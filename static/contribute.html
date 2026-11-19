@@ -129,12 +129,21 @@
         </div>
 
         <div class="container-fluid">
-            <div id="loginMessage" class="alert alert-danger alert-inline hidden" role="alert">
-                <span class="glyphicon glyphicon-alert"></span>
-                Sorry, but you need to be logged-in to be able to contribute
-            </div>
             <div id="contributeWrapper" class="hidden">
                 <div class="col-xs-12 col-md-6">
+                    <div id="feedbackPanel" class="panel panel-default">
+                        <div class="panel-heading">Help improve FFBE Equip Reborn</div>
+                        <div class="panel-body">
+                            <p>Found a problem or have an idea? Open an issue on GitHub (a free GitHub account is needed):</p>
+                            <button class="btn btn-default" onclick="openFeedbackIssue('bug_report.yml')">
+                                <span class="glyphicon glyphicon-alert"></span> Report a bug
+                            </button>
+                            <button class="btn btn-default" onclick="openFeedbackIssue('suggestion.yml')">
+                                <span class="glyphicon glyphicon-thumbs-up"></span> Suggest an improvement
+                            </button>
+                            <p class="feedbackHint">To correct how an item can be obtained, use the tool below.</p>
+                        </div>
+                    </div>
                     <div id="modifiedItems" class="panel panel-default hidden">
                         <div id="results" class="table notSorted items results">
                             <div class="thead">
@@ -150,26 +159,21 @@
                             </div>
                         </div>
                         <div id="sendToServerDiv">
-                            <button class="btn btn-primary" onclick="sendToServer()">Send it to FFBE Equip Reborn</button>
+                            <button class="btn btn-primary" onclick="openCorrectionIssue()">Open a GitHub issue with these corrections</button>
                         </div>
                     </div>
                     <div>
-                        <h4>How to use this:</h4>
+                        <h4>How to correct item data:</h4>
                         <ol>
                             <li>Items that are missing data are displayed on the right. You can select one, or use the search if you want to correct another item.</li>
                             <li>Once you've found the item you want to modify, click on the <span class="glyphicon glyphicon-edit"></span> to add this item to the list on the left. You can add multiple items to this list (max 10).</li>
                             <li>You can modify the Access and Max Number of the items on the left pane. For Max Number, leave it empty if there is no limitation to how many times this item could be acquired.</li>
-                            <li>When you have entered all the data to the items, click on "<b>Send it to FFBE Equip Reborn</b>" to send it to FFBE Equip Reborn.</li>
-                            <li>A dialog should appears with the result of your submission.</li>
+                            <li>When you have entered all the data, click on "<b>Open a GitHub issue with these corrections</b>": a GitHub page opens in a new tab with the issue already filled in. Check it and submit it there.</li>
                             <li>
-                                <strong>Please note that the data won't be corrected immediately.</strong> <br/>
-                                I regularly merge the sent data to the main data of FFBE Equip Reborn.
+                                <strong>Please note that the data won't be corrected immediately:</strong>
+                                corrections are reviewed and then merged into the data of the site.
                             </li>
                         </ol>
-                    </div>
-                    <div>
-                        You can also report any issues directly on the GitHub repository:
-                        <a href="https://github.com/dCurre/ffbe-equip-reborn/issues" target="_blank" rel="noreferrer">https://github.com/dCurre/ffbe-equip-reborn/issues</a>
                     </div>
                     <div class="footerButtons">
                         <div>
@@ -195,6 +199,7 @@
                                         <div id="statTitle" class="td value sort">Value</div>
                                         <div class="td special">Special</div>
                                         <div class="td access">Access</div>
+                                        <div class="td">
                                             Max <span class='hidden-xs'>Number</span>
                                         </div>
                                     </div>
@@ -214,45 +219,6 @@
                     <div class="modal-header">Add access</div>
                     <div class="modal-body">
                         <div class="btn-group choice" data-toggle="buttons" id="accessList"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="submitModal" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        Submit results
-                    </div>
-                    <div class="modal-body">
-                        <div class="submitSuccess hidden">
-                            <p class="text-success">
-                                    <span class="glyphicon glyphicon-ok-circle"></span>
-                                    Your contribution is saved! Thanks a lot!
-                                </p>
-                            <p class="details">
-                                Number of item modified: <span class='modified'></span><br/>
-                                Number of item pending: <span class='total'></span><br/>
-                            </p>
-                        </div>
-                        <div class="submitFailed hidden">
-                            <p class="text-danger">
-                                    <span class="glyphicon glyphicon-exclamation-sign"></span>
-                                    There was an issue with your submission.
-                                </p>
-                            <p>Error information:</p>
-                            <pre class='error'></pre>
-                            <p>The data sent to the server was:</p>
-                            <pre class='data'></pre>
-                            <p class="details">
-                                You can
-                                <a href="https://github.com/dCurre/ffbe-equip-reborn/issues" target="_blank" rel="noreferrer">open an issue on GitHub</a>.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

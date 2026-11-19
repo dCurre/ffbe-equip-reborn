@@ -27,9 +27,15 @@ Pages): anything that still calls the Node server is broken online.
 - [ ] **`/clientConfig` script tag** in `static/builder.html` and `static/units.html` returns 404 on
   GitHub Pages. Remove it (or replace with a static config file) once the features above no longer
   need it.
-- [ ] **Contribute page** (`static/contribute.html`, `POST /:server/corrections`) can't save anything
-  without a server. Replace with a link to (prefilled) GitHub issues on this repo, or remove the page.
-  It also loads `GL/corrections.json` (written by the old server, not in the repo) → 404 on every visit.
+- [ ] **Process data correction issues**: the Contribute page now opens GitHub issues (label `data`,
+  form `.github/ISSUE_TEMPLATE/data_correction.yml`) with the corrections as JSON. They must be applied
+  to `static/<server>/data.json` by hand or with a script (the old flow used
+  `tools/GL/applyCorrections.js` / `tools/JP/applyCorrection.js` with a `corrections.json`). Optionally
+  create the `data` label in the repo (GitHub ignores labels that don't exist).
+  Open questions on the Contribute page: the item correction tool may not be worth keeping (no GL
+  item is `unknown`; JP data is frozen) — decide whether to keep it or leave only bugs/suggestions.
+  The results after a search are slow to appear (likely `displayItems` rendering every match at once;
+  not measured yet); the "add" action (pencil) is not self-explanatory ("Add to corrections").
 - [ ] **Retire the server** once the items above are done: `server.js`, `server/`, `config.js`,
   `.config.json` handling and the related npm dependencies — or keep a minimal static server for local
   development only.
@@ -59,6 +65,10 @@ Pages): anything that still calls the Node server is broken online.
   duplication and a proposal (incremental refactor vs a component framework) before changing code.
   Also check for libraries loaded by the pages but no longer used (bootstrap-toggle was loaded by
   `units.html` although unused since 2019).
+  Check global functions redefined with the same name as in `static/common.js` (they silently replace
+  it on that page): `unselectAll` (encyclopedia.js, unitSearch.js), `prepareSearch` and `sort`
+  (inventory.js), `isTwoHanded` (builder/common.js). `filterItems` in contribute.js caused an infinite
+  recursion in the search and was renamed; verify each of the others is an intended override.
 - [ ] **Review the build algorithm** (the equipment optimizer): correctness, performance and
   readability. Main files: `static/builder/buildOptimizer.js`, `static/builder/typeCombinationGenerator.js`,
   `static/builder/itemPool.js`, `static/builder/optimizerWebWorker.js` (runs in Web Workers),

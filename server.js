@@ -5,7 +5,6 @@ import sessions from 'client-sessions';
 import helmet from 'helmet'
 import cors from 'cors'
 import ServerConfig from './config.js'
-import { route as corrections } from './server/routes/corrections.js';
 import { route as clientConfig } from './server/routes/clientConfig.js';
 import { route as oauth } from './server/routes/oauth.js'
 import * as firebase from './server/routes/firebase.js';
@@ -24,8 +23,6 @@ let config = ServerConfig.ServerConfig;
 const app = express();
 app.use(compression({level: 9}));
 console.log(`Environment is: ${config.env}`);
-
-app.use('/', corrections);
 
 // Helmet Middleware
 app.use(helmet.frameguard({

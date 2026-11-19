@@ -1,0 +1,35 @@
+name: Bug report
+description: Something on the site doesn't work as expected
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem with FFBE Equip Reborn!
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: Which page has the problem?
+      placeholder: e.g. Builder, Units, Inventory, Espers, Unit Search, Encyclopedia
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. ...
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: e.g. Chrome on Windows, Safari on iPhone

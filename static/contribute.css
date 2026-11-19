@@ -10,6 +10,15 @@
     padding: 0;
 }
 
+#feedbackPanel .btn {
+    margin: 0 5px 5px 0;
+}
+
+#feedbackPanel .feedbackHint {
+    margin: 5px 0 0 0;
+    opacity: 0.75;
+}
+
 #sendToServerDiv {
     display: flex;
     flex-direction: row;

@@ -2,10 +2,14 @@ var currentItem;
 var newItems = [];
 var dataById = {};
 var modifiedItems = {};
-var corrections;
+
+// Contributions are sent as GitHub issues (the site has no server). The forms are in .github/ISSUE_TEMPLATE.
+const NEW_ISSUE_URL = 'https://github.com/dCurre/ffbe-equip-reborn/issues/new';
+// GitHub rejects URLs that are too long (414): stay well below the limit
+const MAX_ISSUE_URL_LENGTH = 7000;
 
 function updateResults() {
-    displayItems(filterItems(removeModifedItems(data)));
+    displayItems(filterContributeItems(removeModifedItems(data)));
     displayModifiedItems();
     lazyLoader.update();
 }
@@ -23,7 +27,8 @@ function removeModifedItems(data) {
     return notModifiedItems;
 }
 
-function filterItems(data) {
+// Not named filterItems: that would override filterItems() of common.js, which filter() calls (infinite recursion)
+function filterContributeItems(data) {
     var searchText = $("#searchText").val();
     if (!searchText) {
         return filterUnknowItems(data);
@@ -51,7 +56,7 @@ function displayItems(items) {
     for (var index in items) {
         var item = items[index];
         if (item) {
-            html += '<div class="tr ' + item.id + (item.corrected ? " userInputed" : "") + '">';
+            html += '<div class="tr ' + item.id + '">';
             html += '<div class="td select"><span class="glyphicon glyphicon-edit clickable" onclick="modifyItem(\'' + item.id + '\')"></span></div>';
             html += displayItemLine(item);
             html += '<div class="td">' + (item.maxNumber ? item.maxNumber : "N/A") + "</div>";
@@ -100,7 +105,7 @@ function displayModifiedItems() {
 
 function modifyItem(itemId) {
     if (Object.keys(modifiedItems).length >=10 ) {
-        Modal.showMessage("Modification error", "Only 10 items at most can be modifed at a time. Please send the current item being modified to the server before continuing.");
+        Modal.showMessage("Modification error", "Only 10 items at most can be modified at a time. Please open an issue with the current items before continuing.");
         return;
     }
     var modifiedItem = {"access":[]};
@@ -145,8 +150,25 @@ function setAccess(itemId, access) {
     updateResults();
 }
 
-function sendToServer() {
-    $("body").addClass("loading");
+// Opens the GitHub "new issue" page in a new tab, with the given issue form and prefilled fields
+// (field names are the ids defined in .github/ISSUE_TEMPLATE/<template>)
+function openIssue(template, fields) {
+    const params = new URLSearchParams(Object.assign({ template: template }, fields));
+    const url = NEW_ISSUE_URL + '?' + params.toString();
+    if (url.length > MAX_ISSUE_URL_LENGTH) {
+        Modal.showMessage("Too much data", "The issue is too long to be prepared automatically. Please send fewer items at a time.");
+        return false;
+    }
+    window.open(url, '_blank', 'noopener');
+    return true;
+}
+
+function openFeedbackIssue(template) {
+    openIssue(template, {});
+}
+
+function openCorrectionIssue() {
+    const itemCorrections = [];
     for (var id in modifiedItems) {
         if (!modifiedItems[id].access || modifiedItems[id].access.length == 0) {
             Modal.showMessage("Access error", "Access cannot be empty");
@@ -162,64 +184,31 @@ function sendToServer() {
         } else {
             delete modifiedItems[id].maxNumber;
         }
-    }
-    
-    $("#submitModal .submitFailed, #submitModal .submitSuccess").addClass('hidden');
-
-    var modifiedItemsStr = JSON.stringify(modifiedItems);
-
-    $.ajax({
-        type: "POST",
-        url: "/" + server + "/corrections",
-        data: modifiedItemsStr,
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function(data) {
-            $("#submitModal .submitSuccess").removeClass('hidden');
-            $("#submitModal .submitSuccess .details .modified").text(data.modified);
-            $("#submitModal .submitSuccess .details .total").text(data.total);
-            for (var id in modifiedItems) {
-                cancelModification(id);
-            }
-            getCorrections();
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            var error = errorThrown + "\n";
-            if (jqXHR.responseJSON) error += jqXHR.responseJSON.error;
-            $("#submitModal .submitFailed").removeClass('hidden');
-            $("#submitModal .submitFailed").find('pre.error').html(error);
-            $("#submitModal .submitFailed").find('pre.data').html(modifiedItemsStr);
-        },
-        complete: function() {
-            // run after success/error handler
-            $("body").removeClass("loading");
-            $("#submitModal").modal();
+        const correction = { id: id, name: dataById[id].name, access: modifiedItems[id].access };
+        if (modifiedItems[id].maxNumber) {
+            correction.maxNumber = modifiedItems[id].maxNumber;
         }
+        itemCorrections.push(correction);
+    }
+    if (itemCorrections.length === 0) {
+        return;
+    }
+
+    const names = itemCorrections.map(correction => correction.name).join(', ');
+    const opened = openIssue('data_correction.yml', {
+        title: '[Data] ' + server + ': ' + (names.length > 80 ? names.substring(0, 77) + '...' : names),
+        server: server,
+        corrections: JSON.stringify(itemCorrections, null, 2)
     });
+    if (opened) {
+        Modal.showMessage("Almost done", "A GitHub page with the issue already filled in has been opened in a new tab. Please check it and click \"Submit new issue\" there. Thank you!");
+    }
 }
 
-function getCorrections() {
-    $.get(server + "/corrections.json", function(result) {
-        corrections = result;
-        for (var index = data.length; index--;) {
-            if (corrections[data[index].id]) {
-                data[index].access = corrections[data[index].id].access;
-                if (corrections[data[index].id].maxNumber) {
-                    data[index].maxNumber = corrections[data[index].id].maxNumber;
-                } else {
-                    delete data[index].maxNumber;
-                }
-                data[index].corrected = true;
-            }
-        }
-        prepareSearch(data);
-        updateResults();
-        $("#contributeWrapper").removeClass('hidden');
-        $("#loginMessage").addClass('hidden');
-    }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
-        $("#contributeWrapper").addClass('hidden');
-        $("#loginMessage").removeClass('hidden');
-    });  
+function showContributePage() {
+    prepareSearch(data);
+    updateResults();
+    $("#contributeWrapper").removeClass('hidden');
 }
 
 // will be called by common.js at page load
@@ -231,7 +220,7 @@ function startPage() {
         }
         getStaticData("units", true, function(result) {
             units = result;
-            getCorrections();
+            showContributePage();
         });
     });
     

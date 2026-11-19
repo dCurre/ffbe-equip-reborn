@@ -35,10 +35,11 @@ FFBE Equip Reborn is maintained by **[dCurre](https://github.com/dCurre)**.
 The game's servers are closed (the Global version ended in October 2024), so the game data in this
 repository is frozen. The site is hosted as a **static website on GitHub Pages**, without a backend.
 
-Most of the tool works: builder and optimizer, unit search, encyclopedia, espers, and units/inventory saved
-in your browser. Features that relied on the original server are not available yet and are being migrated:
-Google login and Drive sync, shared build links, public unit collections, export to imgur and the
-contribution form. See [.claude/ROADMAP.md](.claude/ROADMAP.md) for the full list of open work.
+Most of the tool works: builder and optimizer, unit search, encyclopedia and espers. Bug reports,
+suggestions and item data corrections are sent as GitHub issues from the Contribute page. Features that
+relied on the original server are not available yet and are being migrated: Google login and Drive sync
+(needed to save your units, inventory and espers), shared build links, public unit collections and export
+to imgur. See [.claude/ROADMAP.md](.claude/ROADMAP.md) for the full list of open work.
 
 ## Run locally
 
