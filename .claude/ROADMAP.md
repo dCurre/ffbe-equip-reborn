@@ -27,11 +27,10 @@ Pages): anything that still calls the Node server is broken online.
 - [ ] **`/clientConfig` script tag** in `static/builder.html` and `static/units.html` returns 404 on
   GitHub Pages. Remove it (or replace with a static config file) once the features above no longer
   need it.
-- [ ] **Process data correction issues**: the Contribute page now opens GitHub issues (label `data`,
-  form `.github/ISSUE_TEMPLATE/data_correction.yml`) with the corrections as JSON. They must be applied
-  to `static/<server>/data.json` by hand or with a script (the old flow used
-  `tools/GL/applyCorrections.js` / `tools/JP/applyCorrection.js` with a `corrections.json`). Optionally
-  create the `data` label in the repo (GitHub ignores labels that don't exist).
+- [ ] **Process data correction issues**: the Contribute page now opens GitHub issues (label
+  `documentation`, title prefix `[Data]`, form `.github/ISSUE_TEMPLATE/data_correction.yml`) with the
+  corrections as JSON. They must be applied to `static/<server>/data.json` by hand or with a script (the
+  old flow used `tools/GL/applyCorrections.js` / `tools/JP/applyCorrection.js` with a `corrections.json`).
   Open questions on the Contribute page: the item correction tool may not be worth keeping (no GL
   item is `unknown`; JP data is frozen) — decide whether to keep it or leave only bugs/suggestions.
   The results after a search are slow to appear (likely `displayItems` rendering every match at once;

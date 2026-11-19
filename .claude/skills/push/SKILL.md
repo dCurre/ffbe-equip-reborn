@@ -140,26 +140,17 @@ git push origin <branch>
 git log --oneline -1 origin/<branch>
 ```
 
-The remote must show the new commit.
+The remote must show the new commit. That's the end of the verification.
 
-**If the push went to `master`, verify the deploy.** `gh` is NOT installed on this machine: use the
-public GitHub API.
+**Do NOT wait for or check the deploy / live site after a push to `master`** (no polling of the
+Actions run, no curl of the live pages): the user checks the site and reports problems. Only check the
+deploy if the user explicitly asks, or reports that something is wrong. In that case, `gh` is NOT
+installed on this machine: use the public GitHub API:
 
 ```bash
 curl -s "https://api.github.com/repos/dCurre/ffbe-equip-reborn/actions/runs?per_page=1" \
   | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const r=JSON.parse(s).workflow_runs[0];console.log(r.name,'|',r.head_sha.slice(0,9),'|',r.status,'|',r.conclusion,'|',r.html_url)})"
 ```
 
-- Check that the run's `head_sha` matches the pushed commit. `status` goes `queued` → `in_progress` →
-  `completed`; a deploy usually takes 1–3 minutes. If it's still running, tell the user and offer to
-  check again, rather than polling in a tight loop.
-- When `conclusion` is `success`, spot-check the live site (HTTP 200 on the pages/files touched):
-
-```bash
-B=https://dcurre.github.io/ffbe-equip-reborn
-for u in / /builder.html /GL/data.json; do echo "$u $(curl -s -o /dev/null -w '%{http_code}' $B$u)"; done
-```
-
-- If the run failed, open the run URL for the user and diagnose from the failing step.
-
-Report to the user: commit hash, branch, and (for master) deploy result + live URL.
+Report to the user: commit hash and branch; for `master`, say that the deploy has started (it usually
+takes 1–3 minutes) and give the live URL https://dcurre.github.io/ffbe-equip-reborn/.

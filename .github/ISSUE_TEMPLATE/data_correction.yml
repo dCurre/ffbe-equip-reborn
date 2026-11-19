@@ -1,7 +1,7 @@
 name: Item data correction
 description: Correct how an item can be obtained (access) or how many can be obtained (max number)
 title: "[Data] "
-labels: ["data"]
+labels: ["documentation"]
 body:
   - type: markdown
     attributes:
