@@ -3,7 +3,6 @@ import express from 'express'
 import bodyParser from 'body-parser';
 import sessions from 'client-sessions';
 import helmet from 'helmet'
-import mime from 'mime'
 import cors from 'cors'
 import ServerConfig from './config.js'
 import { route as corrections } from './server/routes/corrections.js';
@@ -26,25 +25,6 @@ const app = express();
 app.use(compression({level: 9}));
 console.log(`Environment is: ${config.env}`);
 
-app.use(express.static(path.join(__dirname, '/dist/'), {
-  etag: false,
-  lastModified: config.isProd,
-  cacheControl: config.isProd,
-  maxAge: "365d",
-  immutable: config.isProd,
-  index: 'homepage.html',
-  setHeaders: function (res, path) {
-    if (mime.lookup(path) === 'text/html') {
-      // For HTML, avoid long and immutable cache since it can't be busted
-      res.setHeader('Cache-Control', 'public, max-age=0');
-    }
-    if (mime.getType(path) === 'application/json') {
-      // For JSON, avoid caching
-      res.setHeader('Cache-Control', 'public, max-age=0');
-    }
-  }
-}));
-
 app.use('/', corrections);
 
 // Helmet Middleware
@@ -62,18 +42,11 @@ app.use(helmet.hsts({
 let corsOptions = {
   origin: 'https://dcurre.github.io',
 }
-if (!config.isProd && process.env.DEV_USE_DIST != "yes") {
+if (!config.isProd) {
     corsOptions.origin = [corsOptions.origin, 'http://localhost:4444', 'http://localhost:3001'];
 }
-console.log("Config is not Production and DEV_USE_DIST is no: ");
-console.log(!config.isProd && process.env.DEV_USE_DIST != "yes");
-console.log(corsOptions);
 
 app.use(cors(corsOptions));
-
-app.use('/css', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/css')))
-app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist/js')))
-app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')))
 
 var cspDirectives = {
   "default-src": ["'self'"],
@@ -92,39 +65,11 @@ var cspDirectives = {
   "blockAllMixedContent": [],
 };
 
-app.use(helmet.contentSecurityPolicy({ 
-  directives: cspDirectives,
-  reportOnly: false // make sure reportOnly is set to false
-}));
-
-
-app.use(helmet.contentSecurityPolicy({ 
+app.use(helmet.contentSecurityPolicy({
   directives: cspDirectives
 }));
 
-
 // Static middleware
-if (config.isProd || process.env.DEV_USE_DIST === "yes") {
-  console.log(`App is also serving dist`);
-  // In prod, also serve dist folder (which contains the webpack generated files)
-  // Any files present in 'dist' will shadow files in 'static'
-  app.use(express.static(path.join(__dirname, '/dist/'), {
-    etag: false,
-    lastModified: config.isProd,
-    cacheControl: config.isProd,
-    maxAge: "365d",
-    immutable: config.isProd,
-    index: 'homepage.html',
-    setHeaders: function (res, path) {
-      if (mime.lookup(path) === 'text/html') {
-        // For HTML, avoid long and immutable cache since it can't be busted
-        res.setHeader('Cache-Control', 'public, max-age=0');
-      }
-    }
-  }));
-}
-
-// Static middleware 
 // Serve static files directly
 // Cache related headers are disabled in dev
 app.use(express.static(path.join(__dirname, '/static/'), {
@@ -133,8 +78,8 @@ app.use(express.static(path.join(__dirname, '/static/'), {
   lastModified: config.isProd,
   maxAge: "1h",
   index: 'homepage.html',
-  setHeaders: function (res, path) {
-    if (mime.getType(path) === 'application/json') {
+  setHeaders: function (res, filePath) {
+    if (path.extname(filePath) === '.json') {
       // For JSON, avoid caching
       res.setHeader('Cache-Control', 'public, max-age=0');
     }

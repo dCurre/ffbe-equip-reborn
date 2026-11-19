@@ -35,13 +35,10 @@ Pages): anything that still calls the Node server is broken online.
 
 ## Bugs / technical debt
 
-- [ ] **`npm run build` (webpack) is broken**: `webpack.config.js` uses CommonJS `require` while
-  `package.json` has `"type": "module"`, and `--hide-modules` no longer exists in webpack 5. The deploy
-  doesn't use it (it publishes `static/` as is). Decide: fix it (minification/cache busting) or remove
-  webpack, its devDependencies and the stale `dist/` folder.
-- [ ] **`mime.lookup` in `server.js`**: the installed `mime` is v3 (no `lookup`); `mime` is also not a
-  declared dependency. Only affects the local Node server when serving `dist/`. Fix or remove with the
-  server.
+- [ ] **Frontend libraries with known vulnerabilities** (they run in visitors' browsers, so this is
+  the real exposure of the public site): jQuery 3.1.0 (`static/lib/`, XSS fixes in 3.5+), Bootstrap
+  3.3.7 (CDN, XSS fixes in 3.4.1), jQuery UI 1.12.1 (fixes in 1.13). Update within the same major
+  version and re-test every page; update the CDN `integrity` hashes.
 - [ ] **Outdated dependencies**: `npm audit`, deprecated `request`, `engines: ">=8"` is wrong; move
   local development to a current Node LTS (CI already uses Node 20).
 - [ ] **Security headers**: GitHub Pages can't set HTTP headers, so the CSP from `server.js` is not
@@ -51,6 +48,19 @@ Pages): anything that still calls the Node server is broken online.
   or dropping the cache.
 - [ ] **Tests** (`npm test`, mocha in `test/`): status unknown after the changes; check and fix or
   prune tests for removed routes.
+
+## Code quality and build algorithm
+
+- [ ] **Review code quality**: evaluate splitting the UI into reusable components and removing
+  duplicated code. The frontend is plain jQuery with very large files (`static/builder.js` ~5,200
+  lines, `static/common.js` ~2,900, `inventory.js` / `unitSearch.js` / `units.js` ~1,700 each) and
+  repeated blocks across pages (same header/menu/footer markup in every HTML page, similar
+  load/save logic in `units.js` / `inventory.js` / `espers.js`). Start with an analysis of the
+  duplication and a proposal (incremental refactor vs a component framework) before changing code.
+- [ ] **Review the build algorithm** (the equipment optimizer): correctness, performance and
+  readability. Main files: `static/builder/buildOptimizer.js`, `static/builder/typeCombinationGenerator.js`,
+  `static/builder/itemPool.js`, `static/builder/optimizerWebWorker.js` (runs in Web Workers),
+  `static/formula.js` (damage/stat formulas); `static/algorithm.html` documents the approach.
 
 ## Ideas (optional)
 
