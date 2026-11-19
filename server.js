@@ -48,6 +48,7 @@ if (!config.isProd) {
 
 app.use(cors(corsOptions));
 
+// Keep in sync with the Content-Security-Policy <meta> tag in the static/*.html pages
 var cspDirectives = {
   "default-src": ["'self'"],
   "script-src": ["'self'",'code.jquery.com', 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com', 'gitcdn.github.io', 'kit.fontawesome.com', 'ka-f.fontawesome.com', "'unsafe-inline'"],

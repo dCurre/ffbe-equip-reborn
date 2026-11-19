@@ -4619,12 +4619,6 @@ function startPage() {
         waitingCallbackKeyReady("unitsWithPassives");
     });
 
-    // try to read unit skill from cache
-    var unitsWithSkillsData = staticFileCache.retrieve(`${server}/unitsWithSkill.json`);
-    if (unitsWithSkillsData && !$.isEmptyObject(unitsWithSkillsData)) {
-        unitsWithSkills = unitsWithSkillsData;
-    }
-
     getStaticData("defaultBuilderEspers", false, async function(result) {
         espers = [];
         for (var index = result.length; index--;) {

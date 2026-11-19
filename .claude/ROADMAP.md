@@ -29,6 +29,7 @@ Pages): anything that still calls the Node server is broken online.
   need it.
 - [ ] **Contribute page** (`static/contribute.html`, `POST /:server/corrections`) can't save anything
   without a server. Replace with a link to (prefilled) GitHub issues on this repo, or remove the page.
+  It also loads `GL/corrections.json` (written by the old server, not in the repo) → 404 on every visit.
 - [ ] **Retire the server** once the items above are done: `server.js`, `server/`, `config.js`,
   `.config.json` handling and the related npm dependencies — or keep a minimal static server for local
   development only.
@@ -40,13 +41,6 @@ Pages): anything that still calls the Node server is broken online.
   Also consider select2 4.0.5 → 4.0.13 (bug fixes, same major).
 - [ ] **Outdated dependencies**: `npm audit`, deprecated `request`, `engines: ">=8"` is wrong; move
   local development to a current Node LTS (CI already uses Node 20).
-- [ ] **Security headers**: GitHub Pages can't set HTTP headers, so the CSP from `server.js` is not
-  applied online. Add a `<meta http-equiv="Content-Security-Policy">` to the pages if wanted.
-- [ ] **Browser cache of data files** (`staticFileCache` in `static/common.js`) stores big JSON
-  uncompressed in `localStorage` (~5 MB quota; large files just get re-downloaded). Consider IndexedDB
-  or dropping the cache. Symptom: `QuotaExceededError` warnings in the console when saving
-  `GL/visionCards.json`, `GL/unitsWithPassives.json` (handled, not breaking). Also fix the log line
-  "Retrieved … (undefined bytes)" in `staticFileCache.retrieve` (logs `.length` of a parsed object).
 - [ ] **Tests** (`npm test`, mocha in `test/`): status unknown after the changes; check and fix or
   prune tests for removed routes.
 
@@ -62,7 +56,8 @@ Pages): anything that still calls the Node server is broken online.
   readability. Main files: `static/builder/buildOptimizer.js`, `static/builder/typeCombinationGenerator.js`,
   `static/builder/itemPool.js`, `static/builder/optimizerWebWorker.js` (runs in Web Workers),
   `static/formula.js` (damage/stat formulas); `static/algorithm.html` documents the approach.
-  Remove leftover debug `console.log` calls (e.g. `buildOptimizer.js:47` logs every enchantment item).
+  Remove leftover debug `console.log` calls (e.g. `buildOptimizer.js:47` logs every enchantment item;
+  `espers.js` logs "entering/exiting notLoaded function", `displayEspers` and every skill name).
   Reference timing on a dev PC: `optimize: ~3.2 s` for one unit.
 
 ## Ideas (optional)

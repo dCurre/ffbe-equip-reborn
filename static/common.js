@@ -2062,167 +2062,55 @@ function getStaticData(name, localized, callback) {
         name = server + "/" + name + ".json";
     }
 
-    var data = staticFileCache.retrieve(name);
-
-    // Check data, should not be empty
-    if (data && !$.isEmptyObject(data)) {
-        // Data found, not empty, good to go!
-        callback(data);
-    } else {
-        // Data NOT found, let's fetch it
+    // Data files are kept between visits by the browser's HTTP cache (GitHub Pages sends cache headers),
+    // so no extra copy is stored in localStorage (its ~5 MB quota is too small for them anyway).
+    // The "Downloading" notification only appears when a download is actually slow.
+    let notification = null;
+    let shownAt = 0;
+    const notifyTimer = setTimeout(function() {
         $.notify("Downloading " + name, {
             className: "info",
-            autoHide:false
+            autoHide: false
         });
-        let notification = $('.notifyjs-corner').children().first();
-        let start = Date.now();
-        $.get(name, function(result) {
-            requestIdleCallback(function() {
-              staticFileCache.store(name, result);
-              callback(result);
-              let end = Date.now();
-              if (end - start < 1000) {
-                setTimeout(function () {
-                  notification.trigger('notify-hide');
-                }, 1000);
-              } else {
-                notification.trigger('notify-hide');
-              }
-            });
-          }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
-            Modal.showErrorGet(this.url, errorThrown);
-          });
-          
-    }
+        notification = $('.notifyjs-corner').children().first();
+        shownAt = Date.now();
+    }, 300);
+    const hideNotification = function() {
+        clearTimeout(notifyTimer);
+        if (notification) {
+            // Keep it visible at least 1s once shown, to avoid flickering
+            const notificationToHide = notification;
+            setTimeout(function() {
+                notificationToHide.trigger('notify-hide');
+            }, Math.max(0, 1000 - (Date.now() - shownAt)));
+        }
+    };
+
+    $.get(name, function(result) {
+        requestIdleCallback(function() {
+            hideNotification();
+            callback(result);
+        });
+    }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
+        hideNotification();
+        Modal.showErrorGet(this.url, errorThrown);
+    });
 }
 
+// Older versions cached data files in localStorage. That cache was removed in favour of the browser's
+// HTTP cache; clear() removes the entries those versions left behind, so they stop using the quota.
 staticFileCache = {
-    /*
-     * staticFileCache.store
-     * Convert data to string, compress and store in localStorage
-     */
-    store: function(filename, data) {
-        if (!localStorageAvailable) return;
-          
+    clear: function() {
         try {
-            // Convert to string if not already (may throw if bad data)
-            if (typeof data !== 'string') {
-                data = JSON.stringify(data);
+            const savedFiles = JSON.parse(localStorage.getItem("savedFiles"));
+            if ($.isPlainObject(savedFiles)) {
+                Object.keys(savedFiles).forEach(function(filename) {
+                    localStorage.removeItem(filename);
+                });
             }
-            // Store uncompressed. Large files may exceed the localStorage quota:
-            // the catch below drops them and they are simply re-downloaded next time.
-            localStorage.removeItem(filename);
-            localStorage.setItem(filename, data);
-            // Update savedFiles
-            var savedFiles = JSON.parse(localStorage.getItem("savedFiles"));
-            if (!savedFiles) savedFiles = {};
-            savedFiles[filename] = data.length;
-            localStorage.setItem("savedFiles", JSON.stringify(savedFiles));
-            // Log to console
-            window.console && window.console.log("Stored "+filename+" (" + data.length+" bytes)");
-        } catch (error) {
-          // Modal.showError("An error occured while trying to save data to your local storage.", error);
-          window.console && window.console.warn("An error occured while trying to save the file "+filename+" to your local storage", error);
-          // Failsafe: remove item in case of error (to free space if needed)
-          try { localStorage.removeItem(filename); } catch(e){}
-        }
-      },
-    /*
-     * staticFileCache.retrieve
-     * Read from localStorage, decompress, convert to JS
-     */
-    retrieve: function(filename) {
-        if (!localStorageAvailable) return;
-
-        var data = null;
-        try {
-            data = localStorage.getItem(filename);
-            if (data) {
-                // Parse stored JSON. Legacy LZString-compressed entries fail to parse
-                // and are removed by the catch below, then re-downloaded.
-                data = JSON.parse(data);
-
-                // Log to console
-                window.console && window.console.log("Retrieved "+filename+" (" + data.length + " bytes)");
-            }
-        } catch (error) {
-            window.console && window.console.warn("An error occured while trying to retrieve the file "+filename+" from your local storage", error);
-            // Failsafe: remove item in case of error (to free space if needed)
-            try { localStorage.removeItem(filename); } catch(e){}
-        }
-        return data;
-    },
-
-    /*
-     * staticFileCache.clear
-     * Clear a file or all files saved in localStorage
-     */
-    clear: function(filename = null) {
-        if (!localStorageAvailable) return;
-
-        var savedFiles, filenames;
-
-        // Load save files list
-        try {
-            savedFiles = JSON.parse(localStorage.getItem("savedFiles"));
-        } catch (error) {
-            window.console && window.console.warn("An error occured while trying to load saved files list", error);
-        }
-
-        // Set saved files to default if not a plain object
-        if (!$.isPlainObject(savedFiles)) savedFiles = {};
-
-        try {
-            // Establish list of files to remove
-            if (typeof filename === 'string') {
-                filenames = [filename];
-            } else {
-                filenames = Object.keys(savedFiles);
-            }
-
-            // Loop and remove
-            for (i = 0; i < filenames.length; i++) {
-                localStorage.removeItem(filenames[i]);
-                delete savedFiles[filenames[i]];
-            }
-        } catch (error) {
-            window.console && window.console.warn("An error occured while trying to remove the file(s) "+filenames+" from your local storage", error);
-        }
-
-        // Always update list of saved files
-        localStorage.setItem("savedFiles", JSON.stringify(savedFiles));
-    },
-
-    /*
-     * staticFileCache.checkDataVersion
-     * Compare the version, server and language as stored in localStorage
-     */
-    checkDataVersion: function(version, server, language) {
-        if (!localStorageAvailable) return false;
-
-        try {
-            var storedDataVersion = JSON.parse(localStorage.getItem("dataVersion"));
-            if (storedDataVersion.version === version && storedDataVersion.server === server && storedDataVersion.language === language) {
-                return true
-            }
-            window.console && window.console.warn("Data version differs from stored", version, server, language, storedDataVersion);
-        } catch (e) { /* ignore exceptions */ }
-        return false;
-    },
-
-    /*
-     * staticFileCache.setDataVersion
-     * Set the version, server and language to localStorage
-     */
-    setDataVersion: function(version, server, language) {
-        if (!localStorageAvailable) return;
-
-        try {
-            localStorage.setItem("dataVersion", JSON.stringify({"version": version, "server": server, "language": language}));
-            window.console && window.console.log("Storing data version", version, server, language);
-        } catch (error) {
-            window.console && window.console.warn("An error occured while trying to save current data version", error, version, server, language);
-        }
+            localStorage.removeItem("savedFiles");
+            localStorage.removeItem("dataVersion");
+        } catch (e) { /* localStorage unavailable or malformed: nothing to clean */ }
     }
 }
 
@@ -2616,37 +2504,18 @@ function checkUnitImageLevel(unitId, unitData){
 
 $(function() {
     $.notify.defaults({"globalPosition":"bottom right"});
-    try {
-        // Bust the whole localStorage in case of old array used in order to get a clean state
-        // @TODO: can be removed after october 2018
-        if (localStorageAvailable && $.isArray(JSON.parse(localStorage.getItem("savedFiles")))) {
-            localStorage.clear();
-            window.console && window.console.warn("Clearing the whole localStorage!");
-        }
-    } catch (e) {}
 
+    // Free the localStorage space used by the data cache of older versions (no-op once cleaned)
+    staticFileCache.clear();
 
     readUrlParams();
 
-    $.get(server + '/dataVersion.json', function(result) {
-        var dataVersion = result.version;
-        var selectedLanguage = language ? language : "en";
+    startPage();
 
-        if (localStorageAvailable && !staticFileCache.checkDataVersion(dataVersion, server, selectedLanguage)) {
-            staticFileCache.clear();
-            staticFileCache.setDataVersion(dataVersion, server, selectedLanguage);
-        }
-
-        startPage();
-
-        // Set tooltips
-        $('[data-toggle="tooltip"]').tooltip({
-            container: 'body',
-            trigger: 'hover'
-        });
-
-    }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
-        Modal.showErrorGet(this.url, errorThrown);
+    // Set tooltips
+    $('[data-toggle="tooltip"]').tooltip({
+        container: 'body',
+        trigger: 'hover'
     });
 
     if ((window.location.href.indexOf("&o") > 0 || window.location.href.indexOf("?o") > 0)) {
