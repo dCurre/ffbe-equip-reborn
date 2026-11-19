@@ -1,13 +1,14 @@
-![](https://cdn.discordapp.com/icons/389844892853075969/69657d37c167df648dd93205435ca2e7.png?size=128) 
+# FFBE Builder Reborn
 
-# Final Fantasy Brave Exvius Equipment Tool 
-![GitHub repo size](https://img.shields.io/github/repo-size/lyrgard/ffbeEquip)
-![GitHub contributors](https://img.shields.io/github/contributors/lyrgard/ffbeEquip)
-![GitHub](https://img.shields.io/github/license/lyrgard/ffbeEquip)
+FFBE Builder Reborn is a community revival of [FFBE Equip](https://github.com/lyrgard/ffbeEquip), the online tool for [Final Fantasy Brave Exvius](http://www.finalfantasyexvius.com/). Features include building units/parties, searching units/gear, and saving user inventory/units/espers.
 
-Welcome to FFBE Equip Next, an online tool for [Final Fantasy Brave Exvius](http://www.finalfantasyexvius.com/). Features include building units/parties, searching units/gear, and saving user inventory/units/espers.
+This is an unofficial fan project, not affiliated with or endorsed by Square Enix.
 
-Check it out here: https://ffbeequipnext.com/
+## Credits
+Based on the work of Lyrgard and the FFBE Equip / FFBE Equip Next contributors.
+Original repository: https://github.com/lyrgard/ffbeEquip
+
+> **Note:** the instructions below come from the original project and are being updated for FFBE Builder Reborn.
 
 # How to run locally
 This first point explain how to get a barebone FFBE Equip local server in 5 mintes.
@@ -117,13 +118,5 @@ This section is only needed if you use firebase with your local instance.
         gsutil cors set cors.json gs://[myproject].appspot.com
         ``` 
 
-# Connect
-Need help or have questions?
-- Reach out on [Discord](https://discord.gg/KTeaq525tR)
-- Message me on [Reddit](https://www.reddit.com/message/compose/?to=gwythian)
-
-# Support FFBE Equip
-Looking for other ways to support FFBE Equip?
-
 # License
-FFBE Equip Next is released under the [ISC License](https://opensource.org/licenses/ISC).
+FFBE Builder Reborn is released under the [ISC License](https://opensource.org/licenses/ISC), like the original FFBE Equip project. See [LICENSE](LICENSE).

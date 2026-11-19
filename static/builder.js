@@ -291,7 +291,7 @@ function optimize() {
 
     initialPinnedWeapons = [builds[currentUnitIndex].fixedItems[0], builds[currentUnitIndex].fixedItems[1]];
 
-    document.title = "0% - FFBE Equip - Builder";
+    document.title = "0% - FFBE Builder Reborn - Builder";
 
     processedCount = 0
     typeCombinationsCount = remainingTypeCombinations.length;
@@ -3218,7 +3218,7 @@ function shortLinkFormatToData(shortLinkData) {
     var unit = {};
     unit.id = unitFound.id;
     if (rarity != 6 && unitFound.max_rarity != rarity) {
-      Modal.showMessage("Unsupported unit rarity", "FFBE Equip only support max rarity units. Max unit rarity will be displayed");
+      Modal.showMessage("Unsupported unit rarity", "FFBE Builder Reborn only support max rarity units. Max unit rarity will be displayed");
       unit.rarity = unitFound.max_rarity;
     } else {
       unit.rarity = rarity;
@@ -4852,7 +4852,7 @@ function initWorkers() {
                                 stopBuild();
                                 progressElement.width("100%");
                                 progressElement.text("100%");
-                                document.title = "100% - FFBE Equip - Builder";
+                                document.title = "100% - FFBE Builder Reborn - Builder";
                                 updateFindAWayButtonDisplay();
                             } else {
                                 if (messageData.value.max > currentBestParamChallengeBuild.value) {
@@ -4867,7 +4867,7 @@ function initWorkers() {
                                 stopBuild();
                                 progressElement.width("100%");
                                 progressElement.text("100%");
-                                document.title = "100% - FFBE Equip - Builder";
+                                document.title = "100% - FFBE Builder Reborn - Builder";
                             }
                         }
                     }
@@ -4881,7 +4881,7 @@ function initWorkers() {
                         progress = newProgress;
                         progressElement.width(progress + "%");
                         progressElement.text(progress + "%");
-                        document.title = progress + "% - FFBE Equip - Builder";
+                        document.title = progress + "% - FFBE Builder Reborn - Builder";
                     }
                     if (workerWorkingCount == 0) {
                         if (runningParamChallenge) {

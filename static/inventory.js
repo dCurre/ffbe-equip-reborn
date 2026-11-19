@@ -1429,7 +1429,7 @@ function importInventory() {
     importedOwnedUnit = null;
     Modal.show({
         title: "Import inventory",
-        body: '<p class="label label-danger">This feature is a Work in Progress. It will override your inventory on FFBE Equip</p><br/><br/>' +
+        body: '<p class="label label-danger">This feature is a Work in Progress. It will override your inventory on FFBE Builder Reborn</p><br/><br/>' +
               '<input type="file" id="importFile" name="importFile" onchange="treatImportFile"/><br/>'+
               '<p><a class="link" href="https://www.reddit.com/r/FFBraveExvius/comments/dd8ljd/ffbe_sync_is_back/">Instructions to import your data directly from the game</a> (require login to FFBE with Facebook or Google)</p><br>' +
               '<p id="importSummary"></p>',

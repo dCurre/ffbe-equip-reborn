@@ -889,16 +889,16 @@ function loadInventory() {
         Modal.show({
             title: "Google Authentication",
             body: '<p>You\'ll be redirected to a google authentication page</p>'+
-                  "<p>This account is only for FFBE Equip to store your data. It will NOT link automatically to your FFBE account. You don't need to switch to Google to log in FFBE.</p>" +
+                  "<p>This account is only for FFBE Builder Reborn to store your data. It will NOT link automatically to your FFBE account. You don't need to switch to Google to log in FFBE.</p>" +
                   '<p class="loginMessageDetail">'+
                     'This site is using '+
                     '<a href="https://en.wikipedia.org/wiki/OAuth" target="_blank" rel="noreferrer">OAuth2 <span class="glyphicon glyphicon-question-sign"/></a> '+
                     'to access the stored inventory data, so it will never know your google login and password.'+
                   '</p>'+
                   '<p class="loginMessageDetail">'+
-                    'The data is stored on the secure FFBE Equip '+
+                    'The data is stored on the secure FFBE Builder Reborn '+
                     '<a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer">app folder on Google Drive <span class="glyphicon glyphicon-question-sign"/></a>. '+
-                    'FFBE Equip can only access this folder, and no personal file.'+
+                    'FFBE Builder Reborn can only access this folder, and no personal file.'+
                   '</p>',
             buttons: [{
                 text: "Continue",
@@ -2109,30 +2109,17 @@ staticFileCache = {
             if (typeof data !== 'string') {
                 data = JSON.stringify(data);
             }
-            // Check if data is already in UTF16 format
-            var isUTF16 = (decodeURIComponent(encodeURIComponent(data)).length === data.length);
-            // Compress string if not already in UTF16 format
-            if (!isUTF16) {
-                data = LZString.compressToUTF16(data);
-                console.log("Compressed "+filename+" (" + data.length+" bytes" + ")")
-            }
-            // create a web worker to compress the file and save it
-            var worker = new Worker('compressionWorker.js');
-            // compress case worker
-            worker.postMessage({process: "compress", filename: filename, data: data});
-            worker.onmessage = function(e) {
-                // save the file
-                data = e.data;
-                localStorage.removeItem(filename);
-                localStorage.setItem(filename, e.data);
-                // Update savedFiles
-                var savedFiles = JSON.parse(localStorage.getItem("savedFiles"));
-                if (!savedFiles) savedFiles = {};
-                savedFiles[filename] = data.length;
-                localStorage.setItem("savedFiles", JSON.stringify(savedFiles));
-                // Log to console
-                window.console && window.console.log("Stored "+filename+" (" + data.length+" bytes" + (isUTF16 ? "" : ", ratio "+ (data.length*100/JSON.stringify(data).length).toFixed(0) +"%") + ")");
-            }
+            // Store uncompressed. Large files may exceed the localStorage quota:
+            // the catch below drops them and they are simply re-downloaded next time.
+            localStorage.removeItem(filename);
+            localStorage.setItem(filename, data);
+            // Update savedFiles
+            var savedFiles = JSON.parse(localStorage.getItem("savedFiles"));
+            if (!savedFiles) savedFiles = {};
+            savedFiles[filename] = data.length;
+            localStorage.setItem("savedFiles", JSON.stringify(savedFiles));
+            // Log to console
+            window.console && window.console.log("Stored "+filename+" (" + data.length+" bytes)");
         } catch (error) {
           // Modal.showError("An error occured while trying to save data to your local storage.", error);
           window.console && window.console.warn("An error occured while trying to save the file "+filename+" to your local storage", error);
@@ -2151,10 +2138,8 @@ staticFileCache = {
         try {
             data = localStorage.getItem(filename);
             if (data) {
-                // Decompress string and parse
-                // Check if the data is already in JSON format if not decompress it
-                
-                data = LZString.decompressFromUTF16(data);
+                // Parse stored JSON. Legacy LZString-compressed entries fail to parse
+                // and are removed by the catch below, then re-downloaded.
                 data = JSON.parse(data);
 
                 // Log to console
