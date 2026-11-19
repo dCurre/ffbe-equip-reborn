@@ -1,7 +1,7 @@
 {
-  "name": "ffbe-builder-reborn",
+  "name": "ffbe-equip-reborn",
   "version": "1.0.0",
-  "description": "FFBE Builder Reborn",
+  "description": "FFBE Equip Reborn",
   "main": "server.js",
   "engines": {
     "node": ">=8"

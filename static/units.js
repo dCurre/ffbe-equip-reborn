@@ -1194,7 +1194,7 @@ function importUnits() {
     importedOwnedUnit = null;
     Modal.show({
         title: "Import unit collection",
-        body: '<p class="label label-danger">It will override your unit collection on FFBE Builder Reborn</p><br/><br/>' +
+        body: '<p class="label label-danger">It will override your unit collection on FFBE Equip Reborn</p><br/><br/>' +
               '<input type="file" id="importFile" name="importFile" onchange="treatImportFile"/>'+
               '<p><a class="link" href="https://www.reddit.com/r/FFBraveExvius/comments/dd8ljd/ffbe_sync_is_back/">Instructions to import your data directly from the game</a> ((require login to FFBE with Facebook or Google)</p><br>' +
               '<p id="importSummary"></p>',
@@ -1305,7 +1305,7 @@ function treatImportFile(evt) {
                             }
                         }
                         if (!baseUnitId) {
-                            Modal.showMessage('unknown unit id : ' + unit.id + '. FFBE Builder Reborn data probably was not updated yet. Ignoring this unit.');
+                            Modal.showMessage('unknown unit id : ' + unit.id + '. FFBE Equip Reborn data probably was not updated yet. Ignoring this unit.');
                             //importedOwnedUnit = null;
                             return;
                         } else {

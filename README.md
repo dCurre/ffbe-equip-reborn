@@ -1,6 +1,6 @@
-# FFBE Builder Reborn
+# FFBE Equip Reborn
 
-FFBE Builder Reborn is a community revival of [FFBE Equip](https://github.com/lyrgard/ffbeEquip), the online tool for [Final Fantasy Brave Exvius](http://www.finalfantasyexvius.com/). Features include building units/parties, searching units/gear, and saving user inventory/units/espers.
+FFBE Equip Reborn is a community revival of [FFBE Equip](https://github.com/lyrgard/ffbeEquip), the online tool for [Final Fantasy Brave Exvius](http://www.finalfantasyexvius.com/). Features include building units/parties, searching units/gear, and saving user inventory/units/espers.
 
 This is an unofficial fan project, not affiliated with or endorsed by Square Enix.
 
@@ -8,7 +8,7 @@ This is an unofficial fan project, not affiliated with or endorsed by Square Eni
 Based on the work of Lyrgard and the FFBE Equip / FFBE Equip Next contributors.
 Original repository: https://github.com/lyrgard/ffbeEquip
 
-> **Note:** the instructions below come from the original project and are being updated for FFBE Builder Reborn.
+> **Note:** the instructions below come from the original project and are being updated for FFBE Equip Reborn.
 
 # How to run locally
 This first point explain how to get a barebone FFBE Equip local server in 5 mintes.
@@ -119,4 +119,4 @@ This section is only needed if you use firebase with your local instance.
         ``` 
 
 # License
-FFBE Builder Reborn is released under the [ISC License](https://opensource.org/licenses/ISC), like the original FFBE Equip project. See [LICENSE](LICENSE).
+FFBE Equip Reborn is released under the [ISC License](https://opensource.org/licenses/ISC), like the original FFBE Equip project. See [LICENSE](LICENSE).
