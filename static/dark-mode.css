@@ -6,7 +6,7 @@ body.dark {
 }
 
 body.dark #header .bannerPicture {
-    background-image: url(/img/banner/banner_blank_dark.png);
+    background-image: url(img/banner/banner_blank_dark.png);
 }
 
 body.dark #header .bannerBackground {

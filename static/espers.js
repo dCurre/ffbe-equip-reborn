@@ -414,7 +414,7 @@ function showNode(node, parentNodeHtml, star, scale=1) {
             break;
         }
         if (node[percentValues[baseStats[statIndex]]]) {
-            nodeHtml.html('<span class="iconHolder"><img class="icon" src="/img/items/ability_77.png"></img></span><span class="text">' + baseStats[statIndex].toUpperCase() + ' + ' + node[percentValues[baseStats[statIndex]]] + '%</span><span class="cost">' + node["cost"]["SP"] + ' SP</span>');
+            nodeHtml.html('<span class="iconHolder"><img class="icon" src="img/items/ability_77.png"></img></span><span class="text">' + baseStats[statIndex].toUpperCase() + ' + ' + node[percentValues[baseStats[statIndex]]] + '%</span><span class="cost">' + node["cost"]["SP"] + ' SP</span>');
             nodeHtml.addClass(baseStats[statIndex]);
             break;
         }
@@ -440,37 +440,37 @@ function showNode(node, parentNodeHtml, star, scale=1) {
         nodeHtml.addClass("killer");
     }
     if (node.esperStatsBonus) {
-        var html = '<span class="iconHolder"><img class="icon" src="/img/items/ability_77.png"></img></span><span class="text">ST Reflection Boost<a href="http://exvius.gamepedia.com/ST_Reflection_Boost" target="_blank" rel="noreferrer"><span class="glyphicon glyphicon-new-window wikiLink"></span></a></span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
+        var html = '<span class="iconHolder"><img class="icon" src="img/items/ability_77.png"></img></span><span class="text">ST Reflection Boost<a href="http://exvius.gamepedia.com/ST_Reflection_Boost" target="_blank" rel="noreferrer"><span class="glyphicon glyphicon-new-window wikiLink"></span></a></span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
         nodeHtml.html(html);
         nodeHtml.addClass("ability");
     }
     if (node.lbPerTurn) {
-        var html = '<span class="iconHolder"><img class="icon" src="/img/items/ability_91.png"></img></span><span class="text">+' + node.lbPerTurn.min + ' LS/turn<a href="http://exvius.gamepedia.com/Auto-Limit" target="_blank" rel="noreferrer"><span class="glyphicon glyphicon-new-window wikiLink"></span></a></span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
+        var html = '<span class="iconHolder"><img class="icon" src="img/items/ability_91.png"></img></span><span class="text">+' + node.lbPerTurn.min + ' LS/turn<a href="http://exvius.gamepedia.com/Auto-Limit" target="_blank" rel="noreferrer"><span class="glyphicon glyphicon-new-window wikiLink"></span></a></span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
         nodeHtml.html(html);
         nodeHtml.addClass("ability");
     }
     if (node.lbFillRate) {
-        var html = '<span class="iconHolder"><img class="icon" src="/img/items/ability_78.png"></img></span><span class="text">+' + node.lbFillRate + '% LB fill rate</span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
+        var html = '<span class="iconHolder"><img class="icon" src="img/items/ability_78.png"></img></span><span class="text">+' + node.lbFillRate + '% LB fill rate</span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
         nodeHtml.html(html);
         nodeHtml.addClass("ability");
     }
     if (node.lbDamage) {
-        var html = '<span class="iconHolder"><img class="icon" src="/img/items/ability_78.png"></img></span><span class="text">+' + node.lbDamage + '% LB damage</span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
+        var html = '<span class="iconHolder"><img class="icon" src="img/items/ability_78.png"></img></span><span class="text">+' + node.lbDamage + '% LB damage</span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
         nodeHtml.html(html);
         nodeHtml.addClass("ability");
     }
     if (node.evade && node.evade.physical) {
-        var html = '<span class="iconHolder"><img class="icon" src="/img/items/ability_97.png"></img></span><span class="text">' + node.evade.physical + '% physical evasion<a href="http://exvius.gamepedia.com/Air_Step" target="_blank" rel="noreferrer"><span class="glyphicon glyphicon-new-window wikiLink"></span></a></span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
+        var html = '<span class="iconHolder"><img class="icon" src="img/items/ability_97.png"></img></span><span class="text">' + node.evade.physical + '% physical evasion<a href="http://exvius.gamepedia.com/Air_Step" target="_blank" rel="noreferrer"><span class="glyphicon glyphicon-new-window wikiLink"></span></a></span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
         nodeHtml.html(html);
         nodeHtml.addClass("ability");
     }
     if (node.evade && node.evade.magical) {
-        var html = '<span class="iconHolder"><img class="icon" src="/img/items/ability_97.png"></img></span><span class="text">' + node.evade.magical + '% magical evasion<a href="http://exvius.gamepedia.com/Air_Wall" target="_blank" rel="noreferrer"><span class="glyphicon glyphicon-new-window wikiLink"></span></a></span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
+        var html = '<span class="iconHolder"><img class="icon" src="img/items/ability_97.png"></img></span><span class="text">' + node.evade.magical + '% magical evasion<a href="http://exvius.gamepedia.com/Air_Wall" target="_blank" rel="noreferrer"><span class="glyphicon glyphicon-new-window wikiLink"></span></a></span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
         nodeHtml.html(html);
         nodeHtml.addClass("ability");
     }
     if (node.jumpDamage) {
-        var html = '<span class="iconHolder"><img class="icon" src="/img/items/ability_80.png"></img></span><span class="text">+' + node.jumpDamage + '% jump damage</span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
+        var html = '<span class="iconHolder"><img class="icon" src="img/items/ability_80.png"></img></span><span class="text">+' + node.jumpDamage + '% jump damage</span><span class="cost">' + node["cost"]["SP"]+ ' SP</span>';
         nodeHtml.html(html);
         nodeHtml.addClass("ability");
     }
@@ -479,7 +479,7 @@ function showNode(node, parentNodeHtml, star, scale=1) {
         var html = '';
         node.conditional.forEach(c => {
             if (c.equipedCondition && typeList.includes(c.equipedCondition)) {
-               html += '<span class="iconHolder"><img class="icon" src="/img/items/' + c.icon + '"></img></span><span class="text">'
+               html += '<span class="iconHolder"><img class="icon" src="img/items/' + c.icon + '"></img></span><span class="text">'
                let first = true;
                baseStats.filter(s => c[s+'%']).forEach(s => {
                    if (first) {
@@ -512,7 +512,7 @@ function abilityIcon(text) {
     // get the ability_###.png where there nubmer can be any length
     var icon = text.match(/ability_\d+\.png/);
     if (icon) {
-        return '<img class="icon" src="/img/items/' + icon[0] + '"></img>';
+        return '<img class="icon" src="img/items/' + icon[0] + '"></img>';
     } else {
         return '';
     }

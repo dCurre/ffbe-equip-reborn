@@ -471,7 +471,7 @@ function getSpecialHtml(item) {
     }
     if (item.counterSkills) {
         item.counterSkills.forEach(counter => {
-            special += '<li>Counter ' + counter.counter + ' damage with <img class="icon" src="/img/items/' + counter.skill.icon + '">' + toLink(counter.skill.name) + ': ' + counter.skill.effects.map(effect => effect.desc).join(', ');
+            special += '<li>Counter ' + counter.counter + ' damage with <img class="icon" src="img/items/' + counter.skill.icon + '">' + toLink(counter.skill.name) + ': ' + counter.skill.effects.map(effect => effect.desc).join(', ');
             if (counter.maxTime) {
                 special += ' (max ' + counter.maxTime + '/turn)';
             }
@@ -480,17 +480,17 @@ function getSpecialHtml(item) {
     }
     if (item.skills) {
         item.skills.forEach(skill => {
-            special += '<li><div class="skill"><img class="icon" src="/img/items/' + skill.icon + '">' + toLink(skill.name) + ': ' + skill.effects.map(effect => effect.desc).join(', ') + '</div></li>';
+            special += '<li><div class="skill"><img class="icon" src="img/items/' + skill.icon + '">' + toLink(skill.name) + ': ' + skill.effects.map(effect => effect.desc).join(', ') + '</div></li>';
         });
     }
     if (item.autoCastedSkills) {
         item.autoCastedSkills.forEach(skill => {
-            special += '<li>Cast at start of battle or when revived: <img class="icon" src="/img/items/' + skill.icon + '">' + toLink(skill.name) + ': ' + skill.effects.map(effect => effect.desc).join(', ') + '</li>';
+            special += '<li>Cast at start of battle or when revived: <img class="icon" src="img/items/' + skill.icon + '">' + toLink(skill.name) + ': ' + skill.effects.map(effect => effect.desc).join(', ') + '</li>';
         });
     }
     if (item.startOfTurnSkills) {
         item.startOfTurnSkills.forEach(skill => {
-            special += '<li>Cast at start of turn: <img class="icon" src="/img/items/' + skill.skill.icon + '">' + toLink(skill.skill.name) + ': ' + skill.skill.effects.map(effect => effect.desc).join(', ') + '</li>';
+            special += '<li>Cast at start of turn: <img class="icon" src="img/items/' + skill.skill.icon + '">' + toLink(skill.skill.name) + ': ' + skill.skill.effects.map(effect => effect.desc).join(', ') + '</li>';
         });
     }
     if (item.special) {
@@ -507,7 +507,7 @@ function getConditionalHtml(conditionals) {
     var html = "";
     conditionals.forEach(c => {
        if (c.equipedCondition && typeList.includes(c.equipedCondition)) {
-           html += '<div><img class="icon" src="/img/items/' + c.icon + '"></img>';
+           html += '<div><img class="icon" src="img/items/' + c.icon + '"></img>';
            let first = true;
            baseStats.filter(s => c[s+'%']).forEach(s => {
                if (first) {
@@ -716,10 +716,10 @@ function toHtml(text) {
         if (token.length == 1) {
             result += toLink(token[0]);
         } else if (token.length == 2) {
-            result += "<img class='icon' src='/img/items/" + token[1] + "'></img>"
+            result += "<img class='icon' src='img/items/" + token[1] + "'></img>"
             result += toLink(token[0]);
         } else if (token.length == 3) {
-            result += "<img class='icon' src='/img/items/" + token[2] + "'></img>"
+            result += "<img class='icon' src='img/items/" + token[2] + "'></img>"
             result += toLink(token[1], token[0]);
         }
 
@@ -1869,7 +1869,7 @@ function onUnitsOrInventoryLoaded() {
             // before version 3, units were : {"unitId": number}
             // After, they are {"unitId": {"number":number,"farmable":number}
             $.get(getLocalizedFileUrl("data"), function(data) {
-                $.get("/" + server + "/units.json", function(unitResult) {
+                $.get(server + "/units.json", function(unitResult) {
                     var allUnitsTmp = unitResult;
                     var tmrNumberByUnitId = {};
                     for (var index = data.length; index--; ) {
@@ -2622,7 +2622,7 @@ $(function() {
 
     readUrlParams();
 
-    $.get("/" + server + '/dataVersion.json', function(result) {
+    $.get(server + '/dataVersion.json', function(result) {
         var dataVersion = result.version;
         var selectedLanguage = language ? language : "en";
 

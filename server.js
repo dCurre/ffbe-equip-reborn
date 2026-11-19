@@ -9,7 +9,6 @@ import ServerConfig from './config.js'
 import { route as corrections } from './server/routes/corrections.js';
 import { route as clientConfig } from './server/routes/clientConfig.js';
 import { route as oauth } from './server/routes/oauth.js'
-import { route as unitSkills } from './server/routes/unitSkills.js'
 import * as firebase from './server/routes/firebase.js';
 import { OAuthFunction as authRequired } from './server/middlewares/oauth.js';
 import { route as drive } from './server/routes/drive.js';
@@ -46,7 +45,7 @@ app.use(express.static(path.join(__dirname, '/dist/'), {
   }
 }));
 
-app.use('/', corrections, unitSkills);
+app.use('/', corrections);
 
 // Helmet Middleware
 app.use(helmet.frameguard({

@@ -374,11 +374,11 @@ function getItemDisplay(itemEntry, showStmrRecipe = false, inSellableItems = fal
         html += '<span class="number badge badge-success">' + itemEntry.ownedNumber + '</span>';
         if (!inSellableItems && !inEnhancementsCandidates) {
             html += '<span class="glyphicon glyphicon-minus" onclick="event.stopPropagation();removeFromInventory(\'' + itemEntry.id + '\');" />';
-            html += '<img class="farmedButton" onclick="event.stopPropagation();farmedTMR(' + item.tmrUnit + ')" src="/img/units/unit_ills_904000105.png" title="TMR Farmed ! Click here to indicate you farmed this TMR. It will decrease the number you can farm and increase the number you own this TMR by 1"></img>';
+            html += '<img class="farmedButton" onclick="event.stopPropagation();farmedTMR(' + item.tmrUnit + ')" src="img/units/unit_ills_904000105.png" title="TMR Farmed ! Click here to indicate you farmed this TMR. It will decrease the number you can farm and increase the number you own this TMR by 1"></img>';
             if (weaponList.includes(item.type)) {
-                html += '<img class="itemWorldButton" onclick="event.stopPropagation();modifyItemEnhancements(\'' + itemEntry.id + '\')" src="/img/icons/dwarf.png" title="Open item management popup"></img>';
+                html += '<img class="itemWorldButton" onclick="event.stopPropagation();modifyItemEnhancements(\'' + itemEntry.id + '\')" src="img/icons/dwarf.png" title="Open item management popup"></img>';
             }
-            html += '<img class="excludeFromExpeditionButton" onclick="event.stopPropagation();excludeFromExpedition(' + item.id + ')" src="/img/icons/excludeExpedition.png" title="Exclude this item from builds made for expeditions"></img>';
+            html += '<img class="excludeFromExpeditionButton" onclick="event.stopPropagation();excludeFromExpedition(' + item.id + ')" src="img/icons/excludeExpedition.png" title="Exclude this item from builds made for expeditions"></img>';
         }   
         html += '</div>';
         if (itemEntry.visionCard && itemEntry.visionCard.levels.length > 1) {
@@ -417,7 +417,7 @@ function getItemDisplay(itemEntry, showStmrRecipe = false, inSellableItems = fal
         
         
         html += '<div class="stmrRecipe">'
-        html += '<div><img class="unitImage" src="/img/units/unit_icon_' + item.stmrUnit.substr(0, item.stmrUnit.length - 1) + 7 + '.png"/></div>';
+        html += '<div><img class="unitImage" src="img/units/unit_icon_' + item.stmrUnit.substr(0, item.stmrUnit.length - 1) + 7 + '.png"/></div>';
         html += '<div class="column">'
         
         html += '<div class="unitName">' + toLink(units[item.stmrUnit].name) + '</div>';
@@ -437,7 +437,7 @@ function getItemDisplay(itemEntry, showStmrRecipe = false, inSellableItems = fal
             }
         }
         if (itemEntry.stmrAccess.stmrMoogle) {
-            html += ' + ' + itemEntry.stmrAccess.stmrMoogle + '% <div style="position:relative;"><img class="stmrMoogle" src="/img/units/unit_ills_906000105.png"></div>'
+            html += ' + ' + itemEntry.stmrAccess.stmrMoogle + '% <div style="position:relative;"><img class="stmrMoogle" src="img/units/unit_ills_906000105.png"></div>'
         }
         html += '</div>';
         html += '</div>';

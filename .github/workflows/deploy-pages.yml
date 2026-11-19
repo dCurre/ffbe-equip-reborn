@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deployment at a time; don't cancel a deployment already in progress
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # One JSON file per unit (replaces the old /:server/unit/:id server endpoint).
+      # Uses only Node built-ins, so no npm install is needed.
+      - name: Generate per-unit files
+        run: node tools/generateUnitFiles.js --force
+
+      - name: Assemble site
+        run: |
+          mkdir _site
+          cp -r static/. _site/
+          # Data-extraction scripts and their sources are not part of the website
+          rm -f _site/GL/*.js _site/JP/*.js
+          rm -rf _site/custom
+          # GitHub Pages serves index.html as the start page; the project uses homepage.html
+          cp _site/homepage.html _site/index.html
+          du -sh _site
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

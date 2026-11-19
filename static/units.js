@@ -331,7 +331,7 @@ function displayUnitsByRarity(units, minRarity = 1, soon) {
 };
 
 function getUnitImage(unit) {
-    var unitImage = '/img/units/unit_icon_' + unit.id.substr(0,7);
+    var unitImage = 'img/units/unit_icon_' + unit.id.substr(0,7);
     var formToDisplay = unit.max_rarity;
     if (unit.max_rarity == 'NV' && unit.min_rarity != 'NV') {
         unitImage += '1';
@@ -450,10 +450,10 @@ function getUnitDisplay(unit, useTmrName = false) {
         if (!readOnly) {
             html += '<div class="actions">'
             html += '<span class="glyphicon glyphicon-plus modifyCounterButton" onclick="event.stopPropagation();addToOwnedUnits(\'' + unit.id + '\')" title="Add one ' + unit.name + ' to your collection"></span>'
-            html += '<img class="farmedButton tmr" onclick="event.stopPropagation();farmedTMR(' + unit.id + ')" src="/img/units/unit_ills_904000105.png" title="TMR Farmed ! Click here to indicate you farmed this TMR. It will add 1 of this TMR to your inventory"></img>';
-            html += '<img class="farmedButton stmr" onclick="event.stopPropagation();farmedSTMR(' + unit.id + ')" src="/img/units/unit_ills_906000105.png" title="STMR Farmed ! Click here to indicate you farmed this STMR. It will add 1 of this STMR to your inventory"></img>';
+            html += '<img class="farmedButton tmr" onclick="event.stopPropagation();farmedTMR(' + unit.id + ')" src="img/units/unit_ills_904000105.png" title="TMR Farmed ! Click here to indicate you farmed this TMR. It will add 1 of this TMR to your inventory"></img>';
+            html += '<img class="farmedButton stmr" onclick="event.stopPropagation();farmedSTMR(' + unit.id + ')" src="img/units/unit_ills_906000105.png" title="STMR Farmed ! Click here to indicate you farmed this STMR. It will add 1 of this STMR to your inventory"></img>';
             if (unit.max_rarity == 7) {
-                html += '<img class="awakenButton" onclick="event.stopPropagation();awaken(' + unit.id + ')" src="/img/icons/crystals/sevenStarCrystal.png" title="Awaken this unit !"></img>';
+                html += '<img class="awakenButton" onclick="event.stopPropagation();awaken(' + unit.id + ')" src="img/icons/crystals/sevenStarCrystal.png" title="Awaken this unit !"></img>';
             }
             html += '<span class="glyphicon glyphicon-pencil" onclick="event.stopPropagation();editUnit(\'' + unit.id + '\')" title="Edit unit values"></span>'
             html += '</div>';

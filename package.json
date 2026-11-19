@@ -12,7 +12,8 @@
     "test:web": "mocha-webpack --webpack-config test/webpack.config.js --require test/setup.js test/static/*.js",
     "build:dev": "webpack --mode development --watch",
     "build": "webpack --mode production --hide-modules",
-    "prestart": "node config.js",
+    "build:units": "node tools/generateUnitFiles.js",
+    "prestart": "node config.js && node tools/generateUnitFiles.js",
     "start": "node server.js",
     "start:useDist": "DEV_USE_DIST=yes node server.js"
   },

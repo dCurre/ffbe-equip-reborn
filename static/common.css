@@ -57,7 +57,7 @@ body {
 }
 
 #header .bannerPicture {
-    background-image: url(/img/banner/banner_blank.png);
+    background-image: url(img/banner/banner_blank.png);
 }
 
 #header .bannerPicturePerson {
@@ -119,56 +119,56 @@ body {
 }
 
 #header.headerSakura .bannerPicturePerson {
-    background-image: url(/img/banner/Sakura.png) ;
+    background-image: url(img/banner/Sakura.png) ;
 }
 #header.headerSakura .headerContent {
     padding-left: 350px;
 }
 
 #header.headerLasswell .bannerPicturePerson {
-    background-image: url(/img/banner/Lasswell.png) ;
+    background-image: url(img/banner/Lasswell.png) ;
 }
 #header.headerLasswell .headerContent {
     padding-left: 300px;
 }
 
 #header.headerJake .bannerPicturePerson {
-    background-image: url(/img/banner/Jake.png) ;
+    background-image: url(img/banner/Jake.png) ;
 }
 #header.headerJake .headerContent {
     padding-left: 360px;
 }
 
 #header.headerRain .bannerPicturePerson {
-    background-image: url(/img/banner/Rain.png) ;
+    background-image: url(img/banner/Rain.png) ;
 }
 #header.headerRain .headerContent {
     padding-left: 340px;
 }
 
 #header.headerNichol .bannerPicturePerson {
-    background-image: url(/img/banner/Nichol.png) ;
+    background-image: url(img/banner/Nichol.png) ;
 }
 #header.headerNichol .headerContent {
     padding-left: 330px;
 }
 
 #header.headerLid .bannerPicturePerson {
-    background-image: url(/img/banner/Lid.png) ;
+    background-image: url(img/banner/Lid.png) ;
 }
 #header.headerLid .headerContent {
     padding-left: 325px;
 }
 
 #header.headerFina .bannerPicturePerson {
-    background-image: url(/img/banner/Fina.png) ;
+    background-image: url(img/banner/Fina.png) ;
 }
 #header.headerFina .headerContent {
     padding-left: 330px;
 }
 
 #header.headerMogChocobo .bannerPicturePerson {
-    background-image: url(/img/banner/MogChocobo.png) ;
+    background-image: url(img/banner/MogChocobo.png) ;
 }
 #header.headerMogChocobo .headerContent {
     padding-left: 310px;

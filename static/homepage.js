@@ -252,5 +252,5 @@ function notLoaded() {
  * 
  */
 if (window.location.hash != '') {
-    window.location.href = '/encyclopedia.html' + window.location.hash;
+    window.location.href = 'encyclopedia.html' + window.location.hash;
 }
