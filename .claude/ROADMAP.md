@@ -35,17 +35,18 @@ Pages): anything that still calls the Node server is broken online.
 
 ## Bugs / technical debt
 
-- [ ] **Frontend libraries with known vulnerabilities** (they run in visitors' browsers, so this is
-  the real exposure of the public site): jQuery 3.1.0 (`static/lib/`, XSS fixes in 3.5+), Bootstrap
-  3.3.7 (CDN, XSS fixes in 3.4.1), jQuery UI 1.12.1 (fixes in 1.13). Update within the same major
-  version and re-test every page; update the CDN `integrity` hashes.
+- [ ] **bootstrap-toggle 2.2.2** (on/off switches, e.g. Units page) is unmaintained and loaded from
+  `gitcdn.github.io`, a third-party proxy that may disappear. Vendor it into `static/lib/` or replace it.
+  Also consider select2 4.0.5 → 4.0.13 (bug fixes, same major).
 - [ ] **Outdated dependencies**: `npm audit`, deprecated `request`, `engines: ">=8"` is wrong; move
   local development to a current Node LTS (CI already uses Node 20).
 - [ ] **Security headers**: GitHub Pages can't set HTTP headers, so the CSP from `server.js` is not
   applied online. Add a `<meta http-equiv="Content-Security-Policy">` to the pages if wanted.
 - [ ] **Browser cache of data files** (`staticFileCache` in `static/common.js`) stores big JSON
   uncompressed in `localStorage` (~5 MB quota; large files just get re-downloaded). Consider IndexedDB
-  or dropping the cache.
+  or dropping the cache. Symptom: `QuotaExceededError` warnings in the console when saving
+  `GL/visionCards.json`, `GL/unitsWithPassives.json` (handled, not breaking). Also fix the log line
+  "Retrieved … (undefined bytes)" in `staticFileCache.retrieve` (logs `.length` of a parsed object).
 - [ ] **Tests** (`npm test`, mocha in `test/`): status unknown after the changes; check and fix or
   prune tests for removed routes.
 
@@ -61,6 +62,8 @@ Pages): anything that still calls the Node server is broken online.
   readability. Main files: `static/builder/buildOptimizer.js`, `static/builder/typeCombinationGenerator.js`,
   `static/builder/itemPool.js`, `static/builder/optimizerWebWorker.js` (runs in Web Workers),
   `static/formula.js` (damage/stat formulas); `static/algorithm.html` documents the approach.
+  Remove leftover debug `console.log` calls (e.g. `buildOptimizer.js:47` logs every enchantment item).
+  Reference timing on a dev PC: `optimize: ~3.2 s` for one unit.
 
 ## Ideas (optional)
 

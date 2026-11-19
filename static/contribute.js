@@ -52,7 +52,7 @@ function displayItems(items) {
         var item = items[index];
         if (item) {
             html += '<div class="tr ' + item.id + (item.corrected ? " userInputed" : "") + '">';
-            html += '<div class="td select"><span class="glyphicon glyphicon-edit clickable" onclick="modifyItem(\'' + item.id + '\')"/></div>';
+            html += '<div class="td select"><span class="glyphicon glyphicon-edit clickable" onclick="modifyItem(\'' + item.id + '\')"></span></div>';
             html += displayItemLine(item);
             html += '<div class="td">' + (item.maxNumber ? item.maxNumber : "N/A") + "</div>";
             html += "</div>";
@@ -89,7 +89,7 @@ function displayModifiedItems() {
                 }
                 html += "</div></div></div>";
                 html += '<div class="td"><input class="maxNumber" type="number" onkeypress="return isNumber(event)" value="' + (modifiedItem.maxNumber ? modifiedItem.maxNumber : "") + '"/></div>';
-                html += '<div class="td select"><span class="glyphicon glyphicon-remove clickable" onclick="cancelModification(\'' + item.id + '\')"/></div>';
+                html += '<div class="td select"><span class="glyphicon glyphicon-remove clickable" onclick="cancelModification(\'' + item.id + '\')"></span></div>';
                 html += "</div>";
             }
         }

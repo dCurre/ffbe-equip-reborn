@@ -279,7 +279,7 @@ var displayItems = function(itemsEntries, byType = false) {
 function displayItemsByTypeAsync(itemsEntries, start, div, id, jumpDiv, inFarmableStmr = false, inSellableItems = false, inEnhancementCandidates = false) {
     // Set item type for this run and various useful vars
     var currentItemType = itemsEntries[start].item.type;
-    var currentItemTypeImgHtml = '<i class="img img-equipment-' + currentItemType + '"/>';
+    var currentItemTypeImgHtml = '<i class="img img-equipment-' + currentItemType + '"></i>';
 
     var html = '<div class="itemSeparator" id="' + currentItemType + '">' + currentItemTypeImgHtml + '</div>';
     html += '<div class="itemList">';
@@ -369,11 +369,11 @@ function getItemDisplay(itemEntry, showStmrRecipe = false, inSellableItems = fal
     if (itemInventory) {
         html+= '<div class="td inventory">';
         if (!inSellableItems && !inEnhancementsCandidates) {
-            html += '<span class="glyphicon glyphicon-plus" onclick="event.stopPropagation();addToInventory(\'' + itemEntry.id + '\')" />';
+            html += '<span class="glyphicon glyphicon-plus" onclick="event.stopPropagation();addToInventory(\'' + itemEntry.id + '\')"></span>';
         }
         html += '<span class="number badge badge-success">' + itemEntry.ownedNumber + '</span>';
         if (!inSellableItems && !inEnhancementsCandidates) {
-            html += '<span class="glyphicon glyphicon-minus" onclick="event.stopPropagation();removeFromInventory(\'' + itemEntry.id + '\');" />';
+            html += '<span class="glyphicon glyphicon-minus" onclick="event.stopPropagation();removeFromInventory(\'' + itemEntry.id + '\');"></span>';
             html += '<img class="farmedButton" onclick="event.stopPropagation();farmedTMR(' + item.tmrUnit + ')" src="img/units/unit_ills_904000105.png" title="TMR Farmed ! Click here to indicate you farmed this TMR. It will decrease the number you can farm and increase the number you own this TMR by 1"></img>';
             if (weaponList.includes(item.type)) {
                 html += '<img class="itemWorldButton" onclick="event.stopPropagation();modifyItemEnhancements(\'' + itemEntry.id + '\')" src="img/icons/dwarf.png" title="Open item management popup"></img>';
@@ -383,8 +383,8 @@ function getItemDisplay(itemEntry, showStmrRecipe = false, inSellableItems = fal
         html += '</div>';
         if (itemEntry.visionCard && itemEntry.visionCard.levels.length > 1) {
 
-            html += '<span class="vcLevelChange"><span class="vcLevelUp glyphicon glyphicon-arrow-up" onclick="event.stopPropagation();increaseVisionCardLevel(\'' + itemEntry.id + '\');" />';
-            html += '<span class="vcLevelDown glyphicon glyphicon-arrow-down" onclick="event.stopPropagation();decreaseVisionCardLevel(\'' + itemEntry.id + '\');" /></span>';
+            html += '<span class="vcLevelChange"><span class="vcLevelUp glyphicon glyphicon-arrow-up" onclick="event.stopPropagation();increaseVisionCardLevel(\'' + itemEntry.id + '\');"></span>';
+            html += '<span class="vcLevelDown glyphicon glyphicon-arrow-down" onclick="event.stopPropagation();decreaseVisionCardLevel(\'' + itemEntry.id + '\');"></span></span>';
         }
     }
     if (inSellableItems) {

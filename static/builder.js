@@ -1038,7 +1038,7 @@ function getItemLine(index, short = false) {
     } else if (!item.placeHolder) {
         var enhancementText = item.enhancements ? JSON.stringify(item.enhancements).replace(/\"/g, "'") : false;
         html += `<div class="td actions"><i class="fas fa-thumbtack pin notFixed" title="Pin this item" onclick="fixItem('${item.id}', ${index}, ${enhancementText});"></i> <i class="fas fa-trash-alt delete" title="Remove this item" onclick="removeItemAt('${index}')"></i>`;
-        html += '<span title="Exclude this item from builds" class="excludeItem fas fa-ban" onclick="excludeItem(\'' + item.id +'\', ' + index + ')" />';
+        html += '<span title="Exclude this item from builds" class="excludeItem fas fa-ban" onclick="excludeItem(\'' + item.id +'\', ' + index + ')"></span>';
         if (weaponList.includes(item.type)) {
             html += '<img class="itemEnchantmentButton" title="Modify this weapon enchantment" src="img/icons/dwarf.png" onclick="currentItemSlot = ' + index + ';selectEnchantement(getRawItemForEnhancements(builds[currentUnitIndex].build[' + index + ']))" />';
         }
@@ -1062,11 +1062,11 @@ function getItemLine(index, short = false) {
             var ownNumber = dataStorage.getOwnedNumber(item);
             if (ownNumber.totalOwnedNumber <= alreadyUsed && ownNumber.total > alreadyUsed) {
                 if (item.tmrUnit) {
-                    html += '<div class="td"><span class="glyphicon glyphicon-screenshot" title="TMR you may want to farm. TMR of ' + units[item.tmrUnit].name + '"/></div>'
+                    html += '<div class="td"><span class="glyphicon glyphicon-screenshot" title="TMR you may want to farm. TMR of ' + units[item.tmrUnit].name + '"></span></div>'
                 } else if (item.stmrUnit) {
-                    html += '<div class="td"><span class="glyphicon glyphicon-screenshot" title="STMR you can acquire. STMR of ' + units[item.stmrUnit].name + '"/></div>'
+                    html += '<div class="td"><span class="glyphicon glyphicon-screenshot" title="STMR you can acquire. STMR of ' + units[item.stmrUnit].name + '"></span></div>'
                 } else if (item.access.includes("trial")) {
-                    html += '<div class="td"><span class="glyphicon glyphicon-screenshot" title="Trial reward"/></div>'
+                    html += '<div class="td"><span class="glyphicon glyphicon-screenshot" title="Trial reward"></span></div>'
                 }
             }
         }

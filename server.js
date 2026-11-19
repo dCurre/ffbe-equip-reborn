@@ -50,12 +50,12 @@ app.use(cors(corsOptions));
 
 var cspDirectives = {
   "default-src": ["'self'"],
-  "script-src": ["'self'",'code.jquery.com', 'cdn.jsdelivr.net', 'maxcdn.bootstrapcdn.com', 'cdnjs.cloudflare.com', 'gitcdn.github.io', 'kit.fontawesome.com', 'ka-f.fontawesome.com', "'unsafe-inline'"],
+  "script-src": ["'self'",'code.jquery.com', 'cdn.jsdelivr.net', 'cdnjs.cloudflare.com', 'gitcdn.github.io', 'kit.fontawesome.com', 'ka-f.fontawesome.com', "'unsafe-inline'"],
   "script-src-attr": ["'unsafe-inline'"],
-  "style-src": ["'self'",'code.jquery.com', 'gitcdn.github.io', 'cdnjs.cloudflare.com', 'kit-free.fontawesome.com', 'cdn.jsdelivr.net', 'maxcdn.bootstrapcdn.com', "'unsafe-inline'"],
+  "style-src": ["'self'",'code.jquery.com', 'gitcdn.github.io', 'cdnjs.cloudflare.com', 'kit-free.fontawesome.com', 'cdn.jsdelivr.net', "'unsafe-inline'"],
   "img-src": ["'self'", 'data:', 'blob:', 'content:', 'code.jquery.com', 'cdn.jsdelivr.net'],
-  "font-src": ["'self'", 'fonts.gstatic.com', 'kit-free.fontawesome.com', 'ka-f.fontawesome.com', 'maxcdn.bootstrapcdn.com'],
-  "connect-src": ["'self'", 'firebasestorage.googleapis.com', 'https://api.github.com', 'https://api.imgur.com/3/image', 'https://ka-f.fontawesome.com'],
+  "font-src": ["'self'", 'fonts.gstatic.com', 'kit-free.fontawesome.com', 'ka-f.fontawesome.com', 'cdnjs.cloudflare.com'],
+  "connect-src": ["'self'", 'firebasestorage.googleapis.com', 'cdnjs.cloudflare.com', 'gitcdn.github.io', 'https://api.github.com', 'https://api.imgur.com/3/image', 'https://ka-f.fontawesome.com'],
   "media-src": ["'none'"],
   "object-src": ["'none'"],
   "child-src": ["'self'"],

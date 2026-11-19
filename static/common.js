@@ -892,12 +892,12 @@ function loadInventory() {
                   "<p>This account is only for FFBE Equip Reborn to store your data. It will NOT link automatically to your FFBE account. You don't need to switch to Google to log in FFBE.</p>" +
                   '<p class="loginMessageDetail">'+
                     'This site is using '+
-                    '<a href="https://en.wikipedia.org/wiki/OAuth" target="_blank" rel="noreferrer">OAuth2 <span class="glyphicon glyphicon-question-sign"/></a> '+
+                    '<a href="https://en.wikipedia.org/wiki/OAuth" target="_blank" rel="noreferrer">OAuth2 <span class="glyphicon glyphicon-question-sign"></span></a> '+
                     'to access the stored inventory data, so it will never know your google login and password.'+
                   '</p>'+
                   '<p class="loginMessageDetail">'+
                     'The data is stored on the secure FFBE Equip Reborn '+
-                    '<a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer">app folder on Google Drive <span class="glyphicon glyphicon-question-sign"/></a>. '+
+                    '<a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer">app folder on Google Drive <span class="glyphicon glyphicon-question-sign"></span></a>. '+
                     'FFBE Equip Reborn can only access this folder, and no personal file.'+
                   '</p>',
             buttons: [{
