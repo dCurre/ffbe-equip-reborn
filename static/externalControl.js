@@ -1,5 +1,5 @@
 FFBEEquipExternalControl = {
-    'ffbeEquipUrl': 'https://ffbeequipnext.com/builder.html',
+    'ffbeEquipUrl': 'https://dcurre.github.io/ffbe-equip-reborn/builder.html',
     'iframe': null,
     'checkboxList': [
         'forceDoublehand',
@@ -186,7 +186,7 @@ FFBEEquipExternalControl = {
     },
     
     'handleMessage': function(message) {
-        //if(message.origin === 'https://www.ffbeequipnext.com'){
+        //if(message.origin === 'https://dcurre.github.io'){
             let data = JSON.parse(message.data);
             console.log('received Message : ' + data.type);
             if (FFBEEquipExternalControl.listeners[data.type]) {

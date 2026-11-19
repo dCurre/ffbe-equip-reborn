@@ -1,8 +1,0 @@
-node_modules/
-tools/
-debug/
-resources/
-.idea/
-.editorconfig
-static/img/units/
-static/img/items/

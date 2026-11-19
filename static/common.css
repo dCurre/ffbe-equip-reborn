@@ -530,6 +530,12 @@ ul {
 .footerButtons {
     margin: 15px 0;
 }
+.footerCredits {
+    margin-top: 10px;
+    font-size: 0.85em;
+    opacity: 0.75;
+    text-align: center;
+}
 
 .noWrap {
     white-space:nowrap;

@@ -60,7 +60,7 @@ app.use(helmet.hsts({
 }));
 
 let corsOptions = {
-  origin: 'https://www.ffbeequipnext.com',
+  origin: 'https://dcurre.github.io',
 }
 if (!config.isProd && process.env.DEV_USE_DIST != "yes") {
     corsOptions.origin = [corsOptions.origin, 'http://localhost:4444', 'http://localhost:3001'];
@@ -77,12 +77,12 @@ app.use('/js', express.static(path.join(__dirname, 'node_modules/bootstrap/dist'
 
 var cspDirectives = {
   "default-src": ["'self'"],
-  "script-src": ["'self'",'code.jquery.com', 'cdn.jsdelivr.net', 'maxcdn.bootstrapcdn.com', 'cdnjs.cloudflare.com', 'gitcdn.github.io', 'www.googletagmanager.com', 'www.google-analytics.com', 'kit.fontawesome.com', 'ka-f.fontawesome.com', "'unsafe-inline'"],
+  "script-src": ["'self'",'code.jquery.com', 'cdn.jsdelivr.net', 'maxcdn.bootstrapcdn.com', 'cdnjs.cloudflare.com', 'gitcdn.github.io', 'kit.fontawesome.com', 'ka-f.fontawesome.com', "'unsafe-inline'"],
   "script-src-attr": ["'unsafe-inline'"],
   "style-src": ["'self'",'code.jquery.com', 'gitcdn.github.io', 'cdnjs.cloudflare.com', 'kit-free.fontawesome.com', 'cdn.jsdelivr.net', 'maxcdn.bootstrapcdn.com', "'unsafe-inline'"],
-  "img-src": ["'self'", 'data:', 'blob:', 'content:', 'www.googletagmanager.com', 'www.google-analytics.com', 'code.jquery.com', 'ffbeequipnext.com', 'cdn.jsdelivr.net'],
+  "img-src": ["'self'", 'data:', 'blob:', 'content:', 'code.jquery.com', 'cdn.jsdelivr.net'],
   "font-src": ["'self'", 'fonts.gstatic.com', 'kit-free.fontawesome.com', 'ka-f.fontawesome.com', 'maxcdn.bootstrapcdn.com'],
-  "connect-src": ["'self'", 'www.googletagmanager.com', 'www.google-analytics.com', 'firebasestorage.googleapis.com', 'https://api.github.com', 'https://discordapp.com', 'https://api.imgur.com/3/image', 'https://ka-f.fontawesome.com'],
+  "connect-src": ["'self'", 'firebasestorage.googleapis.com', 'https://api.github.com', 'https://api.imgur.com/3/image', 'https://ka-f.fontawesome.com'],
   "media-src": ["'none'"],
   "object-src": ["'none'"],
   "child-src": ["'self'"],
@@ -90,7 +90,6 @@ var cspDirectives = {
   "frame-src": ["'self'"],
   "formAction": ["'self'"],
   "blockAllMixedContent": [],
-  "reportUri": 'https://ffbeequipnext.report-uri.com/r/d/csp/reportOnly'
 };
 
 app.use(helmet.contentSecurityPolicy({ 
@@ -98,11 +97,6 @@ app.use(helmet.contentSecurityPolicy({
   reportOnly: false // make sure reportOnly is set to false
 }));
 
-
-// In development, do not report
-if (config.isDev) {
-  delete cspDirectives.reportUri;
-}
 
 app.use(helmet.contentSecurityPolicy({ 
   directives: cspDirectives

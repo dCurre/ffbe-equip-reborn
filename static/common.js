@@ -2344,7 +2344,7 @@ Modal = {
 
     showWithBuildLink: function(name, link) {
         if (!link.startsWith('http')) {
-            link = 'https://www.ffbeequipnext.com/'+link;
+            link = getSiteBaseUrl() + link;
         }
         Modal.show({
             title: "Link to your " + name,
@@ -2480,6 +2480,12 @@ function waitingCallbackKeyReady(key) {
     })
 }
 
+// Base URL of the site the user is on (e.g. "https://dcurre.github.io/ffbe-equip-reborn/" or
+// "http://localhost:3000/"), so share links work on any host and sub-path.
+function getSiteBaseUrl() {
+    return window.location.href.split(/[?#]/)[0].replace(/[^/]*$/, '');
+}
+
 function getEsperLink(esper) {
     let linkData = escapeName(esper.name) + '|' + esper.rarity + '|' + esper.level + '|';
 
@@ -2487,7 +2493,7 @@ function getEsperLink(esper) {
     let boardState = bin2hex(boardStateBin);
 
     linkData += boardState;
-    return "https://www.ffbeequipnext.com/espers.html?server=" + server + '&o#' + linkData;
+    return getSiteBaseUrl() + "espers.html?server=" + server + '&o#' + linkData;
 }
 
 function getEsperBoardPositionString(x, y) {
