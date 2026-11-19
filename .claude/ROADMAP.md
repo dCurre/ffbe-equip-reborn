@@ -14,7 +14,10 @@ Pages): anything that still calls the Node server is broken online.
   Google Identity Services token model, scope `drive.appdata`, Google Cloud project of dCurre). The
   OAuth consent screen is in **Testing** mode: only the listed test users can log in. When the flow is
   verified, publish it ("In production") so anyone can log in (`drive.appdata` is a non-sensitive scope:
-  no security audit needed). Optional: a separate OAuth client for development (origins
+  no security audit needed). Publishing requires the Branding page: home page
+  `https://dcurre.github.io/ffbe-equip-reborn/`, privacy policy
+  `https://dcurre.github.io/ffbe-equip-reborn/privacy.html` (`static/privacy.html`), authorized domain
+  `dcurre.github.io`; no logo (it would trigger brand verification). Optional: a separate OAuth client for development (origins
   `localhost:3000/4000` only) so the production client only authorizes `https://dcurre.github.io`.
   Known limits: the token lasts ~1h (then the user logs in again); data saved by FFBE Equip Next lives
   in the old project's app folder and can't be read by the new client (users start fresh).

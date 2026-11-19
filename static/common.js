@@ -898,7 +898,8 @@ function loadInventory() {
                     'The data is stored on the secure FFBE Equip Reborn '+
                     '<a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer">app folder on Google Drive <span class="glyphicon glyphicon-question-sign"></span></a>. '+
                     'FFBE Equip Reborn can only access this folder, and no personal file.'+
-                  '</p>',
+                  '</p>'+
+                  '<p class="loginMessageDetail"><a href="privacy.html" target="_blank">Privacy policy</a></p>',
             buttons: [{
                 text: "Continue",
                 onClick: function() {
