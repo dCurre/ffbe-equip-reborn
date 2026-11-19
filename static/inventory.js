@@ -1644,7 +1644,9 @@ function getItemEntries(item) {
 }
 
 function inventoryLoaded() {
-    if (data) {
+    // All the static data used by prepareData must be loaded; otherwise startPage() calls prepareData()
+    // once the last of them (visionCards) arrives
+    if (data && units && visionCards) {
         prepareData();
         stmrs = computeFarmableStmr();
     }

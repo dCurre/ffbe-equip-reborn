@@ -4038,14 +4038,14 @@ function getSavedBuilds(callback) {
     if (savedBuilds) {
         callback(savedBuilds);
     } else {
-        $.get(server + '/savedTeams', function(result) {
+        readUserData('savedTeams').then(function(result) {
             savedBuilds = result;
             if (!savedBuilds.teams) {
                 savedBuilds.teams = [];
             }
             callback(savedBuilds);
-        }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
-            Modal.showErrorGet(this.url, errorThrown);
+        }, function(error) {
+            Modal.showError("An error occured while trying to load your saved teams from Google Drive.", error);
         });
     }
 }
@@ -4081,16 +4081,10 @@ function saveTeamAs(name) {
 }
 
 function writeSavedTeams() {
-    $.ajax({
-        url: server + '/savedTeams',
-        method: 'PUT',
-        data: JSON.stringify(savedBuilds),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function() { $.notify("Team saved", "success");},
-        error: function(error) {
-            Modal.showError("Save error", 'An error occured while trying to save the team.', error);
-        }
+    writeUserData('savedTeams', savedBuilds, function() {
+        $.notify("Team saved", "success");
+    }, function(error) {
+        Modal.showError('An error occured while trying to save the team.', error);
     });
 }
 

@@ -878,6 +878,15 @@ function markSaveNeeded() {
 }
 
 function savePublicLink(callback) {
+    // Public collection links need storage outside the user's Drive (they used the old server + Firebase
+    // Storage): disabled until they are migrated (see "Last: shared links" in the roadmap). Automatic
+    // calls (after each change, before leaving the page) do nothing; the explicit link button explains it.
+    savePublicLinkNeeded = false;
+    if (callback) {
+        Modal.showMessage("Not available yet", "Public unit collection links are not available yet in FFBE Equip Reborn.");
+    }
+    return;
+
     var publicUnitcollection = {};
     for (var index = 0, len = releasedUnits.length; index < len; index++) {
         var unit = releasedUnits[index];

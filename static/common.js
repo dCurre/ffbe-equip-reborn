@@ -885,10 +885,9 @@ function addIconChoiceTo(target, name, value, type="checkbox", iconType = "", to
 }
 
 function loadInventory() {
-    $.get('googleOAuthUrl', function(result) {
-        Modal.show({
+    Modal.show({
             title: "Google Authentication",
-            body: '<p>You\'ll be redirected to a google authentication page</p>'+
+            body: '<p>A Google login window will open.</p>'+
                   "<p>This account is only for FFBE Equip Reborn to store your data. It will NOT link automatically to your FFBE account. You don't need to switch to Google to log in FFBE.</p>" +
                   '<p class="loginMessageDetail">'+
                     'This site is using '+
@@ -903,23 +902,38 @@ function loadInventory() {
             buttons: [{
                 text: "Continue",
                 onClick: function() {
-                    // Reset localStorage on connection
-                    if (localStorageAvailable) staticFileCache.clear();
-                    // Redirect to GoogleAuth
-                    window.location.href = result.url + "&state=" + encodeURIComponent(window.location.href.replace(".lyrgard.fr",".com"));
+                    // Runs inside the click, so the browser allows the Google login popup.
+                    // After login, reload the page to load the user data with the normal flow.
+                    googleDrive.login()
+                        .then(function() {
+                            window.location.reload();
+                        })
+                        .catch(function(error) {
+                            Modal.showMessage("Login failed", error.message);
+                        });
                 }
             }]
         });
-    }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
-        Modal.showErrorGet(this.url, errorThrown);
-    });
 }
 
 function unloadInventory() {
-    // Reset localStorage on disconnection
-    if (localStorageAvailable) staticFileCache.clear();
-    // Redirect to GoogleAuth
-    location.href='/googleOAuthLogout';
+    googleDrive.logout();
+    window.location.reload();
+}
+
+// Reads one user data file from the app folder of the user's Google Drive (e.g. units_GL.json)
+function readUserData(table) {
+    return googleDrive.readJson(table + "_" + server + ".json", {});
+}
+
+// Writes one user data file; calls successCallback or errorCallback(error) like the old jQuery calls
+function writeUserData(table, data, successCallback, errorCallback) {
+    googleDrive.writeJson(table + "_" + server + ".json", data)
+        .then(function() {
+            if (successCallback) successCallback();
+        }, function(error) {
+            if (errorCallback) errorCallback(error);
+        });
 }
 
 function mergeArrayWithoutDuplicates(array1, array2) {
@@ -1982,10 +1996,10 @@ function saveSuccess() {
     $.notify("Data saved", "success");
 }
 
-function saveError() {
+function saveError(error) {
     $("#inventoryDiv").removeClass("Inventoryloading").addClass("Inventoryloaded");
-    if (error.status == 401) {
-        Modal.showMessage('You have been disconnected', 'You have been disconnected. <strong>The data was not saved.</strong><br/>The page will be reloaded.', function() {
+    if (error && error.status == 401) {
+        Modal.showMessage('You have been disconnected', 'Your Google session has expired. <strong>The data was not saved.</strong><br/>The page will be reloaded: log in again, then redo your last change.', function() {
             window.location.reload();
         });
     } else {
@@ -2002,57 +2016,28 @@ function sanitizeItemInventory() {
 
 function saveInventory(successCallback, errorCallback) {
     sanitizeItemInventory();
-
-    $.ajax({
-        url: server + '/itemInventory',
-        method: 'PUT',
-        data: JSON.stringify(itemInventory),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: successCallback,
-        error: errorCallback
-    });
+    writeUserData('itemInventory', itemInventory, successCallback, errorCallback);
 }
 
- function saveUnits(successCallback, errorCallback) {
-    $.ajax({
-        url: server + '/units',
-        method: 'PUT',
-        data: JSON.stringify(ownedUnits),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: successCallback,
-        error: errorCallback
-    });
+function saveUnits(successCallback, errorCallback) {
+    writeUserData('units', ownedUnits, successCallback, errorCallback);
 }
 
 function saveConsumables(successCallback, errorCallback) {
-    $.ajax({
-        url: server + '/consumables',
-        method: 'PUT',
-        data: JSON.stringify(ownedConsumables),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: successCallback,
-        error: errorCallback
-    });
+    writeUserData('consumables', ownedConsumables, successCallback, errorCallback);
 }
 
 function saveEspers(successCallback, errorCallback, forceSave = false) {
     if (!forceSave && (!ownedEspers || Object.keys(ownedEspers).length == 0)) {
         if (confirm("You're trying to save empty espers. Are you sure you want to erase your espers ?")) {
             saveEspers(successCallback, errorCallback, true);
+        } else {
+            // Cancelled: don't save (previously the empty espers were saved anyway)
+            $("#inventoryDiv").removeClass("Inventoryloading").addClass("Inventoryloaded");
         }
+        return;
     }
-    $.ajax({
-        url: server + '/espers',
-        method: 'PUT',
-        data: JSON.stringify(ownedEspers),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: successCallback,
-        error: errorCallback
-    });
+    writeUserData('espers', ownedEspers, successCallback, errorCallback);
 }
 
 function getStaticData(name, localized, callback) {
@@ -2500,6 +2485,94 @@ function checkUnitImageLevel(unitId, unitData){
     return(iconId)
 }
 
+// Loads the user data files from the app folder of the user's Google Drive (see googleDrive.js).
+// Each file is processed as soon as it arrives; onUnitsOrInventoryLoaded() waits for all of them.
+var userDataErrorNotified = false;
+function onUserDataLoadError(error) {
+    $("#inventoryDiv").removeClass("Inventoryloading Inventoryloaded");
+    if (!userDataErrorNotified) {
+        userDataErrorNotified = true;
+        if (error && error.status == 401) {
+            $.notify("Your Google session has expired: please log in again", "warn");
+        } else {
+            console.warn("Error while loading the user data from Google Drive", error);
+            $.notify("Error while loading your data from Google Drive", "error");
+        }
+    }
+    notLoaded();
+}
+
+function loadUserDataFromDrive() {
+    console.log("Getting Item Inventory...");
+    readUserData('itemInventory').then(function(result) {
+        console.log("Got inventory");
+        itemInventory = result;
+        if (!itemInventory.enchantments) {
+            itemInventory.enchantments = {};
+        }
+        if (!itemInventory.visionCardsLevels) {
+            itemInventory.visionCardsLevels = {};
+        }
+        adaptItemInventoryForMultipleRareEnchantments();
+        sanitizeItemInventory();
+        onUnitsOrInventoryLoaded();
+    }, onUserDataLoadError);
+
+    readUserData('settings').then(function(result) {
+        userSettings = result;
+    }, function(error) {
+        console.warn("Error while loading the user settings from Google Drive", error);
+    });
+
+    readUserData('units').then(function(result) {
+        ownedUnits = result;
+        actuallyOwnedUnits = result;
+        if (result.version && result.version == 3) {
+            getStaticData("units", false, function(allUnitResult) {
+                for (var unitSerieId in allUnitResult) {
+                    var unit = allUnitResult[unitSerieId];
+                    var maxUnitId = unitSerieId.substr(0, unitSerieId.length-1) + unit.max_rarity;
+                    if (ownedUnits[maxUnitId]) {
+                        ownedUnits[unitSerieId] = ownedUnits[maxUnitId];
+                        delete ownedUnits[maxUnitId];
+                    }
+                }
+                ownedUnits.version = 4;
+                saveUnits(
+                    function() {
+                        $.notify("Owned units data successfuly migrated to v4", "success");
+                        onUnitsOrInventoryLoaded();
+                    },
+                    function(errorThrown) {
+                        Modal.showError("An error occured when trying to upgrade your unit data to version 4.", errorThrown);
+                    }
+                );
+            });
+        } else {
+            onUnitsOrInventoryLoaded();
+        }
+    }, onUserDataLoadError);
+
+    console.log("Starts to load owned espers");
+    readUserData('espers').then(function(result) {
+        ownedEspers = result;
+        Object.keys(ownedEspers).forEach(esper => {
+            if (ownedEspers[esper].esperStatsBonus && !ownedEspers[esper].esperStatsBonus.all) {
+                ownedEspers[esper].esperStatsBonus = {"all":ownedEspers[esper].esperStatsBonus};
+            }
+        });
+        console.log("owned espers loaded");
+        onUnitsOrInventoryLoaded();
+    }, onUserDataLoadError);
+
+    console.log("Starts to load owned consumables");
+    readUserData('consumables').then(function(result) {
+        ownedConsumables = result;
+        console.log("owned consumables loaded");
+        onUnitsOrInventoryLoaded();
+    }, onUserDataLoadError);
+}
+
 //document ready
 
 $(function() {
@@ -2522,97 +2595,13 @@ $(function() {
         $("#inventoryDiv").removeClass("Inventoryloading Inventoryloaded");
         notLoaded();
     } else {
-        console.log("Getting Item Inventory...")
-
-        $.get("/" + server + '/itemInventory', function(result) {
-            console.log("Got inventory")
-            itemInventory = result;
-            if (!itemInventory.enchantments) {
-                itemInventory.enchantments = {};
-            }
-            if (!itemInventory.visionCardsLevels) {
-                itemInventory.visionCardsLevels = {};
-            }
-            adaptItemInventoryForMultipleRareEnchantments();
-            sanitizeItemInventory();
-            onUnitsOrInventoryLoaded();
-        }, 'json')
-        .fail(function(jqXHR, textStatus, errorThrown ) {
-            console.log("File is not available. Please log in to gain access to inventory data.")
+        if (googleDrive.isLoggedIn()) {
+            loadUserDataFromDrive();
+        } else {
+            // Not logged in: there is no user data to load (the page shows the "Log in" button)
             $("#inventoryDiv").removeClass("Inventoryloading Inventoryloaded");
-            if (notLoaded) {
-                notLoaded();
-            }
-        });
-        $.get(server + '/settings', function(result) {
-            userSettings = result;
-        });
-        $.get(server + '/units', function(result) {
-            ownedUnits = result;
-            actuallyOwnedUnits = result;
-            if (result.version && result.version == 3) {
-                getStaticData("units", false, function(allUnitResult) {
-                    for (var unitSerieId in allUnitResult) {
-                        var unit = allUnitResult[unitSerieId];
-                        var maxUnitId = unitSerieId.substr(0, unitSerieId.length-1) + unit.max_rarity;
-                        if (ownedUnits[maxUnitId]) {
-                            ownedUnits[unitSerieId] = ownedUnits[maxUnitId];
-                            delete ownedUnits[maxUnitId];
-                        }
-                    }
-                    ownedUnits.version = 4;
-                    saveUnits(
-                        function() {
-                            $.notify("Owned units data successfuly migrated to v4", "success");
-                            onUnitsOrInventoryLoaded();
-                        },
-                        function(errorThrown) {
-                            Modal.showError("An error occured when trying to upgrade your unit data to version 4.", errorThrown);
-                        }
-                    );
-                });
-            } else {
-                onUnitsOrInventoryLoaded();
-            }
-
-
-        }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
-            $("#inventoryDiv").removeClass("Inventoryloading Inventoryloaded");
-            if (notLoaded) {
-                notLoaded();
-            }
-        });
-        console.log("Starts to load owned espers");
-        $.get("/" + server + '/espers', function(result) {
-            ownedEspers = result;
-
-            Object.keys(ownedEspers).forEach(esper => {
-                 if (ownedEspers[esper].esperStatsBonus && !ownedEspers[esper].esperStatsBonus.all) {
-                     ownedEspers[esper].esperStatsBonus = {"all":ownedEspers[esper].esperStatsBonus};
-                 }
-            });
-
-            console.log("owned espers loaded");
-            onUnitsOrInventoryLoaded();
-        }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
-            console.log("error loading owned espers");
-            $("#inventoryDiv").removeClass("Inventoryloading Inventoryloaded");
-            if (notLoaded) {
-                notLoaded();
-            }
-        });
-        console.log("Starts to load owned consumables");
-        $.get("/" + server + '/consumables', function(result) {
-            ownedConsumables = result;
-            console.log("owned consumables loaded");
-            onUnitsOrInventoryLoaded();
-        }, 'json').fail(function(jqXHR, textStatus, errorThrown ) {
-            console.log("error loading owned consumables");
-            $("#inventoryDiv").removeClass("Inventoryloading Inventoryloaded");
-            if (notLoaded) {
-                notLoaded();
-            }
-        });
+            notLoaded();
+        }
 
         getStaticData("itemEnchants", false, function(result) {
             itemEnchantments = result;
