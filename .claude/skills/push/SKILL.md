@@ -74,6 +74,9 @@ git status --short --untracked-files=all | grep -iE "\.config\.json|firebase_con
 
 ### 3. Verify before committing (non-trivial changes)
 
+The rules and traps for the changes themselves are in the `develop-rules` skill (first rule: verify,
+never assume). The checks below are the commit-time subset.
+
 - Syntax-check every edited JS file: `node --check <file>` (works for browser scripts and ES modules).
 - If the change affects what the site loads (pages, paths, data, `static/`), the user should have
   tested it with `npm start` and/or the GitHub Pages preview (static files served under
