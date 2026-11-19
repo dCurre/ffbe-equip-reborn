@@ -36,13 +36,18 @@ Pages): anything that still calls the Node server is broken online.
 
 ## Bugs / technical debt
 
-- [ ] **bootstrap-toggle 2.2.2** (on/off switches, e.g. Units page) is unmaintained and loaded from
-  `gitcdn.github.io`, a third-party proxy that may disappear. Vendor it into `static/lib/` or replace it.
-  Also consider select2 4.0.5 → 4.0.13 (bug fixes, same major).
-- [ ] **Outdated dependencies**: `npm audit`, deprecated `request`, `engines: ">=8"` is wrong; move
-  local development to a current Node LTS (CI already uses Node 20).
-- [ ] **Tests** (`npm test`, mocha in `test/`): status unknown after the changes; check and fix or
-  prune tests for removed routes.
+- [ ] **Outdated server dependencies** (`npm audit`: ~50 vulnerabilities, deprecated `request`): they
+  only run locally (server and data-extraction tools), never on the public site. Most will disappear
+  when the server is retired: run the audit again after that and update what remains.
+- [ ] **Local Node version**: local development currently runs on Node 15 (end of life since 2021,
+  kept for now because other projects on the same machine need it); the deploy uses Node 24 from
+  `.node-version`. Upgrade locally when convenient, then raise `engines` in `package.json` (now `>=15`).
+- [ ] **Tests** (`npm test`, mocha in `test/`) are all broken: they use CommonJS `require` in an ES
+  module project. Do this BEFORE the code quality / build algorithm reviews: rewrite
+  `test/static/test.formula.js` (damage/stat formulas — the safety net for refactoring) with a current
+  runner (e.g. `node --test`), and delete the server tests (`test/server/`) when the server is retired;
+  then drop `mocha`, `nyc`, `supertest`, `nock`, `mock-require`, `webpack-node-externals` and
+  `test/webpack.config.js`.
 
 ## Code quality and build algorithm
 
@@ -52,6 +57,8 @@ Pages): anything that still calls the Node server is broken online.
   repeated blocks across pages (same header/menu/footer markup in every HTML page, similar
   load/save logic in `units.js` / `inventory.js` / `espers.js`). Start with an analysis of the
   duplication and a proposal (incremental refactor vs a component framework) before changing code.
+  Also check for libraries loaded by the pages but no longer used (bootstrap-toggle was loaded by
+  `units.html` although unused since 2019).
 - [ ] **Review the build algorithm** (the equipment optimizer): correctness, performance and
   readability. Main files: `static/builder/buildOptimizer.js`, `static/builder/typeCombinationGenerator.js`,
   `static/builder/itemPool.js`, `static/builder/optimizerWebWorker.js` (runs in Web Workers),
@@ -62,7 +69,5 @@ Pages): anything that still calls the Node server is broken online.
 
 ## Ideas (optional)
 
-- [ ] **Offline Windows app** (Tauri) built from the same static site, once the serverless migration
-  is done.
 - [ ] **Raw game data in `tools/*/sources`** (~259 MB) is only needed to re-extract data; the game is
   closed (Global ended Oct 2024, JP data frozen May 2024). Consider removing it from the repo.

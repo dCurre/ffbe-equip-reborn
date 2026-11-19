@@ -25,7 +25,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .node-version
 
       # One JSON file per unit (replaces the old /:server/unit/:id server endpoint).
       # Uses only Node built-ins, so no npm install is needed.

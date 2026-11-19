@@ -42,7 +42,9 @@ contribution form. See [.claude/ROADMAP.md](.claude/ROADMAP.md) for the full lis
 
 ## Run locally
 
-Requirements: [Node.js](https://nodejs.org/) (a current LTS version is recommended) and npm.
+Requirements: [Node.js](https://nodejs.org/) and npm. Node is only used locally and by the deploy (the
+website itself is static): the deploy uses the version in [`.node-version`](.node-version) (24 LTS), and
+local development also works with older versions (tested with Node 15).
 
 ```bash
 npm install
