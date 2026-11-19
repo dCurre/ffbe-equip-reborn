@@ -82,6 +82,14 @@ times out.
   since jQuery 3.5 they are not auto-closed and the following markup ends up nested inside. Write
   `<span ...></span>`. Void tags (`<img .../>`, `<br/>`, `<input .../>`) are fine.
 
+### Global function names
+- The page scripts (`builder.js`, `units.js`, `contribute.js`, …) share the global scope with
+  `static/common.js`: a `function foo()` in a page script silently REPLACES `foo` of common.js on that
+  page, also for the calls made inside common.js. Before adding a top-level function, check the name is
+  not already used: `git grep -n "function <name>(" -- 'static/*.js' 'static/builder/*.js'`.
+  (Real case: `filterItems` in contribute.js replaced the one that `filter()` in common.js calls →
+  infinite recursion as soon as the user typed in the search box.)
+
 ### External resources, CSP and integrity
 - The **Content-Security-Policy** exists twice and must stay in sync: the `<meta>` tag in the 10 main
   pages (`static/*.html`) and `cspDirectives` in `server.js`. Adding a resource from a new domain
