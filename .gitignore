@@ -7,3 +7,4 @@ static/GL/unit/
 static/JP/unit/
 # Personal Claude Code settings
 .claude/settings.local.json
+.wrangler

@@ -1,0 +1,8 @@
+name = "ffbe-equip-reborn"
+main = "index.js"
+compatibility_date = "2026-11-01"
+
+# Fill the id with the output of: npx wrangler kv namespace create LINKS
+[[kv_namespaces]]
+binding = "LINKS"
+id = "a5b83cb683664cb59d77d8acf30eb6ee"

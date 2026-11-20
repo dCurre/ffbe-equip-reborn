@@ -21,8 +21,6 @@ var server = "GL";
 var language = "";
 var saveTimeout;
 var saveNeeded;
-var savePublicLinkTimeout;
-var savePublicLinkNeeded = false;
 var mustSaveUnits = false;
 var mustSaveInventory = false;
 var mustSaveEspers = false;
@@ -1955,8 +1953,37 @@ function updateUnitAndItemCount() {
     $("#inventoryDiv .itemsNumber").text(itemCount + " item" + (itemCount > 0 ? 's' : ''));
 }
 
+// Shared links (builds, unit collections) live in the Cloudflare Worker of /worker, which maps a short id to the data.
+const LINK_STORE_URL = 'https://ffbe-equip-reborn.ffbe-equip-reborn.workers.dev';
+
 function isLinkId(value) {
-    return value.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+    return /^[A-Za-z0-9]{10}$/.test(value);
+}
+
+// ids of the links made by FFBE Equip Next (Firebase): the data is lost
+function isOldLinkId(value) {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function saveSharedLink(data, onSuccess, onError) {
+    $.ajax({
+        url: LINK_STORE_URL,
+        method: 'POST',
+        data: JSON.stringify(data),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: result => onSuccess(result.id),
+        error: onError
+    });
+}
+
+function loadSharedLink(id, onSuccess, onError) {
+    $.ajax({
+        url: LINK_STORE_URL + '/' + id,
+        dataType: "json",
+        success: onSuccess,
+        error: onError
+    });
 }
 
 function saveUserData(mustSaveInventory, mustSaveUnits, mustSaveEspers = false, mustSaveConsumables = false) {

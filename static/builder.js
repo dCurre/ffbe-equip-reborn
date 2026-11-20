@@ -3099,17 +3099,13 @@ function readStateHashData(callback) {
     if (window.location.hash.length > 1) {
         var hashValue = window.location.hash.substr(1);
         if (isLinkId(hashValue)) {
-            $.ajax({
-                accepts: "application/json",
-                url: "https://firebasestorage.googleapis.com/v0/b/" + window.clientConfig.firebaseBucketUri + "/o/PartyBuilds%2F" + hashValue + ".json?alt=media",
-                success: function (json) {
-                    console.log(json);
-                    callback(json);
-                },
-                error: function (textStatus, errorThrown) {
-                    console.log(textStatus, errorThrown);
-                }
+            loadSharedLink(hashValue, callback, function () {
+                Modal.showMessage("Link not found", "This build link does not exist or could not be loaded.");
+                callback(null);
             });
+        } else if (isOldLinkId(hashValue)) {
+            Modal.showMessage("Old link", "This link was made by FFBE Equip Next and its data is no longer available.");
+            callback(null);
         } else {
             let parsedData = JSON.parse(atob(hashValue));
             let error = validator.validate('shortLink', parsedData);
@@ -3549,18 +3545,10 @@ function showBuildLink(onlyCurrentUnit) {
 
     data.itemSelector.mainSelector = "all";
 
-    $.ajax({
-        url: '/partyBuild',
-        method: 'POST',
-        data: JSON.stringify(data),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function(data) {
-            Modal.showWithBuildLink("unit" + (onlyCurrentUnit? '' : 's') + " build", "builder.html?server=" + server + '#' + data.id);
-        },
-        error: function(error) {
-            Modal.showError("Failed to generate url", 'Failed to generate url', error);
-        }
+    saveSharedLink(data, function(id) {
+        Modal.showWithBuildLink("unit" + (onlyCurrentUnit? '' : 's') + " build", "builder.html?server=" + server + '#' + id);
+    }, function(error) {
+        Modal.showError("Failed to generate url", 'Failed to generate url', error);
     });
 }
 
@@ -4314,30 +4302,6 @@ function exportAsImage() {
     $('#exportAsImageCanvas')[0].toBlob(function (blob) {
         window.saveAs(blob, builds.map(build => build.unit.name).join("-") + ".png");
         $("#exportAsImageModal").modal('hide');
-    });
-}
-
-function uploadToImgur() {
-    var img = $('#exportAsImageCanvas')[0].toDataURL().split(',')[1];
-
-    $.ajax({
-        url: 'https://api.imgur.com/3/image',
-        type: 'post',
-        headers: {
-            Authorization: 'Client-ID ' + window.clientConfig.imgurClientId,
-        },
-        data: {
-            image: img
-        },
-        dataType: 'json',
-        success: function(response) {
-            if(response.success) {
-                Modal.showWithBuildLink("Build image on Imgur", response.data.link);
-                $("#exportAsImageModal").modal('hide');
-            } else {
-                Modal.showMessage("Imposible to upload to Imgur", "The daily quota of free upload to Imgur has been reached. Please try again later.");
-            }
-        }
     });
 }
 

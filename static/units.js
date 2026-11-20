@@ -870,23 +870,12 @@ function editUnit(unitId) {
 
 function markSaveNeeded() {
     saveNeeded = true;
-    savePublicLinkNeeded = true;
     if (saveTimeout) {clearTimeout(saveTimeout)}
-    if (savePublicLinkTimeout) {clearTimeout(savePublicLinkTimeout)}
     saveTimeout = setTimeout(saveUserData,3000, true, true, false, true);
-    savePublicLinkTimeout = setTimeout(savePublicLink, 10000);
 }
 
-function savePublicLink(callback) {
-    // Public collection links need storage outside the user's Drive (they used the old server + Firebase
-    // Storage): disabled until they are migrated (see "Last: shared links" in the roadmap). Automatic
-    // calls (after each change, before leaving the page) do nothing; the explicit link button explains it.
-    savePublicLinkNeeded = false;
-    if (callback) {
-        Modal.showMessage("Not available yet", "Public unit collection links are not available yet in FFBE Equip Reborn.");
-    }
-    return;
-
+// The link is a snapshot of the collection at the moment of the click (it is not updated afterwards).
+function showPublicUnitCollectionLink() {
     var publicUnitcollection = {};
     for (var index = 0, len = releasedUnits.length; index < len; index++) {
         var unit = releasedUnits[index];
@@ -907,29 +896,9 @@ function savePublicLink(callback) {
         }
     }
 
-    $.ajax({
-        url: server + '/publicUnitCollection',
-        method: 'PUT',
-        data: JSON.stringify(publicUnitcollection),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function(data) { 
-            $.notify("Public link updated", "success"); 
-            savePublicLinkNeeded = false;
-            userSettings.unitCollection = data.id;
-            if (callback) {callback(data.id)} 
-        },
-        error: function() { $.notify("Error while updating public link", "error"); }
-    });
-
-}
-
-function showPublicUnitCollectionLink() {
-    if (savePublicLinkNeeded || !userSettings.unitCollection) {
-        savePublicLink(showPublicUnitCollectionLink)
-    } else {
-        Modal.showWithBuildLink("unit collection", "units.html?server=" + server + '&o#' + userSettings.unitCollection);
-    }
+    saveSharedLink(publicUnitcollection, function(id) {
+        Modal.showWithBuildLink("unit collection", "units.html?server=" + server + '&o#' + id);
+    }, function() { $.notify("Error while creating the public link", "error"); });
 }
 
 function filterName(units) {
@@ -1214,7 +1183,6 @@ function importUnits() {
                     ownedUnits = importedOwnedUnit;
                     markSaveNeeded();
                     saveUserData(false, true, false);
-                    savePublicLink();
                     showRaritySort();
                 } else {
                     Modal.show("Please select a file to import");
@@ -1240,7 +1208,6 @@ function importConsumables() {
                     ownedConsumables = importedConsumables;
                     markSaveNeeded();
                     saveUserData(false, false, false, true);
-                    savePublicLink();
                     showRaritySort();
                 } else {
                     Modal.show("Please select a file to import");
@@ -1348,24 +1315,18 @@ function treatImportConsumablesFile(evt) {
 function onDataReady() {
     if (releasedUnits && data) {
         if (window.location.hash.length > 1 && isLinkId(window.location.hash.substr(1))) {
-            $.ajax({
-                accepts: "application/json",
-                url: "https://firebasestorage.googleapis.com/v0/b/" + window.clientConfig.firebaseBucketUri + "/o/UnitCollections%2F" + window.location.hash.substr(1) + ".json?alt=media",
-                success: function (result) {
-                    ownedUnits = result;
-                    tmrNumberByUnitId = {};
-                    for (var id in ownedUnits) {
-                        tmrNumberByUnitId[id] = ownedUnits[id].farmed;
-                        stmrNumberByUnitId[id] = ownedUnits[id].farmedStmr;
-                    }
-                    showNumberTMRFarmed= true;
-                    showRaritySort();
-                    displayStats();
-                },
-                error: function (textStatus, errorThrown) {
-                    $.notify("Error : no data found", "error");
-                    console.log(textStatus, errorThrown);
+            loadSharedLink(window.location.hash.substr(1), function (result) {
+                ownedUnits = result;
+                tmrNumberByUnitId = {};
+                for (var id in ownedUnits) {
+                    tmrNumberByUnitId[id] = ownedUnits[id].farmed;
+                    stmrNumberByUnitId[id] = ownedUnits[id].farmedStmr;
                 }
+                showNumberTMRFarmed= true;
+                showRaritySort();
+                displayStats();
+            }, function () {
+                $.notify("Error : no data found", "error");
             });
         } else if (itemInventory && ownedUnits) {
             prepareData();
@@ -1418,9 +1379,6 @@ function startPage() {
     $window.on("beforeunload", function () {
         if  (saveNeeded) {
             return "Unsaved change exists !";
-        }
-        if (savePublicLinkNeeded) {
-            savePublicLink();
         }
     });
 

@@ -181,14 +181,27 @@ FFBEEquipBuildAsImage = {
             if (item && item.id != 'unavailable') {
                 let line = Math.floor(item.slot / 2);
                 let column = item.slot % 2;
-                FFBEEquipBuildAsImage.drawImage(ctx, FFBEEquipBuildAsImage.ffbeEquipUrl + `/img/items/${item.icon}`, x + column * 180, y + line * 30, 40, 40);
-                let color = 'white';
-                if (unit.itemEnchantments[index]) {
-                    color = '#e74c3c';
+                let textX = x + 40 + column * 180;
+                let textY = y + line * 30 + 20;
+                if (item.name) {
+                    FFBEEquipBuildAsImage.drawImage(ctx, FFBEEquipBuildAsImage.ffbeEquipUrl + `/img/items/${item.icon}`, x + column * 180, y + line * 30, 40, 40);
+                    let color = 'white';
+                    if (unit.itemEnchantments && unit.itemEnchantments[index]) {
+                        color = '#e74c3c';
+                    }
+                    FFBEEquipBuildAsImage.drawText(ctx, item.name, 'bold', 12, 'start', 'middle', textX, textY, 130, color);
+                } else {
+                    // placeholder: an item type without a chosen item, its id is the type
+                    FFBEEquipBuildAsImage.drawText(ctx, 'Any ' + item.id, 'italic', 12, 'start', 'middle', textX, textY, 130, '#6fa8dc');
                 }
-                FFBEEquipBuildAsImage.drawText(ctx, item.name, 'bold', 12, 'start', 'middle', x + 40 + column * 180, y + line * 30 + 20, 130, color);
             }
         });
+        // slots with nothing at all (unavailable slots, e.g. left hand with a two-handed weapon, are left blank)
+        for (let slot = 0; slot < 11; slot++) {
+            if (!unit.items.some(item => item && item.slot === slot)) {
+                FFBEEquipBuildAsImage.drawText(ctx, 'Empty', 'italic', 12, 'start', 'middle', x + 40 + (slot % 2) * 180, y + Math.floor(slot / 2) * 30 + 20, 130, '#888888');
+            }
+        }
         let line = 5;
         let column = 1;
         if (unit.esperId) {

@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <!-- Security policy (GitHub Pages cannot send HTTP headers); this tag is the only copy of the policy -->
-        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' code.jquery.com cdn.jsdelivr.net cdnjs.cloudflare.com kit.fontawesome.com ka-f.fontawesome.com https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' code.jquery.com cdn.jsdelivr.net cdnjs.cloudflare.com kit-free.fontawesome.com ka-f.fontawesome.com https://accounts.google.com/gsi/style; img-src 'self' data: blob: code.jquery.com cdn.jsdelivr.net; font-src 'self' data: cdnjs.cloudflare.com fonts.gstatic.com kit-free.fontawesome.com ka-f.fontawesome.com; connect-src 'self' cdnjs.cloudflare.com ka-f.fontawesome.com firebasestorage.googleapis.com https://api.imgur.com https://api.github.com https://accounts.google.com/gsi/ https://www.googleapis.com https://oauth2.googleapis.com; worker-src 'self'; frame-src 'self' https://accounts.google.com/gsi/; object-src 'none'; base-uri 'self'; form-action 'self'">
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' code.jquery.com cdn.jsdelivr.net cdnjs.cloudflare.com kit.fontawesome.com ka-f.fontawesome.com https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' code.jquery.com cdn.jsdelivr.net cdnjs.cloudflare.com kit-free.fontawesome.com ka-f.fontawesome.com https://accounts.google.com/gsi/style; img-src 'self' data: blob: code.jquery.com cdn.jsdelivr.net; font-src 'self' data: cdnjs.cloudflare.com fonts.gstatic.com kit-free.fontawesome.com ka-f.fontawesome.com; connect-src 'self' cdnjs.cloudflare.com ka-f.fontawesome.com https://ffbe-equip-reborn.ffbe-equip-reborn.workers.dev https://api.github.com https://accounts.google.com/gsi/ https://www.googleapis.com https://oauth2.googleapis.com; worker-src 'self'; frame-src 'self' https://accounts.google.com/gsi/; object-src 'none'; base-uri 'self'; form-action 'self'">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>FFBE Equip Reborn - Builder</title>
@@ -1847,7 +1847,6 @@
                         <canvas id="exportAsImageCanvas" width="730" height="235"></canvas>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" onclick="uploadToImgur();">Export to Imgur</button>
                         <button type="button" class="btn btn-default" onclick="exportAsImage();">Download</button>
                     </div>
                 </div>
@@ -1864,7 +1863,6 @@
 		<script src="lib/jquery.ba-throttle-debounce.min.js"></script>
         <script src="lib/notify.min.js"></script>
         <script src="lib/jjv.js"></script>
-        <script src="/clientConfig"></script>
         <script src="virtualScroll.js"></script>
         <script src="constants.js"></script>
         <script src="https://accounts.google.com/gsi/client" async defer></script>
