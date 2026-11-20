@@ -35,18 +35,10 @@ Pages): anything that still calls the Node server is broken online.
   every time, also seen with the cleanup of unused scripts reverted, so probably an old bug). The
   line positions are measured at draw time (`getCenterX` / `getCenterY` in `static/espers.js`):
   suspect a layout not settled yet (images/fonts/CSS). Check if it also happens on the live site.
-- [ ] **Builder startup race**: `updateEspers()` in `static/builder.js` reads the global `espers`, which
-  is filled asynchronously by `getStaticData("defaultBuilderEspers")` in `startPage`; when the
-  `/units.json` request returns first, `onEquipmentsChange()` → `updateEspers()` throws
-  "esperSource is undefined" (intermittent, unrelated to the console.log cleanup). Fix: wait for both
-  loads before calling it, or default `espers` to `[]`.
-  Same pattern in `static/unitSearch.js`: `inventoryLoaded()` → `update()` → `readFilterValues()` throws
-  "skillFilter is undefined" when the Drive load finishes before the filter state is applied (the code that
-  assigns `skillFilter` is around line 1495). Look for the same race in the other pages.
-- [ ] **Espers import with an unknown id breaks the page**: `importEsper` in `static/espers.js` does not
-  check `importIdConversion[esperData.id]`; with an id that is not in the table it throws after emptying
-  `ownedEspers` (leaving a bogus `"undefined"` entry that a later auto-save would write to Drive).
-  Validate the ids before touching `ownedEspers`.
+- [ ] **Unit Search startup race**: in `static/unitSearch.js`, `inventoryLoaded()` → `update()` →
+  `readFilterValues()` throws "skillFilter is undefined" when the Drive load finishes before the filter
+  state is applied (the code that assigns `skillFilter` is around line 1495). The same race in
+  `static/builder.js` is fixed (`espers` defaults to `[]`); look for it in the other pages too.
 - [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (35 tests, ~2 s): formula parsing, stats and
   damage with hand-computed values (`test.stats.js`, `test.damage.js`) and a golden master of the
   calculations on the real GL data (`test.golden.js`: all 1,653 units; `npm run test:golden:update`
@@ -113,8 +105,3 @@ Pages): anything that still calls the Node server is broken online.
   Storage `UnitCollections/`, `static/units.js`). Migrate together with shared builds. Currently disabled
   by an early `return` at the top of `savePublicLink()` in `static/units.js` (it was called 10 s after
   every change and always failed with a 404); remove it when migrating.
-
-## Ideas (optional)
-
-- [ ] **Raw game data in `tools/*/sources`** (~259 MB) is only needed to re-extract data; the game is
-  closed (Global ended Oct 2024, JP data frozen May 2024). Consider removing it from the repo.
