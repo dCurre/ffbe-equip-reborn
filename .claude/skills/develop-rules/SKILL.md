@@ -19,23 +19,14 @@ committing/pushing follows the `push` skill.
 ## Rule #1 — Verify, never assume
 
 Every statement about this codebase must come from checking the code, not from names, conventions or
-memory. This rule exists because assumptions already went wrong here:
-
-- bootstrap-toggle was loaded by `units.html`, so "on/off switches" were proposed as a test — the
-  library had been unused since 2019;
-- the builder was said not to use the `/:server/unit/:id` API — it called it every time a unit was
-  selected (`static/builder.js`, `ensureInitUnitWithSkills`);
-- the first search for "unused" images was incomplete (only some file types and folders).
-
-What this means in practice:
+memory. In practice:
 
 - **Before saying something is used or unused**, search for it everywhere it could be referenced: JS,
   HTML, CSS (also `static/css-img/`), the JSON data files, `tools/`, `server/`, and paths built
   dynamically (string concatenation, template literals). If relevant, check git history
   (`git log -S "<string>" -- '*.js' '*.html' '*.css'`).
-- **Before describing what a library or feature does here**, find its call sites (e.g.
-  `git grep -n "bootstrapToggle\|data-toggle=.toggle."`) and read them. A loaded library is not
-  necessarily a used one.
+- **Before describing what a library or feature does here**, find its call sites with `git grep` and
+  read them. A loaded library is not necessarily a used one.
 - **Before asking the user to test something**, verify that the feature exists, on which page, and how
   it is triggered. Give test steps only for verified behaviour.
 - **Two independent checks for important claims** (e.g. a strict regex search plus a looser one, or
@@ -45,8 +36,7 @@ What this means in practice:
 
 Search tips: prefer `git grep` (fast, tracked files only). Exclude minified libraries
 (`':!static/lib/*'`) and the big data folders when they're not relevant (`':!static/GL/*' ':!static/JP/*'
-':!tools/GL/*' ':!tools/JP/*'`). Never run a plain recursive grep over `static/img/` (~20k files): it
-times out.
+':!tools/GL/*' ':!tools/JP/*'`). Never run a plain recursive grep over `static/img/`: it times out.
 
 ## How the project works (the facts the traps come from)
 
@@ -63,9 +53,6 @@ times out.
 - **Node**: local development runs on **Node 15** (the user keeps it for other projects); the deploy
   uses the version in `.node-version` (24). Code that runs locally (`server.js`, `config.js`,
   `tools/*.js`) must stay compatible with Node 15 — no newer Node APIs or syntax there.
-- **Frontend stack**: plain jQuery 3.7.1 (local `static/lib/`), Bootstrap 3.4.1, jQuery UI 1.13.3
-  (Units, Inventory), select2 4.0.13 (Builder, Encyclopedia), Font Awesome kit; the optimizer runs in
-  Web Workers (`static/builder/optimizerWebWorker.js`).
 
 ## The traps (works locally ≠ works online)
 
@@ -87,8 +74,6 @@ times out.
   `static/common.js`: a `function foo()` in a page script silently REPLACES `foo` of common.js on that
   page, also for the calls made inside common.js. Before adding a top-level function, check the name is
   not already used: `git grep -n "function <name>(" -- 'static/*.js' 'static/builder/*.js'`.
-  (Real case: `filterItems` in contribute.js replaced the one that `filter()` in common.js calls →
-  infinite recursion as soon as the user typed in the search box.)
 
 ### External resources, CSP and integrity
 - The **Content-Security-Policy** exists twice and must stay in sync: the `<meta>` tag in the 10 main
@@ -107,9 +92,7 @@ times out.
 
 ### Editing files on Windows (CRLF)
 - The repo uses `core.autocrlf=true`; working files are CRLF. When editing with scripts (perl/node),
-  preserve the file's line endings. After editing, check `git diff --stat`: a few-line change must not
-  show as a whole-file diff. JSON files must still parse
-  (`node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"`).
+  preserve the file's line endings (the diff check is in the `push` skill).
 - If an exact-match edit fails, the file may contain different whitespace: read the exact lines first,
   or replace by verified line range.
 
@@ -124,10 +107,8 @@ times out.
 - **Keep the user in the loop on testing**: after a change that affects what the site loads, give
   concrete, verified test steps (page, action, expected result, console to watch). The user tests
   locally before anything is committed (`push` skill).
-- **Check syntax** of every edited JS file: `node --check <file>`.
 - **No silent debt**: don't leave debug `console.log` in new code, don't hard-code what should come from
   data or the current URL, don't swallow errors without a reason.
 - **Small, separate steps**: one topic per change/commit, so each can be tested and reverted alone.
-- **Update `.claude/ROADMAP.md`** when work is completed (remove the item) or new open work is found.
 - **Use the dependency manager for dependencies**: give the user the `npm install/uninstall` command
   (they prefer to run npm themselves) instead of hand-editing `package.json`/`package-lock.json`.
