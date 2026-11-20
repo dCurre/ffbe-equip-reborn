@@ -286,14 +286,14 @@ function innerCalculateBuildValueWithFormula(itemAndPassives, unitBuild, enemySt
 
             if (!context.savedValues.hasOwnProperty("resistModifier")) {
                 // Takes elements from weapons into account
-                if (itemAndPassives[0] && itemAndPassives[0].element) {
+                if (!formula.value.fixedAttack && itemAndPassives[0] && itemAndPassives[0].element) {
                     for (var elementIndex = itemAndPassives[0].element.length; elementIndex--;) {
                         if (!elements.includes(itemAndPassives[0].element[elementIndex])) {
                             elements.push(itemAndPassives[0].element[elementIndex]);
                         }
                     }
                 };
-                if (itemAndPassives[1] && itemAndPassives[1].element) {
+                if (!formula.value.fixedAttack && itemAndPassives[1] && itemAndPassives[1].element) {
                     for (var elementIndex = itemAndPassives[1].element.length; elementIndex--;) {
                         if (!elements.includes(itemAndPassives[1].element[elementIndex])) {
                             elements.push(itemAndPassives[1].element[elementIndex]);
@@ -332,7 +332,7 @@ function innerCalculateBuildValueWithFormula(itemAndPassives, unitBuild, enemySt
                 }
             }
 
-            if (dualWielding && !context.isLb && !context.multicast && (!formula.value.delay || formula.value.jump)) {
+            if (dualWielding && !formula.value.fixedAttack && !context.isLb && !context.multicast && (!formula.value.delay || formula.value.jump)) {
                 // Plan for the left hand attack to be calculated later
                 context.remainingLeftHandAttacks.push(formula);
             }
@@ -400,7 +400,7 @@ function innerCalculateBuildValueWithFormula(itemAndPassives, unitBuild, enemySt
         }
         // Killer
         var killerMultiplicator = 1;
-        if (applicableKillerType && enemyStats.races.length > 0) {
+        if (applicableKillerType && !formula.value.fixedAttack && enemyStats.races.length > 0) {
             if (context.savedValues.killerMultiplicator.hasOwnProperty(applicableKillerType)) {
                 killerMultiplicator = context.savedValues.killerMultiplicator[applicableKillerType];
             } else {
@@ -506,9 +506,6 @@ function innerCalculateBuildValueWithFormula(itemAndPassives, unitBuild, enemySt
         if (context.isLb) {
             lbMultiplier += getStatCalculatedValue(context, itemAndPassives, "lbDamage", unitBuild).total/100;
         }
-
-        var chainMult;
-        chainMult += getStatCalculatedValue(context, itemAndPassives, "chainMastery", unitBuild).total / 100;
 
         var evoMagMultiplier = 1;
         if (unitBuild.involvedStats.includes("evoMag")) {
@@ -1295,7 +1292,7 @@ function calculateMonsterDamage(monsterAttackFormula, itemAndPassives, unitBuild
                         "switchWeapons": false
                     };
                 case 'atkDamageWithFixedMechanism':
-                    if (context.alreadyCalculatedValues['def']) {
+                    if (context.alreadyCalculatedValues && context.alreadyCalculatedValues['def']) {
                         def = context.alreadyCalculatedValues['def'];
                     } else {
                         def = calculateStatValue(itemAndPassives, 'def', unitBuild, context.berserk).total
@@ -1495,10 +1492,10 @@ function calculateStatValue(itemAndPassives, stat, unitBuild, berserk = 0, ignor
                 calculatedValue = calculatedValue + unitBuild.baseValues["lbDamage"]
             }
         }
-        var result = {"right":0,"left":0,"total":calculatedValue,"bonusPercent":currentPercentIncrease.value, "overcap": realCap};
         if (!valuesToNotRoundDown.includes(stat)) {
             calculatedValue = Math.floor(calculatedValue);
         }
+        var result = {"right":0,"left":0,"total":calculatedValue,"bonusPercent":currentPercentIncrease.value, "overcap": realCap};
         if (itemAndPassives[0] && weaponList.includes(itemAndPassives[0].type)) {
             result.right = result.total;
         }

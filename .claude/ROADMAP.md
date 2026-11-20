@@ -22,19 +22,22 @@ Pages): anything that still calls the Node server is broken online.
   `tools/buildImageLinks` and `tools/JP/getImages.js` are unusable and the image `download` step of
   `GL|JP/parseItems.js` fails; the JSON data from GitHub (`aEnigmatic/ffbe`, `ffbe-jp`, `ffbe-gl-strings`) still
   downloads fine. The tools now use `tools/request.js` (a `fetch` shim, output verified identical to `request`).
-- [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (35 tests, ~2 s): formula parsing, stats and
+- [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (117 tests, ~2 s): formula parsing, stats and
   damage with hand-computed values (`test.stats.js`, `test.damage.js`) and a golden master of the
   calculations on the real GL data (`test.golden.js`: all 1,653 units; `npm run test:golden:update`
   regenerates `test/static/golden/calc.json` when a change is intended). `npm run test:coverage` prints
-  the coverage of `formula.js` (46.9%) and `builder/common.js` (45.3%). Still uncovered:
-  `calculateMonsterDamage`, `areConditionOK`, `findBestItemVersion`, `combineTwoItems`,
-  `applyEnhancements`, `getEsperStatBonus`, `chainMastery`, `formulaFromEffect`, the formula conditions,
-  and the optimizer (`buildOptimizer.js`, `itemPool.js`, `typeCombinationGenerator.js`: a golden master
+  the coverage of `formula.js` (89.4%) and `builder/common.js` (69.1%). Still uncovered: `computeFarmableStmr` and
+  `getItemEntry` (bound to the inventory/DOM) and the optimizer (`buildOptimizer.js`, `itemPool.js`, `typeCombinationGenerator.js`: a golden master
   needs the data prepared by `builder.js`, which is bound to the DOM). Add these before reviewing the
   build algorithm or splitting `builder.js`.
 
 ## Code quality and build algorithm
 
+- [ ] **Site rework (to design, next topic).** Nothing decided yet. To settle first: the goal (speed, look,
+  maintainability), the scope (all pages or one first: builder, units, inventory) and the technology (clean up
+  the classic scripts, or a framework such as Angular: see the idea below). Measure where the site is slow
+  before choosing. Constraints: static site on GitHub Pages, no backend; imgur and shared links stay last. The
+  tests (`npm test`, golden master included) are the safety net: extend them before splitting `builder.js`.
 - [ ] **Review code quality** (what is left). Done: unused scripts/libraries and debug `console.log`
   removed, globals shadowing `common.js` renamed (`inventory.js`) or simplified (`unselectAll`),
   header/menu/footer shared in `static/layout.js`, JSON import shared (`readJsonFile` in `common.js`).
@@ -54,13 +57,20 @@ Pages): anything that still calls the Node server is broken online.
   readability. Main files: `static/builder/buildOptimizer.js`, `static/builder/typeCombinationGenerator.js`,
   `static/builder/itemPool.js`, `static/builder/optimizerWebWorker.js` (runs in Web Workers),
   `static/formula.js` (damage/stat formulas); `static/algorithm.html` documents the approach.
-  Found while writing the tests (`static/builder/common.js`): the final `Math.floor` in
-  `calculateStatValue` is assigned to `calculatedValue`, which is never used afterwards, so the total of
-  the non-ATK stats is not rounded; `var chainMult; chainMult += ...` in `innerCalculateBuildValueWithFormula`
-  is `NaN` and never used (dead code).
-  The golden master (`npm test`, test.golden.js) also found 144 unit skills (432 values over 3 scenarios)
-  whose damage is `NaN`: mostly `damage` effects with mechanism `none` and sums of such effects, plus a few
-  physical ones. Check if they are skills the builder never offers as goal or a real defect.
+  The golden master found 144 unit skills whose damage was `NaN` (the builder offered them as goal): most
+  have attack type "None" in the game data, the wiki's **Fixed** attack type (Mug, Covering Fire...). Fixed:
+  `formulaFromEffect` (`formula.js`) now computes them with the stat of their damage type (hybrid if missing),
+  ignoring killers, dual wield and weapon elements (`fixedAttack`, wiki "Mechanics", "Damage Types"), and no
+  longer offers the effects on SELF/ALLY (HP cost, token damage for buffs) as goal. Still open:
+  - 15 values (5 skills, e.g. Energy Shot 1380140) are still `NaN`: physical damage with `mpCoef` and no `coef`.
+  - To verify in game: the wiki lists the delayed-damage skills (Covering Fire, Missile Shelter, Spiteful
+    Blade) as plain Physical, not Fixed, but the game data says "None" for all, so they are treated as Fixed
+    (no killers, no dual wield). Also unknown: whether the weapon/final variance applies to Fixed attacks
+    (kept applied). Test: use the skill twice on an enemy with a known killer or resistance.
+  - The wiki is hand written and inconsistent (Hallowed Song); read it with the `exvius-wiki` skill.
+  Future check: `calculateStatValue` now rounds down the total of the non-ATK stats (it did not before,
+  the `Math.floor` result was discarded). The change is deduced from the code, not compared with the game:
+  verify it against an offline FFBE repo or known in-game values (golden master regenerated, up to -0.42%).
   Reference timing on a dev PC: `optimize: ~3.2 s` for one unit.
 
 ## Last: imgur and shared links (decided to do after everything else)

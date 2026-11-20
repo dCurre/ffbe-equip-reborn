@@ -157,7 +157,7 @@ class UnitBuild {
         } else if (formula.type === "damage") {
             this.addToInvolvedStats(["chainMastery"]);
             if (formula.value.mechanism === "physical") {
-                this.addToInvolvedStats(["weaponElement","physicalKiller","meanDamageVariance"]);
+                this.addToInvolvedStats(formula.value.fixedAttack ? ["meanDamageVariance"] : ["weaponElement","physicalKiller","meanDamageVariance"]);
                 
                 
                 if (formula.value.damageType === "body") {
@@ -179,7 +179,7 @@ class UnitBuild {
                     this.addToInvolvedStats(["jumpDamage", "skillEnhancement.jumpDamage"]);
                 }
             } else if (formula.value.mechanism === "magical") {
-                this.addToInvolvedStats(["magicalKiller", "meanDamageVariance", "skillEnhancement.allMagicalAttacks"]);
+                this.addToInvolvedStats(formula.value.fixedAttack ? ["meanDamageVariance", "skillEnhancement.allMagicalAttacks"] : ["magicalKiller", "meanDamageVariance", "skillEnhancement.allMagicalAttacks"]);
                 if (formula.value.damageType === "mind") {
                     if (formula.value.use) {
                         this.addToInvolvedStats([formula.value.use.stat]);
@@ -190,7 +190,7 @@ class UnitBuild {
                     this.addToInvolvedStats(["atk"]);
                 }
             } else if (formula.value.mechanism === "hybrid") {
-                this.addToInvolvedStats(["weaponElement","physicalKiller","meanDamageVariance", "atk", "mag"]);
+                this.addToInvolvedStats(formula.value.fixedAttack ? ["meanDamageVariance", "atk", "mag"] : ["weaponElement","physicalKiller","meanDamageVariance", "atk", "mag"]);
             } else if (formula.value.mechanism === "summonerSkillMAG/SPRMechanism" || formula.value.mechanism === "summonerSkillMAGMechanism" || formula.value.mechanism === "summonerSkillSPRMechanism"){
                 this.addToInvolvedStats(['evoMag', 'evokeDamageBoost.all', 'meanDamageVariance']);
                 if (formula.value.magSplit > 0) {

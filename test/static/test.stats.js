@@ -43,11 +43,14 @@ describe('calculateStatValue', () => {
         assert.equal(ctx.calculateStatValue(items, 'def', unitBuild).total, 2500);
     });
 
-    it('does not round the total of the non-ATK stats (current behaviour)', () => {
-        // The Math.floor at the end of calculateStatValue is assigned to a variable that is never used
-        // afterwards, so the returned total keeps the decimals. To review with the build algorithm.
+    it('rounds down the total of the non-ATK stats', () => {
         const unitBuild = makeUnitBuild(ctx, { stats: { def: 501 } });
-        assert.equal(ctx.calculateStatValue(withItems({ 2: { 'def%': 10 } }), 'def', unitBuild).total, 551.1);
+        assert.equal(ctx.calculateStatValue(withItems({ 2: { 'def%': 10 } }), 'def', unitBuild).total, 551); // 501 + 50.1
+    });
+
+    it('does not round the stats listed in valuesToNotRoundDown', () => {
+        const unitBuild = makeUnitBuild(ctx, { stats: {} });
+        assert.equal(ctx.calculateStatValue(withItems({ 2: { evoMag: 10.5 } }), 'evoMag', unitBuild).total, 10.5);
     });
 
     it('splits the ATK between both hands when dual wielding', () => {
