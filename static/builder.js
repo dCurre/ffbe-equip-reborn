@@ -74,7 +74,7 @@ const goalQuickSelectDefaultValues = [
 
 var customFormula;
 
-var espers;
+var espers = []; // filled by startPage; updateEspers() can run before that
 var espersByName = {};
 
 var units;
