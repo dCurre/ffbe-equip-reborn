@@ -8,8 +8,9 @@
   },
   "scripts": {
     "profileTest": "node --inspect server.js",
-    "test": "nyc mocha test/server --recursive",
-    "test:web": "mocha-webpack --webpack-config test/webpack.config.js --require test/setup.js test/static/*.js",
+    "test": "node --test \"test/static/*.js\"",
+    "test:coverage": "node test/coverage.mjs",
+    "test:golden:update": "node test/static/golden/update.mjs",
     "build:units": "node tools/generateUnitFiles.js",
     "prestart": "node config.js && node tools/generateUnitFiles.js",
     "start": "node server.js"

@@ -1,8 +1,8 @@
-const assert = require('assert');
-const {
-  parseFormula,
-  formulaToString,
-} = require('exports-loader?parseFormula,formulaToString!../../static/formula.js');
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
+import { loadBuilderEnv } from './helpers/builderEnv.js';
+
+const { parseFormula, formulaToString } = loadBuilderEnv();
 
 const testCases = {
   'Maximize HP': {
@@ -95,8 +95,9 @@ describe('static.formula', () => {
   describe('#parseFormula', () => {
     Object.keys(testCases).forEach((formula) => {
       it(formula, () => {
-        const parsed = parseFormula(formula);
-        assert.deepEqual(testCases[formula], parsed);
+        // JSON copy: objects built inside the vm sandbox have other prototypes, which strict deepEqual rejects
+        const parsed = JSON.parse(JSON.stringify(parseFormula(formula)));
+        assert.deepEqual(parsed, testCases[formula]);
       });
     });
   });
