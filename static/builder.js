@@ -2586,9 +2586,6 @@ function displaySearchResultsAsync(items, start, div) {
 }
 
 function getItemHtml(item) {
-    if (item.name.includes("Kimahri")) {
-        console.log(item)
-    }
     let html = "";
     if (item) {
         var enhancementString = "null";
@@ -2796,7 +2793,6 @@ function selectEnchantement(item) {
     }
     $("#modifyEnhancementModal .modal-header .title").html(getImageHtml(currentEnchantmentItem) + getNameColumnHtml(currentEnchantmentItem));
     // populate the itemEnhancements into the rares column.
-    console.log(itemEnchantments)
     if (itemEnhancementLabels["special_1"][item.id]) {
         $("#modifyEnhancementModal .value.special_1").removeClass("hidden");
         $("#modifyEnhancementModal .value.special_1").html(itemEnhancementLabels["special_1"][item.id]);
@@ -4780,7 +4776,6 @@ function initWorkerNumber() {
             numberOfWorkers = 1;
         }
     } else {
-        console.log("No navigator.hardwareConcurrency support. Suppose 4 cores");
         numberOfWorkers = 4;
     }
     $("#coreUsage input").val(numberOfWorkers);
@@ -5152,7 +5147,6 @@ validator.addSchema('shortLink', {
 
 let handleExternalControl = function(message) {
     let data = JSON.parse(message.data);
-    console.log("Message received : " + data.type);
     switch(data.type) {
         case 'selectUnit':
             selectUnit(data.value);
