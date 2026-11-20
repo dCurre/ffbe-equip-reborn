@@ -1258,128 +1258,91 @@ let importedOwnedUnit;
 let importedConsumables;
 
 function treatImportFile(evt) {
-    var f = evt.target.files[0]; // FileList object
-
-    var reader = new FileReader();
-
-    reader.onload = function(){
-        try {
-            let temporaryResult = JSON.parse(reader.result);
-            var errors = importValidator.validate('units', temporaryResult);
-
-            // validation was successful
-            if (errors) {
-                Modal.showMessage("imported file doesn't have the correct form : " + JSON.stringify(errors));
+    readJsonFile(evt, importValidator, 'units', function(temporaryResult) {
+        importedOwnedUnit = {};
+        temporaryResult.forEach(unit => {
+            if (!unit.id) {
+                Modal.showMessage("unit doesn't have id : " + JSON.stringify(unit));
+                importedOwnedUnit = null;
                 return;
-            }
-            importedOwnedUnit = {};
-            temporaryResult.forEach(unit => {
-                if (!unit.id) {
-                    Modal.showMessage("unit doesn't have id : " + JSON.stringify(unit));
-                    importedOwnedUnit = null;
-                    return;
-                } else if (!unitsToIgnoreForImport[server].includes(unit.id)) {
-                    if (unit.id == '904000115' && unit.tmr < 1000) { //Prisms
-                        let baseUnitId = baseUnitIdByTmrId[unit.tmrId]
-                        if (baseUnitId) {
-                            if (!importedOwnedUnit[baseUnitId]) {
-                                importedOwnedUnit[baseUnitId] = {"number":0,"farmable":0,"sevenStar":0,"farmableStmr":0};
+            } else if (!unitsToIgnoreForImport[server].includes(unit.id)) {
+                if (unit.id == '904000115' && unit.tmr < 1000) { //Prisms
+                    let baseUnitId = baseUnitIdByTmrId[unit.tmrId]
+                    if (baseUnitId) {
+                        if (!importedOwnedUnit[baseUnitId]) {
+                            importedOwnedUnit[baseUnitId] = {"number":0,"farmable":0,"sevenStar":0,"farmableStmr":0};
+                        }
+                        importedOwnedUnit[baseUnitId].farmable++;
+                    }
+                } else if (unit.id == '904000103') { //TMR Moogles
+                    let baseUnitId = baseUnitIdByTmrId[unit.tmrId]
+                    if (baseUnitId) {
+                        if (!importedOwnedUnit[baseUnitId]) {
+                            importedOwnedUnit[baseUnitId] = {"number":0,"farmable":0,"sevenStar":0,"farmableStmr":0, "tmrMoogles": []};
+                        } else {
+                            if (!importedOwnedUnit[baseUnitId].tmrMoogles) {
+                                importedOwnedUnit[baseUnitId].tmrMoogles = [];
                             }
+                        }
+                        importedOwnedUnit[baseUnitId].tmrMoogles.push(unit.tmr / 10);
+                    }
+                } else if (!unit.id.startsWith('9')) {
+                    let baseUnitId = baseUnitIdBySpecificRarityUnitId[unit.id];
+                    let NVA = false;
+                    if (!baseUnitId) {
+                        // Try for NVA
+                        if (unit.id.endsWith("17")) {
+                            baseUnitId = baseUnitIdBySpecificRarityUnitId[unit.id.substr(0, unit.id.length - 2) + "07"];
+                            NVA = true;
+                        }
+                        if (server === 'GL' && unit.id === "100000327" ) { //GL Dark Fina NVA doesn't match unit id standards used
+                            baseUnitId = "100000315";
+                            NVA = true;
+                        }
+                    }
+                    if (!baseUnitId) {
+                        Modal.showMessage('unknown unit id : ' + unit.id + '. FFBE Equip Reborn data probably was not updated yet. Ignoring this unit.');
+                        //importedOwnedUnit = null;
+                        return;
+                    } else {
+                        if (!importedOwnedUnit[baseUnitId]) {
+                            importedOwnedUnit[baseUnitId] = {"number":0,"farmable":0,"sevenStar":0,"farmableStmr":0,"exRank":0};
+                        }
+                        if (unit.tmr < 1000) {
                             importedOwnedUnit[baseUnitId].farmable++;
                         }
-                    } else if (unit.id == '904000103') { //TMR Moogles
-                        let baseUnitId = baseUnitIdByTmrId[unit.tmrId]
-                        if (baseUnitId) {
-                            if (!importedOwnedUnit[baseUnitId]) {
-                                importedOwnedUnit[baseUnitId] = {"number":0,"farmable":0,"sevenStar":0,"farmableStmr":0, "tmrMoogles": []};
-                            } else {
-                                if (!importedOwnedUnit[baseUnitId].tmrMoogles) {
-                                    importedOwnedUnit[baseUnitId].tmrMoogles = [];
-                                }
+                        if (NVA || units[baseUnitId].min_rarity === 'NV') { // Case of NVA or NV Unit
+                            if (!importedOwnedUnit[baseUnitId].nv) {
+                                importedOwnedUnit[baseUnitId].nv = 0;
                             }
-                            importedOwnedUnit[baseUnitId].tmrMoogles.push(unit.tmr / 10);
-                        }
-                    } else if (!unit.id.startsWith('9')) {
-                        let baseUnitId = baseUnitIdBySpecificRarityUnitId[unit.id];
-                        let NVA = false;
-                        if (!baseUnitId) {
-                            // Try for NVA
-                            if (unit.id.endsWith("17")) {
-                                baseUnitId = baseUnitIdBySpecificRarityUnitId[unit.id.substr(0, unit.id.length - 2) + "07"];
-                                NVA = true;
+                            importedOwnedUnit[baseUnitId].nv++;
+                            if (unit.stmr < 1000) {
+                                importedOwnedUnit[baseUnitId].farmableStmr++;
                             }
-                            if (server === 'GL' && unit.id === "100000327" ) { //GL Dark Fina NVA doesn't match unit id standards used
-                                baseUnitId = "100000315";
-                                NVA = true;
+                            // Store the max awakened ex level of this unit.
+                            importedOwnedUnit[baseUnitId].exRank = Math.max(importedOwnedUnit[baseUnitId].exRank, unit.exRank);
+                        } else if (unit.id.endsWith("7")) { // Seven star units
+                            importedOwnedUnit[baseUnitId].sevenStar++;
+                            if (unit.stmr < 1000) {
+                                importedOwnedUnit[baseUnitId].farmableStmr++;
                             }
-                        }
-                        if (!baseUnitId) {
-                            Modal.showMessage('unknown unit id : ' + unit.id + '. FFBE Equip Reborn data probably was not updated yet. Ignoring this unit.');
-                            //importedOwnedUnit = null;
-                            return;
-                        } else {
-                            if (!importedOwnedUnit[baseUnitId]) {
-                                importedOwnedUnit[baseUnitId] = {"number":0,"farmable":0,"sevenStar":0,"farmableStmr":0,"exRank":0};
-                            }
-                            if (unit.tmr < 1000) {
-                                importedOwnedUnit[baseUnitId].farmable++;
-                            }
-                            if (NVA || units[baseUnitId].min_rarity === 'NV') { // Case of NVA or NV Unit
-                                if (!importedOwnedUnit[baseUnitId].nv) {
-                                    importedOwnedUnit[baseUnitId].nv = 0;
-                                }
-                                importedOwnedUnit[baseUnitId].nv++;
-                                if (unit.stmr < 1000) {
-                                    importedOwnedUnit[baseUnitId].farmableStmr++;
-                                }
-                                // Store the max awakened ex level of this unit.
-                                importedOwnedUnit[baseUnitId].exRank = Math.max(importedOwnedUnit[baseUnitId].exRank, unit.exRank);
-                            } else if (unit.id.endsWith("7")) { // Seven star units
-                                importedOwnedUnit[baseUnitId].sevenStar++;
-                                if (unit.stmr < 1000) {
-                                    importedOwnedUnit[baseUnitId].farmableStmr++;
-                                }
-                            } else { // Sub seven star units.
-                                importedOwnedUnit[baseUnitId].number++;
-                            }
+                        } else { // Sub seven star units.
+                            importedOwnedUnit[baseUnitId].number++;
                         }
                     }
                 }
-            });
-            $('#importSummary').text('Units to import : ' + Object.keys(importedOwnedUnit).length);
-        } catch(e) {
-            Modal.showError('imported file is not in json format', e);
-        }
-
-    };
-    reader.readAsText(f);
-
+            }
+        });
+        $('#importSummary').text('Units to import : ' + Object.keys(importedOwnedUnit).length);
+    });
 }
 
 function treatImportConsumablesFile(evt) {
-    var f = evt.target.files[0]; // FileList object
-
-    var reader = new FileReader();
-
-    reader.onload = function(){
-        try {
-            let temporaryResult = JSON.parse(reader.result);
-            var errors = importValidator.validate('consumables', temporaryResult);
-
-            // validation was successful
-            if (errors) {
-                Modal.showMessage("imported file doesn't have the correct form : " + JSON.stringify(errors));
-                return;
-            }
-            importedConsumables = {};
-            temporaryResult.forEach(data => importedConsumables[data.itemId] = parseInt(data.itemQty));
-            $('#importSummary').text('Consumables to import : ' + Object.keys(importedConsumables).length);
-        } catch(e) {
-            Modal.showError('imported file is not in json format', e);
-        }
-
-    };
-    reader.readAsText(f);
+    readJsonFile(evt, importValidator, 'consumables', function(temporaryResult) {
+        importedConsumables = {};
+        temporaryResult.forEach(data => importedConsumables[data.itemId] = parseInt(data.itemQty));
+        $('#importSummary').text('Consumables to import : ' + Object.keys(importedConsumables).length);
+    });
 }
 
 function onDataReady() {
