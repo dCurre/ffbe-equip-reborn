@@ -1472,7 +1472,8 @@ function unselectAll(type) {
 
 function inventoryLoaded() {
     $("#onlyShowOwnedUnitsDiv").removeClass("hidden");
-    if (data) {
+    // skillFilter is set by initFilters(), which runs update() itself once done
+    if (data && skillFilter) {
         update();
     }
 }
