@@ -2742,6 +2742,26 @@ const throttle = (func, limit) => {
 }
 
 /** Saves a setting to local storage. */
+// Reads the JSON file chosen in an import <input>, validates it against the schema `schemaName` of the jjv
+// `validator` and calls onValid(data). Errors (invalid JSON, wrong form, or thrown by onValid) are shown in a modal.
+function readJsonFile(evt, validator, schemaName, onValid) {
+    var reader = new FileReader();
+    reader.onload = function() {
+        try {
+            var data = JSON.parse(reader.result);
+            var errors = validator.validate(schemaName, data);
+            if (errors) {
+                Modal.showMessage("imported file doesn't have the correct form : " + JSON.stringify(errors));
+                return;
+            }
+            onValid(data);
+        } catch(e) {
+            Modal.showError('imported file is not in json format', e);
+        }
+    };
+    reader.readAsText(evt.target.files[0]);
+}
+
 function saveSetting(key, value) {
     if (localStorageAvailable) {
         localStorage.setItem(key, value);

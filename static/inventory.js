@@ -1455,81 +1455,61 @@ let dataIds = null;
 let importedItemInventory;
 
 function treatImportFile(evt) {
-    var f = evt.target.files[0]; // FileList object
-  
-    var reader = new FileReader();
-    
-    reader.onload = function(){
-        try {
-            let temporaryResult = JSON.parse(reader.result);
-            var errors = importValidator.validate('itemInventory', temporaryResult);
-
-            // validation was successful
-            if (errors) {
-                console.log(errors)
-                Modal.showMessage("imported file doesn't have the correct form : " + JSON.stringify(errors));
+    readJsonFile(evt, importValidator, 'itemInventory', function(temporaryResult) {
+        importedItemInventory = {"enchantments":{}};
+        let visionCardIds = visionCards.map(vc => vc.id);
+        temporaryResult.forEach(item => {
+            if (!item.id) {
+                Modal.showMessage("item doesn't have id : " + JSON.stringify(item));
+                importedOwnedUnit = null;
                 return;
-            }
-            importedItemInventory = {"enchantments":{}};
-            let visionCardIds = visionCards.map(vc => vc.id);
-            temporaryResult.forEach(item => {
-                if (!item.id) {
-                    Modal.showMessage("item doesn't have id : " + JSON.stringify(item));
-                    importedOwnedUnit = null;
-                    return;
-                } else {
-                    if (idToIgnoreOnImport[server].includes(item.id)) return;
-                    if (dataIds.includes(item.id)) {
-                        if (!importedItemInventory[item.id]) {
-                            importedItemInventory[item.id] = 0;
-                        }
-                        importedItemInventory[item.id] += parseInt(item.count);
+            } else {
+                if (idToIgnoreOnImport[server].includes(item.id)) return;
+                if (dataIds.includes(item.id)) {
+                    if (!importedItemInventory[item.id]) {
+                        importedItemInventory[item.id] = 0;
+                    }
+                    importedItemInventory[item.id] += parseInt(item.count);
 
-                        if (item.enhancements) {
-                            if (!importedItemInventory.enchantments[item.id]) {
-                                importedItemInventory.enchantments[item.id] = [];
-                            }
-                            importedItemInventory.enchantments[item.id].push(item.enhancements.map(e => itemEnhancementBySkillId[e]));
-                            
-                            //loop through itemEnchantments and if it has an id that matches item.id, push it to the importedItemInventory.enchantments[item.id]
-                            Object.keys(itemEnchantments).forEach(enh => {
-                                if (itemEnchantments[enh].id == item.id) {
-                                    importedItemInventory.enchantments[item.id].push(itemEnchantments[enh].effects);
-                                }
-                            });
+                    if (item.enhancements) {
+                        if (!importedItemInventory.enchantments[item.id]) {
+                            importedItemInventory.enchantments[item.id] = [];
                         }
-                    } else if (visionCardIds.includes(item.id)) {
-                        if (!importedItemInventory[item.id]) {
-                            importedItemInventory[item.id] = 0;
-                        }
-                        importedItemInventory[item.id] += parseInt(item.count);
-                        let vc = visionCards.find(vc => vc.id == item.id);
-                        if (vc.levels.length > 1) {
-                            if (!importedItemInventory.visionCardsLevels) {
-                                importedItemInventory.visionCardsLevels = {};
+                        importedItemInventory.enchantments[item.id].push(item.enhancements.map(e => itemEnhancementBySkillId[e]));
+                        
+                        //loop through itemEnchantments and if it has an id that matches item.id, push it to the importedItemInventory.enchantments[item.id]
+                        Object.keys(itemEnchantments).forEach(enh => {
+                            if (itemEnchantments[enh].id == item.id) {
+                                importedItemInventory.enchantments[item.id].push(itemEnchantments[enh].effects);
                             }
-                            if (!importedItemInventory.visionCardsLevels[item.id]) {
-                                importedItemInventory.visionCardsLevels[item.id] = [];
-                            }
-                            importedItemInventory.visionCardsLevels[item.id].push(item.level);
+                        });
+                    }
+                } else if (visionCardIds.includes(item.id)) {
+                    if (!importedItemInventory[item.id]) {
+                        importedItemInventory[item.id] = 0;
+                    }
+                    importedItemInventory[item.id] += parseInt(item.count);
+                    let vc = visionCards.find(vc => vc.id == item.id);
+                    if (vc.levels.length > 1) {
+                        if (!importedItemInventory.visionCardsLevels) {
+                            importedItemInventory.visionCardsLevels = {};
                         }
-
-                    } else {
-                        Modal.showMessage('unknown item id : ' + item.id);
-                        importedOwnedUnit = null;
-                        return;
+                        if (!importedItemInventory.visionCardsLevels[item.id]) {
+                            importedItemInventory.visionCardsLevels[item.id] = [];
+                        }
+                        importedItemInventory.visionCardsLevels[item.id].push(item.level);
                     }
 
+                } else {
+                    Modal.showMessage('unknown item id : ' + item.id);
+                    importedOwnedUnit = null;
+                    return;
                 }
-            });
-            $('#importSummary').text('Items to import : ' + Object.keys(importedItemInventory).length);
-        } catch(e) {
-            Modal.showError('imported file is not in json format', e);
-        }
-            
-    };
-    reader.readAsText(f);
-    
+
+            }
+        });
+        $('#importSummary').text('Items to import : ' + Object.keys(importedItemInventory).length);
+    });
 }
 
 function displayStats() {

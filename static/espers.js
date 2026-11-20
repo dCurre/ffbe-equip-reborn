@@ -1081,29 +1081,10 @@ function importEspers() {
 let importedEspers = null;
 
 function treatImportFile(evt) {
-    var f = evt.target.files[0]; // FileList object
-
-    var reader = new FileReader();
-
-    reader.onload = function(){
-        try {
-            let temporaryResult = JSON.parse(reader.result);
-            var errors = importValidator.validate('espers', temporaryResult);
-
-            // validation was successful
-            if (errors) {
-                Modal.showMessage("imported file doesn't have the correct form : " + JSON.stringify(errors));
-                return;
-            }
-            importedEspers = temporaryResult;
-            $('#importSummary').text('Espers to import : ' + importedEspers.length);
-        } catch(e) {
-            Modal.showError('imported file is not in json format', e);
-        }
-
-    };
-    reader.readAsText(f);
-
+    readJsonFile(evt, importValidator, 'espers', function(temporaryResult) {
+        importedEspers = temporaryResult;
+        $('#importSummary').text('Espers to import : ' + importedEspers.length);
+    });
 }
 
 function setEsperRarity(rarity) {
