@@ -31,14 +31,6 @@ Pages): anything that still calls the Node server is broken online.
 - [ ] **Outdated server dependencies** (`npm audit`: ~50 vulnerabilities, deprecated `request`): they
   only run locally (server and data-extraction tools), never on the public site. Most will disappear
   when the server is retired: run the audit again after that and update what remains.
-- [ ] **Espers page: the board sometimes renders broken** (connections between hexagons wrong; not
-  every time, also seen with the cleanup of unused scripts reverted, so probably an old bug). The
-  line positions are measured at draw time (`getCenterX` / `getCenterY` in `static/espers.js`):
-  suspect a layout not settled yet (images/fonts/CSS). Check if it also happens on the live site.
-- [ ] **Unit Search startup race**: in `static/unitSearch.js`, `inventoryLoaded()` → `update()` →
-  `readFilterValues()` throws "skillFilter is undefined" when the Drive load finishes before the filter
-  state is applied (the code that assigns `skillFilter` is around line 1495). The same race in
-  `static/builder.js` is fixed (`espers` defaults to `[]`); look for it in the other pages too.
 - [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (35 tests, ~2 s): formula parsing, stats and
   damage with hand-computed values (`test.stats.js`, `test.damage.js`) and a golden master of the
   calculations on the real GL data (`test.golden.js`: all 1,653 units; `npm run test:golden:update`
