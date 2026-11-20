@@ -118,7 +118,7 @@ function showSearch() {
 
     // filter, sort and display the results
     var textToSearch = $("#searchBox").val();
-    displayItems(sort(search(textToSearch)), inEquipment || inSellableItems || inEnhancementCandidates);
+    displayItems(sortInventoryEntries(search(textToSearch)), inEquipment || inSellableItems || inEnhancementCandidates);
     if (textToSearch) {
         $("#sortType").text("");
     }
@@ -1058,7 +1058,7 @@ var sortOrderByType = {
     "accessory": ["def","spr","atk","mag","hp","mp", "sortId"],
     "materia": []
 }
-function sort(itemEntries) {
+function sortInventoryEntries(itemEntries) {
     return itemEntries.sort(function (itemEntry1, itemEntry2){
         let item1 = itemEntry1.item;
         let item2 = itemEntry2.item;
@@ -1254,7 +1254,7 @@ function toggleItemEnhancement(enhancement) {
 }
 
 
-function prepareSearch(data) {
+function prepareInventorySearch(data) {
     for (var index in data) {
         var item = data[index];
         item.searchString = item.name;
@@ -1339,7 +1339,7 @@ function prepareLastItemReleases() {
 
 function exportAsCsv() {
     var csv = "Item Id;Item Name;Item type;Number Owned;TMR of;Access;Enhancement 1;Enhancement 2;Enhancement 3\n";
-    var sortedItems = sort(equipments).concat(sort(materia));
+    var sortedItems = sortInventoryEntries(equipments).concat(sortInventoryEntries(materia));
     for (var index = 0, len = sortedItems.length; index < len; index++) {
         var item = sortedItems[index];
         if (itemInventory[item.id]) {
@@ -1693,7 +1693,7 @@ function startPage() {
             units = unitResult;
             getStaticData("visionCards", false, function(visionCardsResult) {
                 visionCards = visionCardsResult;
-                prepareSearch(data);
+                prepareInventorySearch(data);
                 if (itemInventory) {
                     prepareData();
                 }

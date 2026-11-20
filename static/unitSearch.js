@@ -1460,16 +1460,13 @@ function afterDisplay() {
 
 }
 
-// Unselect all values for a filter of the given type. if runUpdate = true, then call update() function
-function unselectAll(type, runUpdate) {
-    runUpdate = runUpdate || true;
+// Unselect all values for a filter of the given type, then call update()
+function unselectAll(type) {
     $('.active input[name='+ type +']').each(function(index, checkbox) {
         $(checkbox).prop('checked', false);
         $(checkbox).parent().removeClass('active');
     });
-    if (runUpdate) {
-        update();
-    }
+    update();
 };
 
 

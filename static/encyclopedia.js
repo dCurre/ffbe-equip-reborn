@@ -352,16 +352,13 @@ var displayUnitRarity = function(unit) {
     }
 };
 
-// Unselect all values for a filter of the given type. if runUpdate = true, then call update() function
-function unselectAll(type, runUpdate) {
-    runUpdate = runUpdate || true;
+// Unselect all values for a filter of the given type, then call update()
+function unselectAll(type) {
     $('.active input[name='+ type +']').each(function(index, checkbox) {
         $(checkbox).prop('checked', false);
         $(checkbox).parent().removeClass('active');
     });
-    if (runUpdate) {
-        update();
-    }
+    update();
 };
 
 // Called when the page is loaded. Read the url hash, extract filters from that and populate them
@@ -466,7 +463,7 @@ function populateUnitSelect() {
                    $("#baseStat_" + stat).val(selectedUnitData.stats.maxStats[stat] + selectedUnitData.stats.pots[stat]);
                });
                $(".unit-image").html("<img src=\"img/units/unit_ills_" + selectedUnitData.id + ".png\"/>");
-               unselectAll("types", false);
+               unselectAll("types");
            } else {
                selectedUnitId = 0;
                $(baseStats).each(function (index, stat) {
