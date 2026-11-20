@@ -1,5 +1,5 @@
 var fs = require('fs');
-var request = require('request');
+import request from './request.js';
 var PNG = require('pngjs').PNG;
 
 var stats = ["HP","MP","ATK","DEF","MAG","SPR"];

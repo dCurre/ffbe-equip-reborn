@@ -1,5 +1,5 @@
 import fs from 'fs'
-import request from 'request'
+import request from '../request.js';
 import * as commonParse from '../commonParseUnit.js'
 import unorm from 'unorm';
 

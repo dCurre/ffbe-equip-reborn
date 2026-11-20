@@ -1437,9 +1437,6 @@ function onUnitChange() {
             }
             displayUnitRarity(selectedUnitData);
             displayUnitEnhancements();
-            if (window !== window.parent) {
-                window.parent.postMessage(JSON.stringify({'type':'unitSelected', 'value':''}), '*');
-            }
         }
         resolve();
     });
@@ -4583,12 +4580,6 @@ function startPage() {
         });
     });
 
-    registerWaitingCallback(["data", "unitsWithPassives", "defaultBuilderEspers", "loginStatus"], () => {
-        if (window !== window.parent) {
-            window.parent.postMessage(JSON.stringify({'type':'ready'}), '*');
-        }
-    });
-
     getStaticData("data", true, function(result) {
         data = result;
         getStaticData("visionCards", false, function(cards) {
@@ -4761,10 +4752,6 @@ function startPage() {
     $("#ailmentImunities input").change($.debounce(300,onGoalChange));
     $("#defaultVisionCardLevel").change(() => dataStorage.defaultVisionCardLevel = $("#defaultVisionCardLevel").val());
     dataStorage.defaultVisionCardLevel = $("#defaultVisionCardLevel").val();
-
-    if (window !== window.parent) {
-        window.addEventListener("message", handleExternalControl);
-    }
 }
 
 function initWorkerNumber() {
@@ -4973,9 +4960,6 @@ function initWorkers() {
                                     updateBuildButtonDisplay();
                                     $("body").removeClass("building");
                                 }
-                                if (window !== window.parent) {
-                                    parent.postMessage(JSON.stringify({'type':'buildFinished', 'value':getStateHash(false)}), '*');
-                                }
                             }
 
                         }
@@ -5144,75 +5128,3 @@ validator.addSchema('shortLink', {
 		},
 	]
 });
-
-let handleExternalControl = function(message) {
-    let data = JSON.parse(message.data);
-    switch(data.type) {
-        case 'selectUnit':
-            selectUnit(data.value);
-            break;
-        case 'pinItem':
-            fixItem(data.value);
-            parent.postMessage(JSON.stringify({'type':'itemPinned' + data.requestId, 'value':''}), '*');
-            break;
-        case 'checkOption':
-            checkbox = $('#' + data.value);
-            if (!checkbox.prop('checked')) {
-                checkbox.prop('checked', true);
-            }
-            parent.postMessage(JSON.stringify({'type':'optionChecked' + data.requestId, 'value':''}), '*');
-            break;
-        case 'uncheckOption':
-            checkbox = $('#' + data.value);
-            if (checkbox.prop('checked')) {
-                checkbox.prop('checked', false);
-            }
-            parent.postMessage(JSON.stringify({'type':'optionUnchecked' + data.requestId, 'value':''}), '*');
-            break;
-        case 'setBuff':
-            $('.stat.' + data.value.stat + ' .buff input').val(data.value.value);
-            onBuffChange(data.value.stat);
-            parent.postMessage(JSON.stringify({'type':'buffSet' + data.requestId, 'value':''}), '*');
-            break;
-        case 'setPot':
-            $('.stat.' + data.value.stat + ' .pots input').val(data.value.value);
-            onPotsChange(data.value.stat);
-            parent.postMessage(JSON.stringify({'type':'potSet' + data.requestId, 'value':''}), '*');
-            break;
-        case 'setMonsterStats':
-            $('#monsterStats .atk .stat').val(data.value.baseAtk);
-            $('#monsterStats .mag .stat').val(data.value.basemMag);
-            $('#monsterStats .def .stat').val(data.value.baseDef);
-            $('#monsterStats .spr .stat').val(data.value.baseSpr);
-            $('#monsterStats .atk .break').val(data.value.atkBreak);
-            $('#monsterStats .mag .break').val(data.value.magBreak);
-            $('#monsterStats .def .break').val(data.value.defBreak);
-            $('#monsterStats .spr .break').val(data.value.sprBreak);
-            $('#monsterStats .atk .buff').val(data.value.atkBuff);
-            $('#monsterStats .mag .buff').val(data.value.magBuff);
-            $('#monsterStats .def .buff').val(data.value.defBuff);
-            $('#monsterStats .spr .buff').val(data.value.sprBuff);
-            parent.postMessage(JSON.stringify({'type':'monsterStatsSet', 'value':''}), '*');
-            break;
-        case 'setMonsterElementalResist':
-            $('.panel.monster #elementalResists .element.' + data.value.element + ' .elementalResist').val(data.value.value);
-            parent.postMessage(JSON.stringify({'type':'monsterElementalResistSet' + data.requestId, 'value':''}), '*');
-            break;
-        case 'setMonsterRaces':
-            unselectAll("races");
-            select("races", data.value);
-            parent.postMessage(JSON.stringify({'type':'monsterRacesSet', 'value':''}), '*');
-            break;
-        case 'setDefaultEnhancements':
-            setDefaultEnhancements(data.value);
-            parent.postMessage(JSON.stringify({'type':'defaultEnhancementsSet', 'value':''}), '*');
-            break;
-        case 'selectGoal':
-            chooseCustomFormula(data.value);
-            parent.postMessage(JSON.stringify({'type':'goalChanged' + data.requestId, 'value':''}), '*');
-            break;
-        case 'build':
-            build();
-            break;
-    }
-}
