@@ -251,6 +251,9 @@ function findCurrentScale()
 function showBoard(esperName, star) {
     var nodes = $("#grid li .hexagon");
     nodes.removeClass("hp mp atk def mag spr ability resist killer selected");
+    // Clear what the previous esper left: the outer ring (3 stars only) goes back to hidden
+    nodes.filter(".outerRing").addClass("notUsed");
+    nodes.empty();
     $(".line").remove();
     
     $("#grid,#gridTrimmer").removeClass("star1 star2 star3");
@@ -405,6 +408,13 @@ function getCenterY(node, scale=1) {
 function showNode(node, parentNodeHtml, star, scale=1) {
     var posString = getEsperBoardPositionString(node.position[0], node.position[1]);
     var nodeHtml = $("#grid li." + posString + " .hexagon");
+    if (distance(node.position[0], node.position[1]) > star + 2) {
+        // Outside the board of this rarity (the outer ring exists only at 3 stars): keep it hidden
+        for (var c = 0; c < node.children.length; c++) {
+            showNode(node.children[c], nodeHtml, star, scale);
+        }
+        return;
+    }
     nodeHtml.removeClass("notUsed");
     for (var statIndex = 0; statIndex < baseStats.length; statIndex++) {
         if (node[baseStats[statIndex]]) {
@@ -538,7 +548,16 @@ function prepareSave() {
 function selectNode(x,y) {
     var posString = getEsperBoardPositionString(x, y);
     var path = findPathTo(x,y,esperBoards[currentEsper]);
-    if (ownedEspers[currentEsper].selectedSkills.includes(posString)) {
+    if (!path && !(x == 0 && y == 0)) {
+        // No node here: nothing changes, so don't mark the inventory as modified
+        return;
+    }
+    if (x == 0 && y == 0) {
+        // The center icon resets the whole board
+        esperBoards[currentEsper].nodes.forEach(function (rootChild) {
+            unselectNodeAndChildren(ownedEspers[currentEsper], rootChild);
+        });
+    } else if (ownedEspers[currentEsper].selectedSkills.includes(posString)) {
         var node = path[path.length - 1];
         unselectNodeAndChildren(ownedEspers[currentEsper], node);
     } else {
@@ -917,7 +936,7 @@ function displayEspers() {
         boardHtml += '<li class="' + posString + '"><div class="hexagon ';
         var dist = distance(x, y);
         if (dist > 4) {
-            boardHtml += " notUsed ";
+            boardHtml += " notUsed " + (dist == 5 ? " outerRing " : "");
         } else if (dist > 3) {
             boardHtml += " star3 ";
         } else if (dist > 2) {
