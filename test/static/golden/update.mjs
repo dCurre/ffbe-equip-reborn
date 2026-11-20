@@ -2,6 +2,7 @@
 // Run it only when a change of the calculation results is intended, and review the diff.
 import fs from 'node:fs';
 import { computeGolden, SAMPLE_EVERY } from './golden.mjs';
+import { computeOptimizerGolden } from './optimizer.mjs';
 
 const { result } = computeGolden();
 const ids = Object.keys(result);
@@ -11,3 +12,6 @@ const sample = Object.fromEntries(ids.filter((_, index) => index % SAMPLE_EVERY 
 
 fs.writeFileSync(new URL('./calc.json', import.meta.url), JSON.stringify({ units, sample }, null, 1) + '\n');
 console.log(`${ids.length} units, ${Object.keys(sample).length} in the readable sample`);
+
+fs.writeFileSync(new URL('./optimizer.json', import.meta.url), JSON.stringify(computeOptimizerGolden(), null, 1) + '\n');
+console.log('optimizer golden written');

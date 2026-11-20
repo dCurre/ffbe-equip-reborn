@@ -1,5 +1,5 @@
 class ItemPool {
-    constructor(maxDepth, involvedStats, enemyStats, desirableElements, desirableItemIds, skillIds, includeSingleWielding, includeDualWielding, forceDoublehand = false, formula) {
+    constructor(maxDepth, involvedStats, enemyStats, desirableElements, desirableItemIds, skillIds, includeSingleWielding, includeDualWielding, formula) {
         this.maxDepth = maxDepth;
         this.involvedStats = involvedStats;
         this.enemyStats = enemyStats;
@@ -7,7 +7,6 @@ class ItemPool {
         this.desirableItemIds = desirableItemIds;
         this.includeSingleWielding = includeSingleWielding;
         this.includeDualWielding = includeDualWielding;
-        this.forceDoublehand = forceDoublehand;
         this.formula = formula;
         this.keptItems = [];
         this.groupByIds = {};
@@ -21,7 +20,7 @@ class ItemPool {
     }
 
     clone() {
-        let clone = new ItemPool(this.maxDepth, this.involvedStats, this.enemyStats, this.desirableElements, this.desirableItemIds, this.skillIds, this.includeSingleWielding, this.includeDualWielding, this.forceDoublehand, this.formula);
+        let clone = new ItemPool(this.maxDepth, this.involvedStats, this.enemyStats, this.desirableElements, this.desirableItemIds, this.skillIds, this.includeSingleWielding, this.includeDualWielding, this.formula);
         clone.addItems(this.getEntries());
         return clone;
     }
@@ -42,16 +41,6 @@ class ItemPool {
         var lesserGroups = [];
         var betterItemCount = 0;
 
-        //if the item is a weapon and does not takes 2 hands, don't consider it if we're not allowing doublehanding
-        if (weaponList.includes(entry.item.type) && this.forceDoublehand) {
-            //check to see if entry.special is defined
-            if (!entry.item.special) {
-                return;
-            } else if (!entry.item.special.includes("twoHanded")) {
-                return;
-            }
-        }
-
         // Set the priority based on the rarity of the item
         if (entry.owned) {
             if (entry.item.stmrUnit) {
@@ -66,7 +55,7 @@ class ItemPool {
         }
 
         for (var i = this.keptItems.length; i--;) {
-            var comparison = ItemPool.getComparison(this.keptItems[i].equivalents[0], entry, this.involvedStats, this.enemyStats, this.desirableElements, this.desirableItemIds, this.skillIds, this.includeSingleWielding, this.includeDualWielding, this.forceDoublehand, this.formula);
+            var comparison = ItemPool.getComparison(this.keptItems[i].equivalents[0], entry, this.involvedStats, this.enemyStats, this.desirableElements, this.desirableItemIds, this.skillIds, this.includeSingleWielding, this.includeDualWielding, undefined, this.formula);
             switch (comparison) {
                 case "strictlyWorse":
                     betterItemCount += this.keptItems[i].available;

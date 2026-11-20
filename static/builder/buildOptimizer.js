@@ -215,7 +215,6 @@ class BuildOptimizer {
         }
         var includeSingleWielding = !typeCombination[0] || !typeCombination[1];
         var includeDualWielding = typeCombination[0] && typeCombination[1] && weaponList.includes(typeCombination[0]) && weaponList.includes(typeCombination[1]);
-        var forceDoublehand = false;
         var fixedString = "";
         for (var i = 0; i < fixedItems.lenght; i++) {
             if (fixedItems[i]) {
@@ -223,7 +222,7 @@ class BuildOptimizer {
             }
         }
         var skillsIds = getSkillIds(this._unitBuild.formula) || [];
-        var itemPool = new ItemPool(numberNeeded, this._unitBuild.involvedStats, this.enemyStats, this.desirableElements, this.desirableItemIds, skillsIds, includeSingleWielding, includeDualWielding, this.forceDoublehand, this._unitBuild.formula);
+        var itemPool = new ItemPool(numberNeeded, this._unitBuild.involvedStats, this.enemyStats, this.desirableElements, this.desirableItemIds, skillsIds, includeSingleWielding, includeDualWielding, this._unitBuild.formula);
         for (var i = tempResult.length; i--;) {
             var entry = tempResult[i];
             if (weaponList.includes(type) && (typeCombination[1] || this._unitBuild.fixedItems[0] || this._unitBuild.fixedItems[1]) && isTwoHanded(entry.item) ) {
