@@ -50,9 +50,7 @@ Search tips: prefer `git grep` (fast, tracked files only). Exclude minified libr
   them; Unit Search loads the full `unitsWithSkill.json`.
 - **Game data is frozen** (the game closed in 2024): `static/GL`, `static/JP`. Don't hand-edit the big
   JSON files unless the task is explicitly about data.
-- **Node**: local development runs on **Node 15** (the user keeps it for other projects); the deploy
-  uses the version in `.node-version` (24). Code that runs locally (`server.js`, `config.js`,
-  `tools/*.js`) must stay compatible with Node 15 — no newer Node APIs or syntax there.
+- **Node**: local development and the deploy both use Node 24 (`.node-version`).
 
 ## The traps (works locally ≠ works online)
 
