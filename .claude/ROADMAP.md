@@ -10,30 +10,17 @@ Pages): anything that still calls the Node server is broken online.
 
 ## Features broken online (need a serverless replacement)
 
-- [ ] **Google login: publish the app.** Login + Drive now run in the browser (`static/googleDrive.js`,
-  Google Identity Services token model, scope `drive.appdata`, Google Cloud project of dCurre). The
-  OAuth consent screen is in **Testing** mode: only the listed test users can log in. When the flow is
-  verified, publish it ("In production") so anyone can log in (`drive.appdata` is a non-sensitive scope:
-  no security audit needed). Publishing requires the Branding page: home page
-  `https://dcurre.github.io/ffbe-equip-reborn/`, privacy policy
-  `https://dcurre.github.io/ffbe-equip-reborn/privacy.html` (`static/privacy.html`), authorized domain
-  `dcurre.github.io`; no logo (it would trigger brand verification). Optional: a separate OAuth client for development (origins
-  `localhost:3000/4000` only) so the production client only authorizes `https://dcurre.github.io`.
-  Known limits: the token lasts ~1h (then the user logs in again); data saved by FFBE Equip Next lives
-  in the old project's app folder and can't be read by the new client (users start fresh).
-- [ ] **Export to imgur.** Uses `window.clientConfig.imgurClientId` from the server. Drop it, or call
-  imgur from the browser with an own client ID.
 - [ ] **`/clientConfig` script tag** in `static/builder.html` and `static/units.html` returns 404 on
-  GitHub Pages. Remove it (or replace with a static config file) once the features above no longer
-  need it.
-- [ ] **Process data correction issues**: the Contribute page now opens GitHub issues (label
-  `documentation`, title prefix `[Data]`, form `.github/ISSUE_TEMPLATE/data_correction.yml`) with the
-  corrections as JSON. They must be applied to `static/<server>/data.json` by hand or with a script (the
-  old flow used `tools/GL/applyCorrections.js` / `tools/JP/applyCorrection.js` with a `corrections.json`).
-  Open questions on the Contribute page: the item correction tool may not be worth keeping (no GL
-  item is `unknown`; JP data is frozen) — decide whether to keep it or leave only bugs/suggestions.
-  The results after a search are slow to appear (likely `displayItems` rendering every match at once;
-  not measured yet); the "add" action (pencil) is not self-explanatory ("Add to corrections").
+  GitHub Pages. Remove it (or replace with a static config file) once imgur export and shared links
+  (both in the "Last" section) no longer need it.
+- [ ] **Review the Contribute page** (to be redone, so no script to apply corrections is needed). It
+  now opens GitHub issues (label `documentation`, title prefix `[Data]`, form
+  `.github/ISSUE_TEMPLATE/data_correction.yml`) with the corrections as JSON. The item correction tool
+  may not be worth keeping (no GL item is `unknown`; JP data is frozen): decide whether to keep it or
+  leave only bugs/suggestions. The results after a search are slow to appear (likely `displayItems`
+  rendering every match at once; not measured yet); the "add" action (pencil) is not self-explanatory
+  ("Add to corrections"). Once decided, delete `tools/GL/applyCorrections.js` and
+  `tools/JP/applyCorrection.js` (they depend on the dead `corrections.json` server flow).
 - [ ] **Retire the server** once the items above are done: `server.js`, `server/`, `config.js`,
   `.config.json` handling and the related npm dependencies — or keep a minimal static server for local
   development only. The server login/Drive routes (`server/routes/oauth.js`, `drive.js`,
@@ -44,40 +31,70 @@ Pages): anything that still calls the Node server is broken online.
 - [ ] **Outdated server dependencies** (`npm audit`: ~50 vulnerabilities, deprecated `request`): they
   only run locally (server and data-extraction tools), never on the public site. Most will disappear
   when the server is retired: run the audit again after that and update what remains.
-- [ ] **Local Node version**: local development currently runs on Node 15 (end of life since 2021,
-  kept for now because other projects on the same machine need it); the deploy uses Node 24 from
-  `.node-version`. Upgrade locally when convenient, then raise `engines` in `package.json` (now `>=15`).
-- [ ] **Tests** (`npm test`, mocha in `test/`) are all broken: they use CommonJS `require` in an ES
-  module project. Do this BEFORE the code quality / build algorithm reviews: rewrite
-  `test/static/test.formula.js` (damage/stat formulas — the safety net for refactoring) with a current
-  runner (e.g. `node --test`), and delete the server tests (`test/server/`) when the server is retired;
-  then drop `mocha`, `nyc`, `supertest`, `nock`, `mock-require`, `webpack-node-externals` and
-  `test/webpack.config.js`.
+- [ ] **Espers page: the board sometimes renders broken** (connections between hexagons wrong; not
+  every time, also seen with the cleanup of unused scripts reverted, so probably an old bug). The
+  line positions are measured at draw time (`getCenterX` / `getCenterY` in `static/espers.js`):
+  suspect a layout not settled yet (images/fonts/CSS). Check if it also happens on the live site.
+- [ ] **Builder startup race**: `updateEspers()` in `static/builder.js` reads the global `espers`, which
+  is filled asynchronously by `getStaticData("defaultBuilderEspers")` in `startPage`; when the
+  `/units.json` request returns first, `onEquipmentsChange()` → `updateEspers()` throws
+  "esperSource is undefined" (intermittent, unrelated to the console.log cleanup). Fix: wait for both
+  loads before calling it, or default `espers` to `[]`.
+  Same pattern in `static/unitSearch.js`: `inventoryLoaded()` → `update()` → `readFilterValues()` throws
+  "skillFilter is undefined" when the Drive load finishes before the filter state is applied (the code that
+  assigns `skillFilter` is around line 1495). Look for the same race in the other pages.
+- [ ] **Espers import with an unknown id breaks the page**: `importEsper` in `static/espers.js` does not
+  check `importIdConversion[esperData.id]`; with an id that is not in the table it throws after emptying
+  `ownedEspers` (leaving a bogus `"undefined"` entry that a later auto-save would write to Drive).
+  Validate the ids before touching `ownedEspers`.
+- [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (35 tests, ~2 s): formula parsing, stats and
+  damage with hand-computed values (`test.stats.js`, `test.damage.js`) and a golden master of the
+  calculations on the real GL data (`test.golden.js`: all 1,653 units; `npm run test:golden:update`
+  regenerates `test/static/golden/calc.json` when a change is intended). `npm run test:coverage` prints
+  the coverage of `formula.js` (46.9%) and `builder/common.js` (45.3%). Still uncovered:
+  `calculateMonsterDamage`, `areConditionOK`, `findBestItemVersion`, `combineTwoItems`,
+  `applyEnhancements`, `getEsperStatBonus`, `chainMastery`, `formulaFromEffect`, the formula conditions,
+  and the optimizer (`buildOptimizer.js`, `itemPool.js`, `typeCombinationGenerator.js`: a golden master
+  needs the data prepared by `builder.js`, which is bound to the DOM). Add these before reviewing the
+  build algorithm or splitting `builder.js`. Cleanup left: delete the server tests (`test/server/`),
+  `test/setup.js` and `test/webpack.config.js` when the server is retired, then drop `mocha`, `nyc`,
+  `supertest`, `nock`, `mock-require`, `webpack-node-externals` (and the `nyc` block) from `package.json`.
 
 ## Code quality and build algorithm
 
-- [ ] **Review code quality**: evaluate splitting the UI into reusable components and removing
-  duplicated code. The frontend is plain jQuery with very large files (`static/builder.js` ~5,200
-  lines, `static/common.js` ~2,900, `inventory.js` / `unitSearch.js` / `units.js` ~1,700 each) and
-  repeated blocks across pages (same header/menu/footer markup in every HTML page, similar
-  load/save logic in `units.js` / `inventory.js` / `espers.js`). Start with an analysis of the
-  duplication and a proposal (incremental refactor vs a component framework) before changing code.
-  Also check for libraries loaded by the pages but no longer used (bootstrap-toggle was loaded by
-  `units.html` although unused since 2019).
-  Check global functions redefined with the same name as in `static/common.js` (they silently replace
-  it on that page): `unselectAll` (encyclopedia.js, unitSearch.js), `prepareSearch` and `sort`
-  (inventory.js), `isTwoHanded` (builder/common.js). `filterItems` in contribute.js caused an infinite
-  recursion in the search and was renamed; verify each of the others is an intended override.
+- [ ] **Review code quality** (what is left). Done: unused scripts/libraries and debug `console.log`
+  removed, globals shadowing `common.js` renamed (`inventory.js`) or simplified (`unselectAll`),
+  header/menu/footer shared in `static/layout.js`, JSON import shared (`readJsonFile` in `common.js`).
+  Left:
+  - Very large files: `static/builder.js` ~5,200 lines (161 global functions), `common.js` ~2,750,
+    `builder/common.js` ~2,200, `inventory.js` / `unitSearch.js` / `units.js` ~1,700 each. The scripts are
+    classic (no ES modules) and the HTML uses `onclick="fn()"`, so functions must stay global unless the
+    handlers are migrated. Split only after the tests above exist.
+  - `externalControl.js` still logs every call (13 `console.log`): decide if it is wanted.
+  - `isTwoHanded` is defined in both `common.js` and `builder/common.js` on purpose (the optimizer Web
+    Worker loads only `builder/common.js`); `unselectAll` in `common.js` has another signature than the
+    ones in `unitSearch.js` / `encyclopedia.js`.
+  - Idea, not decided: migrate to Angular in a separate branch, page by page, once the base is clean. It
+    would not make the site faster by itself: measure where it is slow first (builder, units, inventory)
+    and fix the hot spots. It needs Node >= 20 (local is 24) and a GitHub Pages setup (`--base-href`,
+    hash routes or a `404.html` fallback, CSP meta tag).
 - [ ] **Review the build algorithm** (the equipment optimizer): correctness, performance and
   readability. Main files: `static/builder/buildOptimizer.js`, `static/builder/typeCombinationGenerator.js`,
   `static/builder/itemPool.js`, `static/builder/optimizerWebWorker.js` (runs in Web Workers),
   `static/formula.js` (damage/stat formulas); `static/algorithm.html` documents the approach.
-  Remove leftover debug `console.log` calls (e.g. `buildOptimizer.js:47` logs every enchantment item;
-  `espers.js` logs "entering/exiting notLoaded function", `displayEspers` and every skill name).
+  Found while writing the tests (`static/builder/common.js`): the final `Math.floor` in
+  `calculateStatValue` is assigned to `calculatedValue`, which is never used afterwards, so the total of
+  the non-ATK stats is not rounded; `var chainMult; chainMult += ...` in `innerCalculateBuildValueWithFormula`
+  is `NaN` and never used (dead code).
+  The golden master (`npm test`, test.golden.js) also found 144 unit skills (432 values over 3 scenarios)
+  whose damage is `NaN`: mostly `damage` effects with mechanism `none` and sums of such effects, plus a few
+  physical ones. Check if they are skills the builder never offers as goal or a real defect.
   Reference timing on a dev PC: `optimize: ~3.2 s` for one unit.
 
-## Last: shared links (decided to do after everything else)
+## Last: imgur and shared links (decided to do after everything else)
 
+- [ ] **Export to imgur.** Uses `window.clientConfig.imgurClientId` from the server. Drop it, or call
+  imgur from the browser with an own client ID.
 - [ ] **Shared build links.** The builder posts to `/partyBuild` (server → Firebase Storage) and reads
   links back from Firebase Storage via `window.clientConfig.firebaseBucketUri`. Firebase Storage now
   requires the paid Blaze plan, so it can't stay. Plan: encode the build in the URL itself, compressed
