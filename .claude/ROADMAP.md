@@ -8,11 +8,6 @@ Live site: https://dcurre.github.io/ffbe-equip-reborn/ — deployed by GitHub Ac
 `master` (`.github/workflows/deploy-pages.yml`). The site is **static only** (no server on GitHub
 Pages): anything that still calls the Node server is broken online.
 
-## Features broken online (need a serverless replacement)
-
-- [ ] **`/clientConfig` script tag** in `static/builder.html` and `static/units.html` returns 404 (the server
-  is gone). Remove it once imgur export and shared links ("Last" section) no longer need it.
-
 ## Bugs / technical debt
 
 - [ ] **Outdated dependencies**: `npm audit` reports 1 high issue in `image-size` (DoS in the ICNS parser),
@@ -36,7 +31,7 @@ Pages): anything that still calls the Node server is broken online.
 - [ ] **Site rework (to design, next topic).** Nothing decided yet. To settle first: the goal (speed, look,
   maintainability), the scope (all pages or one first: builder, units, inventory) and the technology (clean up
   the classic scripts, or a framework such as Angular: see the idea below). Measure where the site is slow
-  before choosing. Constraints: static site on GitHub Pages, no backend; imgur and shared links stay last. The
+  before choosing. Constraints: static site on GitHub Pages, no backend (only the link store Worker in `worker/`). The
   tests (`npm test`, golden master included) are the safety net: extend them before splitting `builder.js`.
 - [ ] **Review code quality** (what is left). Done: unused scripts/libraries and debug `console.log`
   removed, globals shadowing `common.js` renamed (`inventory.js`) or simplified (`unselectAll`),
@@ -72,26 +67,3 @@ Pages): anything that still calls the Node server is broken online.
   the `Math.floor` result was discarded). The change is deduced from the code, not compared with the game:
   verify it against an offline FFBE repo or known in-game values (golden master regenerated, up to -0.42%).
   Reference timing on a dev PC: `optimize: ~3.2 s` for one unit.
-
-## Last: imgur and shared links (decided to do after everything else)
-
-- [ ] **Export to imgur.** Uses `window.clientConfig.imgurClientId` from the server. Drop it, or call
-  imgur from the browser with an own client ID.
-- [ ] **Shared build links.** The builder posts to `/partyBuild` (server → Firebase Storage) and reads
-  links back from Firebase Storage via `window.clientConfig.firebaseBucketUri`. Firebase Storage now
-  requires the paid Blaze plan, so it can't stay. Plan: encode the build in the URL itself, compressed
-  (`CompressionStream` deflate + base64url), no backend.
-  - The builder can already READ a build from the URL (`readStateHashData` / `shortLinkFormatToData`
-    in `static/builder.js`, the 2018 `shortLink` format), but nothing creates such links anymore.
-  - Don't put the full `getStateHash()` state in the link: it repeats item names, icons, stats and the
-    whole esper object. Estimated link length (2026-11-19, real GL data, distinct units/items):
-    full state compressed ≈ 1,300 chars (1 unit), 2,700 (5), 4,400 (10) — over Discord's 2,000-char
-    message limit from ~5 units. A compact format with only ids + goal, pots, enchantments, pinned
-    flags and non-default monster settings, compressed: ≈ 270 / 500 / 770 chars. Item ids are stable
-    because the game data is frozen, so links won't break.
-  - Before implementing, verify how `loadStateHashAndBuild` rebuilds a build from ids. Old short links
-    of FFBE Equip Next (Firebase ids) can't be recovered.
-- [ ] **Public unit collection links.** Same mechanism (`PUT /:server/publicUnitCollection`, Firebase
-  Storage `UnitCollections/`, `static/units.js`). Migrate together with shared builds. Currently disabled
-  by an early `return` at the top of `savePublicLink()` in `static/units.js` (it was called 10 s after
-  every change and always failed with a 404); remove it when migrating.
