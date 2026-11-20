@@ -104,7 +104,7 @@ function showAll() {
 
             // First cell: image, name, points
             html += "<td class='esperDesc index'>";
-            html += "<i class='img img-esper-" + escapedName +"'></i>";
+            html += "<i class='img img-esper-" + escapedName() +"'></i>";
             html += "<div class='name'>" + esper.name + " <span class='rarity'>" + Array(esper.rarity+1).join("★") +"</span></div>";
             html += "<div class='sp'>" + sp.used + " / "+ sp.available +"</div>";
             html += "<span class='hidden sortValue'>" + index + "</span>";
