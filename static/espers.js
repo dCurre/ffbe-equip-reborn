@@ -1055,13 +1055,16 @@ function importEspers() {
         buttons: [{
             text: "Import",
             onClick: function() {
-                if (importedEspers) {
+                const knownEspers = importedEspers && importedEspers.filter(esperData => importIdConversion[esperData.id]);
+                if (importedEspers && knownEspers.length == 0) {
+                    Modal.show("No known esper found in the file");
+                } else if (importedEspers) {
                     $('.glassPanel').removeClass("hidden");
 
                     setTimeout(function() {
                         ownedEspers = {};
                         $("#tabs li.esper").addClass("notOwned");
-                        importedEspers.forEach(esperData => {
+                        knownEspers.forEach(esperData => {
                             importEsper(importIdConversion[esperData.id], parseInt(esperData.rarity), parseInt(esperData.level), esperData.board);
                         });
                         showAll();
