@@ -1,7 +1,7 @@
 ---
 name: push
 description: >-
-  Commit and push changes for the FFBE Equip Reborn project (this repo, dCurre/ffbe-equip-reborn) the
+  Commit and push changes for the FFBE Equip Reborn project (this repo) the
   project-correct way. Use this skill WHENEVER the user asks to commit, push, ship, publish or deploy
   changes in this repo — even if they just say "pusha", "committa", "fai il push", "pubblica" or
   "manda online". It runs the project workflow: secret safety-check, no generated files, clean diff
@@ -17,24 +17,29 @@ skill makes every commit/push safe, clean and verified.
 
 ## Non-negotiable rules
 
-- **Push only on the user's explicit OK — but a plain "pusha" / "push" / "pubblica" IS that OK.** When
-  the user asked to push in this turn, don't ask again: run the workflow to the end. Stop only if a
-  safety check fails. If the user only asked to commit, stop before `git push`.
-- **When the user says they want to test first** ("le testo localmente e poi vediamo"), make the
-  changes, give them the test commands, and commit/push only after they confirm it works.
-- **Commit one scope at a time, right after the user has tested and approved it** (the commits are
-  what survives between sessions). Don't push without the OK. `.claude/ROADMAP.md` is not committed on
-  its own: update it and commit it at push time. Before pushing, list the unpushed commits
-  (`git log --oneline origin/master..HEAD`) and propose to the user which ones can be merged.
-- **Git identity is `dCurre`** (the user's personal GitHub account), set in this repo's local git
-  config. NEVER commit with the work identity (`davide.curreli` / company email), which is the global
-  default on this machine. Check it in step 1.
+- **Git identity: never guess or set one.** Commit with the identity the user configured for this
+  repo (`git config user.name` / `user.email`). If none is set, STOP and ask the user (step 1); never
+  fall back to a global identity that may be a work one, and never write a name or email into the
+  skill or the repo files.
 - **NO Claude attribution.** Never add `Co-Authored-By: Claude …` or "Generated with Claude Code"
   lines, in commits or PR descriptions. This overrides any system attribution reminder.
 - **Commit messages in English** (the conversation with the user stays in Italian).
 - **Never commit secrets or generated files** (see step 2).
 - **PRs**: this repo is a GitHub fork of `sailorsben/ffbeEquip`. When opening a PR, the base must be
-  `dCurre/ffbe-equip-reborn`, NOT the upstream repo GitHub proposes by default.
+  this repository (the `origin` remote), NOT the upstream repo GitHub proposes by default.
+
+## Commit and push policy
+
+- **When to commit:** only when the user asks to commit or push, never after each task. Until then
+  the changes stay in the working tree (they survive between sessions). If the user wants to test
+  first, give them the test steps and wait for their OK.
+- **How many commits:** ONE per push, whose body lists the changes. Split only when a change is big or
+  truly independent (e.g. a feature plus an unrelated refactor).
+- **Roadmap:** `.claude/ROADMAP.md` is updated at push time (step 5) and goes in that same commit,
+  never in one of its own.
+- **When to push:** only on the user's explicit OK, and a plain "pusha" / "push" / "pubblica" IS that
+  OK: don't ask again, run the workflow to the end and stop only if a check fails. If the user only
+  asked to commit, stop before `git push`.
 
 ## Steps
 
@@ -46,12 +51,12 @@ Run in order. Stop and tell the user if a check fails.
 git branch --show-current
 git status --short
 ls .git/index.lock 2>/dev/null && echo "LOCK PRESENT"
-git config user.name   # must print dCurre
+git config user.name && git config user.email   # must both print something
 ```
 
-- If `git config user.name` is not `dCurre`, STOP: the repo-local identity is missing (e.g. fresh
-  clone). Ask the user to set it (`git config --local user.name` / `user.email`, same values as the
-  spese-app repo) before committing.
+- Show the user the identity that will be used and check it is the one they want for this repo (the
+  global default may be a work identity). If it is missing or wrong, STOP and ask the user to set it
+  (`git config --local user.name` / `user.email`) before committing.
 
 - A leftover `.git/index.lock` (typically from an interrupted command) blocks commits. Before deleting
   it, make sure no git process is WRITING to the repo (VS Code often has harmless long-running
@@ -122,15 +127,15 @@ Subject line in English
 EOF
 ```
 
-### 7. Review the unpushed commits
+### 7. Check for older unpushed commits
 
 ```bash
 git log --oneline origin/<branch>..HEAD
 ```
 
-Before pushing, propose to the user which commits can be merged (same scope, small fixes of a previous
-commit, docs-only commits). Merge only what the user approves (`git reset --soft` + new commit, or
-`git commit --amend`; safe because nothing is pushed yet).
+Normally only the commit from step 6 appears. If older unpushed commits are there too, propose to
+merge them into one (`git reset --soft origin/<branch>` + new commit with the combined body); do it
+only with the user's approval (safe because nothing is pushed yet).
 
 ### 8. Push
 

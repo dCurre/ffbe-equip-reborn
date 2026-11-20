@@ -1,5 +1,0 @@
-{
-  "watch": ["server.js", "src/", "static/"],
-  "ext": "js,json",
-  "ignore": ["node_modules/"]
-}

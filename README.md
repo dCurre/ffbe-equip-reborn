@@ -38,7 +38,7 @@ repository is frozen. The site is hosted as a **static website on GitHub Pages**
 Most of the tool works: builder and optimizer, unit search, encyclopedia and espers. Log in with Google
 to save your units, inventory, espers and teams: they are stored in a hidden app folder of **your own**
 Google Drive, directly from the browser (`static/googleDrive.js`); the site only has access to that
-folder. Bug reports, suggestions and item data corrections are sent as GitHub issues from the Contribute
+folder. Bug reports and suggestions are sent as GitHub issues from the Contribute
 page. Features that relied on the original server are not available yet: shared build links, public unit
 collections and export to imgur. See [.claude/ROADMAP.md](.claude/ROADMAP.md) for the full list of open
 work.
@@ -51,15 +51,14 @@ website itself is static): both the deploy and local development use the version
 
 ```bash
 npm install
-cp .config.json.sample .config.json   # then set "secret" to a random string
 npm start
 ```
 
 Open http://localhost:3000.
 
-`npm start` first validates `.config.json` and generates the per-unit data files (see below). The first
-run takes a little longer; later runs skip the generation if the data didn't change. The `google` and
-`firebase` sections of the config can stay disabled.
+`npm start` generates the per-unit data files (see below) and serves the `static/` folder with
+[`serve`](https://www.npmjs.com/package/serve) (downloaded by `npx` the first time). The first run takes a
+little longer; later runs skip the generation if the data didn't change.
 
 ## How the site is built and deployed
 
@@ -72,8 +71,6 @@ run takes a little longer; later runs skip the generation if the data didn't cha
 - **Deploy**: every push to `master` runs the GitHub Actions workflow
   [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which generates the unit
   files, assembles the site and publishes it to GitHub Pages in a few minutes.
-- **`server.js`** is the original Node/Express server. It is only used for local development and will be
-  retired once the remaining server features are migrated to the browser.
 - **`tools/`** contains the scripts that extracted the game data from the game files.
 
 ## Contributing

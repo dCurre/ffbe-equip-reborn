@@ -10,27 +10,16 @@ Pages): anything that still calls the Node server is broken online.
 
 ## Features broken online (need a serverless replacement)
 
-- [ ] **`/clientConfig` script tag** in `static/builder.html` and `static/units.html` returns 404 on
-  GitHub Pages. Remove it (or replace with a static config file) once imgur export and shared links
-  (both in the "Last" section) no longer need it.
-- [ ] **Review the Contribute page** (to be redone, so no script to apply corrections is needed). It
-  now opens GitHub issues (label `documentation`, title prefix `[Data]`, form
-  `.github/ISSUE_TEMPLATE/data_correction.yml`) with the corrections as JSON. The item correction tool
-  may not be worth keeping (no GL item is `unknown`; JP data is frozen): decide whether to keep it or
-  leave only bugs/suggestions. The results after a search are slow to appear (likely `displayItems`
-  rendering every match at once; not measured yet); the "add" action (pencil) is not self-explanatory
-  ("Add to corrections"). Once decided, delete `tools/GL/applyCorrections.js` and
-  `tools/JP/applyCorrection.js` (they depend on the dead `corrections.json` server flow).
-- [ ] **Retire the server** once the items above are done: `server.js`, `server/`, `config.js`,
-  `.config.json` handling and the related npm dependencies — or keep a minimal static server for local
-  development only. The server login/Drive routes (`server/routes/oauth.js`, `drive.js`,
-  `server/lib/oauth.js`, `drive.js`) are no longer called by the site.
+- [ ] **`/clientConfig` script tag** in `static/builder.html` and `static/units.html` returns 404 (the server
+  is gone). Remove it once imgur export and shared links ("Last" section) no longer need it.
 
 ## Bugs / technical debt
 
-- [ ] **Outdated server dependencies** (`npm audit`: ~50 vulnerabilities, deprecated `request`): they
-  only run locally (server and data-extraction tools), never on the public site. Most will disappear
-  when the server is retired: run the audit again after that and update what remains.
+- [ ] **Outdated dependencies**: the unused server ones are still installed: run `npm uninstall express body-parser compression cors
+  helmet client-sessions es-main @hapi/boom joi uuid firebase-admin googleapis @sindresorhus/is bluebird`. The
+  data-extraction tools' ones stay (`request`, deprecated, used in ~18 files of `tools/` and `static/GL|JP`;
+  `pngjs`, `unorm`, `image-size`); they never run on the public site. Then run `npm audit` again and
+  replace `request` with the native `fetch` or delete the extraction tools (the data is frozen).
 - [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (35 tests, ~2 s): formula parsing, stats and
   damage with hand-computed values (`test.stats.js`, `test.damage.js`) and a golden master of the
   calculations on the real GL data (`test.golden.js`: all 1,653 units; `npm run test:golden:update`
@@ -40,9 +29,7 @@ Pages): anything that still calls the Node server is broken online.
   `applyEnhancements`, `getEsperStatBonus`, `chainMastery`, `formulaFromEffect`, the formula conditions,
   and the optimizer (`buildOptimizer.js`, `itemPool.js`, `typeCombinationGenerator.js`: a golden master
   needs the data prepared by `builder.js`, which is bound to the DOM). Add these before reviewing the
-  build algorithm or splitting `builder.js`. Cleanup left: delete the server tests (`test/server/`),
-  `test/setup.js` and `test/webpack.config.js` when the server is retired, then drop `mocha`, `nyc`,
-  `supertest`, `nock`, `mock-require`, `webpack-node-externals` (and the `nyc` block) from `package.json`.
+  build algorithm or splitting `builder.js`.
 
 ## Code quality and build algorithm
 

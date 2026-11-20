@@ -14,24 +14,6 @@
     margin: 0 5px 5px 0;
 }
 
-#feedbackPanel .feedbackHint {
-    margin: 5px 0 0 0;
-    opacity: 0.75;
-}
-
-#sendToServerDiv {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    padding: 5px;
-}
-
-#modifiedItems .td.access > div {
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-}
-
 .submitSuccess .details,
 .submitFailed .details {
     font-size: 0.9em;
