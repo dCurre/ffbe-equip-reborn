@@ -49,9 +49,6 @@ class VirtualScroll {
                 firstItemIndex = 0;
             } else {
                 firstItemIndex = Math.min(Math.floor((topVisible / this.totalHeight * this.items.length)), this.items.length - 1);
-                if (firstItemIndex >= this.items.length) {
-                    console.log('!!');
-                }
                 while (this.itemInfos[firstItemIndex].position < topVisible && firstItemIndex < this.items.length - 1) {
                     firstItemIndex++;
                 }

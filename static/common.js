@@ -2504,9 +2504,7 @@ function onUserDataLoadError(error) {
 }
 
 function loadUserDataFromDrive() {
-    console.log("Getting Item Inventory...");
     readUserData('itemInventory').then(function(result) {
-        console.log("Got inventory");
         itemInventory = result;
         if (!itemInventory.enchantments) {
             itemInventory.enchantments = {};
@@ -2554,7 +2552,6 @@ function loadUserDataFromDrive() {
         }
     }, onUserDataLoadError);
 
-    console.log("Starts to load owned espers");
     readUserData('espers').then(function(result) {
         ownedEspers = result;
         Object.keys(ownedEspers).forEach(esper => {
@@ -2562,14 +2559,11 @@ function loadUserDataFromDrive() {
                 ownedEspers[esper].esperStatsBonus = {"all":ownedEspers[esper].esperStatsBonus};
             }
         });
-        console.log("owned espers loaded");
         onUnitsOrInventoryLoaded();
     }, onUserDataLoadError);
 
-    console.log("Starts to load owned consumables");
     readUserData('consumables').then(function(result) {
         ownedConsumables = result;
-        console.log("owned consumables loaded");
         onUnitsOrInventoryLoaded();
     }, onUserDataLoadError);
 }

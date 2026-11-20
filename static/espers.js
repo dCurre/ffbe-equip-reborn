@@ -245,7 +245,6 @@ function findCurrentScale()
     if (!transformMatrix.length) return 1;
     var scale = parseFloat(transformMatrix[0]);
     if (!scale) return 1;
-    console.log('Found scale ' + scale);
     return scale;
 }
 
@@ -524,7 +523,6 @@ function abilityName(text) {
     var name = text.replace(/\|ability_\d+\.png/, '');
     // remove the brackets
     name = name.replace(/\[|\]/g, '');
-    console.log(name)
     return name;
 };
 
@@ -850,7 +848,6 @@ function findPathTo(x,y, fromNode, currentPath = []) {
 }
 
 function displayEspers() {
-    console.log("Entering displayEspers function. logged : " + logged + ", linkMode : " + linkMode + ", ownedEspers : " + Object.keys(ownedEspers).length)
     if (!logged && !linkMode) {
         ownedEspers = {};
         for (var index in espers) {
@@ -897,7 +894,6 @@ function displayEspers() {
             var escapedName ="";
             
             if (escapeName(espers[index].name) === 'Black_Dragon'){
-                console.log("Black Dragon found")
                 escapedName = 'Kokuryu'
             } else {
                 escapedName = escapeName(espers[index].name)
@@ -970,7 +966,6 @@ function getPositionFromString(posString) {
 
 function loadLink() {
     if (window.location.hash.length > 1) {
-        console.log("Loading esper link");
         var hashValue = window.location.hash.substr(1);
         
         if (decodeURI(hashValue).includes('|')) {
@@ -1009,7 +1004,6 @@ function loadLink() {
         $('.navbar').addClass("hidden");
         $("#header").addClass("hidden");
         linkMode = true;
-        console.log("finished Loading esper link");
     }    
 }
 
@@ -1130,21 +1124,17 @@ function setEsperRarity(rarity) {
 }
 
 function inventoryLoaded() {
-    console.log("entering inventoryLoaded function");
     logged = true;
     if (esperBoards) {
         $('#importLink').removeClass('hidden');
         displayEspers();
     }
-    console.log("exiting inventoryLoaded function");
 }
 
 function notLoaded() {
-    console.log("entering notLoaded function");
     ownedEspers = {};
 
     if (esperBoards) {
-        console.log("esperBoards exist")
         loadLink();
         displayEspers();
     }
@@ -1153,7 +1143,6 @@ function notLoaded() {
         $("#loginMessage").removeClass("hidden");
     }
     $("#inventory").addClass("hidden");
-    console.log("exiting notLoaded function");
 }
 
 // will be called by common.js at page load

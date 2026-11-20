@@ -44,7 +44,6 @@ class BuildOptimizer {
                     if (!this.itemConditionalElements[condition]) {
                         this.itemConditionalElements[condition] = [];
                     }
-                    console.log(entry)
                     this.itemConditionalElements[condition].push(entry);
                 }
             })
