@@ -46,8 +46,8 @@ work.
 ## Run locally
 
 Requirements: [Node.js](https://nodejs.org/) and npm. Node is only used locally and by the deploy (the
-website itself is static): the deploy uses the version in [`.node-version`](.node-version) (24 LTS), and
-local development also works with older versions (tested with Node 15).
+website itself is static): both the deploy and local development use the version in [`.node-version`](.node-version)
+(24 LTS).
 
 ```bash
 npm install
