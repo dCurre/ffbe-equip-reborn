@@ -15,11 +15,13 @@ Pages): anything that still calls the Node server is broken online.
 
 ## Bugs / technical debt
 
-- [ ] **Outdated dependencies**: the unused server ones are still installed: run `npm uninstall express body-parser compression cors
-  helmet client-sessions es-main @hapi/boom joi uuid firebase-admin googleapis @sindresorhus/is bluebird`. The
-  data-extraction tools' ones stay (`request`, deprecated, used in ~18 files of `tools/` and `static/GL|JP`;
-  `pngjs`, `unorm`, `image-size`); they never run on the public site. Then run `npm audit` again and
-  replace `request` with the native `fetch` or delete the extraction tools (the data is frozen).
+- [ ] **Outdated dependencies**: `npm audit` reports 1 high issue in `image-size` (DoS in the ICNS parser),
+  used only by the data-extraction tools, which never run on the public site and **stay** (decided: do not
+  delete them). Fix with `npm audit fix --force` (image-size 2.x, breaking) only if those tools are run again.
+  Their image servers `diffs.exvius.gg` and `diffs.exviusdb.com` no longer respond (checked 2026-11-20):
+  `tools/buildImageLinks` and `tools/JP/getImages.js` are unusable and the image `download` step of
+  `GL|JP/parseItems.js` fails; the JSON data from GitHub (`aEnigmatic/ffbe`, `ffbe-jp`, `ffbe-gl-strings`) still
+  downloads fine. The tools now use `tools/request.js` (a `fetch` shim, output verified identical to `request`).
 - [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (35 tests, ~2 s): formula parsing, stats and
   damage with hand-computed values (`test.stats.js`, `test.damage.js`) and a golden master of the
   calculations on the real GL data (`test.golden.js`: all 1,653 units; `npm run test:golden:update`
@@ -41,7 +43,6 @@ Pages): anything that still calls the Node server is broken online.
     `builder/common.js` ~2,200, `inventory.js` / `unitSearch.js` / `units.js` ~1,700 each. The scripts are
     classic (no ES modules) and the HTML uses `onclick="fn()"`, so functions must stay global unless the
     handlers are migrated. Split only after the tests above exist.
-  - `externalControl.js` still logs every call (13 `console.log`): decide if it is wanted.
   - `isTwoHanded` is defined in both `common.js` and `builder/common.js` on purpose (the optimizer Web
     Worker loads only `builder/common.js`); `unselectAll` in `common.js` has another signature than the
     ones in `unitSearch.js` / `encyclopedia.js`.

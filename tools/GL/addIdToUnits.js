@@ -1,5 +1,5 @@
 var fs = require('fs');
-var request = require('request');
+import request from '../request.js';
 
 request.get('https://raw.githubusercontent.com/aEnigmatic/ffbe/master/units.json', function (error, response, body) {
     if (!error && response.statusCode == 200) {

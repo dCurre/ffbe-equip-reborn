@@ -29,7 +29,6 @@
   "homepage": "https://dcurre.github.io/ffbe-equip-reborn/",
   "dependencies": {
     "pngjs": "6.0.0",
-    "request": "^2.87.0",
     "unorm": "^1.6.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import request from 'request';
+import request from '../request.js';
 
 var stats = ["HP","MP","ATK","DEF","MAG","SPR"];
 var elements = ["fire", "ice", "lightning", "water", "wind", "earth", "light", "dark"];

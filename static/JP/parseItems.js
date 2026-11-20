@@ -1,5 +1,5 @@
 ﻿import fs from 'fs';
-import request from 'request';
+import request from '../../tools/request.js';
 import PNG from 'pngjs';
 import { exit } from 'process';
 
