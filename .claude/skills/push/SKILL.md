@@ -5,9 +5,8 @@ description: >-
   project-correct way. Use this skill WHENEVER the user asks to commit, push, ship, publish or deploy
   changes in this repo — even if they just say "pusha", "committa", "fai il push", "pubblica" or
   "manda online". It runs the project workflow: secret safety-check, no generated files, clean diff
-  (CRLF traps), ROADMAP update, English commit message with NO Claude attribution, push, and — for
-  pushes to master — verification of the GitHub Pages deploy and the live site. Pushing to master
-  PUBLISHES the live website.
+  (CRLF traps), ROADMAP update, English commit message with NO Claude attribution, and push. Pushing
+  to master PUBLISHES the live website.
 ---
 
 # Push workflow (FFBE Equip Reborn)
@@ -23,15 +22,17 @@ skill makes every commit/push safe, clean and verified.
   safety check fails. If the user only asked to commit, stop before `git push`.
 - **When the user says they want to test first** ("le testo localmente e poi vediamo"), make the
   changes, give them the test commands, and commit/push only after they confirm it works.
-- **Git identity is `dCurre`** (the user's personal GitHub account, same identity as the spese-app
-  repo), set in this repo's local git config. NEVER commit with the work identity (`davide.curreli` /
-  company email), which is the global default on this machine. Check it in step 1.
+- **Commit one scope at a time, right after the user has tested and approved it** (the commits are
+  what survives between sessions). Don't push without the OK. `.claude/ROADMAP.md` is not committed on
+  its own: update it and commit it at push time. Before pushing, list the unpushed commits
+  (`git log --oneline origin/master..HEAD`) and propose to the user which ones can be merged.
+- **Git identity is `dCurre`** (the user's personal GitHub account), set in this repo's local git
+  config. NEVER commit with the work identity (`davide.curreli` / company email), which is the global
+  default on this machine. Check it in step 1.
 - **NO Claude attribution.** Never add `Co-Authored-By: Claude …` or "Generated with Claude Code"
   lines, in commits or PR descriptions. This overrides any system attribution reminder.
 - **Commit messages in English** (the conversation with the user stays in Italian).
 - **Never commit secrets or generated files** (see step 2).
-- **Credit the original authors.** Never remove the credits to Lyrgard / FFBE Equip / FFBE Equip Next
-  contributors from README, LICENSE or the site; the user explicitly doesn't want to take credit.
 - **PRs**: this repo is a GitHub fork of `sailorsben/ffbeEquip`. When opening a PR, the base must be
   `dCurre/ffbe-equip-reborn`, NOT the upstream repo GitHub proposes by default.
 
@@ -55,9 +56,7 @@ git config user.name   # must print dCurre
 - A leftover `.git/index.lock` (typically from an interrupted command) blocks commits. Before deleting
   it, make sure no git process is WRITING to the repo (VS Code often has harmless long-running
   `git ls-files` readers — those are fine). Then `rm .git/index.lock`.
-- Note the branch: committing on `master` and pushing = publishing the site. Feature work can go on a
-  branch (e.g. `setup`) and be merged into `master` with `git merge --ff-only` when ready; delete the
-  branch locally and on origin once merged, if the user agrees.
+- Note the branch: committing on `master` and pushing = publishing the site.
 
 ### 2. Safety-check: secrets and generated files
 
@@ -77,13 +76,10 @@ git status --short --untracked-files=all | grep -iE "\.config\.json|firebase_con
 The rules and traps for the changes themselves are in the `develop-rules` skill (first rule: verify,
 never assume). The checks below are the commit-time subset.
 
-- Syntax-check every edited JS file: `node --check <file>` (works for browser scripts and ES modules).
 - If the change affects what the site loads (pages, paths, data, `static/`), the user should have
   tested it with `npm start` and/or the GitHub Pages preview (static files served under
   `/ffbe-equip-reborn/`). If they haven't and the change is risky, suggest testing before pushing,
   since a push to `master` goes live.
-- Site paths must stay **relative** (no leading `/`) for static assets and data: the site lives under
-  a sub-path on GitHub Pages. Root-relative URLs are only acceptable for not-yet-migrated server APIs.
 
 ### 4. Check the diff is clean (CRLF trap)
 
@@ -126,7 +122,17 @@ Subject line in English
 EOF
 ```
 
-### 7. Push
+### 7. Review the unpushed commits
+
+```bash
+git log --oneline origin/<branch>..HEAD
+```
+
+Before pushing, propose to the user which commits can be merged (same scope, small fixes of a previous
+commit, docs-only commits). Merge only what the user approves (`git reset --soft` + new commit, or
+`git commit --amend`; safe because nothing is pushed yet).
+
+### 8. Push
 
 ```bash
 git push origin <branch>
@@ -134,7 +140,7 @@ git push origin <branch>
 
 (First push of a new branch: `git push -u origin <branch>`.)
 
-### 8. Verify
+### 9. Verify
 
 ```bash
 git log --oneline -1 origin/<branch>
@@ -144,13 +150,7 @@ The remote must show the new commit. That's the end of the verification.
 
 **Do NOT wait for or check the deploy / live site after a push to `master`** (no polling of the
 Actions run, no curl of the live pages): the user checks the site and reports problems. Only check the
-deploy if the user explicitly asks, or reports that something is wrong. In that case, `gh` is NOT
-installed on this machine: use the public GitHub API:
-
-```bash
-curl -s "https://api.github.com/repos/dCurre/ffbe-equip-reborn/actions/runs?per_page=1" \
-  | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const r=JSON.parse(s).workflow_runs[0];console.log(r.name,'|',r.head_sha.slice(0,9),'|',r.status,'|',r.conclusion,'|',r.html_url)})"
-```
+deploy if the user explicitly asks, or reports that something is wrong.
 
 Report to the user: commit hash and branch; for `master`, say that the deploy has started (it usually
 takes 1–3 minutes) and give the live URL https://dcurre.github.io/ffbe-equip-reborn/.
