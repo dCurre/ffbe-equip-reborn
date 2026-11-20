@@ -273,7 +273,6 @@ function optimize() {
             "desirableElements":dataStorage.desirableElements,
             "enemyStats":enemyStats,
             "goalVariation": goalVariation,
-            "forceDoubleHand": forceDoubleHand,
         }));
     }
     let forceTmrAbility = $("#forceTmrAbility").prop('checked');

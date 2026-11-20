@@ -17,14 +17,16 @@ Pages): anything that still calls the Node server is broken online.
   `tools/buildImageLinks` and `tools/JP/getImages.js` are unusable and the image `download` step of
   `GL|JP/parseItems.js` fails; the JSON data from GitHub (`aEnigmatic/ffbe`, `ffbe-jp`, `ffbe-gl-strings`) still
   downloads fine. The tools now use `tools/request.js` (a `fetch` shim, output verified identical to `request`).
-- [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (117 tests, ~2 s): formula parsing, stats and
-  damage with hand-computed values (`test.stats.js`, `test.damage.js`) and a golden master of the
-  calculations on the real GL data (`test.golden.js`: all 1,653 units; `npm run test:golden:update`
-  regenerates `test/static/golden/calc.json` when a change is intended). `npm run test:coverage` prints
-  the coverage of `formula.js` (89.4%) and `builder/common.js` (69.1%). Still uncovered: `computeFarmableStmr` and
-  `getItemEntry` (bound to the inventory/DOM) and the optimizer (`buildOptimizer.js`, `itemPool.js`, `typeCombinationGenerator.js`: a golden master
-  needs the data prepared by `builder.js`, which is bound to the DOM). Add these before reviewing the
-  build algorithm or splitting `builder.js`.
+- [ ] **Tests**: `npm test` runs `node --test "test/static/*.js"` (126 tests, ~8 s): formula parsing, stats and
+  damage with hand-computed values (`test.stats.js`, `test.damage.js`), a golden master of the
+  calculations on the real GL data (`test.golden.js`: all 1,653 units) and the optimizer: `test.optimizer.js`
+  (invariants on the first 12 type combinations) and `test.optimizerGolden.js` (full search, best build and value of
+  3 units, item pool reduced to the best 80 per type: ~1 s per unit; the unreduced search takes over 10 minutes in one
+  thread). The optimizer runs without builder.js through `helpers/optimizerEnv.js` / `optimizerRun.js`.
+  `npm run test:golden:update` regenerates `calc.json` and `optimizer.json` when a change is intended.
+  `npm run test:coverage` prints the coverage of `formula.js` and `builder/common.js`. Still uncovered:
+  `computeFarmableStmr` and `getItemEntry` with an inventory, and the owned-only / esper / forced-TMR / force-doublehand
+  optimizer paths. The golden pool is reduced, so it does not prove the full search finds the global best.
 
 ## Code quality and build algorithm
 
@@ -67,3 +69,9 @@ Pages): anything that still calls the Node server is broken online.
   the `Math.floor` result was discarded). The change is deduced from the code, not compared with the game:
   verify it against an offline FFBE repo or known in-game values (golden master regenerated, up to -0.42%).
   Reference timing on a dev PC: `optimize: ~3.2 s` for one unit.
+
+## New features (after the site rework)
+
+- [ ] **Builder unit filters**, in the same place as the existing "Only Nv Units" option:
+  1. filter to owned units only;
+  2. filter to NVA+ units only.
