@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <!-- Security policy (GitHub Pages cannot send HTTP headers). Keep in sync with cspDirectives in server.js -->
+        <!-- Security policy (GitHub Pages cannot send HTTP headers); this tag is the only copy of the policy -->
         <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' code.jquery.com cdn.jsdelivr.net cdnjs.cloudflare.com kit.fontawesome.com ka-f.fontawesome.com https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' code.jquery.com cdn.jsdelivr.net cdnjs.cloudflare.com kit-free.fontawesome.com ka-f.fontawesome.com https://accounts.google.com/gsi/style; img-src 'self' data: blob: code.jquery.com cdn.jsdelivr.net; font-src 'self' data: cdnjs.cloudflare.com fonts.gstatic.com kit-free.fontawesome.com ka-f.fontawesome.com; connect-src 'self' cdnjs.cloudflare.com ka-f.fontawesome.com firebasestorage.googleapis.com https://api.imgur.com https://api.github.com https://accounts.google.com/gsi/ https://www.googleapis.com https://oauth2.googleapis.com; worker-src 'self'; frame-src 'self' https://accounts.google.com/gsi/; object-src 'none'; base-uri 'self'; form-action 'self'">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -35,78 +35,9 @@
                             <button class="btn btn-default" onclick="openFeedbackIssue('suggestion.yml')">
                                 <span class="glyphicon glyphicon-thumbs-up"></span> Suggest an improvement
                             </button>
-                            <p class="feedbackHint">To correct how an item can be obtained, use the tool below.</p>
                         </div>
-                    </div>
-                    <div id="modifiedItems" class="panel panel-default hidden">
-                        <div id="results" class="table notSorted items results">
-                            <div class="thead">
-                                <div class="tr">
-                                    <div class="td type">&nbsp;</div>
-                                    <div class="td name">Name</div>
-                                    <div class="td access">Access</div>
-                                    <div class="td">&nbsp;</div>
-                                </div>
-                            </div>
-                            <div class="tbody">
-
-                            </div>
-                        </div>
-                        <div id="sendToServerDiv">
-                            <button class="btn btn-primary" onclick="openCorrectionIssue()">Open a GitHub issue with these corrections</button>
-                        </div>
-                    </div>
-                    <div>
-                        <h4>How to correct item data:</h4>
-                        <ol>
-                            <li>Items that are missing data are displayed on the right. You can select one, or use the search if you want to correct another item.</li>
-                            <li>Once you've found the item you want to modify, click on the <span class="glyphicon glyphicon-edit"></span> to add this item to the list on the left. You can add multiple items to this list (max 10).</li>
-                            <li>You can modify the Access and Max Number of the items on the left pane. For Max Number, leave it empty if there is no limitation to how many times this item could be acquired.</li>
-                            <li>When you have entered all the data, click on "<b>Open a GitHub issue with these corrections</b>": a GitHub page opens in a new tab with the issue already filled in. Check it and submit it there.</li>
-                            <li>
-                                <strong>Please note that the data won't be corrected immediately:</strong>
-                                corrections are reviewed and then merged into the data of the site.
-                            </li>
-                        </ol>
                     </div>
                     <script src="layout.js" data-part="footer"></script>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-md-6">
-                    <div class="panel panel-default itemList">
-                        <div class="panel-heading">
-                            <input type="text" class="form-control" id="searchText" placeholder="Enter search text. Will search in item name, stats, abilities, TMR's unit, ...">
-                        </div>
-                        <div class="panel-body">
-                            <div id="results" class="table notSorted items results">
-                                <div class="thead">
-                                    <div class="tr">
-                                        <div class="td select">&nbsp;</div>
-                                        <div class="td type">&nbsp;</div>
-                                        <div class="td name">Name</div>
-                                        <div id="statTitle" class="td value sort">Value</div>
-                                        <div class="td special">Special</div>
-                                        <div class="td access">Access</div>
-                                        <div class="td">
-                                            Max <span class='hidden-xs'>Number</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="tbody">
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="modal fade" id="addAccessModal" role="dialog">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">Add access</div>
-                    <div class="modal-body">
-                        <div class="btn-group choice" data-toggle="buttons" id="accessList"></div>
                     </div>
                 </div>
             </div>
