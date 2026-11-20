@@ -514,8 +514,25 @@ function formulaFromSkill(skill, multicast = false, isLb = false) {
 
 function formulaFromEffect(effect, multicast = false) {
     if (effect.effect.damage) {
-        var coef = effect.effect.damage.coef;
-        return {"type":"damage", "value":effect.effect.damage};
+        var damage = effect.effect.damage;
+        if (damage.mechanism === "none" || damage.mechanism === undefined) {
+            // Not an attack on enemies: HP cost to the caster, or a token damage to an ally that only carries buffs.
+            if (effect.effect.target === "SELF" || effect.effect.target === "ALLY") {
+                return null;
+            }
+            // The game data gives attack type "None" (the wiki's Fixed attack type) and no mechanism: the damage type
+            // tells the stat. Fixed ignores killers, dual wield and weapon elements (formula.value.fixedAttack).
+            // Missing damageType means a hybrid. The data itself is left untouched: copy.
+            var mechanismByDamageType = {"body": "physical", "mind": "magical"};
+            var mechanism = mechanismByDamageType[damage.damageType] || (damage.mechanism === "none" ? "hybrid" : undefined);
+            if (mechanism) {
+                damage = Object.assign({}, damage, {"mechanism": mechanism});
+                if (effect.effect.damage.mechanism === "none") {
+                    damage.fixedAttack = true;
+                }
+            }
+        }
+        return {"type":"damage", "value":damage};
     } else if (effect.effect.imperil) {
         return {
             "type": "imperil",
