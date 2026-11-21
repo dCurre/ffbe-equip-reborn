@@ -1,0 +1,14 @@
+:host {
+  display: inline-block;
+  padding: 6px 12px;
+  font: inherit;
+  line-height: var(--line-height);
+  color: var(--color-button-text);
+  background-color: var(--color-button-background);
+  border: 1px solid var(--color-button-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+:host(:hover) {
+  background-color: var(--color-button-hover-background);
+}

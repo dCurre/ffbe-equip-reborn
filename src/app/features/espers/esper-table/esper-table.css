@@ -1,0 +1,163 @@
+.all-espers {
+  max-width: 80%;
+  margin: 0 auto;
+  padding-top: 1em;
+}
+
+.import-link {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.table-panel {
+  margin: 0.85em;
+}
+
+table {
+  width: 100%;
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 8px;
+  line-height: 1.42857143;
+  text-align: left;
+  vertical-align: middle;
+  border-top: 1px solid var(--color-border);
+}
+
+thead th {
+  vertical-align: bottom;
+  border-top: 0;
+  border-bottom: 2px solid var(--color-border);
+  cursor: pointer;
+}
+
+thead th::after {
+  content: '↑';
+  z-index: 1;
+  margin-left: 3px;
+  font-size: 14px;
+  color: #d3d3d3;
+}
+
+thead th.desc::after {
+  content: '↓';
+}
+
+thead th.active {
+  background-color: var(--color-panel-heading);
+}
+
+thead th.active::after {
+  color: #3b3b3b;
+}
+
+:host-context(:root[data-theme='dark']) thead th.active::after {
+  color: #d3d3d3;
+}
+
+tbody tr {
+  height: 80px;
+}
+
+.esper-desc {
+  position: relative;
+  padding-left: 70px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.esper-desc i.img {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  width: 60px;
+  height: 60px;
+  margin-top: -30px;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
+}
+
+.esper-desc .name {
+  font-weight: bold;
+}
+
+.esper-desc .sp {
+  font-size: 0.85em;
+  color: #8a8a8a;
+}
+
+td.stat {
+  color: #8a8a8a;
+}
+
+.bonus {
+  color: #19983d;
+}
+
+.resists,
+.killers {
+  min-width: 135px;
+}
+
+/* --- One Esper --- */
+
+@media (max-width: 1200px) {
+  .all-espers {
+    max-width: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .table-panel {
+    margin: 0.85em 0;
+    overflow-x: auto;
+  }
+
+  td {
+    padding: 2px 6px;
+  }
+
+  .esper-desc {
+    padding-left: 38px;
+  }
+
+  .esper-desc i.img {
+    left: 4px;
+    width: 30px;
+    height: 30px;
+    margin-top: -15px;
+  }
+}
+
+@media (max-width: 768px) {
+  table {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 500px) {
+  .esper-desc {
+    padding-left: 2px;
+  }
+
+  .esper-desc i.img {
+    display: none;
+  }
+
+  th {
+    font-size: 0.9em;
+    font-weight: normal;
+  }
+
+  td {
+    padding: 1px 6px;
+  }
+
+  thead th::after {
+    display: none;
+  }
+}

@@ -1,0 +1,146 @@
+<header [style]="bannerPadding()">
+  <div class="top-buttons">
+    <label class="theme">
+      <span class="theme-title">Theme :</span>
+      <select [value]="theme.current()" (change)="chooseTheme($event)">
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </label>
+    @if (serverContext.server() === 'GL') {
+      <div class="languages" role="group" aria-label="Language">
+        @for (language of languages; track language) {
+          <button
+            type="button"
+            class="flag"
+            [class.selected]="serverContext.language() === language"
+            style="background-image: url(img/icons/languages.png)"
+            [style.background-position]="flagPosition(language)"
+            [attr.aria-label]="language"
+            [attr.aria-pressed]="serverContext.language() === language"
+            (click)="serverContext.setLanguage(language)"
+          ></button>
+        }
+      </div>
+    }
+    <div class="servers" role="group" aria-label="Server">
+      @for (server of servers; track server) {
+        <button
+          type="button"
+          [class.selected]="serverContext.server() === server"
+          [attr.aria-pressed]="serverContext.server() === server"
+          (click)="serverContext.setServer(server)"
+        >
+          {{ server }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="content">
+    <h1 class="title">{{ title() }}</h1>
+    <div class="inventory" role="group" aria-label="Inventory">
+      @if (loggedIn()) {
+        <button type="button" class="logout" title="logout" aria-label="logout" (click)="logout()">&#x23FB;</button>
+      } @else {
+        <button type="button" class="login" (click)="openLoginDialog()">Log in</button>
+      }
+      <div class="status">
+        @switch (inventory.status()) {
+          @case ('loaded') {
+            <span>Inventory loaded</span>
+            <div class="counts">
+              <span>{{ inventory.unitCount() }} units</span>
+              <span>{{ inventory.itemCount() }} items</span>
+            </div>
+          }
+          @case ('loading') {
+            <span>Loading inventory</span>
+          }
+          @default {
+            <span>Inventory not loaded</span>
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  <nav class="desktop" aria-label="Main">
+    <a
+      class="logo"
+      routerLink="/"
+      [queryParams]="serverContext.linkParams()"
+      title="Return to homepage"
+      aria-label="Return to homepage"
+    ></a>
+    @for (item of menu; track item.path) {
+      <a
+        [routerLink]="item.path"
+        [queryParams]="serverContext.linkParams()"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >{{ item.label }}</a
+      >
+    }
+  </nav>
+
+  <nav class="mobile" aria-label="Main">
+    <button
+      type="button"
+      class="logo"
+      aria-label="Menu"
+      [attr.aria-expanded]="menuOpen()"
+      (click)="menuOpen.set(!menuOpen())"
+    >
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 8l7 8 7-8z" /></svg>
+    </button>
+    @if (menuOpen()) {
+      <ul class="dropdown">
+        @for (item of menu; track item.path) {
+          <li>
+            <a
+              [routerLink]="item.path"
+              [queryParams]="serverContext.linkParams()"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="menuOpen.set(false)"
+              >{{ item.label }}</a
+            >
+          </li>
+        }
+      </ul>
+    }
+  </nav>
+
+  <div class="banner-background"></div>
+  <div class="banner-picture" [style.background-image]="bannerBlankImage()"></div>
+  <div class="banner-person" [style.background-image]="bannerPersonImage()"></div>
+</header>
+
+<dialog #loginDialog class="login-dialog" aria-labelledby="login-title">
+  <h2 id="login-title">Google Authentication</h2>
+  <p>A Google login window will open.</p>
+  <p>
+    This account is only for FFBE Equip Reborn to store your data. It will NOT link automatically to your FFBE account.
+    You don't need to switch to Google to log in FFBE.
+  </p>
+  <p class="detail">
+    This site is using
+    <a href="https://en.wikipedia.org/wiki/OAuth" target="_blank" rel="noreferrer">OAuth2</a>
+    to access the stored inventory data, so it will never know your google login and password.
+  </p>
+  <p class="detail">
+    The data is stored on the secure FFBE Equip Reborn
+    <a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer"
+      >app folder on Google Drive</a
+    >. FFBE Equip Reborn can only access this folder, and no personal file.
+  </p>
+  <p class="detail"><a routerLink="/privacy" target="_blank">Privacy policy</a></p>
+  @if (loginError()) {
+    <p class="error" role="alert">Login failed: {{ loginError() }}</p>
+  }
+  <div class="dialog-buttons">
+    <button type="button" (click)="loginDialog.close()">Cancel</button>
+    <button type="button" class="primary" (click)="login()">Continue</button>
+  </div>
+</dialog>

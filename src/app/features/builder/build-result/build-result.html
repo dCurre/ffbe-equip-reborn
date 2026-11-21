@@ -1,0 +1,76 @@
+@if (s.message()) {
+  <app-alert kind="danger">{{ s.message() }}</app-alert>
+}
+@if (s.unit()) {
+  <div class="build-bar">
+    <button app-button type="button" class="build-button" [disabled]="!ready()" (click)="build.emit()">
+      {{ runner().running() ? 'STOP' : 'Build !' }}
+    </button>
+    <div class="progress">
+      <div class="progress-bar" [style.width.%]="runner().progress()">{{ runner().progress() }}%</div>
+    </div>
+    <span class="counter" title="Number of builds tried">{{ runner().builds().toLocaleString() }}</span>
+    <button app-button type="button" title="Get a link to this build" (click)="sharing().openShare()">
+      <app-icon name="link" /> Link
+    </button>
+    <button app-button type="button" title="The build as text" (click)="sharing().openText()">Text</button>
+    @if (allSharing().length > 1) {
+      <button
+        app-button
+        type="button"
+        title="A link to the units of all the tabs"
+        (click)="sharing().openShare(allSharing())"
+      >
+        <app-icon name="link" /> Link (all units)
+      </button>
+      <button
+        app-button
+        type="button"
+        title="The builds of all the tabs as text"
+        (click)="sharing().openText(allSharing())"
+      >
+        Text (all units)
+      </button>
+    }
+    <button app-button type="button" title="Remove the items that are not pinned" (click)="items().clearItems(true)">
+      Clear
+    </button>
+    <button app-button type="button" title="Remove all the items, pinned ones too" (click)="items().clearItems(false)">
+      Clear all
+    </button>
+  </div>
+
+  <div class="build-result">
+    @for (line of lines(); track line.slot.index) {
+      @if (line.item) {
+        <div class="slot-line" [class.enhanced]="line.item.enhancements">
+          <div class="actions">
+            @if (line.pinned) {
+              <button type="button" title="Unpin this item" (click)="items().unpinItem(line.slot.index)">
+                &#128204;
+              </button>
+            } @else {
+              <button type="button" class="dim" title="Pin this item" (click)="items().pinItem(line.slot.index)">
+                &#128204;
+              </button>
+            }
+            <button type="button" title="Remove this item" (click)="items().removeItem(line.slot.index)">
+              &#128465;
+            </button>
+          </div>
+          <div class="item-cards" (click)="items().openSlot(line.slot.index)">
+            <app-item-summary [item]="line.item" [enchantments]="game().enchantments" />
+          </div>
+        </div>
+      } @else {
+        <div class="slot-line empty" (click)="items().openSlot(line.slot.index)">
+          <i [class]="'img img-slot-' + line.slot.icon + ' icon'"></i> {{ line.slot.name }}
+        </div>
+      }
+    }
+  </div>
+
+  @if (result(); as result) {
+    <app-build-result-stats [result]="result" [goal]="s.goalVariation()" />
+  }
+}

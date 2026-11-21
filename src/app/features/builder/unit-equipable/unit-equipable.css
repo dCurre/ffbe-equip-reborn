@@ -1,0 +1,15 @@
+.equipable {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.equipable i.img {
+  width: 36px;
+  height: 36px;
+  margin: 2px;
+  cursor: pointer;
+}
+
+.equipable i.banned {
+  opacity: 0.25;
+}

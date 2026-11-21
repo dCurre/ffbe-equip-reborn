@@ -1,0 +1,50 @@
+<div class="all-espers">
+  @if (logged()) {
+    <a class="import-link" (click)="importing.emit()">
+      <app-icon name="save" /> <span class="text">Import Espers</span>
+    </a>
+  }
+  @if (ownedCount() === 0) {
+    <app-alert><app-icon name="info" /> You don't own any espers yet...</app-alert>
+  } @else {
+    <div class="table-panel panel-box">
+      <table>
+        <thead>
+          <tr>
+            @for (col of columns(); track col.column) {
+              <th
+                [class]="col.column"
+                [class.active]="sort().column === col.column"
+                [class.desc]="sort().column === col.column && sort().descending"
+                (click)="sorted.emit(col.column)"
+              >
+                {{ col.label }}
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.info.name) {
+            <tr>
+              <td class="esper-desc" (click)="opened.emit(row.info.name)">
+                <i [class]="sprite(row.info.name)"></i>
+                <div class="name">
+                  {{ row.info.name }} <span class="rarity">{{ stars(row.esper.rarity) }}</span>
+                </div>
+                <div class="sp">{{ row.sp.used }} / {{ row.sp.available }}</div>
+              </td>
+              <td>{{ row.esper.level }}</td>
+              @for (stat of stats; track stat) {
+                <td class="stat">
+                  <span class="bonus">+{{ bonus(row.esper, stat) }}</span> ({{ value(row.esper, stat) }})
+                </td>
+              }
+              <td class="resists"><app-resist-list [resist]="row.esper.resist" /></td>
+              <td class="killers"><app-killer-list [killers]="row.esper.killers" /></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

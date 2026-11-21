@@ -1,0 +1,14 @@
+<span class="leading"><ng-content select="[leading]" /></span>
+<input
+  type="number"
+  [class.with-icon]="withIcon()"
+  [class.with-suffix]="!!suffix()"
+  [placeholder]="placeholder()"
+  [title]="title()"
+  [disabled]="disabled()"
+  [value]="value()"
+  (input)="value.set($any($event.target).value)"
+/>
+@if (suffix()) {
+  <span class="suffix">{{ suffix() }}</span>
+}

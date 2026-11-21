@@ -1,0 +1,236 @@
+<app-page-content>
+  <app-load-status [ready]="ready()" [loginNeeded]="loginNeeded()" subject="your inventory" />
+
+  @if (showInventory()) {
+    <app-collection-layout [(collapsed)]="sidebarCollapsed">
+      <div stats class="stats">
+        @for (type of ['materia'].concat(typeList); track type) {
+          @if (stats()[type]; as stat) {
+            <table [class.materia]="type === 'materia'">
+              <tbody>
+                <tr>
+                  <td class="type"><i [class]="'img img-equipment-' + type"></i></td>
+                  <td>{{ stat.different }}</td>
+                  <td>/</td>
+                  <td>{{ stat.total }}</td>
+                  <td class="number">({{ stat.number }})</td>
+                </tr>
+              </tbody>
+            </table>
+          }
+        }
+      </div>
+
+      <div actions>
+        <app-dropdown-menu label="Export inventory" [items]="exportItems" />
+        <app-action-link icon="save" label="Import inventory" (click)="openImport()" />
+        <app-action-link icon="new-window" label="Export your data from the game" [href]="gameDataUrl" />
+      </div>
+
+      <app-tab-bar [tabs]="tabs" [active]="tab()" (selected)="showTab($event)" />
+      <div class="sort-label">{{ sortLabel() }}</div>
+
+      <div class="tab-pane">
+        <div class="search-header">
+          @if (tab() === 'equipment' || tab() === 'materia' || tab() === 'farmableStmr') {
+            <input
+              #searchBox
+              type="text"
+              class="search"
+              placeholder="Enter item name or name of TMR's unit"
+              aria-label="Search"
+              [value]="search()"
+              (input)="onSearch($event)"
+            />
+          }
+          @if (tab() === 'farmableStmr') {
+            <div class="stmr-moogle">
+              Available <img src="img/units/unit_ills_906000105.png" alt="" />
+              <input
+                type="number"
+                min="0"
+                step="50"
+                [value]="stmrMoogle()"
+                (input)="numberInput($event.target, stmrMoogle, 0)"
+              />
+              %
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="onlyTimeLimited()"
+                  (change)="onlyTimeLimited.set($any($event.target).checked)"
+                />
+                Only time limited units
+              </label>
+            </div>
+          }
+          @if (tab() === 'sellable') {
+            <div class="work-in-progress">
+              <div>&#9888; This is a work in progress</div>
+              <div>
+                It displays the items you own, that either can be bought in a shop, or for which you own at least X
+                strictly better items
+              </div>
+              <div>Hover on the second number to display the list of better owned items</div>
+              <div class="number-line">
+                <span>Number of strictly better items required:</span>
+                <input
+                  type="number"
+                  min="1"
+                  [value]="betterItemsNumber()"
+                  (input)="numberInput($event.target, betterItemsNumber, 4)"
+                />
+              </div>
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="includeRecipes()"
+                  (change)="includeRecipes.set($any($event.target).checked)"
+                />
+                Include recipe items
+              </label>
+            </div>
+          }
+          @if (tab() === 'candidates') {
+            <div class="work-in-progress">
+              <div>&#9888; This is a work in progress</div>
+              <div>
+                It displays the items you own, not enhanced, that have at most X strictly better item you own, that is,
+                good candidates for Item World
+              </div>
+              <div class="number-line">
+                <span>Number max of strictly better items:</span>
+                <input
+                  type="number"
+                  min="0"
+                  [value]="candidatesDepth()"
+                  (input)="numberInput($event.target, candidatesDepth, 1)"
+                />
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="results item-cards">
+          @if (tab() === 'settings') {
+            <div class="tools">
+              <div class="source">Inventory Tools</div>
+              <button app-button type="button" (click)="addAllOpen.set(true)">Add All Equipment and Materia</button>
+              @if (undoAvailable()) {
+                <button app-button type="button" (click)="undoAddAll()">Undo Add All</button>
+              }
+              <button app-button type="button" class="danger" (click)="removeAllOpen.set(true)">
+                Remove All Equipment and Materia
+              </button>
+            </div>
+          } @else if (tab() === 'history') {
+            @for (release of history().slice(0, historyCount()); track release.date) {
+              <div class="date">{{ release.date }}</div>
+              @for (source of release.sources; track $index) {
+                <div class="source">{{ source.title }}</div>
+                <ng-container *ngTemplateOutlet="cardList; context: { lines: source.items }" />
+              }
+            }
+            @if (historyCount() < history().length) {
+              <div class="load-more">
+                <button app-button type="button" (click)="historyCount.set(historyCount() + 10)">Load more...</button>
+                <button app-button type="button" (click)="historyCount.set(history().length)">Load All</button>
+              </div>
+            }
+          } @else {
+            @if (byType() && groups().length > 1) {
+              <div class="type-jump" data-html2canvas-ignore>
+                <span>Jump to</span>
+                @for (group of groups(); track group.type) {
+                  <a [href]="'#type-' + group.type" (click)="jumpTo(group.type, $event)">
+                    <i [class]="'img img-equipment-' + group.type"></i>
+                  </a>
+                }
+              </div>
+            }
+            @for (group of visibleGroups(); track group.type) {
+              @if (byType()) {
+                <div class="separator" [id]="'type-' + group.type">
+                  <i [class]="'img img-equipment-' + group.type"></i>
+                </div>
+              }
+              <ng-container *ngTemplateOutlet="cardList; context: { lines: group.lines }" />
+            }
+            @if (lines().length === 0) {
+              <p>No items found...</p>
+            }
+            <div #end class="end"></div>
+          }
+        </div>
+      </div>
+    </app-collection-layout>
+  }
+
+  <app-site-footer />
+</app-page-content>
+
+<app-inventory-enhancement-modal
+  [line]="enhancingLine()"
+  [enchantments]="enchantments()"
+  [(open)]="enhancingOpen"
+  (toggled)="toggleEnhancementValue($event)"
+/>
+
+<app-confirm-modal heading="Limited item" confirmLabel="Add anyway" [(open)]="limitOpen" (confirmed)="addAnyway()">
+  <p>
+    You can only have up to {{ limitNumber() }} of these. If you own more, please report it to correct that value. Do
+    you want to add the item nonetheless?
+  </p>
+</app-confirm-modal>
+
+<app-confirm-modal
+  heading="Add all equipment and materia to inventory?"
+  confirmLabel="Add all items"
+  [(open)]="addAllOpen"
+  (confirmed)="addAllItems()"
+>
+  <p>This will add up to 2 of each equipment and 4 of each materia to your inventory.</p>
+  <p><strong>Are you sure you want to continue?</strong></p>
+</app-confirm-modal>
+
+<app-confirm-modal
+  heading="Remove all equipment and materia from inventory?"
+  confirmLabel="Empty inventory"
+  [danger]="true"
+  [(open)]="removeAllOpen"
+  (confirmed)="removeAllItems()"
+>
+  <p>This will empty your equipment and materia inventory (on this site).</p>
+  <p><strong>This is not reversible</strong></p>
+  <p><strong>Are you sure you want to continue?</strong></p>
+</app-confirm-modal>
+
+<app-import-modal
+  heading="Import inventory"
+  warning="This feature is a Work in Progress. It will override your inventory on FFBE Equip Reborn"
+  [summary]="importing.summary()"
+  [messages]="importing.messages()"
+  [(open)]="importing.open"
+  (fileLoaded)="loadImportFile($event)"
+  (confirmed)="runImport()"
+/>
+
+<ng-template #cardList let-lines="lines">
+  <div class="cards">
+    @for (line of lines; track line.key) {
+      <app-inventory-card
+        [line]="line"
+        [tab]="tab()"
+        [classes]="classes(line)"
+        [enchantments]="enchantments()"
+        [stmrUnitName]="stmrUnitName(line)"
+        (add)="add(line)"
+        (remove)="remove(line)"
+        (farmedTmr)="farmedTmr(line)"
+        (enhance)="openEnhancements(line)"
+        (excluded)="toggleExcluded(line)"
+        (levelChange)="cardLevel(line, $event)"
+      />
+    }
+  </div>
+</ng-template>

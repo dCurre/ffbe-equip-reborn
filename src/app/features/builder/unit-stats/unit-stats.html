@@ -1,0 +1,60 @@
+<table class="unit-stats">
+  <thead>
+    <tr>
+      <th></th>
+      <th>Base</th>
+      <th>
+        <button type="button" class="link-button" title="Switch pots" (click)="switchPots()">Pots</button>
+      </th>
+      <th>Buff %</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (stat of stats; track stat) {
+      <tr>
+        <th>{{ stat.toUpperCase() }}</th>
+        <td>{{ s.build().getStat(stat) }}</td>
+        <td>
+          <button type="button" class="pot-button" title="Pot" (click)="cyclePot(stat)">&#9679;</button>
+          <input
+            type="number"
+            min="0"
+            [class]="potClass(stat)"
+            [value]="s.pots()[stat]"
+            (input)="setPot(stat, $any($event.target).value)"
+          />
+        </td>
+        <td>
+          <input type="number" min="0" [value]="s.buffs()[stat]" (input)="setBuff(stat, $any($event.target).value)" />
+        </td>
+      </tr>
+    }
+    <tr>
+      <th>LB fill</th>
+      <td></td>
+      <td></td>
+      <td>
+        <input
+          type="number"
+          min="0"
+          [value]="s.lbFillRate()"
+          (input)="s.lbFillRate.set($any($event.target).value); s.refresh()"
+        />
+      </td>
+    </tr>
+    <tr>
+      <th>LB/turn</th>
+      <td></td>
+      <td></td>
+      <td>
+        <input
+          type="number"
+          min="0"
+          step="0.5"
+          [value]="s.lbShards()"
+          (input)="s.lbShards.set($any($event.target).value); s.refresh()"
+        />
+      </td>
+    </tr>
+  </tbody>
+</table>

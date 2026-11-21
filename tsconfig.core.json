@@ -1,0 +1,16 @@
+{
+  // The calculation core (no DOM, no framework). Compiled for the tests into .tmp/core; the Angular build will use the same sources.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "WebWorker"],
+    "rootDir": "src/core",
+    "outDir": ".tmp/core",
+    "strict": true,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "sourceMap": false
+  },
+  "include": ["src/core/**/*.ts"]
+}

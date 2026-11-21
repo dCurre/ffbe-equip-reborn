@@ -1,0 +1,108 @@
+<app-modal heading="Choose an item" [wide]="true" [(open)]="open">
+  <div class="search-line">
+    <input
+      type="text"
+      class="search"
+      placeholder="Search"
+      aria-label="Search"
+      [value]="text()"
+      (input)="onSearch($event)"
+    />
+    <label class="stat">
+      Sort by
+      <select [value]="stat()" (change)="stat.set($any($event.target).value)">
+        <option value="">name</option>
+        @for (name of statChoices; track name) {
+          <option [value]="name">{{ name.toUpperCase() }} (total)</option>
+          @if (name !== 'evade' && name !== 'inflict' && name !== 'resist') {
+            <option [value]="name + '-flat'">{{ name.toUpperCase() }} (flat)</option>
+          }
+        }
+      </select>
+    </label>
+  </div>
+  <div class="options">
+    @if (canFilterOwned()) {
+      <app-checkbox [(checked)]="onlyOwned">Only show owned equipment</app-checkbox>
+    }
+    <app-checkbox [(checked)]="excludeNotReleased">Exclude not released yet</app-checkbox>
+  </div>
+  @if (typeChoices().length > 1) {
+    <div class="types">
+      <button
+        app-button
+        type="button"
+        [class.active]="selectedTypes().length > 1"
+        title="All"
+        (click)="chooseTypes(typeChoices())"
+      >
+        All
+      </button>
+      @for (type of typeChoices(); track type) {
+        <button
+          app-button
+          type="button"
+          [class.active]="selectedTypes().length === 1 && selectedTypes()[0] === type"
+          [title]="type"
+          (click)="chooseTypes([type])"
+        >
+          <i [class]="'img img-equipment-' + type"></i>
+        </button>
+      }
+    </div>
+  }
+  <div #table class="items results" [class.notSorted]="!stat()">
+    <div class="tbody">
+      @for (item of visible(); track $index) {
+        <div
+          class="tr selectable"
+          [class.enhanced]="isEnhanced(item)"
+          [class.excluded]="isExcluded(item)"
+          (click)="click(item, $event)"
+        >
+          <div class="td flag">
+            @if (behavior() === 'include') {
+              <span [class.on]="isIncluded(item)" title="Always allow this item">&#10004;</span>
+            } @else {
+              <span [class.on]="isExcluded(item)" title="Exclude this item from builds">&#128683;</span>
+            }
+          </div>
+          <app-item-line
+            class="inline"
+            [item]="item"
+            [stat]="stat() ? stat().split('-')[0] : undefined"
+            [units]="context().units"
+            [enchantments]="context().enchantments"
+          />
+          @if (item.type === 'visionCard') {
+            <div class="td levels">
+              Level:
+              @for (level of cardLevels(item); track level.level) {
+                <button app-button type="button" [class]="level.state" (click)="pickCard(item, level, $event)">
+                  {{ level.level }}
+                </button>
+              }
+            </div>
+          }
+          @if (behavior() === 'equip') {
+            <div class="td enchantment">
+              <button type="button" class="dwarf" title="Modify the enhancements" (click)="enhanceItem.emit(item)">
+                <img src="img/icons/dwarf.png" alt="Enhancements" />
+              </button>
+            </div>
+          }
+          @if (ownedText(item); as owned) {
+            <div class="td inventory">
+              <span class="badge" [class.notEnough]="owned.notEnough">{{ owned.text }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+    <div #end class="end"></div>
+    @if (results().length === 0) {
+      <p>No results…</p>
+    }
+  </div>
+  <ng-container modalFooter><button app-button type="button" (click)="open.set(false)">Close</button></ng-container>
+</app-modal>

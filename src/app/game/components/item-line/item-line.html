@@ -1,0 +1,14 @@
+@if (item().type !== 'monster') {
+  <app-item-picture [item]="item()" />
+}
+<app-item-name [item]="item()" [enchantments]="enchantments()" />
+@if (stat() !== undefined) {
+  <div class="td value sort">{{ value() }}</div>
+}
+<app-item-special [item]="item()" />
+<app-item-access [item]="item()" [units]="units()" [accessToRemove]="accessToRemove()" />
+@if (owned() !== null) {
+  <div class="td inventory" [class.notPossessed]="!owned()">
+    <span class="number badge">{{ owned() || '' }}</span>
+  </div>
+}

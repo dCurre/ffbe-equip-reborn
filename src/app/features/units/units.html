@@ -1,0 +1,157 @@
+<app-page-content>
+  <app-load-status [ready]="ready()" [loginNeeded]="loginNeeded()" subject="your units" />
+
+  @if (showCollection()) {
+    <app-collection-layout [(collapsed)]="sidebarCollapsed" [narrow]="true" [hideActions]="readOnly()">
+      <app-unit-collection-stats stats [counts]="stats()" [groups]="statGroups" [rows]="statRows" />
+
+      <div actions>
+        <app-dropdown-menu label="Share unit collection" [items]="exportItems" />
+        <app-action-link icon="save" label="Import unit collection" (click)="openImport('units')" />
+        <app-action-link icon="save" label="Import consumables" (click)="openImport('consumables')" />
+        <app-action-link icon="new-window" label="Export your data from the game" [href]="gameDataUrl" />
+      </div>
+
+      <div [class.read-only]="readOnly()">
+        <app-tab-bar [tabs]="tabs" [active]="tab()" (selected)="showTab($event)" />
+
+        <div class="tab-pane">
+          <div class="controls">
+            @if (tab() !== 'history') {
+              <input
+                #searchBox
+                type="text"
+                class="search"
+                [placeholder]="placeholder()"
+                [attr.aria-label]="placeholder()"
+                (input)="setSearch($event)"
+              />
+            }
+            <div class="filters">
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="onlyOwned()"
+                  (change)="toggleOnlyOwned($any($event.target).checked)"
+                />
+                Only show owned units
+              </label>
+              @if (onlyOwned()) {
+                <label>
+                  <input
+                    type="checkbox"
+                    [checked]="onlySevenStar()"
+                    (change)="onlySevenStar.set($any($event.target).checked)"
+                  />
+                  Only show 7★ units
+                </label>
+              }
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="onlyTimeLimited()"
+                  (change)="onlyTimeLimited.set($any($event.target).checked)"
+                />
+                Only time limited units
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="onlyTmrMoogles()"
+                  (change)="onlyTmrMoogles.set($any($event.target).checked)"
+                />
+                Only units with TMR Moogles
+              </label>
+            </div>
+          </div>
+
+          <div
+            #results
+            class="results"
+            [class.export-all]="exporting() && exporting()!.minRarity === 1"
+            [class.export-rare]="exporting() && exporting()!.minRarity !== 1"
+          >
+            @if (jumps().length > 0) {
+              <div class="jump-list" data-html2canvas-ignore>
+                <span>Jump to</span>
+                @for (group of jumps(); track group.id) {
+                  <a [href]="'#' + group.id" (click)="jumpTo(group.id, $event)">
+                    <ng-container *ngTemplateOutlet="groupLabel; context: { group: group }" />
+                  </a>
+                }
+              </div>
+            }
+            @for (group of groups(); track group.id) {
+              @if (group.title) {
+                <div class="separator" [id]="group.id">
+                  <ng-container *ngTemplateOutlet="groupLabel; context: { group: group }" />
+                </div>
+              }
+              <div class="unit-list">
+                @for (card of group.cards; track card.unit.id) {
+                  <app-unit-card
+                    [card]="card"
+                    [tab]="tab()"
+                    [readOnly]="readOnly()"
+                    [eager]="!!exporting()"
+                    (add)="add(card.unit)"
+                    (farmedTmr)="farmedTmr(card.unit)"
+                    (farmedStmr)="askFarmedStmr(card.unit)"
+                    (awaken)="askAwaken(card.unit)"
+                    (edit)="editModal().show(card.unit)"
+                  />
+                }
+              </div>
+            }
+            @if (shown() === 0) {
+              <p>No {{ tab() === 'tmr' ? 'TMR' : 'units' }} found...</p>
+            }
+          </div>
+        </div>
+      </div>
+    </app-collection-layout>
+  }
+
+  <app-site-footer />
+</app-page-content>
+
+<app-unit-edit-modal [tmr]="trust().tmr" (saved)="changed()" />
+
+<app-unit-stmr-modal [unit]="stmrUnit()" [sources]="stmrSources()" [(open)]="stmrOpen" (chosen)="farmedStmr($event)" />
+
+<app-unit-awaken-modal [unit]="awakenUnit()" [(open)]="awakenOpen" (chosen)="awakenWith($event)" />
+
+<app-text-export-modal heading="Owned units" [text]="textExport()" [(open)]="textOpen" (copy)="copyText()" />
+
+<app-share-link-modal
+  heading="Link to your unit collection"
+  intro="This link will allow anyone to see your unit collection (as it is now)"
+  [link]="share.link()"
+  [copied]="share.copied()"
+  [(open)]="share.open"
+/>
+
+<app-import-modal
+  [heading]="importKind() === 'units' ? 'Import unit collection' : 'Import consumables'"
+  [warning]="importKind() === 'units' ? 'It will override your unit collection on FFBE Equip Reborn' : ''"
+  [summary]="importing.summary()"
+  [messages]="importing.messages()"
+  [(open)]="importing.open"
+  (fileLoaded)="loadImportFile($event)"
+  (confirmed)="runImport()"
+/>
+
+@if (busy()) {
+  <app-busy-overlay />
+}
+
+<ng-template #groupLabel let-group="group">
+  @if (group.rarity) {
+    @if (group.rarity.icon) {
+      <i [class]="'img img-crystal-' + group.rarity.icon"></i>
+    }
+    {{ group.rarity.text }}
+  } @else {
+    {{ group.title }}
+  }
+</ng-template>

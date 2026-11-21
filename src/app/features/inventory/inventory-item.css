@@ -1,0 +1,15 @@
+.item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-height: 82px;
+  padding: 5px;
+  background-color: var(--card-owned);
+  border: 2px solid var(--card-border);
+  border-radius: 10px;
+}
+
+.item ::ng-deep .td.name {
+  flex-grow: 1;
+}

@@ -1,0 +1,218 @@
+:host {
+  display: block;
+  --card-owned: #d2edf9;
+  --card-not-owned: #ffffff;
+  --card-border: #ffffff;
+  --card-stmr: #f5fcff;
+  --badge-background: #d2edf9;
+  --badge-text: #337ab7;
+  --step-color: #d2edf9;
+  --step-color-empty: #fff;
+  --soft-text: #808080;
+}
+
+:host-context([data-theme='dark']) {
+  --card-owned: #222;
+  --card-not-owned: #303030;
+  --card-border: #303030;
+  --card-stmr: #303030;
+  --badge-background: #555;
+  --badge-text: #ddd;
+}
+
+.danger {
+  color: #fff;
+  background-color: #d9534f;
+}
+
+/* --- Layout: the statistics on the left, the items on the right --- */
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.stats table {
+  width: 100%;
+  max-width: 180px;
+  margin: 0 auto;
+}
+
+.stats table.materia {
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.stats td {
+  padding-left: 5px;
+  text-align: right;
+}
+
+.stats .type {
+  width: 40px;
+  padding: 0;
+  text-align: center;
+}
+
+.stats .type i {
+  width: 20px;
+  height: 20px;
+}
+
+.stats td {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.stats .number {
+  font-size: 0.9em;
+  color: var(--soft-text);
+}
+
+/* --- Actions and tabs --- */
+
+.sort-label {
+  height: 0;
+  text-align: right;
+  font-size: 0.9em;
+  position: relative;
+  top: -25px;
+  right: 20px;
+}
+
+.search-header {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 10px;
+}
+
+.search {
+  flex: 1;
+  margin: 10px 0;
+}
+
+.stmr-moogle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding-left: 30px;
+}
+
+.stmr-moogle img {
+  width: 40px;
+  height: 40px;
+}
+
+.stmr-moogle input[type='number'] {
+  width: 80px;
+  margin-right: 5px;
+}
+
+.stmr-moogle label {
+  margin: 0 0 0 20px;
+  font-weight: normal;
+}
+
+.work-in-progress {
+  padding: 10px 0;
+}
+
+.number-line {
+  display: flex;
+  align-items: center;
+}
+
+.number-line input {
+  width: 60px;
+  margin-left: 5px;
+}
+
+/* --- The cards --- */
+
+.results {
+  padding: 0 10px 10px;
+}
+
+.separator {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.separator i {
+  width: 50px;
+  height: 50px;
+}
+
+.type-jump {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.type-jump span {
+  margin-right: 10px;
+  color: var(--soft-text);
+}
+
+.type-jump a {
+  margin: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.type-jump i {
+  width: 24px;
+  height: 24px;
+}
+
+.date,
+.source {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #337ab7;
+  margin-top: 10px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 0;
+}
+
+.tools {
+  padding: 50px 0 15px 15px;
+}
+
+.tools button {
+  margin-right: 15px;
+}
+
+.load-more {
+  text-align: center;
+}
+
+.load-more button {
+  margin: 1em;
+}
+
+.end {
+  height: 1px;
+}
+
+@media (max-width: 991px) {
+  .stats {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .stats table {
+    width: auto;
+    padding: 0 4px;
+  }
+}

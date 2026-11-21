@@ -1,0 +1,18 @@
+@for (group of groups(); track group.key) {
+  <div class="stats-group">
+    <h4>{{ group.title }}</h4>
+    <table>
+      <tbody>
+        @for (row of rows(); track row.key) {
+          <tr>
+            <td class="crystal"><i [class]="'img img-crystal-' + row.crystal"></i></td>
+            <td>{{ counts()[group.key][row.key].different }}</td>
+            <td>/</td>
+            <td>{{ counts()[group.key][row.key].total }}</td>
+            <td class="number">({{ counts()[group.key][row.key].number }})</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}

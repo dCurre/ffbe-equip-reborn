@@ -1,0 +1,41 @@
+:host {
+  display: block;
+}
+.detail {
+  display: inline;
+  font-size: 0.8em;
+  text-transform: uppercase;
+}
+.miniIcon {
+  width: 22px;
+  height: 22px;
+  margin: 0 5px 0 0;
+  border-radius: 5px;
+}
+.enhancements {
+  display: flex;
+  align-items: center;
+  font-size: small;
+  font-weight: bold;
+  color: brown;
+}
+:root[data-theme='dark'] .enhancements {
+  color: #e74c3c;
+}
+.enhancements img {
+  height: 24px;
+  margin-right: 5px;
+}
+.outclassedByIcon {
+  width: 20px;
+  margin-left: 2px;
+}
+.userPseudo {
+  font-size: 0.6em;
+}
+.buildLink {
+  margin-left: 10px;
+}
+.rarity {
+  opacity: 0.7;
+}

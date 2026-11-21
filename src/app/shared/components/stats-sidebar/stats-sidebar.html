@@ -1,0 +1,7 @@
+<div class="internal">
+  <button type="button" title="Toggle sidebar" (click)="collapsed.set(!collapsed())">
+    <span class="chevron">&#x2039;</span>
+    <span class="collapsed-hidden">Toggle stats</span>
+  </button>
+  <div class="collapsed-hidden"><ng-content /></div>
+</div>

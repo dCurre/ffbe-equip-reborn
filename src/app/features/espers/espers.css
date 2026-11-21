@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+.esper {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.share-link {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+/* On phones the board is a full screen view that the round button opens: the header and the link hide while it is open */
+@media (max-width: 768px), (pointer: coarse) and (hover: none) {
+  .viewing-grid app-esper-header,
+  .viewing-grid .share-link {
+    display: none;
+  }
+}

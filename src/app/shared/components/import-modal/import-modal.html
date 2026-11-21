@@ -1,0 +1,21 @@
+<app-modal [heading]="heading()" [(open)]="open">
+  @if (warning()) {
+    <p class="warning">{{ warning() }}</p>
+  }
+  <input type="file" accept=".json,application/json" (change)="chooseFile($event)" />
+  <p>
+    <a
+      href="https://www.reddit.com/r/FFBraveExvius/comments/dd8ljd/ffbe_sync_is_back/"
+      target="_blank"
+      rel="noreferrer"
+    >
+      Instructions to import your data directly from the game
+    </a>
+    (require login to FFBE with Facebook or Google)
+  </p>
+  <p>{{ summary() }}</p>
+  @for (message of messages(); track $index) {
+    <p class="error">{{ message }}</p>
+  }
+  <ng-container modalFooter><button app-button type="button" (click)="confirmed.emit()">Import</button></ng-container>
+</app-modal>

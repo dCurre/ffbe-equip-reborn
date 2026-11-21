@@ -1,0 +1,12 @@
+<span [class.skill]="isSkill()">
+  @for (piece of pieces(); track $index) {
+    @if (piece.name) {
+      @if (piece.icon) {
+        <img class="icon" [src]="'img/items/' + piece.icon" alt="" />
+      }
+      <app-wiki-link [name]="piece.name" [page]="piece.page" />
+    } @else {
+      <ng-container>{{ piece.text }}</ng-container>
+    }
+  }
+</span>

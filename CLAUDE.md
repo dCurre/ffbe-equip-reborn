@@ -1,0 +1,6 @@
+# FFBE Equip Reborn
+- Branch `angular_migration`; never touch `master`. Plan and resume point: `.claude/REWORK.md`.
+- No local servers left running (owner starts them). No screenshots: compare code, owner checks on screen.
+- Components: own folder with `.ts`/`.html`/`.css`; no inline template/styles, no HTML strings, no `innerHTML`. Reuse `src/app/shared/components/` before new markup/CSS; icons go in `shared/components/icon/icon.ts`.
+- Commit only when asked, as one descriptive commit (roadmap included); push only with OK (`push` skill).
+- Keep extraction tools (`tools/`, `static/GL|JP` parse scripts) and used data; grep every reference before proposing a deletion.

@@ -1,0 +1,21 @@
+<div class="line">
+  <span>Monster attack:</span>
+  <a href="#" (click)="$event.preventDefault(); show()">{{ formulaToString(s.monsterAttackFormula(), false) }}</a>
+  <button type="button" class="reset" title="Back to the default attack" (click)="reset()">
+    <app-icon name="remove" />
+  </button>
+</div>
+
+<app-modal heading="Monster Attack Formula" [(open)]="open">
+  <input
+    type="text"
+    placeholder="Enter monster damage formula"
+    [value]="text()"
+    (input)="text.set($any($event.target).value)"
+    (keydown.enter)="apply()"
+  />
+  <ng-container modalFooter>
+    <button app-button type="button" (click)="apply()">OK</button>
+    <button app-button type="button" (click)="open.set(false)">Cancel</button>
+  </ng-container>
+</app-modal>

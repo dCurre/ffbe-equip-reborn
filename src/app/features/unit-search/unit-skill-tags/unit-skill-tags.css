@@ -1,0 +1,18 @@
+i.img {
+  width: 28px;
+  height: 28px;
+  margin: -3px 2px 0;
+}
+
+.chainFamily {
+  position: relative;
+  padding-left: 16px;
+  margin-left: 2px;
+}
+
+.chainFamily .bullet {
+  position: absolute;
+  top: -4px;
+  left: 0;
+  font-size: 1.3em;
+}

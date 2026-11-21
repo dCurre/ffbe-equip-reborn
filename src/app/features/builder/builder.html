@@ -1,0 +1,72 @@
+<app-page-content>
+  <app-load-status [ready]="ready()" subject="the data" />
+
+  <app-builder-tabs
+    [names]="tabNames()"
+    [max]="maxTabs"
+    [disabled]="runner.running()"
+    [(active)]="active"
+    (add)="addTab()"
+    (close)="closeTab($event)"
+  />
+
+  <div class="columns">
+    <div class="left">
+      <app-unit-panel [state]="s" [loader]="loader" />
+      <app-goal-panel [state]="s" [customGoal]="customGoal" />
+      <app-enemy-panel [state]="s" />
+      <app-rules-panel [state]="s" (workers)="setWorkers($event)" />
+      <app-equipments-panel [state]="s" [items]="items" />
+    </div>
+
+    <div class="right">
+      <app-build-result
+        [state]="s"
+        [items]="items"
+        [sharing]="sharing"
+        [allSharing]="allSharing()"
+        [runner]="runner"
+        [game]="game"
+        [ready]="ready()"
+        (build)="onBuildClick()"
+      />
+      @if (!s.unit()) {
+        <app-build-help />
+      }
+      <app-site-footer />
+    </div>
+  </div>
+</app-page-content>
+
+<app-item-picker
+  [context]="items.pickerContext()"
+  [types]="items.pickerTypes()"
+  [behavior]="items.pickerBehavior()"
+  [itemsToExclude]="s.excluded()"
+  [itemsToInclude]="s.included()"
+  [ownedDefault]="s.source() === 'owned' || s.source() === 'ownedAvailableForExpedition'"
+  [excludeNotReleasedDefault]="s.excludeNotReleased()"
+  (picked)="items.onPicked($event)"
+  (toggledExclude)="items.toggleExclude($event)"
+  (toggledInclude)="items.toggleInclude($event)"
+  (enhanceItem)="items.openEnhancements($event)"
+/>
+
+<app-enhancement-modal [items]="items" [game]="game" />
+
+<app-share-link-modal
+  heading="Link to this build"
+  [link]="sharing.share.link()"
+  [copied]="sharing.share.copied()"
+  [(open)]="sharing.share.open"
+/>
+
+<app-text-export-modal
+  heading="Build as text"
+  [rows]="14"
+  [text]="sharing.textValue()"
+  [(open)]="sharing.textOpen"
+  (copy)="sharing.copyText()"
+/>
+
+<app-custom-goal-modal [goal]="customGoal" />

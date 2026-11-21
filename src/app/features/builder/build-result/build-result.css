@@ -1,0 +1,91 @@
+.build-bar {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.build-button {
+  min-width: 120px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.progress {
+  flex: 1;
+  height: 22px;
+  background-color: var(--color-panel-heading);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.progress-bar {
+  min-width: 34px;
+  height: 100%;
+  padding: 0 6px;
+  color: #fff;
+  background-color: #337ab7;
+  transition: width 0.3s;
+}
+
+.counter {
+  min-width: 100px;
+  text-align: right;
+  opacity: 0.7;
+}
+
+.build-result {
+  margin-bottom: 15px;
+}
+
+.slot-line {
+  display: flex;
+  align-items: center;
+  min-height: 70px;
+  border-top: 1px solid var(--color-border);
+}
+
+.slot-line.empty {
+  gap: 10px;
+  padding-left: 60px;
+  opacity: 0.6;
+}
+
+.slot-line .icon {
+  width: 40px;
+  height: 40px;
+}
+
+.slot-line.enhanced ::ng-deep .itemName {
+  color: brown;
+}
+
+.slot-line .actions {
+  display: flex;
+  flex-direction: column;
+  width: 50px;
+}
+
+.slot-line .actions button {
+  padding: 0;
+  font-size: 14px;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.slot-line .actions button.dim {
+  opacity: 0.35;
+}
+
+.item-cards {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.slot-line .item-cards,
+.slot-line.empty {
+  cursor: pointer;
+}

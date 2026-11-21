@@ -39,16 +39,13 @@ export function runOptimizer(unitId, skillId, { enemy = {}, maxCombos = Infinity
     unitBuild.formula = formula;
     const enemyStats = makeEnemy(ctx, enemy);
 
-    const dataStorage = new ctx.DataStorage();
-    ctx.dataStorage = dataStorage;
-    ctx.builds = [unitBuild];
-    ctx.enemyStats = enemyStats;
+    const dataStorage = new ctx.DataStorage({ currentBuild: () => unitBuild, ownedUnits: () => null, itemEnchantments: () => null });
     dataStorage.setData(structuredClone(pruneItems(items, itemsPerType)));
     dataStorage.setUnitBuild(unitBuild);
     dataStorage.itemsToExclude = [];
     dataStorage.prepareData([], enemyStats, {}, formula);
 
-    const combos = new ctx.TypeCombinationGenerator(false, false, false, unitBuild, dataStorage.dualWieldSources, dataStorage.equipSources, dataStorage.dataByType, dataStorage.weaponsByTypeAndHands, false).generateTypeCombinations();
+    const combos = new ctx.TypeCombinationGenerator(false, false, false, unitBuild, dataStorage.dualWieldSources, dataStorage.equipSources, dataStorage.dataByType, dataStorage.weaponsByTypeAndHands, false, dataStorage).generateTypeCombinations();
 
     const optimizer = new ctx.BuildOptimizer(dataStorage.itemWithVariation, () => {});
     optimizer.unitBuild = unitBuild;

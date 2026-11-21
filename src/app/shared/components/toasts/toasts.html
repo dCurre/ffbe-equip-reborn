@@ -1,0 +1,3 @@
+@for (message of toast.messages(); track message.id) {
+  <p role="status" [class]="message.kind">{{ message.text }}</p>
+}

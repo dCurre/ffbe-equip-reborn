@@ -1,0 +1,77 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.stats-group {
+  flex-grow: 1;
+  width: 100%;
+  max-width: 180px;
+  text-align: center;
+}
+
+h4 {
+  margin-top: 15px;
+  font-size: 1.2em;
+}
+
+table {
+  width: 100%;
+  max-width: 150px;
+  margin: 0 auto;
+}
+
+td {
+  padding-left: 5px;
+  text-align: right;
+}
+
+.crystal {
+  width: 28px;
+  padding: 0;
+  text-align: center;
+}
+
+.crystal i {
+  margin: 1px;
+}
+
+.number {
+  font-size: 0.9em;
+  color: var(--soft-text);
+}
+
+/* the sidebar (a component) stacks above the content on a phone */
+@media (max-width: 991px) {
+  :host {
+    flex-direction: row;
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+
+  .stats-group {
+    width: auto;
+    max-width: none;
+    padding: 0 4px;
+  }
+
+  h4 {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 550px) {
+  :host {
+    font-size: 0.75em;
+  }
+
+  table {
+    max-width: 120px;
+  }
+
+  .crystal {
+    width: 22px;
+  }
+}

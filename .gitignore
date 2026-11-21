@@ -8,3 +8,10 @@ static/JP/unit/
 # Personal Claude Code settings
 .claude/settings.local.json
 .wrangler
+
+# Compiled calculation core (npm test builds it)
+.tmp/
+
+# Angular build output and cache
+/dist
+/.angular/cache

@@ -1,0 +1,18 @@
+@if (effect()?.resist) {
+  @for (group of groups(); track group.value) {
+    @if (!$first) {
+      ,
+    }
+    +{{ group.value }}%
+    @for (resist of group.resists; track resist.name) {
+      <i class="img img-equipment-heavyShield miniIcon"></i
+      ><i [class]="'img withMiniIcon ' + (resist.element ? 'img-element-' : 'img-ailment-') + resist.name"></i>
+    }
+  }
+  {{ turns() }}
+  @if (effect().equipedConditions) {
+    <app-unit-equiped-condition [conditions]="effect().equipedConditions" />
+  }
+} @else {
+  {{ text() }}
+}

@@ -1,0 +1,16 @@
+:host {
+  display: block;
+}
+.exclusive {
+  font-weight: bold;
+}
+.exclusive .img {
+  width: 30px;
+  height: 30px;
+}
+.notSelected {
+  opacity: 0.5;
+}
+.forbiddenAccess {
+  text-decoration: line-through;
+}

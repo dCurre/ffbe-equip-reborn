@@ -1,0 +1,19 @@
+if equiped with
+@for (part of parts(); track $index) {
+  @if (!$first) {
+    ,
+  }
+  @if ('type' in part) {
+    <i [class]="'img img-equipment-' + part.type"></i>
+  } @else if ('element' in part) {
+    <i class="img img-equipment-sword miniIcon"></i
+    ><i [class]="'img img-element-' + part.element + ' withMiniIcon'"></i>
+  } @else {
+    @for (item of part.items; track $index) {
+      @if (!$first) {
+        or
+      }
+      <img class="icon" [src]="'img/items/' + item.icon" alt="" />{{ item.name }}
+    }
+  }
+}

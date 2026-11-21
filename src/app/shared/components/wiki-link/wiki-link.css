@@ -1,0 +1,8 @@
+a {
+  margin-left: 4px;
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+a:hover {
+  opacity: 1;
+}

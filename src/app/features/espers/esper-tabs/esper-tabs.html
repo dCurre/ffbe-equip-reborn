@@ -1,0 +1,17 @@
+<div class="tabs-wrapper">
+  <ul class="tabs">
+    <li [class.active]="tab() === 'ALL'" title="Stats on all espers" (click)="selected.emit('ALL')">
+      <a><i class="img img-esper-ALL"></i></a>
+    </li>
+    @for (info of espers(); track info.name) {
+      <li
+        [class.active]="tab() === info.name"
+        [class.not-owned]="!owned()[info.name]"
+        [title]="info.name + (owned()[info.name] ? ' (owned)' : ' (not owned)')"
+        (click)="selected.emit(info.name)"
+      >
+        <a><i [class]="sprite(info.name)"></i></a>
+      </li>
+    }
+  </ul>
+</div>

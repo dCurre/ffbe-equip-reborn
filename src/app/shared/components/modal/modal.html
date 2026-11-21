@@ -1,0 +1,8 @@
+<dialog #dialog [class.wide]="wide()" (close)="open.set(false)" (click)="closeOnBackdrop($event)">
+  <div class="header">
+    <h4>{{ heading() }}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="open.set(false)">×</button>
+  </div>
+  <div class="body"><ng-content /></div>
+  <div class="footer"><ng-content select="[modalFooter]" /></div>
+</dialog>

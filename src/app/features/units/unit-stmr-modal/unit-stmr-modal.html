@@ -1,0 +1,8 @@
+<app-modal [heading]="'Farmed ' + (unit()?.name ?? '') + ' STMR'" [(open)]="open">
+  <p>How was it created ?</p>
+  <div class="choices">
+    @for (choice of sources(); track choice.source) {
+      <button app-button type="button" (click)="chosen.emit(choice.source)">{{ choice.text }}</button>
+    }
+  </div>
+</app-modal>

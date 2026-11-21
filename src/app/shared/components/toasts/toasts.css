@@ -1,0 +1,21 @@
+:host {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  z-index: 10000;
+}
+p {
+  margin: 0 0 5px;
+  padding: 8px 15px;
+  color: #ffffff;
+  border-radius: var(--radius);
+}
+.success {
+  background-color: #5cb85c;
+}
+.warn {
+  background-color: #f0ad4e;
+}
+.error {
+  background-color: #d9534f;
+}

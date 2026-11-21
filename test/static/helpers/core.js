@@ -1,0 +1,22 @@
+// The calculation core written in TypeScript (src/core), compiled by `tsc -p tsconfig.core.json` (npm test does it first).
+export const core = {
+    ...(await import(new URL('../../../.tmp/core/constants.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/array-utils.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/formula.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/item-values.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/damage-calculation.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/stat-calculation.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/item-conditions.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/item-combination.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/item-entry.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/enemy-stats.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/unit-shift.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/unit-build.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/tree-comparator.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/esper-tree-comparator.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/item-pool.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/type-combination-generator.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/build-optimizer.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/data-storage.js', import.meta.url))),
+    ...(await import(new URL('../../../.tmp/core/builder/optimizer-session.js', import.meta.url))),
+};

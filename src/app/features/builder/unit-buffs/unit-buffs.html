@@ -1,0 +1,36 @@
+<details class="buffs">
+  <summary>Killer and element buffs</summary>
+  <div class="killer-buffs">
+    @for (name of killerNames; track name) {
+      <div class="killer-buff">
+        <i [class]="'img img-killer-physical-' + name" [title]="name + ' physical killer'"></i>
+        <input
+          type="number"
+          min="0"
+          [value]="s.killerBuffs()[name]?.physical ?? ''"
+          (input)="setKillerBuff(name, 'physical', $any($event.target).value)"
+        />
+        <i [class]="'img img-killer-magical-' + name" [title]="name + ' magical killer'"></i>
+        <input
+          type="number"
+          min="0"
+          [value]="s.killerBuffs()[name]?.magical ?? ''"
+          (input)="setKillerBuff(name, 'magical', $any($event.target).value)"
+        />
+      </div>
+    }
+  </div>
+  <div class="element-buffs">
+    @for (element of elements; track element) {
+      <label class="resist"
+        ><i [class]="'img img-element-' + element" [title]="element + ' damage buff'"></i>
+        <input
+          type="number"
+          min="0"
+          [value]="s.elementBuffs()[element] ?? ''"
+          (input)="setElementBuff(element, $any($event.target).value)"
+        />
+      </label>
+    }
+  </div>
+</details>

@@ -1,0 +1,61 @@
+<div class="skill">
+  <div><img class="skillIcon" [src]="'img/items/' + skill().icon" alt="" /></div>
+  <div class="nameAndEffects">
+    <div class="nameLine">
+      <div>
+        <span class="name"
+          >{{ skill().name }}
+          @if (!repeated()) {
+            @if (skill().equipedConditions) {
+              <span class="condition"><app-unit-equiped-condition [conditions]="skill().equipedConditions" /></span>
+            }
+            <app-unit-skill-tags [skill]="shown()" />
+          }
+        </span>
+      </div>
+      @if (!repeated()) {
+        <div class="spacer"></div>
+        @if (shown().lbCost) {
+          <div class="lbCost">
+            {{ shown().lbCost }}<img class="lbCostImg" src="img/icons/lbShard.png" title="LB cost" alt="" />
+          </div>
+        }
+        @if (shown().mpCost) {
+          <div class="mpCost">{{ shown().mpCost }}<span class="mpCostLabel">MP</span></div>
+        }
+        @if (skill().rarity && skill().level) {
+          <div class="rarityAndLevel">
+            <span class="rarity">{{ skill().rarity }}{{ skill().rarity === 'NV' ? '' : '★' }}</span>
+            @if (skill().exLevel) {
+              <span class="exLevel">EX+{{ skill().exLevel }}</span>
+            } @else {
+              <span class="level">lvl {{ skill().level }}</span>
+            }
+          </div>
+        }
+      }
+    </div>
+    @if (!repeated()) {
+      @if (cooldown(); as first) {
+        <span class="effect">Available turn {{ first.startTurn }} ({{ first.cooldownTurns }} turns cooldown):</span>
+      }
+      @if (shown().maxCastPerBattle) {
+        <span class="effect"
+          >{{ shown().maxCastPerBattle }} use(s) per battle{{
+            shown().noMulticast ? ', unique selection on multicast' : ''
+          }}</span
+        >
+      }
+      <app-unit-strange-stats [effects]="shown().effects" />
+      @for (line of unlocks(); track $index) {
+        <div class="unlockedBy"><span class="unlockIcon">&#128275;</span>{{ line }}</div>
+      }
+      @if (lastTurn()) {
+        <div class="unlockedBy"><span class="unlockIcon">&#128275;</span>{{ lastTurn() }}</div>
+      }
+      @for (effect of shown().effects; track $index) {
+        <app-unit-effect [entry]="effect" [already]="already()" [skillId]="shown().id" />
+      }
+    }
+  </div>
+</div>

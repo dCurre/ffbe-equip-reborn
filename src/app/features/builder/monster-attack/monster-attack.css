@@ -1,0 +1,18 @@
+.line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reset {
+  padding: 0;
+  color: var(--color-link);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+input[type='text'] {
+  box-sizing: border-box;
+  width: 100%;
+}

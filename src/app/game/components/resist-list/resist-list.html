@@ -1,0 +1,26 @@
+@if (resist()) {
+  <div class="groups">
+    @for (group of elements(); track group.percent) {
+      <div class="group">
+        @for (name of group.names; track name) {
+          <span class="value">
+            <i [class]="'img mini img-equipment-' + icon()"></i><i [class]="'img with-mini img-element-' + name"></i>
+          </span>
+        }
+        {{ group.percent }}%
+      </div>
+    }
+  </div>
+  <div class="groups">
+    @for (group of ailments(); track group.percent) {
+      <div class="group">
+        @for (name of group.names; track name) {
+          <span class="value">
+            <i [class]="'img mini img-equipment-' + icon()"></i><i [class]="'img with-mini img-ailment-' + name"></i>
+          </span>
+        }
+        {{ group.percent }}%
+      </div>
+    }
+  </div>
+}

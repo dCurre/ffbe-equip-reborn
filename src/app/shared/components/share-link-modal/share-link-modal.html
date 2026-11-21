@@ -1,0 +1,10 @@
+<app-modal [heading]="heading()" [(open)]="open">
+  @if (intro()) {
+    <p>{{ intro() }}</p>
+  }
+  <input class="link-input" type="text" readonly [value]="link()" (focus)="select($event)" />
+  @if (copied()) {
+    <p>Link copied to your clipboard.</p>
+  }
+  <ng-container modalFooter><button app-button type="button" (click)="open.set(false)">Close</button></ng-container>
+</app-modal>

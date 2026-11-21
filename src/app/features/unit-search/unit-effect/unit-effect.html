@@ -1,0 +1,41 @@
+@if (effect()?.randomlyUse; as random) {
+  <span class="effect">Randomly use :</span>
+  @for (use of random; track $index) {
+    <div class="subSkill">
+      <span class="percent">{{ use.percent }}%</span>
+      <app-unit-skill [skill]="use.skill" [topLevel]="false" [already]="alreadyWithSkill()" />
+    </div>
+  }
+} @else if (effect()?.allowUseOf; as equipments) {
+  <span class="effect"
+    >Allow use of
+    @for (equipment of equipments; track equipment) {
+      @if (!$first) {
+        ,
+      }
+      <i [class]="'img img-equipment-' + equipment"></i>
+    }
+  </span>
+} @else if (effect()?.counterSkill; as counter) {
+  <span class="effect">{{ effect().percent }}% chance to counter {{ effect().counterType }} attacks with :</span>
+  <div class="subSkill"><app-unit-skill [skill]="counter" [topLevel]="false" [already]="already()" /></div>
+} @else if (effect()?.autoCastedSkill; as cast) {
+  <span class="effect">Cast at the start of battle or when revived :</span>
+  <div class="subSkill"><app-unit-skill [skill]="cast" [topLevel]="false" [already]="alreadyWithSkill()" /></div>
+} @else if (effect()?.replaceNormalAttack; as replace) {
+  <span class="effect">Replace normal attack by :</span>
+  <div class="subSkill"><app-unit-skill [skill]="replace" [topLevel]="false" [already]="alreadyWithSkill()" /></div>
+} @else if (effect()?.gainSkills; as gain) {
+  <span class="effect"
+    >Gain
+    @if (gain.turns !== undefined) {
+      {{ gain.turns === 0 ? 'for current turn' : 'for ' + gain.turns + ' turns' }}
+    }
+    :</span
+  >
+  @for (gained of gained(); track $index) {
+    <div class="subSkill"><app-unit-skill [skill]="gained.skill" [topLevel]="false" [already]="gained.already" /></div>
+  }
+} @else {
+  <span class="effect"><app-unit-effect-description [entry]="entry()" /></span>
+}

@@ -1,0 +1,94 @@
+<div [class]="classes()" [class.clickable]="clickable()" (click)="onCardClick($event)">
+  @if (tab() === 'farmableStmr' && line().stmrAccess; as stmr) {
+    <div class="stmr-wrapper">
+      <ng-container *ngTemplateOutlet="cardBody" />
+    </div>
+    <div class="stmr-recipe">
+      <div><img class="unit-image" [src]="stmrImage()" alt="" /></div>
+      <div class="column">
+        <div class="unit-name">{{ stmrUnitName() }}</div>
+        <div class="recipe">
+          @if (stmr.base === 'sixStar') {
+            <i class="img img-crystal-rainbowCrystal"></i><i class="img img-crystal-rainbowCrystal"></i> &rArr;
+            <i class="img img-crystal-sevenStarCrystal"></i>
+            <div class="then">then</div>
+          }
+          <i class="img img-crystal-sevenStarCrystal"></i>
+          @if (stmr.sevenStar) {
+            + <i class="img img-crystal-sevenStarCrystal"></i>
+          }
+          @if (stmr.sixStar) {
+            +
+            @for (n of range(stmr.sixStar); track n) {
+              <i class="img img-crystal-rainbowCrystal"></i>
+            }
+          }
+          @if (stmr.stmrMoogle) {
+            + {{ stmr.stmrMoogle }}%
+            <img class="stmr-moogle-icon" src="img/units/unit_ills_906000105.png" alt="" />
+          }
+        </div>
+      </div>
+    </div>
+  } @else {
+    <ng-container *ngTemplateOutlet="cardBody" />
+  }
+</div>
+
+<ng-template #cardBody>
+  <div class="td inventory">
+    @if (tab() !== 'sellable' && tab() !== 'candidates') {
+      <button type="button" class="step plus" title="Add one" (click)="$event.stopPropagation(); add.emit()">+</button>
+    }
+    <span class="number badge">{{ line().ownedNumber }}</span>
+    @if (tab() !== 'sellable' && tab() !== 'candidates') {
+      <button type="button" class="step minus" title="Remove one" (click)="$event.stopPropagation(); remove.emit()">
+        −
+      </button>
+      @if (line().item.tmrUnit) {
+        <img
+          class="farmed-button"
+          src="img/units/unit_ills_904000105.png"
+          alt="TMR farmed"
+          title="TMR Farmed ! Click here to indicate you farmed this TMR. It will decrease the number you can farm and increase the number you own this TMR by 1"
+          (click)="$event.stopPropagation(); farmedTmr.emit()"
+        />
+      }
+      @if (canEnhance()) {
+        <img
+          class="item-world-button"
+          src="img/icons/dwarf.png"
+          alt="Enhancements"
+          title="Open item management popup"
+          (click)="$event.stopPropagation(); enhance.emit()"
+        />
+      }
+      <img
+        class="exclude-button"
+        src="img/icons/excludeExpedition.png"
+        alt="Exclude"
+        title="Exclude this item from builds made for expeditions"
+        (click)="$event.stopPropagation(); excluded.emit()"
+      />
+    }
+  </div>
+  @if (line().visionCard?.levels?.length && line().visionCard!.levels.length > 1) {
+    <span class="card-level">
+      <button type="button" title="Level up" (click)="$event.stopPropagation(); levelChange.emit(1)">&#8593;</button>
+      <button type="button" title="Level down" (click)="$event.stopPropagation(); levelChange.emit(-1)">&#8595;</button>
+    </span>
+  }
+  @if (tab() === 'sellable') {
+    <div class="td sellable-reasons">
+      @if (sellReason(); as reason) {
+        <span class="better" [title]="reason === 'shop' ? 'Can be bought in a shop' : 'Can be crafted'">
+          {{ reason === 'shop' ? '🛒' : '📜' }}
+        </span>
+      }
+      @if (line().betterItems && !line().item.special) {
+        <span class="better" [title]="betterItemsText()">{{ betterItemsTotal() }}&#8648;</span>
+      }
+    </div>
+  }
+  <app-item-summary [item]="line().item" [enchantments]="enchantments()" />
+</ng-template>

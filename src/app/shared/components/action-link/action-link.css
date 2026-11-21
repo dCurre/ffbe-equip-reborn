@@ -1,0 +1,10 @@
+:host {
+  margin-right: 15px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .text {
+    display: none;
+  }
+}

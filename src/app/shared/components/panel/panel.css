@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  margin-bottom: 20px;
+}
+.heading {
+  padding: 10px 15px;
+  background-color: var(--color-panel-heading);
+  border-bottom: 1px solid var(--color-border);
+  border-radius: 3px 3px 0 0;
+}
+.body {
+  padding: 15px;
+}
