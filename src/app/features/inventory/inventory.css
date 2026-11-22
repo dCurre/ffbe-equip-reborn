@@ -30,12 +30,7 @@
 /* --- Actions and tabs --- */
 
 .sort-label {
-  height: 0;
-  text-align: right;
   font-size: 0.9em;
-  position: relative;
-  top: -25px;
-  right: 20px;
 }
 
 .search-header {
@@ -107,11 +102,8 @@
   border-radius: 999px;
 }
 
-/* top right of the panel, over the rows: it appears without moving anything */
+/* in the corner of the tab row, next to the sort label */
 .chip.clear {
-  position: absolute;
-  top: 0;
-  right: 10px;
   color: var(--color-link);
   background-color: transparent;
   border-style: dashed;
@@ -119,6 +111,15 @@
 
 .chip.clear:hover {
   background-color: color-mix(in srgb, var(--color-link) 12%, transparent);
+}
+
+/* on a phone the rows reach the corner: the button gets a row of its own, at the right, over them */
+@media (max-width: 991px) {
+  .chip.clear {
+    position: static;
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
 }
 
 .clear-count {

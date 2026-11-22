@@ -9,6 +9,8 @@ export interface Choice {
   /** a text instead of a picture, or next to the picture when there is an `icon` too */
   label?: string;
   tooltip?: string;
+  /** shown but not to choose (a value that no result could have with the others chosen) */
+  disabled?: boolean;
 }
 
 /**

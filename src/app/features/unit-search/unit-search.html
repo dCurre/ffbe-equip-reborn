@@ -14,17 +14,17 @@
               <div class="line">
                 <span class="sub-title">Base :</span
                 ><app-choice-group
-                  [choices]="baseRarityChoices"
+                  [choices]="baseRarityChoices()"
                   [selected]="state().baseRarity"
-                  (selectedChange)="patch({ baseRarity: [...$event] })"
+                  (selectedChange)="setRarity('baseRarity', $event)"
                 />
               </div>
               <div class="line">
                 <span class="sub-title">Max :</span
                 ><app-choice-group
-                  [choices]="maxRarityChoices"
+                  [choices]="maxRarityChoices()"
                   [selected]="state().maxRarity"
-                  (selectedChange)="patch({ maxRarity: [...$event] })"
+                  (selectedChange)="setRarity('maxRarity', $event)"
                 />
               </div>
             </app-panel>

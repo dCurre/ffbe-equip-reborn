@@ -3,6 +3,7 @@
     app-button
     type="button"
     [active]="isSelected(choice.value)"
+    [disabled]="choice.disabled"
     [title]="choice.tooltip ?? (choice.label === undefined ? null : choice.value)"
     (click)="toggle(choice.value)"
   >

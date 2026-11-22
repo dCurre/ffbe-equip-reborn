@@ -13,6 +13,19 @@
 
       <app-tab-panel [tabs]="tabs" [active]="tab()" (selected)="showTab($event)">
         <div corner class="sort-label">{{ sortLabel() }}</div>
+        @if (activeFilters() > 0 && (showSort() || (byType() && typeChoices().length > 1))) {
+          <button
+            corner
+            app-button
+            small
+            type="button"
+            class="chip clear"
+            title="Show every type, sorted by ATK"
+            (click)="clearFilters()"
+          >
+            <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
+          </button>
+        }
         <div class="search-header">
           <app-search-box
             #searchBox
@@ -46,18 +59,6 @@
 
         @if (showSort() || (byType() && typeChoices().length > 1)) {
           <div class="filter-panel">
-            @if (activeFilters() > 0) {
-              <button
-                app-button
-                small
-                type="button"
-                class="chip clear"
-                title="Show every type, sorted by ATK"
-                (click)="clearFilters()"
-              >
-                <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
-              </button>
-            }
             @if (byType() && typeChoices().length > 1) {
               <span class="filter-label">Type</span>
               <div class="type-rows">

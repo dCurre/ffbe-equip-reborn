@@ -94,6 +94,12 @@ const GROUPS: { key: Group; title: string }[] = [
   { key: 'support', title: 'Support' },
 ];
 
+/** NV is above the stars */
+const rarityRank = (rarity: string): number => (rarity === 'NV' ? 8 : parseInt(rarity, 10));
+const rarityChoice = (value: string): Choice => ({ value, label: value === 'NV' ? 'NV' : `${value}★` });
+const BASE_RARITIES = ['1', '2', '3', '4', '5', 'NV'];
+const MAX_RARITIES = ['2', '3', '4', '5', '6', '7', 'NV'];
+
 const BREAKS = ['atk', 'def', 'mag', 'spr'];
 
 const PANELS: PanelConfig[] = [
@@ -302,23 +308,15 @@ export class UnitSearch {
   private readonly debounce = debouncer();
 
   protected readonly panels = PANELS;
-  protected readonly baseRarityChoices = text(
-    ['1★', '1'],
-    ['2★', '2'],
-    ['3★', '3'],
-    ['4★', '4'],
-    ['5★', '5'],
-    ['NV', 'NV'],
-  );
-  protected readonly maxRarityChoices = text(
-    ['2★', '2'],
-    ['3★', '3'],
-    ['4★', '4'],
-    ['5★', '5'],
-    ['6★', '6'],
-    ['7★', '7'],
-    ['NV', 'NV'],
-  );
+  /** the base and the max rarity of a unit go up together: a max under every base chosen (and a base over every max chosen) has no unit */
+  protected readonly baseRarityChoices = computed<Choice[]>(() => {
+    const top = Math.max(...this.state().maxRarity.map(rarityRank), 0);
+    return BASE_RARITIES.map((value) => ({ ...rarityChoice(value), disabled: top > 0 && rarityRank(value) > top }));
+  });
+  protected readonly maxRarityChoices = computed<Choice[]>(() => {
+    const bottom = Math.min(...this.state().baseRarity.map(rarityRank), Infinity);
+    return MAX_RARITIES.map((value) => ({ ...rarityChoice(value), disabled: rarityRank(value) < bottom }));
+  });
   protected readonly typeChoices: Choice[] = typeList
     .slice(0, typeList.length - 2)
     .map((value) => ({ value, tooltip: (typeListLiterals as Record<string, string>)[value] }));
@@ -339,9 +337,9 @@ export class UnitSearch {
     const named = (choices: Choice[], values: string[]): string => values.map((v) => nameOf(choices, v)).join(', ');
     const list: (ActiveFilter & { group: Group })[] = [];
     if (baseRarity.length)
-      list.push({ key: 'baseRarity', group: 'unit', label: `Base ${named(this.baseRarityChoices, baseRarity)}` });
+      list.push({ key: 'baseRarity', group: 'unit', label: `Base ${named(this.baseRarityChoices(), baseRarity)}` });
     if (maxRarity.length)
-      list.push({ key: 'maxRarity', group: 'unit', label: `Max ${named(this.maxRarityChoices, maxRarity)}` });
+      list.push({ key: 'maxRarity', group: 'unit', label: `Max ${named(this.maxRarityChoices(), maxRarity)}` });
     if (types.length) list.push({ key: 'types', group: 'unit', label: named(this.typeChoices, types) });
     if (series.length) list.push({ key: 'series', group: 'unit', label: named(this.seriesChoices, series) });
     if (skillFilter.chainFamily !== 'none') {
@@ -433,6 +431,20 @@ export class UnitSearch {
   }
 
   // --- Changing the filters ---
+
+  /** A rarity chosen takes off the ones of the other kind that no unit could have with it (see `baseRarityChoices`). */
+  protected setRarity(kind: 'baseRarity' | 'maxRarity', values: readonly string[]): void {
+    const chosen = [...values];
+    const { baseRarity, maxRarity } = this.state();
+    // nothing chosen takes nothing off the other kind
+    if (kind === 'baseRarity') {
+      const bottom = chosen.length ? Math.min(...chosen.map(rarityRank)) : 0;
+      this.patch({ baseRarity: chosen, maxRarity: maxRarity.filter((m) => rarityRank(m) >= bottom) });
+    } else {
+      const top = chosen.length ? Math.max(...chosen.map(rarityRank)) : Infinity;
+      this.patch({ maxRarity: chosen, baseRarity: baseRarity.filter((b) => rarityRank(b) <= top) });
+    }
+  }
 
   protected patch(change: Partial<UnitSearchState>): void {
     this.state.update((state) => ({ ...state, ...change }));

@@ -87,7 +87,6 @@
 
 /* turns every filter off: it shows how many are on */
 .chip.clear {
-  margin-left: auto;
   color: var(--color-link);
   background-color: transparent;
   border-style: dashed;

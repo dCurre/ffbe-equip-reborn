@@ -2,8 +2,33 @@
   display: block;
 }
 
+/* the tabs and, at the right of them, the corner on the same line (a narrow screen puts the corner on a line of its own);
+   its bottom border goes on with the one of the tabs */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.corner {
+  display: flex;
+  flex: 1 1 0;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: max-content;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* empty, it still carries the line of the tabs to the right edge, where the panel has no top border */
+.corner:empty {
+  min-width: 0;
+  padding: 0;
+}
+
 /* the active tab has the color of what is under it: the panel, or `--tab-panel-top` when the content starts with something else */
 app-tab-bar {
+  flex: none;
   --tab-active-background: var(--tab-panel-top, var(--color-panel));
 }
 

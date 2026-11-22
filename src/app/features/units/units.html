@@ -14,9 +14,27 @@
 
       <div [class.read-only]="readOnly()">
         <app-tab-panel [tabs]="tabs" [active]="tab()" (selected)="showTab($event)">
+          @if (activeFilters() > 0) {
+            <button
+              corner
+              app-button
+              small
+              type="button"
+              class="chip clear"
+              title="Turn off every filter"
+              (click)="clearFilters()"
+            >
+              <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
+            </button>
+          }
           <div class="controls">
             @if (tab() !== 'history') {
-              <app-search-box #searchBox class="search-box" [placeholder]="placeholder()" (search)="search.set($event)" />
+              <app-search-box
+                #searchBox
+                class="search-box"
+                [placeholder]="placeholder()"
+                (search)="search.set($event)"
+              />
             }
             <div class="filter-panel">
               <span class="filter-label">Show</span>
@@ -66,11 +84,6 @@
                 >
                   <app-icon name="tmr-moogle" height="16" title="" />TMR Moogles
                 </button>
-                @if (activeFilters() > 0) {
-                  <button app-button small type="button" class="chip clear" title="Turn off every filter" (click)="clearFilters()">
-                    <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
-                  </button>
-                }
               </div>
               <span class="filter-label">Rarity</span>
               <app-choice-group pills iconType="crystal" [choices]="groupChoices()" [(selected)]="selectedGroups" />
@@ -78,7 +91,12 @@
               <app-choice-group pills iconType="ex" [choices]="exChoices" [(selected)]="selectedEx" />
               @if (tab() === 'alphabetical' || tab() === 'tmr') {
                 <span class="filter-label">Letter</span>
-                <app-choice-group pills [choices]="letterChoices()" [selected]="selectedLetters()" (selectedChange)="pickLetter($event)" />
+                <app-choice-group
+                  pills
+                  [choices]="letterChoices()"
+                  [selected]="selectedLetters()"
+                  (selectedChange)="pickLetter($event)"
+                />
               }
             </div>
           </div>
