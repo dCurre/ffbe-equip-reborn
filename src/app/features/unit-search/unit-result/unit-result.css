@@ -12,6 +12,7 @@
 
 .unitImage {
   padding: 5px;
+  cursor: pointer;
 }
 
 .unitName {
@@ -50,8 +51,10 @@
 
 .showAllSkills {
   position: absolute;
-  top: 44px;
-  left: 28px;
+  top: 40px;
+  left: 22px;
+  /* a drawing is 1.1em: the size of the arrow */
+  font-size: 24px;
   cursor: pointer;
 }
 

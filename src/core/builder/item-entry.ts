@@ -10,7 +10,7 @@ export function computeFarmableStmr(data, ownedUnits, itemInventory) {
         (ownedUnits[item.stmrUnit].farmableStmr > 0 || ownedUnits[item.stmrUnit].number >= 2)
       );
     });
-    stmrs = stmrs.map((item) => getItemEntry(item.originalItem || item, itemInventory[item.id] || 0));
+    stmrs = stmrs.map((item) => getItemEntry(item.originalItem || item, itemInventory?.[item.id] || 0));
     stmrs.forEach((stmr) => {
       stmr.stmrAccess = {
         base: '',

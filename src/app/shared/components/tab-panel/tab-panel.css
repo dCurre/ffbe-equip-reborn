@@ -2,9 +2,9 @@
   display: block;
 }
 
-/* the active tab has the color of the panel under it */
+/* the active tab has the color of what is under it: the panel, or `--tab-panel-top` when the content starts with something else */
 app-tab-bar {
-  --tab-active-background: var(--color-panel);
+  --tab-active-background: var(--tab-panel-top, var(--color-panel));
 }
 
 .pane {

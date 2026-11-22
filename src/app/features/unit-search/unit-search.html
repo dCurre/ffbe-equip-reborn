@@ -1,147 +1,145 @@
 <app-page-content>
-  <app-search-columns [showingResults]="showingResults()">
-    <div filters>
-      <div class="notice">
-        <app-icon name="alert" /> Unit Search is a Work in Progress. The result may not be complete yet, and more search
-        criteria will be added.
-      </div>
+  <div class="page">
+    <div class="filters-column" [class.hidden-on-phone]="showingResults()">
+      <app-tab-panel [tabs]="tabs()" [active]="tab()" (selected)="tab.set($event)">
+        <div class="tab-content">
+          @if (tab() === 'unit') {
+            <app-panel>
+              <app-filter-heading
+                panelHeading
+                title="Rarity"
+                [clearable]="state().baseRarity.length + state().maxRarity.length > 0"
+                (cleared)="patch({ baseRarity: [], maxRarity: [] })"
+              />
+              <div class="line">
+                <span class="sub-title">Base :</span
+                ><app-choice-group
+                  [choices]="baseRarityChoices"
+                  [selected]="state().baseRarity"
+                  (selectedChange)="patch({ baseRarity: [...$event] })"
+                />
+              </div>
+              <div class="line">
+                <span class="sub-title">Max :</span
+                ><app-choice-group
+                  [choices]="maxRarityChoices"
+                  [selected]="state().maxRarity"
+                  (selectedChange)="patch({ maxRarity: [...$event] })"
+                />
+              </div>
+            </app-panel>
 
-      <app-panel class="search">
-        <label panelHeading class="input-row">
-          <span class="addon">Search</span>
-          <input
-            #searchBox
-            type="text"
-            [value]="state().searchText"
-            placeholder='Enter search text. eg : "Increase LB Gauge by * to all allies"'
-            (input)="onSearch($event)"
-          />
-        </label>
-      </app-panel>
+            <app-panel>
+              <app-filter-heading
+                panelHeading
+                title="Equipment types"
+                [clearable]="state().types.length > 0"
+                (cleared)="patch({ types: [] })"
+              />
+              <app-choice-group
+                [choices]="typeChoices"
+                iconType="equipment"
+                [selected]="state().types"
+                (selectedChange)="patch({ types: [...$event] })"
+              />
+            </app-panel>
 
-      <app-panel>
-        <app-filter-heading
-          panelHeading
-          title="Rarity"
-          [clearable]="state().baseRarity.length + state().maxRarity.length > 0"
-          (cleared)="patch({ baseRarity: [], maxRarity: [] })"
-        />
-        <div class="line">
-          <span class="sub-title">Base :</span
-          ><app-choice-group
-            [choices]="baseRarityChoices"
-            [selected]="state().baseRarity"
-            (selectedChange)="patch({ baseRarity: [...$event] })"
-          />
-        </div>
-        <div class="line">
-          <span class="sub-title">Max :</span
-          ><app-choice-group
-            [choices]="maxRarityChoices"
-            [selected]="state().maxRarity"
-            (selectedChange)="patch({ maxRarity: [...$event] })"
-          />
-        </div>
-      </app-panel>
-
-      <app-chaining-panel [skillFilter]="state().skillFilter" (skillFilterChange)="setSkillFilter($event)" />
-
-      @for (panel of panels; track panel.key) {
-        <app-panel>
-          <app-filter-heading
-            panelHeading
-            [title]="panel.title"
-            [clearable]="hasValues(panel)"
-            (cleared)="clearPanel(panel)"
-          >
-            @if (hasValues(panel)) {
-              @if (panel.threshold !== undefined) {
-                <label class="threshold">
-                  &#8805;
-                  <input
-                    type="number"
-                    min="0"
-                    max="300"
-                    [step]="panel.threshold"
-                    [value]="criteria(panel.key).threshold || ''"
-                    (input)="setThreshold(panel, $event)"
+            <app-panel>
+              <app-filter-heading
+                panelHeading
+                title="Game Series"
+                [clearable]="state().series.length > 0"
+                (cleared)="patch({ series: [] })"
+              />
+              <app-choice-group
+                [choices]="seriesChoices"
+                [selected]="state().series"
+                (selectedChange)="patch({ series: [...$event] })"
+              />
+            </app-panel>
+          }
+          @if (tab() === 'support') {
+            <app-chaining-panel [skillFilter]="state().skillFilter" (skillFilterChange)="setSkillFilter($event)" />
+          }
+          @for (panel of panelsOf(tab()); track panel.key) {
+            <app-panel>
+              <app-filter-heading
+                panelHeading
+                [title]="panel.title"
+                [clearable]="hasValues(panel)"
+                (cleared)="clearPanel(panel)"
+              >
+                @if (hasValues(panel)) {
+                  @if (panel.threshold !== undefined) {
+                    <label class="threshold">
+                      &#8805;
+                      <input
+                        type="number"
+                        min="0"
+                        max="300"
+                        [step]="panel.threshold"
+                        [value]="criteria(panel.key).threshold || ''"
+                        (input)="setThreshold(panel, $event)"
+                      />
+                    </label>
+                  }
+                  @if (showAreas(panel)) {
+                    <app-choice-group
+                      [choices]="[
+                        { value: 'SELF', label: 'Self' },
+                        { value: 'ST', label: 'ST' },
+                        { value: 'AOE', label: 'AOE' },
+                      ]"
+                      [selected]="criteria(panel.key).targetAreaTypes"
+                      (selectedChange)="setPanel(panel, { targetAreaTypes: [...$event] })"
+                    />
+                  }
+                  <app-choice-group
+                    [choices]="panel.skillTypes"
+                    [selected]="criteria(panel.key).skillTypes"
+                    (selectedChange)="setPanel(panel, { skillTypes: [...$event] })"
                   />
-                </label>
-              }
-              @if (showAreas(panel)) {
+                }
+              </app-filter-heading>
+              <app-choice-group
+                [choices]="panel.choices"
+                [iconType]="panel.iconType"
+                [selected]="criteria(panel.key).values"
+                (selectedChange)="setCriteria(panel.key, { values: [...$event] })"
+              />
+              @if (panel.second; as second) {
                 <app-choice-group
-                  [choices]="[
-                    { value: 'SELF', label: 'Self' },
-                    { value: 'ST', label: 'ST' },
-                    { value: 'AOE', label: 'AOE' },
-                  ]"
-                  [selected]="criteria(panel.key).targetAreaTypes"
-                  (selectedChange)="setPanel(panel, { targetAreaTypes: [...$event] })"
+                  [choices]="second.choices"
+                  [iconType]="second.iconType"
+                  [selected]="criteria(second.key).values"
+                  (selectedChange)="setCriteria(second.key, { values: [...$event] })"
                 />
               }
-              <app-choice-group
-                [choices]="panel.skillTypes"
-                [selected]="criteria(panel.key).skillTypes"
-                (selectedChange)="setPanel(panel, { skillTypes: [...$event] })"
-              />
-            }
-          </app-filter-heading>
-          <app-choice-group
-            [choices]="panel.choices"
-            [iconType]="panel.iconType"
-            [selected]="criteria(panel.key).values"
-            (selectedChange)="setCriteria(panel.key, { values: [...$event] })"
-          />
-          @if (panel.second; as second) {
-            <app-choice-group
-              [choices]="second.choices"
-              [iconType]="second.iconType"
-              [selected]="criteria(second.key).values"
-              (selectedChange)="setCriteria(second.key, { values: [...$event] })"
-            />
+            </app-panel>
           }
-        </app-panel>
-      }
-
-      <app-panel>
-        <app-filter-heading
-          panelHeading
-          title="Equipment types"
-          [clearable]="state().types.length > 0"
-          (cleared)="patch({ types: [] })"
-        />
-        <app-choice-group
-          [choices]="typeChoices"
-          iconType="equipment"
-          [selected]="state().types"
-          (selectedChange)="patch({ types: [...$event] })"
-        />
-      </app-panel>
-
-      <app-panel>
-        <app-filter-heading
-          panelHeading
-          title="Game Series"
-          [clearable]="state().series.length > 0"
-          (cleared)="patch({ series: [] })"
-        />
-        <app-choice-group
-          [choices]="seriesChoices"
-          [selected]="state().series"
-          (selectedChange)="patch({ series: [...$event] })"
-        />
-      </app-panel>
+        </div>
+      </app-tab-panel>
     </div>
 
-    <div results>
-      <app-panel>
-        <app-results-heading panelHeading [count]="results().length" [filtered]="searched()">
-          @if (loggedIn()) {
-            <app-checkbox [checked]="state().onlyOwned" (checkedChange)="patch({ onlyOwned: $event })">
-              Only show owned units
-            </app-checkbox>
+    <div class="results-column">
+      <app-panel [class.filters-view]="!showingResults()">
+        <div panelHeading class="top">
+          @if (ready()) {
+            <app-search-box
+              [initial]="state().searchText"
+              placeholder='Enter search text. eg : "Increase LB Gauge by * to all allies"'
+              (search)="patch({ searchText: $event.toLocaleLowerCase() })"
+            />
           }
-        </app-results-heading>
+          <app-active-filters [filters]="filters()" (removed)="removeFilter($event)" (cleared)="clearFilters()" />
+          <app-results-heading [count]="results().length" [filtered]="searched()">
+            @if (loggedIn()) {
+              <app-checkbox [checked]="state().onlyOwned" (checkedChange)="patch({ onlyOwned: $event })">
+                Only show owned units
+              </app-checkbox>
+            }
+          </app-results-heading>
+        </div>
         <div #resultsBox class="results">
           @for (result of visible(); track result.unit.id) {
             <app-unit-result
@@ -155,7 +153,9 @@
         </div>
       </app-panel>
     </div>
-  </app-search-columns>
+  </div>
+
+  <app-site-footer />
 </app-page-content>
 
-<app-results-switch [(showingResults)]="showingResults" [icons]="summaryIcons()" />
+<app-results-switch [(showingResults)]="showingResults" />

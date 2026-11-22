@@ -1,5 +1,7 @@
 <div class="unit">
-  <div class="unitImage"><img [src]="image()" loading="lazy" alt="" /></div>
+  <div class="unitImage" role="presentation" (click)="toggleSkills.emit()">
+    <img [src]="image()" loading="lazy" alt="" />
+  </div>
   <div class="unitDescriptionLines">
     <span class="unitName"><app-wiki-link [name]="unit().name" [always]="true" /></span>
     <div class="killers"><app-killer-list [killers]="killers()" [selected]="killerSelection()" /></div>
@@ -24,8 +26,8 @@
       title="Show all the skills"
       (click)="toggleSkills.emit()"
       (keydown.enter)="toggleSkills.emit()"
-      ><app-icon [name]="open() ? 'caret-up' : 'caret-down'" /></span
-    >
+      ><app-icon [name]="open() ? 'chevron-up' : 'chevron-down'"
+    /></span>
     <div class="lb">
       @if (showLb()) {
         <app-unit-limit-burst [lb]="unit().lb" />

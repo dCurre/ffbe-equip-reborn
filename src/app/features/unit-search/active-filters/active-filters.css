@@ -1,0 +1,24 @@
+:host {
+  display: block;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.chip {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 3px 11px;
+  border-radius: 999px;
+}
+
+.clear {
+  margin-left: auto;
+  color: var(--color-link);
+  cursor: pointer;
+}

@@ -1,8 +1,11 @@
 <app-panel>
-  <div panelHeading class="heading">
-    <span>Chaining skills</span>
+  <app-filter-heading
+    panelHeading
+    title="Chaining family"
+    [clearable]="skillFilter().chainFamily !== 'none'"
+    (cleared)="chooseFamily('none')"
+  >
     @if (skillFilter().chainFamily !== 'none') {
-      <span class="spacer"></span>
       <app-choice-group
         [choices]="areas"
         [selected]="skillFilter().targetAreaTypes"
@@ -14,23 +17,22 @@
         (selectedChange)="change({ skillTypes: [...$event] })"
       />
     }
-  </div>
+  </app-filter-heading>
   <div class="line">
-    <span class="title">Chaining family:</span>
-    <select [value]="skillFilter().chainFamily" (change)="chooseFamily($any($event.target).value)">
-      <option value="none">No filter</option>
-      @for (family of families; track family.id) {
-        <option [value]="family.id">{{ family.label }}</option>
-      }
-      <option value="chainTag">Chain by itself</option>
-    </select>
+    <app-choice-group
+      pills
+      [single]="true"
+      [choices]="families"
+      [selected]="family()"
+      (selectedChange)="chooseFamily($event[0])"
+    />
   </div>
   @if (skillFilter().chainFamily !== 'none') {
     <div class="line">
       <span class="title">Multicast count:</span>
       <select [value]="skillFilter().multicastCount" (change)="chooseMulticast($any($event.target).value)">
-        @for (count of multicastCounts; track count[0]) {
-          <option [value]="count[0]">{{ count[1] }}</option>
+        @for (count of multicastCounts; track count.value) {
+          <option [value]="count.value">{{ count.label }}</option>
         }
       </select>
     </div>

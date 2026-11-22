@@ -18,26 +18,31 @@ import { typeList, typeListLiterals, weaponList } from '../../../core/constants/
 import { Item, searchTokens } from '../../game/helpers/item';
 import { cardsAsItems, VisionCard } from '../../game/helpers/vision-cards';
 import { PageContent } from '../../layout/page-content/page-content';
-import { SearchColumns } from '../../shared/components/search-columns/search-columns';
 import { highlightText } from '../../shared/helpers/highlight';
 import { Inventory } from '../../shared/services/inventory';
 import { ServerContext } from '../../shared/services/server-context';
-import { clearSearchBox, debouncer } from '../../shared/helpers/search-input';
+import { debouncer } from '../../shared/helpers/search-input';
+import { SearchBox } from '../../shared/components/search-box/search-box';
 import { StaticData } from '../../shared/services/static-data';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
-import { Icon } from '../../shared/components/icon/icon';
 import { Panel } from '../../shared/components/panel/panel';
 import { FilterHeading } from '../../shared/components/filter-heading/filter-heading';
 import { Checkbox } from '../../shared/components/checkbox/checkbox';
 import { ResultsHeading } from '../../shared/components/results-heading/results-heading';
+import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { ResultsSwitch } from '../../shared/components/results-switch/results-switch';
 import { showMoreOnScroll } from '../../shared/helpers/infinite-scroll';
+import { TabPanel } from '../../shared/components/tab-panel/tab-panel';
+import { TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { ActiveFilter, ActiveFilters } from './active-filters/active-filters';
 import { ChainingPanel } from './chaining-panel/chaining-panel';
 import { UnitResult } from './unit-result/unit-result';
 import {
   AllCriteria,
   Criteria,
   CriteriaKey,
+  defaultCriteria,
+  defaultSkillFilter,
   defaultState,
   filterUnits,
   hasSearch,
@@ -65,23 +70,38 @@ const ELEMENT_CHOICES = (tooltip: (e: string) => string): Choice[] =>
 /** One filter panel of the page: its values (pictures), and where the skills are looked for. */
 interface PanelConfig {
   key: CriteriaKey;
+  /** the tab the panel is on */
+  group: Group;
   title: string;
   iconType: string;
   choices: Choice[];
   /** killers have a second line of choices (the magical ones) sharing the skill types and the threshold */
-  second?: { key: CriteriaKey; iconType: string; choices: Choice[] };
+  second?: { key: CriteriaKey; iconType: string; choices: Choice[]; chip?: (value: string) => string };
   skillTypes: Choice[];
   areas: boolean;
+  /** how a chosen value reads in the chips of the filters on, under the title of the panel (default: its tooltip) */
+  chip?: (value: string) => string;
   /** the smallest value asked (a step: its input is shown) */
   threshold?: number;
 }
+
+type Group = 'unit' | 'attack' | 'defense' | 'support';
+
+const GROUPS: { key: Group; title: string }[] = [
+  { key: 'unit', title: 'Unit' },
+  { key: 'attack', title: 'Attack' },
+  { key: 'defense', title: 'Defense' },
+  { key: 'support', title: 'Support' },
+];
 
 const BREAKS = ['atk', 'def', 'mag', 'spr'];
 
 const PANELS: PanelConfig[] = [
   {
     key: 'buffs',
+    group: 'support',
     title: 'Stat buffs',
+    chip: (v) => v.toUpperCase(),
     iconType: 'stat',
     choices: ['atk', 'def', 'mag', 'spr'].map((value) => ({ value, tooltip: `${ucFirst(value)} buff` })),
     skillTypes: ACTIVES,
@@ -90,7 +110,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'breaks',
+    group: 'attack',
     title: 'Breaks',
+    chip: (v) => v.toUpperCase(),
     iconType: 'ailment',
     // the value is the stat; the picture is the break of that stat
     choices: BREAKS.map((value) => ({ value, icon: `break_${value}`, tooltip: `${value.toUpperCase()} break` })),
@@ -100,6 +122,7 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'tankAbilities',
+    group: 'defense',
     title: 'Tank abilities',
     iconType: 'tankAbilities',
     choices: [
@@ -113,6 +136,7 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'mitigation',
+    group: 'defense',
     title: 'Mitigation',
     iconType: 'mitigation',
     choices: [
@@ -127,7 +151,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'elements',
+    group: 'defense',
     title: 'Elemental resistance',
+    chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `${ucFirst(e)} resistance`),
     skillTypes: text(['Passive', 'passives'], ['Active', 'actives'], ['LB', 'lb'], ['Counter', 'counter']),
@@ -136,7 +162,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'physicalElementDamageBoosts',
+    group: 'attack',
     title: 'Physical damage boosts',
+    chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `Physical ${e} damage boost`),
     skillTypes: ACTIVES,
@@ -145,7 +173,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'magicalElementDamageBoosts',
+    group: 'attack',
     title: 'Magic damage boosts',
+    chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `Magical ${e} damage boost`),
     skillTypes: ACTIVES,
@@ -154,7 +184,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'imbues',
+    group: 'attack',
     title: 'Imbues',
+    chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `Imbue ${e}`),
     skillTypes: text(['Active', 'actives'], ['LB', 'lb']),
@@ -162,7 +194,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'imperils',
+    group: 'attack',
     title: 'Imperils',
+    chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `${ucFirst(e)} imperil`),
     skillTypes: ACTIVES,
@@ -171,12 +205,15 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'physicalKillers',
+    group: 'attack',
     title: 'Killers',
+    chip: (v) => `Physical ${ucFirst(v)}`,
     iconType: 'killer-physical',
     choices: killerList.map((value) => ({ value, tooltip: `Physical ${value} killer` })),
     second: {
       key: 'magicalKillers',
       iconType: 'killer-magical',
+      chip: (v) => `Magical ${ucFirst(v)}`,
       choices: killerList.map((value) => ({ value, tooltip: `Magical ${value} killer` })),
     },
     skillTypes: text(['Passive', 'passives'], ['Active', 'actives'], ['LB', 'lb']),
@@ -185,7 +222,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'racialMitigations',
+    group: 'defense',
     title: 'Racial Mitigations',
+    chip: ucFirst,
     iconType: 'racialMitigations',
     choices: racialMitigationList.map((value) => ({ value, tooltip: `Racial ${value} mitigations` })),
     skillTypes: text(['Active', 'actives'], ['LB', 'lb']),
@@ -194,7 +233,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'ailments',
+    group: 'defense',
     title: 'Ailment resistance',
+    chip: (v) => (v.startsWith('break_') ? `Break ${v.slice(6).toUpperCase()}` : ucFirst(v)),
     iconType: 'ailment',
     choices: [...ailmentList, ...BREAKS.map((b) => `break_${b}`)].map((value) => ({
       value,
@@ -205,7 +246,9 @@ const PANELS: PanelConfig[] = [
   },
   {
     key: 'weaponImperils',
+    group: 'attack',
     title: 'Weapon imperils',
+    chip: (v) => (typeListLiterals as Record<string, string>)[v] ?? ucFirst(v),
     iconType: 'equipment',
     choices: weaponList.map((value) => ({ value, tooltip: `${ucFirst(value)} imperil` })),
     skillTypes: ACTIVES,
@@ -218,18 +261,20 @@ const PANELS: PanelConfig[] = [
 @Component({
   selector: 'app-unit-search',
   imports: [
+    ActiveFilters,
+    SearchBox,
     ChainingPanel,
+    TabPanel,
     UnitResult,
     PageContent,
-    SearchColumns,
+    SiteFooter,
+    ResultsSwitch,
     Checkbox,
     FilterHeading,
     ResultsHeading,
     Panel,
     ChoiceGroup,
-    ResultsSwitch,
     FormsModule,
-    Icon,
   ],
   templateUrl: './unit-search.html',
   styleUrls: ['../../shared/styles/search-page.css', './unit-search.css'],
@@ -250,7 +295,7 @@ export class UnitSearch {
 
   // --- The search ---
   protected readonly state = signal<UnitSearchState>(defaultState());
-  protected readonly searchBox = viewChild<ElementRef<HTMLInputElement>>('searchBox');
+  private readonly searchBox = viewChild(SearchBox);
   private readonly resultsElement = viewChild<ElementRef<HTMLElement>>('resultsBox');
   private readonly end = viewChild<ElementRef<HTMLElement>>('end');
   protected readonly showingResults = signal(false);
@@ -283,6 +328,53 @@ export class UnitSearch {
   }));
   protected readonly loggedIn = computed(() => this.inventory.status() === 'loaded');
 
+  // --- The tabs and the filters that are on ---
+  protected readonly tab = signal<Group>('unit');
+  protected readonly filters = computed<(ActiveFilter & { group: Group })[]>(() => {
+    const { baseRarity, maxRarity, types, series, skillFilter, criteria } = this.state();
+    const nameOf = (choices: Choice[], v: string): string => {
+      const choice = choices.find((c) => c.value === v);
+      return choice?.label ?? choice?.tooltip ?? v;
+    };
+    const named = (choices: Choice[], values: string[]): string => values.map((v) => nameOf(choices, v)).join(', ');
+    const list: (ActiveFilter & { group: Group })[] = [];
+    if (baseRarity.length)
+      list.push({ key: 'baseRarity', group: 'unit', label: `Base ${named(this.baseRarityChoices, baseRarity)}` });
+    if (maxRarity.length)
+      list.push({ key: 'maxRarity', group: 'unit', label: `Max ${named(this.maxRarityChoices, maxRarity)}` });
+    if (types.length) list.push({ key: 'types', group: 'unit', label: named(this.typeChoices, types) });
+    if (series.length) list.push({ key: 'series', group: 'unit', label: named(this.seriesChoices, series) });
+    if (skillFilter.chainFamily !== 'none') {
+      const cast = skillFilter.multicastCount > 1 ? ` x${skillFilter.multicastCount}` : '';
+      list.push({ key: 'chain', group: 'support', label: `Chain: ${skillFilter.chainFamily}${cast}` });
+    }
+    for (const panel of PANELS) {
+      const values = [
+        ...criteria[panel.key].values.map((v) => panel.chip?.(v) ?? nameOf(panel.choices, v)),
+        ...(panel.second
+          ? criteria[panel.second.key].values.map((v) => panel.second!.chip?.(v) ?? nameOf(panel.second!.choices, v))
+          : []),
+      ];
+      if (!values.length) continue;
+      const least = criteria[panel.key].threshold;
+      list.push({
+        key: panel.key,
+        group: panel.group,
+        label: `${panel.title}: ${values.join(', ')}${least ? ` ≥${least}` : ''}`,
+      });
+    }
+    return list;
+  });
+  protected readonly tabs = computed<TabItem<Group>[]>(() =>
+    GROUPS.map(({ key, title }) => {
+      const count = this.filters().filter((f) => f.group === key).length;
+      return { key, title: count ? `${title} (${count})` : title };
+    }),
+  );
+  protected panelsOf(group: Group): PanelConfig[] {
+    return PANELS.filter((panel) => panel.group === group);
+  }
+
   // --- The results ---
   private readonly context = computed<SearchContext>(() => ({
     searchUnits: this.searchUnits(),
@@ -297,13 +389,6 @@ export class UnitSearch {
   /** the results shown so far: more come as the page is scrolled */
   protected readonly visible = computed(() => this.results().slice(0, this.limit()));
   protected readonly searched = computed(() => hasSearch(this.state()));
-  protected readonly summaryIcons = computed(() => {
-    const { criteria } = this.state();
-    return [
-      ...criteria.elements.values.map((v) => `element-${v}`),
-      ...criteria.ailments.values.map((v) => `ailment-${v}`),
-    ];
-  });
 
   constructor() {
     // the filters in the URL, so a search can be shared
@@ -324,7 +409,7 @@ export class UnitSearch {
   @HostListener('window:keyup.escape')
   protected clearSearch(): void {
     this.patch({ searchText: '' });
-    clearSearchBox(this.searchBox());
+    this.searchBox()?.clear();
   }
 
   private async start(): Promise<void> {
@@ -351,11 +436,6 @@ export class UnitSearch {
 
   protected patch(change: Partial<UnitSearchState>): void {
     this.state.update((state) => ({ ...state, ...change }));
-  }
-
-  protected onSearch(event: Event): void {
-    const value = (event.target as HTMLInputElement).value.toLocaleLowerCase();
-    this.debounce(() => this.patch({ searchText: value }));
   }
 
   protected criteria(key: CriteriaKey): Criteria {
@@ -396,6 +476,25 @@ export class UnitSearch {
     if (!panel.areas) return false;
     const types = this.criteria(panel.key).skillTypes;
     return types.some((t) => ['actives', 'lb', 'counter'].includes(t));
+  }
+
+  protected removeFilter(key: string): void {
+    const panel = PANELS.find((p) => p.key === key);
+    if (panel) this.clearPanel(panel);
+    else if (key === 'chain') this.setSkillFilter(defaultSkillFilter());
+    else if (key === 'baseRarity' || key === 'maxRarity' || key === 'types' || key === 'series')
+      this.patch({ [key]: [] });
+  }
+
+  protected clearFilters(): void {
+    this.patch({
+      baseRarity: [],
+      maxRarity: [],
+      types: [],
+      series: [],
+      skillFilter: defaultSkillFilter(),
+      criteria: defaultCriteria(),
+    });
   }
 
   protected setSkillFilter(skillFilter: SkillFilter): void {

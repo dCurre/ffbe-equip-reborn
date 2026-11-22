@@ -16,3 +16,10 @@
 app-choice-group {
   margin: 4px;
 }
+
+/* the many families wrap onto more lines, in line with the rows under them */
+.line app-choice-group {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}

@@ -3,6 +3,11 @@
   display: none;
 }
 
+.side-button {
+  /* quick taps are clicks, not a double-tap to zoom (which swallows every other one) */
+  touch-action: manipulation;
+}
+
 @media (max-width: 991px) {
   .side-button {
     position: fixed;
@@ -28,7 +33,7 @@
     flex-direction: column;
   }
 
-    .filter-summary app-icon {
+  .filter-summary app-icon {
     display: flex;
   }
 }

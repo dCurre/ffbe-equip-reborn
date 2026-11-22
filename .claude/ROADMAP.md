@@ -12,7 +12,8 @@ Open tasks only (delete done items). The `push` skill updates this file. Deploy:
 
 ## Code quality and optimizer
 - **Angular migration check:** compare each page with the old site (`git show 0e9eee65d:static/<file>`), fix differences. Intended differences: negative goal resists ignored; no Export for Battle; `noFallthroughCasesInSwitch` off (`tree-comparator.ts`). Mark what to fix, delete what is fine:
-  - Pages: Builder, Encyclopedia, Unit Search
+  - Pages: Builder, Encyclopedia
+  - Unit Search performance (searching feels heavy, not measured yet): every `app-unit-result` recomputes `skillsToDisplay` on any change of `state()`, `matchesOneToken`/`containsText` build a `RegExp` per call, each change filters and sorts every unit; ideas: precompile the regexes per search, give each result only what it needs, keep the text search apart from the other filters
   - Inventory: still to compare look and CSS, item line (`app-item-summary`), sidebar toggle (the logic was compared and fixed). Check on screen: the active tab touching the panel (`app-tab-panel`; `align-items: flex-end` in the tab bar), the sort of each tab (materia too: stats from the highest, A-Z asc/desc, each tab keeps its own), the centered dates and the infinite scroll of the event history, the back-to-top button (`app-scroll-top`) on every page and on a phone
   - Cross-page: dialogs, light theme, Drive loading
 - **Optimizer review** (correctness, performance, readability; main files `buildOptimizer`, `typeCombinationGenerator`, `itemPool`, `optimizerWebWorker`, `formula`; algorithm in the Algorithm page). Open points:

@@ -20,11 +20,18 @@ a {
   border-radius: 4px 4px 0 0;
 }
 
+/* a tab with a title only is text, not a link: the color of the page */
+a {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
 li:hover a {
   border-color: var(--color-border);
 }
 
 li.active a {
+  font-weight: bold;
   background-color: var(--tab-active-background, var(--color-background));
   border-color: var(--color-border);
   border-bottom-color: transparent;
