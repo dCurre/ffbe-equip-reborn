@@ -1,13 +1,19 @@
 .tabs-wrapper {
-  position: relative;
+  display: flex;
   width: 100%;
   max-width: 1300px;
   margin: 0 auto;
   overflow: hidden;
 }
 
-.tabs-wrapper::before,
-.tabs-wrapper::after {
+/* the tab of all the Esper stays out of the scroll */
+.scroller {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.scroller::after {
   content: '';
   position: absolute;
   top: 0;
@@ -15,14 +21,6 @@
   width: 50px;
   height: 100%;
   pointer-events: none;
-}
-
-.tabs-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, var(--color-background), rgba(248, 247, 238, 0));
-}
-
-.tabs-wrapper::after {
   right: 0;
   background: linear-gradient(to left, var(--color-background), rgba(248, 247, 238, 0));
 }
@@ -31,19 +29,20 @@
   display: flex;
   justify-content: space-between;
   margin: 0;
-  overflow: hidden auto;
+  overflow: auto hidden;
+  scroll-behavior: smooth;
   border-bottom: 1px solid var(--color-tab-border);
+}
+
+.tabs.all {
+  flex: none;
 }
 
 .tabs li {
   cursor: pointer;
 }
 
-.tabs li:first-child {
-  padding-left: 30px;
-}
-
-.tabs li:last-child {
+.scroller li:last-child {
   padding-right: 30px;
 }
 

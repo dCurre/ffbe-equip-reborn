@@ -1,7 +1,16 @@
-import { Component, ElementRef, input, output, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, input, output, viewChild } from '@angular/core';
 import { KillerList } from '../../../game/components/killer-list/killer-list';
 import { ResistList } from '../../../game/components/resist-list/resist-list';
-import { EsperInfo, OwnedEsper, Stat, statBonus, statValue } from '../esper-model';
+import {
+  EsperBoard,
+  EsperInfo,
+  nodesResist,
+  LEVEL_RANGE,
+  OwnedEsper,
+  Stat,
+  statBonus,
+  statValue,
+} from '../esper-model';
 
 /** The name, rarity, level, SP and stats of the Esper being viewed. */
 @Component({
@@ -13,6 +22,7 @@ import { EsperInfo, OwnedEsper, Stat, statBonus, statValue } from '../esper-mode
 export class EsperHeader {
   readonly info = input.required<EsperInfo>();
   readonly current = input.required<OwnedEsper | undefined>();
+  readonly board = input.required<EsperBoard>();
   readonly logged = input.required<boolean>();
   readonly sp = input.required<{ used: number; available: number } | null>();
   readonly rarityChange = output<string>();
@@ -25,8 +35,13 @@ export class EsperHeader {
     ['mp', 'def', 'spr'],
   ];
 
+  protected readonly resistBonus = computed(() => {
+    const esper = this.current();
+    return esper ? nodesResist(this.board(), esper) : undefined;
+  });
   protected readonly bonus = statBonus;
   protected readonly value = statValue;
+  protected readonly levelRange = LEVEL_RANGE;
 
   protected rarities(): number[] {
     return Array.from({ length: this.info().maxLevel }, (_, i) => i + 1);

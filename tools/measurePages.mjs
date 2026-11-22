@@ -1,7 +1,7 @@
 // Measures the pages of the site in headless Chrome over CDP (FCP, load, long tasks, heap, DOM nodes, transferred bytes).
 // Usage: node tools/measurePages.mjs <siteDir> <chromePath> [cpuSlowdown]   (env PAGES=a.html,b.html to pick pages)
 // Serves <siteDir> on port 3999 with gzip (like GitHub Pages), cold cache, not logged in. Use WINDOWS-style paths (C:/...) on Windows.
-// Measured on the old site on 2026-11-20: the numbers are in .claude/REWORK.md. Reuse it after the migration to compare.
+// Measured on the old site on 2026-11-20. Reuse it after the migration to compare.
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';

@@ -59,6 +59,7 @@ export interface EsperBoard {
 export interface EsperInfo {
   id: string;
   name: string;
+  /** the highest rarity (stars) of the Esper, 3 or 1: the name comes from the game data and is not a level (see `LEVEL_RANGE`) */
   maxLevel: number;
 }
 
@@ -71,13 +72,20 @@ export interface OwnedEsper extends Effects {
   [stat: string]: unknown;
 }
 
-export const MAX_LEVEL_BY_STAR: Record<number, number> = { 1: 30, 2: 40, 3: 60 };
+/** The levels of each rarity: an Esper reaches a rarity at the maximum level of the previous one. */
+export const LEVEL_RANGE: Record<number, { min: number; max: number }> = {
+  1: { min: 1, max: 30 },
+  2: { min: 30, max: 40 },
+  3: { min: 40, max: 60 },
+};
+
+export function clampLevel(level: number, rarity: number): number {
+  const { min, max } = LEVEL_RANGE[rarity];
+  return Math.min(Math.max(level, min), max);
+}
 
 /** Rarity 3 gains one point per level after the first (0 to 60), the same in both stat patterns. */
-const LINEAR_PROGRESSION: number[] = [
-  0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
-  33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-];
+const LINEAR_PROGRESSION: number[] = Array.from({ length: LEVEL_RANGE[3].max }, (_, level) => (level ? level + 1 : 0));
 
 /** Percent of the stat gain reached at each level, by stat pattern and rarity. */
 const STATS_PROGRESSION: Record<number, Record<number, number[]>> = {
@@ -146,11 +154,15 @@ export function calculateSp(board: EsperBoard, esper: OwnedEsper): { used: numbe
 }
 
 /** Recomputes the six stats of the Esper from its rarity, level and selected nodes (the same rounding as the old site). */
+/** The Espers whose 3★ stat range is the one of level 60 (the wiki lists their maximum at 60), not of level 100 like the others. */
+const FULL_AT_MAX_LEVEL = new Set(['Asura']);
+
 export function updateStats(board: EsperBoard, esper: OwnedEsper): void {
   const progression = STATS_PROGRESSION[board.statPattern[esper.rarity]][esper.rarity];
+  const scale = esper.rarity === 3 && FULL_AT_MAX_LEVEL.has(esper.name) ? 100 / LEVEL_RANGE[3].max : 1;
   for (const stat of baseStats) {
     const [min, max] = board.stats[esper.rarity][stat.toUpperCase()];
-    esper[stat] = Math.round(min + ((max - min) * progression[esper.level - 1]) / 100);
+    esper[stat] = Math.round(min + ((max - min) * progression[esper.level - 1] * scale) / 100);
   }
   const addSelected = (nodes: BoardNode[]): void => {
     for (const node of nodes) {
@@ -173,8 +185,29 @@ export function statBonus(esper: OwnedEsper, stat: Stat): number {
   return Math.floor(((esper[stat] as number) * (1 + (boost ? boost / 100 : 0))) / 100);
 }
 
-/** A node that is not part of the board of this rarity (the outer ring exists only at 3 stars). */
-export const isOutsideBoard = (node: BoardNode, rarity: number): boolean => distance(...node.position) > rarity + 2;
+/** The resistances the selected nodes add to the ones of the rarity. */
+export function nodesResist(board: EsperBoard, esper: OwnedEsper): Resist[] {
+  const total: Resist[] = [];
+  const walk = (nodes: BoardNode[]): void =>
+    nodes.forEach((node) => {
+      if (esper.selectedSkills.includes(positionString(...node.position))) {
+        for (const { name, percent } of node.resist ?? []) {
+          const entry = total.find((r) => r.name === name);
+          if (entry) entry.percent += percent;
+          else total.push({ name, percent });
+        }
+      }
+      walk(node.children);
+    });
+  walk(board.nodes);
+  return total;
+}
+
+/** How far from the center the board goes: one ring per star, and at 3 stars also the outer ring of the Galvanite nodes. */
+export const boardReach = (rarity: number): number => (rarity < 3 ? rarity + 1 : 5);
+
+/** A node that is not part of the board of this rarity. */
+export const isOutsideBoard = (node: BoardNode, rarity: number): boolean => distance(...node.position) > boardReach(rarity);
 
 function addKillers(esper: OwnedEsper, killers: Killer[]): void {
   esper.killers ??= [];
@@ -313,13 +346,25 @@ export function applySelectedNodes(board: EsperBoard, esper: OwnedEsper): void {
   }
 }
 
+/** The Esper at another rarity: the nodes it picked stay picked, except the ones the new rarity does not have. */
+export function changeRarity(board: EsperBoard, esper: OwnedEsper, rarity: number): OwnedEsper {
+  const changed = newEsper(esper, rarity, board);
+  changed.selectedSkills = esper.selectedSkills.filter((position) => {
+    const { x, y } = parsePosition(position);
+    return distance(x, y) <= boardReach(rarity);
+  });
+  applySelectedNodes(board, changed);
+  updateStats(board, changed);
+  return changed;
+}
+
 /** A new Esper at the given rarity: level at the maximum, no node selected. */
-export function newEsper(info: EsperInfo, rarity: number, board: EsperBoard): OwnedEsper {
+export function newEsper(info: Pick<EsperInfo, 'name' | 'id'>, rarity: number, board: EsperBoard): OwnedEsper {
   const esper: OwnedEsper = {
     name: info.name,
     id: info.id,
     rarity,
-    level: MAX_LEVEL_BY_STAR[rarity],
+    level: LEVEL_RANGE[rarity].max,
     selectedSkills: [],
     resist: structuredClone(board.resist[rarity]),
   };

@@ -9,6 +9,7 @@ export interface ResistEntry {
 
 interface Group {
   percent: string;
+  bonus: number;
   names: string[];
 }
 
@@ -20,6 +21,8 @@ interface Group {
 })
 export class ResistList {
   readonly resist = input<readonly ResistEntry[] | undefined>();
+  /** the part of each resistance that comes from outside the base value: the total is shown in green */
+  readonly bonus = input<readonly ResistEntry[] | undefined>();
   /** the equipment picture shown small over each element / ailment: a shield for resistances, a sword for inflictions */
   readonly icon = input('heavyShield');
 
@@ -31,17 +34,19 @@ export class ResistList {
   }
 
   private group(allowed: readonly string[]): Group[] {
-    const byPercent = new Map<string, string[]>();
+    const byValue = new Map<string, Group>();
     for (const { name, percent } of this.resist() ?? []) {
       if (!allowed.includes(name)) continue;
-      const names = byPercent.get(String(percent)) ?? [];
-      if (!names.includes(name)) names.push(name);
-      byPercent.set(String(percent), names);
+      const bonus = this.bonus()?.find((entry) => entry.name === name)?.percent ?? 0;
+      const key = `${percent}|${bonus}`;
+      const group = byValue.get(key) ?? { percent: String(percent), bonus, names: [] };
+      if (!group.names.includes(name)) group.names.push(name);
+      byValue.set(key, group);
     }
-    // the same order as the old site: the keys sorted as text, then reversed
-    return [...byPercent.keys()]
+    // the same order as the old site: the values sorted as text, then reversed
+    return [...byValue.keys()]
       .sort()
       .reverse()
-      .map((percent) => ({ percent, names: byPercent.get(percent)! }));
+      .map((key) => byValue.get(key)!);
   }
 }

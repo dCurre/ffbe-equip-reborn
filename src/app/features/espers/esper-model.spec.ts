@@ -1,6 +1,7 @@
 import {
   BoardNode,
   calculateSp,
+  changeRarity,
   decodeEsperLink,
   encodeEsperLink,
   EsperBoard,
@@ -60,6 +61,28 @@ describe('esper model', () => {
     toggleNode(board, esper, 0, 0);
     expect(esper.selectedSkills).toEqual([]);
     expect(esper['atk']).toBe(200);
+  });
+
+  it('a rarity change keeps the picked nodes the new rarity has and drops the others with their effects', () => {
+    const esper = newEsper(info, 1, board);
+    toggleNode(board, esper, 3, 3);
+    const changed = changeRarity(board, esper, 1);
+    // (3,3) is farther than the 1 star board reaches: its path up to (2,2) stays
+    expect(changed.selectedSkills).toEqual(['1_1', '2_2']);
+    expect(changed['atk']).toBe(esper['atk']);
+    expect(changed.killers).toEqual([{ name: 'bird', physical: 10 }]);
+    expect(changed['hp'] as number).toBeLessThan(esper['hp'] as number);
+  });
+
+  it('an Esper whose 3 star range is the one of level 60 reaches it at that level', () => {
+    const range: EsperBoard = {
+      ...board,
+      stats: { '3': { ...board.stats['1'], HP: [1000, 2000] } },
+      statPattern: { '3': 1 },
+      progression: { '3': [0] },
+    };
+    expect(newEsper({ id: 'Test', name: 'Test' }, 3, range)['hp']).toBe(1600);
+    expect(newEsper({ id: 'Asura', name: 'Asura' }, 3, range)['hp']).toBe(2000);
   });
 
   it('computes the bonus given to the unit', () => {

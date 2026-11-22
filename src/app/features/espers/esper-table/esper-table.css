@@ -5,8 +5,9 @@
 }
 
 .import-link {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
   cursor: pointer;
 }
 

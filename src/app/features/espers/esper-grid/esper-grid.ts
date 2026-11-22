@@ -1,16 +1,14 @@
 import {
-  afterRenderEffect,
   Component,
   computed,
   ElementRef,
   inject,
   input,
+  linkedSignal,
   model,
   output,
   signal,
-  untracked,
   viewChild,
-  viewChildren,
 } from '@angular/core';
 import { KillerList } from '../../../game/components/killer-list/killer-list';
 import { ResistList } from '../../../game/components/resist-list/resist-list';
@@ -20,8 +18,10 @@ import {
   distance,
   EsperBoard as Board,
   EsperInfo,
+  boardReach,
   esperSprite,
   findPathTo,
+  isOutsideBoard,
   OwnedEsper,
   positionString,
   toggleNode,
@@ -32,23 +32,35 @@ interface Cell {
   x: number;
   y: number;
   position: string;
-  tier: 'star1' | 'star2' | 'star3';
-  hidden: boolean;
+  left: number;
+  top: number;
   isCenter: boolean;
   selected: boolean;
+  /** what the node gives (`hp`, `ability`…), as the classes that color it */
+  kinds: string;
+  /** the ring is new after a rarity increase: it fades in while the rest of the board stays */
+  fresh?: boolean;
+  /** a physical and a magical killer: two lines of icons */
+  bothKillers?: boolean;
   view?: NodeView;
 }
 
 interface Line {
+  key: string;
+  fresh?: boolean;
   x1: number;
   y1: number;
   x2: number;
   y2: number;
 }
 
-const GRID_SIZE = 9;
+/** The size of a hexagon cell, and the distance between two of them in a row and between two rows (pixels of the board). */
+const CELL_WIDTH = 92.857;
+const CELL_HEIGHT = 107.225;
+const COLUMN_PITCH = 102.857;
+const ROW_PITCH = 87.225;
 
-/** The training board of an Esper: 81 hexagons to pick the skills from, the lines between them, and the full screen view of phones. */
+/** The training board of an Esper: hexagons to pick the skills from, the lines between them, and the full screen view of phones. */
 @Component({
   selector: 'app-esper-grid',
   imports: [KillerList, ResistList, Icon],
@@ -69,51 +81,86 @@ export class EsperGrid {
   readonly changed = output<void>();
 
   protected readonly sprite = esperSprite;
-  protected readonly lines = signal<Line[]>([]);
+  protected readonly cellWidth = CELL_WIDTH;
+  protected readonly cellHeight = CELL_HEIGHT;
   protected readonly hover = signal<ReadonlySet<string>>(new Set());
   private scroll: { top: number; left: number } | null = null;
   private readonly panWrapper = viewChild<ElementRef<HTMLElement>>('panWrapper');
   private readonly gridContainer = viewChild<ElementRef<HTMLElement>>('gridContainer');
-  private readonly hexagons = viewChildren<ElementRef<HTMLElement>>('hexagon');
 
-  /** The 81 positions of the board and what each one shows. */
+  /** After a rarity increase, the distance from the center that the old rarity reached (the nodes farther out are new); otherwise 0. */
+  private readonly oldReach = linkedSignal<OwnedEsper | undefined, number>({
+    source: this.current,
+    computation: (esper, previous) => {
+      const before = previous?.source;
+      return esper && before && before.name === esper.name && esper.rarity > before.rarity ? boardReach(before.rarity) : 0;
+    },
+  });
+
+  /** The center and the nodes of the rarity, each placed by where its hexagon goes on the board. */
   protected readonly cells = computed<Cell[]>(() => {
     const esper = this.current();
     const board = this.board();
-    const nodes = new Map<string, BoardNode>();
-    const collect = (list: BoardNode[]): void =>
-      list.forEach((node) => {
-        nodes.set(positionString(...node.position), node);
-        collect(node.children);
-      });
-    if (board && esper) collect(board.nodes);
-    return Array.from({ length: GRID_SIZE * GRID_SIZE }, (_, i) => {
-      const y = Math.trunc(i / GRID_SIZE) - 4;
-      const x = (i % GRID_SIZE) - 4 + Math.round(y / 2);
-      const position = positionString(x, y);
-      const dist = distance(x, y);
-      const node = nodes.get(position);
-      const used = !!esper && !!node && dist <= esper.rarity + 2;
-      return {
+    const cells: Cell[] = [];
+    const place = (x: number, y: number, extra: Partial<Cell>): void => {
+      cells.push({
         x,
         y,
-        position,
-        tier: dist > 3 ? 'star3' : dist > 2 ? 'star2' : 'star1',
-        hidden: dist > 4 && !used,
-        isCenter: position === '0_0',
-        selected: position === '0_0' || (used && esper.selectedSkills.includes(position)),
-        view: used ? nodeView(node) : undefined,
-      };
-    });
+        position: positionString(x, y),
+        // columns are half a hexagon apart from one row to the next
+        left: (x - y / 2 + 4) * COLUMN_PITCH,
+        top: (y + 4) * ROW_PITCH,
+        isCenter: false,
+        selected: false,
+        kinds: '',
+        ...extra,
+      });
+    };
+    const oldReach = this.oldReach();
+    if (!board || !esper) return cells;
+    place(0, 0, { isCenter: true, selected: true });
+    const collect = (list: BoardNode[]): void =>
+      list.forEach((node) => {
+        const [x, y] = node.position;
+        if (!isOutsideBoard(node, esper.rarity)) {
+          const view = nodeView(node);
+          place(x, y, {
+            selected: esper.selectedSkills.includes(positionString(x, y)),
+            fresh: oldReach > 0 && distance(x, y) > oldReach,
+            bothKillers: !!node.killers?.some((k) => k.physical) && !!node.killers.some((k) => k.magical),
+            kinds: view.kinds.join(' '),
+            view,
+          });
+        }
+        collect(node.children);
+      });
+    collect(board.nodes);
+    return cells;
   });
 
-  constructor() {
-    // the lines between the nodes follow where the browser put the hexagons
-    afterRenderEffect(() => {
-      this.cells();
-      untracked(() => this.lines.set(this.measureLines()));
-    });
-  }
+  /** The lines between the nodes, from the center of the hexagon of a node to the one of its parent. */
+  protected readonly lines = computed<Line[]>(() => {
+    const esper = this.current();
+    if (!esper) return [];
+    const centers = new Map(
+      this.cells().map(({ position, left, top }) => [position, { x: left + CELL_WIDTH / 2, y: top + CELL_HEIGHT / 2 }]),
+    );
+    const lines: Line[] = [];
+    const oldReach = this.oldReach();
+    const walk = (node: BoardNode, parent: string): void => {
+      const position = positionString(...node.position);
+      // a node outside the rarity has no hexagon: no line
+      const from = centers.get(parent);
+      const to = centers.get(position);
+      if (from && to) {
+        const fresh = distance(...node.position) > oldReach;
+        lines.push({ key: position, x1: from.x, y1: from.y, x2: to.x, y2: to.y, fresh });
+      }
+      node.children.forEach((child) => walk(child, position));
+    };
+    this.board().nodes.forEach((node) => walk(node, '0_0'));
+    return lines;
+  });
 
   protected isHover(cell: Cell): boolean {
     return this.hover().has(cell.position);
@@ -171,33 +218,5 @@ export class EsperGrid {
   private scale(): number {
     const container = this.gridContainer()?.nativeElement;
     return container ? container.getBoundingClientRect().width / container.offsetWidth || 1 : 1;
-  }
-
-  private measureLines(): Line[] {
-    const container = this.gridContainer()?.nativeElement;
-    const esper = this.current();
-    if (!container || !esper) return [];
-    const scale = this.scale();
-    const origin = container.getBoundingClientRect();
-    const centers = new Map<string, { x: number; y: number }>();
-    for (const hexagon of this.hexagons()) {
-      const rect = hexagon.nativeElement.getBoundingClientRect();
-      centers.set(hexagon.nativeElement.dataset['position']!, {
-        x: (rect.left - origin.left + rect.width / 2) / scale,
-        y: (rect.top - origin.top + rect.height / 2) / scale,
-      });
-    }
-    const lines: Line[] = [];
-    const walk = (node: BoardNode, parent: string): void => {
-      const position = positionString(...node.position);
-      if (distance(...node.position) <= esper.rarity + 1) {
-        const from = centers.get(parent);
-        const to = centers.get(position);
-        if (from && to) lines.push({ x1: from.x, y1: from.y, x2: to.x, y2: to.y });
-      }
-      node.children.forEach((child) => walk(child, position));
-    };
-    this.board().nodes.forEach((node) => walk(node, '0_0'));
-    return lines;
   }
 }

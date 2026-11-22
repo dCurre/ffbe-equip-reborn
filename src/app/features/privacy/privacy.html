@@ -19,8 +19,8 @@
   </p>
   <p>
     Your browser stores two small values locally (in <code>localStorage</code>): the theme you chose (light or dark)
-    and, only if you log in, the temporary Google access token described below. They never leave your device except as
-    explained in this page.
+    and, only if you log in, the Google access token and the session identifier described below. They never leave your
+    device except as explained in this page.
   </p>
 
   <h2>Logging in with Google</h2>
@@ -35,8 +35,10 @@
     your browser. The maintainer of FFBE Equip Reborn cannot see it: there is no copy on any server of ours.
   </p>
   <p>
-    The access token given by Google lasts about one hour and is kept in your browser during that time, so you don't
-    have to log in again on every page. Logging out removes it from your browser and revokes it.
+    To keep you logged in until you log out, a small service of this site (a Cloudflare Worker) keeps the Google
+    renewal token that Google gives at login. Your browser only holds a random session identifier and the access token
+    (valid about one hour), which the service renews for you. The service never reads your Drive files. Logging out
+    deletes the session, removes both values from your browser and revokes the renewal token at Google.
   </p>
 
   <h2>Deleting your data and removing access</h2>

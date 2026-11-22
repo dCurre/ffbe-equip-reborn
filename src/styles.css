@@ -3,6 +3,7 @@
 
 :root,
 :root[data-theme='light'] {
+  color-scheme: light;
   --color-background: #ffffff;
   --color-text: #333333;
   --color-link: #337ab7;
@@ -62,6 +63,7 @@
 }
 
 :root[data-theme='dark'] {
+  color-scheme: dark;
   --color-background: #222222;
   --color-text: #dddddd;
   --color-link: #2a9fd6;
@@ -262,6 +264,12 @@ textarea {
   background-color: var(--color-input-background);
   border: 1px solid var(--color-input-border);
   border-radius: var(--radius);
+}
+
+/* the open list of a dropdown ignores the translucent field background: it needs a solid one to stay readable */
+select option {
+  color: var(--color-input-text);
+  background-color: var(--color-panel);
 }
 
 /* a label on the left of a text field: `<label class="input-row"><span class="addon">Search</span><input type="text" /></label>` */

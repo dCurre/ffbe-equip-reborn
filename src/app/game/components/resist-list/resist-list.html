@@ -7,7 +7,7 @@
             <i [class]="'img mini img-equipment-' + icon()"></i><i [class]="'img with-mini img-element-' + name"></i>
           </span>
         }
-        {{ group.percent }}%
+        <span [class.bonus]="group.bonus > 0">{{ group.percent }}%</span>
       </div>
     }
   </div>
@@ -19,7 +19,7 @@
             <i [class]="'img mini img-equipment-' + icon()"></i><i [class]="'img with-mini img-ailment-' + name"></i>
           </span>
         }
-        {{ group.percent }}%
+        <span [class.bonus]="group.bonus > 0">{{ group.percent }}%</span>
       </div>
     }
   </div>

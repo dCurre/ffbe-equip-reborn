@@ -1,6 +1,6 @@
 i.img {
-  width: 40px;
-  height: 40px;
+  width: var(--killer-size, 40px);
+  height: var(--killer-size, 40px);
 }
 .over {
   color: red;

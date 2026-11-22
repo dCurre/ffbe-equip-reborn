@@ -21,6 +21,7 @@ import { ShareLinkModal } from '../../shared/components/share-link-modal/share-l
 import {
   applySelectedNodes,
   calculateSp,
+  changeRarity,
   decodeBoard,
   decodeEsperLink,
   encodeEsperLink,
@@ -28,7 +29,8 @@ import {
   EsperInfo,
   esperSprite,
   IMPORT_ESPER_NAMES,
-  MAX_LEVEL_BY_STAR,
+  LEVEL_RANGE,
+  clampLevel,
   newEsper,
   OwnedEsper,
   parsePosition,
@@ -50,7 +52,6 @@ interface ImportedEsper {
 }
 
 const SAVE_DELAY_MS = 3000;
-const LEVEL_DELAY_MS = 300;
 const STATS = baseStats as Stat[];
 
 const isImportFile = (data: unknown): data is ImportedEsper[] =>
@@ -113,7 +114,6 @@ export class Espers {
   protected readonly share = new ShareLinkState();
   private importedEspers: ImportedEsper[] | null = null;
 
-  protected readonly stats = STATS;
   protected readonly columns: { column: Column; label: string }[] = [
     { column: 'index', label: 'Esper' },
     { column: 'level', label: 'Level' },
@@ -124,7 +124,6 @@ export class Espers {
 
   private saveNeeded = false;
   private saveTimer: ReturnType<typeof setTimeout> | undefined;
-  private levelTimer: ReturnType<typeof setTimeout> | undefined;
 
   private readonly header = viewChild(EsperHeader);
   private readonly board = viewChild(EsperGrid);
@@ -255,14 +254,6 @@ export class Espers {
     return owned;
   }
 
-  // --- Display helpers ---
-
-  protected sprite = esperSprite;
-
-  protected stars(count: number): string {
-    return '★'.repeat(count);
-  }
-
   // --- Actions ---
 
   protected sortBy(column: Column): void {
@@ -275,33 +266,36 @@ export class Espers {
     this.tab.set(name);
   }
 
-  protected openFromTable(name: string): void {
-    this.showTab(name);
-  }
-
   protected setRarity(value: string): void {
     const name = this.tab();
     if (value === 'notOwned') {
       this.ownedMap.update(({ [name]: _removed, ...rest }) => rest);
     } else {
-      const esper = newEsper(this.currentInfo()!, parseInt(value), this.boards[name]);
+      const rarity = parseInt(value);
+      const previous = this.owned()[name];
+      const esper = previous
+        ? changeRarity(this.boards[name], previous, rarity)
+        : newEsper(this.currentInfo()!, rarity, this.boards[name]);
       this.ownedMap.update((owned) => ({ ...owned, [name]: esper }));
     }
     this.markChanged();
   }
 
+  /**
+   * Keeps the level inside the range of the rarity. The maximum applies while typing; the minimum only when the field is
+   * left (`change`), because the first digits of a valid level (the "3" of 35) can be below it. An empty field is left alone.
+   */
   protected onLevelInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    clearTimeout(this.levelTimer);
-    this.levelTimer = setTimeout(() => {
-      const esper = this.current();
-      const level = parseInt(input.value);
-      if (!esper || Number.isNaN(level)) return;
-      esper.level = Math.min(Math.max(level, 1), MAX_LEVEL_BY_STAR[esper.rarity]);
-      input.value = String(esper.level);
-      updateStats(this.boards[esper.name], esper);
-      this.touch();
-    }, LEVEL_DELAY_MS);
+    const esper = this.current();
+    const typed = parseInt(input.value);
+    if (!esper || Number.isNaN(typed)) return;
+    const level = Math.min(typed, LEVEL_RANGE[esper.rarity].max);
+    if (event.type === 'input' && level < LEVEL_RANGE[esper.rarity].min) return;
+    esper.level = clampLevel(level, esper.rarity);
+    input.value = String(esper.level);
+    updateStats(this.boards[esper.name], esper);
+    this.touch();
   }
 
   protected openShare(): void {
@@ -315,7 +309,9 @@ export class Espers {
 
   /** The Esper objects were edited in place: tell the signals, and save later. */
   private touch(): void {
-    this.ownedMap.update((owned) => ({ ...owned }));
+    // the edited Esper is copied (deeply, with its killers and resists): signals compare by reference, so the views would not redraw
+    const name = this.tab();
+    this.ownedMap.update((owned) => ({ ...owned, ...(owned[name] && { [name]: structuredClone(owned[name]) }) }));
     this.markChanged();
   }
 
@@ -380,7 +376,7 @@ export class Espers {
         if (!info || rarity < 1 || rarity > info.maxLevel) continue;
         const board = this.boards[info.name];
         const esper = newEsper(info, rarity, board);
-        esper.level = Math.min(Math.max(Math.round(data.level), 1), MAX_LEVEL_BY_STAR[rarity]);
+        esper.level = clampLevel(Math.round(data.level), rarity);
         for (const position of decodeBoard(data.board)) {
           if (position === '0_0' || esper.selectedSkills.includes(position)) continue;
           const { x, y } = parsePosition(position);
@@ -392,8 +388,11 @@ export class Espers {
       this.ownedMap.set(owned);
       this.tab.set('ALL');
       this.busy.set(false);
-      this.saveNeeded = true;
-      this.save();
+      // without an account (or on a shared link) the import stays on screen: there is nowhere to save it
+      if (this.logged() && !this.linkMode()) {
+        this.saveNeeded = true;
+        this.save();
+      }
     }, 200);
   }
 }

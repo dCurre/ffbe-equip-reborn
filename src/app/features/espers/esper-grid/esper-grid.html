@@ -4,33 +4,21 @@
       <span class="name">SP</span>
       <span [class.error]="sp()!.used > sp()!.available">{{ sp()!.used }} / {{ sp()!.available }}</span>
     </div>
-    <div class="grid-trimmer" [class]="'grid-trimmer star' + esper.rarity">
+    <div class="grid-trimmer">
       <div #gridContainer class="grid-container">
         <svg class="lines" viewBox="0 0 1000 1000" aria-hidden="true">
-          @for (line of lines(); track $index) {
-            <line [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2" />
+          @for (line of lines(); track line.key) {
+            <line animate.leave="leaving" [class.fresh]="line.fresh" [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2" />
           }
         </svg>
-        <ul class="grid" [class]="'grid star' + esper.rarity">
+        <ul class="grid" [style.--cell-width.px]="cellWidth" [style.--cell-height.px]="cellHeight">
           @for (cell of cells(); track cell.position) {
-            <li [class.center]="cell.isCenter">
+            <li animate.leave="leaving" [class.center]="cell.isCenter" [style.left.px]="cell.left" [style.top.px]="cell.top" [class.fresh]="cell.fresh">
               <div
-                #hexagon
-                [attr.data-position]="cell.position"
                 class="hexagon"
-                [class]="'hexagon ' + cell.tier"
-                [class.not-used]="cell.hidden"
+                [class]="cell.kinds"
                 [class.selected]="cell.selected"
                 [class.hover]="isHover(cell)"
-                [class.hp]="cell.view?.kinds?.includes('hp')"
-                [class.mp]="cell.view?.kinds?.includes('mp')"
-                [class.atk]="cell.view?.kinds?.includes('atk')"
-                [class.def]="cell.view?.kinds?.includes('def')"
-                [class.mag]="cell.view?.kinds?.includes('mag')"
-                [class.spr]="cell.view?.kinds?.includes('spr')"
-                [class.ability]="cell.view?.kinds?.includes('ability')"
-                [class.resist]="cell.view?.kinds?.includes('resist')"
-                [class.killer]="cell.view?.kinds?.includes('killer')"
                 (click)="selectNode(cell)"
                 (mouseenter)="hoverNode(cell)"
                 (mouseleave)="hoverNode(null)"
@@ -43,7 +31,7 @@
                       <img class="icon" [src]="'img/items/' + view.icon" alt="" />
                     }
                     @if (view.killers) {
-                      <app-killer-list [killers]="view.killers" />
+                      <app-killer-list [killers]="view.killers" [class.both]="cell.bothKillers" />
                     }
                   </span>
                   @if (view.text) {
