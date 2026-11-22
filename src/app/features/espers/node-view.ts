@@ -1,4 +1,6 @@
-import { baseStats, percentValues, typeList } from '../../../core/constants';
+import { baseStats } from '../../../core/constants/base-lists';
+import { percentValues } from '../../../core/constants/stat-values';
+import { typeList } from '../../../core/constants/item-types';
 import { BoardNode, Killer, Resist, Stat } from './esper-model';
 
 const WIKI = 'https://exvius.fandom.com/wiki/';

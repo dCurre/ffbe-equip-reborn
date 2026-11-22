@@ -26,7 +26,7 @@ getData('units.json', function (units) {
 function verifyImage(serieId, minRarity, maxRarity) {
     for (var i = minRarity; i <= maxRarity; i++) {
         var unitId = serieId.substr(0, serieId.length - 1) + i;
-        var filePath = "../../static/img/units/unit_icon_" + unitId + ".png";
+        var filePath = "../../public/img/units/unit_icon_" + unitId + ".png";
         if (!fs.existsSync(filePath)) {
             //console.log(filePath);
             for (var i = 1; i < 20; i++) {

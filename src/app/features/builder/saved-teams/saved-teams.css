@@ -1,0 +1,37 @@
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.buttons,
+.actions {
+  display: flex;
+  gap: 4px;
+}
+
+.team {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.name {
+  font-weight: bold;
+}
+
+.units {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.unit {
+  height: 38px;
+}

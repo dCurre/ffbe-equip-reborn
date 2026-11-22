@@ -104,7 +104,7 @@ const newContent = fs.readFileSync('newItems.txt', 'utf-8');
 const newRelease = parseNewContent(newContent, data); // Parses newItems.txt and applies any necessary filtering
 
 // File path to the existing releases JSON
-const filePath = '../../static/GL/lastItemReleases.json';
+const filePath = '../../public/GL/lastItemReleases.json';
 // Prepend the new release to the existing data
 prependNewReleaseToExistingData(filePath, newRelease);
 

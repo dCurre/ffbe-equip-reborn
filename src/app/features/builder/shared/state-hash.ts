@@ -1,8 +1,11 @@
-import { baseStats, ailmentList, elementList, esperNameById, killerList, weaponList } from '../../../../core/constants';
-import { weaponBaseDamageVariance } from '../../../../core/builder/damage-calculation';
+import { baseStats, ailmentList, elementList, killerList } from '../../../../core/constants/base-lists';
+import { esperNameById } from '../../../../core/constants/game-ids';
+import { weaponList } from '../../../../core/constants/item-types';
+import { weaponBaseDamageVariance } from '../../../../core/builder/damage/damage-data';
 import { calculateStatValue, getEquipmentStatBonus } from '../../../../core/builder/stat-calculation';
 import { hasDualWieldOrPartialDualWield, isTwoHanded } from '../../../../core/builder/item-values';
-import { formulaToString } from '../../../../core/formula';
+import { formulaToString } from '../../../../core/formula/formula-text';
+import { encodeEsperLink } from '../../espers/esper-model';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core and the link data are open */
 
@@ -80,8 +83,15 @@ function killerTotals(items: any[]): Record<string, { physical: number; magical:
   return totals;
 }
 
+/** The Esper page with the board of an owned Esper, without the account (`o`). */
+function esperPageLink(esper: any, server: string): string {
+  const url = new URL('espers', document.baseURI);
+  url.search = `?server=${server}&o`;
+  return `${url.href}#${encodeEsperLink(esper)}`;
+}
+
 /** One unit of the link, from a build of the page. */
-export function unitState(build: any): any {
+export function unitState(build: any, server: string): any {
   const unit: any = {
     id: build.unit.id,
     name: build.unit.name,
@@ -113,6 +123,12 @@ export function unitState(build: any): any {
   if (build.build[11]) {
     unit.esperId = build.build[11].name;
     unit.esperPinned = build.fixedItems[11] != null;
+    const owned = build.build[11].originalEsper;
+    if (owned?.selectedSkills) {
+      // an owned Esper goes in the link whole, with the link of its board in the Esper page
+      const { buildLink: _link, selectedSkills: _skills, maxLevel: _max, ...esper } = structuredClone(owned);
+      unit.esper = { ...esper, resist: esper.resist ?? [], buildLink: esperPageLink(owned, server) };
+    }
   }
   const values = build.baseValues;
   unit.pots = {};

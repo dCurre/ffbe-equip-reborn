@@ -5,9 +5,9 @@ import request from '../request.js';
 console.log("Starting");
 
 
-fs.readFile('../../static/GL/releasedUnits.json', function (err, content) {
+fs.readFile('../../public/GL/releasedUnits.json', function (err, content) {
     var releasedUnitsIn = JSON.parse(content);
-    fs.readFile('../../static/GL/units.json', function (err, content) {
+    fs.readFile('../../public/GL/units.json', function (err, content) {
         var unitsIn = JSON.parse(content);
         var releasedUnitsOut = {};
         for (var name in releasedUnitsIn) {

@@ -1,5 +1,6 @@
 import { hasDualWield } from './item-values.js';
-import { baseStats, bodyList, elementList, headList, shieldList, typeList, weaponList } from '../constants.js';
+import { baseStats, elementList } from '../constants/base-lists.js';
+import { bodyList, headList, shieldList, typeList, weaponList } from '../constants/item-types.js';
 
 export class UnitShift {
   unit: any;

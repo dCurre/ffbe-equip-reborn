@@ -1,5 +1,5 @@
 import { Component, computed, inject, input, output } from '@angular/core';
-import { ailmentList, elementList, killerList } from '../../../../core/constants';
+import { ailmentList, elementList, killerList } from '../../../../core/constants/base-lists';
 import { KillerList } from '../../../game/components/killer-list/killer-list';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { UnitContext } from '../unit-context';

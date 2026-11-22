@@ -3,23 +3,7 @@
 
   @if (showInventory()) {
     <app-collection-layout [(collapsed)]="sidebarCollapsed">
-      <div stats class="stats">
-        @for (type of ['materia'].concat(typeList); track type) {
-          @if (stats()[type]; as stat) {
-            <table [class.materia]="type === 'materia'">
-              <tbody>
-                <tr>
-                  <td class="type"><i [class]="'img img-equipment-' + type"></i></td>
-                  <td>{{ stat.different }}</td>
-                  <td>/</td>
-                  <td>{{ stat.total }}</td>
-                  <td class="number">({{ stat.number }})</td>
-                </tr>
-              </tbody>
-            </table>
-          }
-        }
-      </div>
+      <app-inventory-stats stats [counts]="stats()" />
 
       <div actions>
         <app-dropdown-menu label="Export inventory" [items]="exportItems" />

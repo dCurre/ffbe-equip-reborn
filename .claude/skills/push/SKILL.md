@@ -17,7 +17,7 @@ Pushing `master` deploys the site via GitHub Actions (https://dcurre.github.io/f
 
 ## Steps
 1. `git branch --show-current; git status --short; git config user.name; git config user.email` — confirm the identity is right, else stop and ask. Remove a stale `.git/index.lock` only if no git process is running.
-2. Risky untested changes (pages, paths, data, `static/`): recommend testing first.
+2. Risky untested changes (pages, paths, data, `public/`): recommend testing first.
 3. `git diff --stat`. With `core.autocrlf=true`, a whole-file diff means stray `\r`: fix line endings. Validate changed JSON with `node -e "JSON.parse(require('fs').readFileSync('<file>','utf8'))"`.
 4. Update `.claude/ROADMAP.md`: remove done items, add new open work (no `[x]`). Then `git add -A` and review `git status --short`.
 5. One commit: imperative English subject, body bullets for non-trivial changes (`git commit -q -F -` with a heredoc).

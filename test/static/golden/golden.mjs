@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { loadBuilderEnv, makeUnitBuild, makeEnemy } from '../helpers/builderEnv.js';
 
-const GL = new URL('../../../static/GL/', import.meta.url);
+const GL = new URL('../../../public/GL/', import.meta.url);
 const readJson = (name) => JSON.parse(fs.readFileSync(new URL(name, GL), 'utf8'));
 
 const WEAPONS = ['dagger', 'sword', 'greatSword', 'katana', 'axe', 'hammer', 'mace', 'spear', 'fist', 'rod', 'staff', 'bow', 'gun', 'whip', 'throwing', 'harp'];

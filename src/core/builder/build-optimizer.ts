@@ -5,8 +5,9 @@ import { areConditionOK, findBestItemVersion } from './item-conditions.js';
 import { ItemPool } from './item-pool.js';
 import { isTwoHanded } from './item-values.js';
 import { calculateStatValue } from './stat-calculation.js';
-import { baseStats, elementList, typeList, weaponList } from '../constants.js';
-import { getSkillIds } from '../formula.js';
+import { baseStats, elementList } from '../constants/base-lists.js';
+import { typeList, weaponList } from '../constants/item-types.js';
+import { getSkillIds } from '../formula/formula-queries.js';
 
 export class BuildOptimizer {
   itemEnchantments: any;

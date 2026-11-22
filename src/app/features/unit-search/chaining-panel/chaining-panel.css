@@ -1,0 +1,18 @@
+:host {
+  display: block;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  margin: 4px;
+  font-weight: normal;
+}
+
+.line .title {
+  width: 110px;
+}
+
+app-choice-group {
+  margin: 4px;
+}

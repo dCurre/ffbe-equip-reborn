@@ -59,7 +59,7 @@ getData('units.json', function (units) {
                             for (var unitId in nameData) {
                                 glNameById[unitId] = nameData[unitId].name;
                             }
-                            fs.readFile('../../static/GL/units.json', function (err, nameDatacontent) {
+                            fs.readFile('../../public/GL/units.json', function (err, nameDatacontent) {
                                 fs.readFile('../imgUrls.json', function (err, imgUrlContent) {
                                     var nameData = JSON.parse(nameDatacontent);
                                     imgUrls = JSON.parse(imgUrlContent);
@@ -277,7 +277,7 @@ function assureArray(input) {
 function verifyImage(serieId, minRarity, maxRarity) {
     for (var i = minRarity; i <= maxRarity; i++) {
         var unitId = serieId.substr(0, serieId.length - 1) + i;
-        var basePath = "../../static/img/units/";
+        var basePath = "../../public/img/units/";
         var illus = "unit_ills_" + unitId + ".png";
         var icon = "unit_icon_" + unitId + ".png";
         var filePath = basePath + illus;

@@ -1,0 +1,37 @@
+<app-panel>
+  <div panelHeading class="heading"><span>Parameter challenges</span></div>
+  @if (available()) {
+    <div class="challenge">
+      <div class="line">
+        <select [value]="challenge().challenge()" (change)="chooseChallenge($any($event.target).value)">
+          @for (option of challenges; track option.value) {
+            <option [value]="option.value" [selected]="option.value === challenge().challenge()">
+              {{ option.label }}
+            </option>
+          }
+        </select>
+        <button app-button type="button" (click)="challenge().find()">
+          {{ challenge().running() ? 'STOP' : challenge().found() ? 'Find another way !' : 'Find a way !' }}
+        </button>
+      </div>
+      <div class="pools">
+        @for (pool of pools; track pool.value) {
+          <label>
+            <input
+              type="radio"
+              name="pool"
+              [value]="pool.value"
+              [checked]="pool.value === challenge().pool()"
+              [disabled]="challenge().running()"
+              (change)="choosePool(pool.value)"
+            />
+            {{ pool.label }}
+          </label>
+        }
+      </div>
+      <p>(Units will be assumed fully leveled, fully potted, and with relevant abilities enhanced)</p>
+    </div>
+  } @else {
+    <app-alert kind="info">Parameter Challenge feature is only available when logged-in</app-alert>
+  }
+</app-panel>

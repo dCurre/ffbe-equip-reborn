@@ -12,11 +12,16 @@ import { ServerContext } from '../../shared/services/server-context';
 import { Sprites } from '../../shared/services/sprites';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
+import { UserData } from '../../shared/services/user-data';
 import { LoadStatus } from '../../shared/components/load-status/load-status';
+import { TabBar, TabItem } from '../../shared/components/tab-bar/tab-bar';
 import { ShareLinkModal } from '../../shared/components/share-link-modal/share-link-modal';
 import { TextExportModal } from '../../shared/components/text-export-modal/text-export-modal';
+import { ImageExportModal } from './image-export-modal/image-export-modal';
 import { ItemPicker } from './item-picker/item-picker';
-import { OptimizerRunner } from './shared/optimizer-runner';
+import { OptimizerRunner, RunCallbacks } from './shared/optimizer-runner';
+import { ParamChallenge } from './shared/param-challenge';
+import { ChallengePanel } from './challenge-panel/challenge-panel';
 import { enemy, readItemOptions } from './shared/build-inputs';
 import { BuildHelp } from './build-help/build-help';
 import { BuildResult } from './build-result/build-result';
@@ -31,6 +36,8 @@ import { GameData } from './shared/game-data';
 import { GoalPanel } from './goal-panel/goal-panel';
 import { ItemActions } from './shared/item-actions';
 import { RulesPanel } from './rules-panel/rules-panel';
+import { SavedTeamsPanel } from './saved-teams/saved-teams';
+import { SavedTeams } from './shared/saved-teams';
 import { BuilderState, BuilderUnit } from './shared/builder-state';
 import { UnitLoader } from './shared/unit-loader';
 import { UnitPanel } from './unit-panel/unit-panel';
@@ -44,6 +51,7 @@ interface BuilderTab {
   items: ItemActions;
   customGoal: CustomGoal;
   sharing: BuildSharing;
+  challenge: ParamChallenge;
 }
 
 /** Builds the best equipment of a unit for a goal (damage, a stat, a skill...), from the items of the game or the owned ones. */
@@ -55,14 +63,18 @@ interface BuilderTab {
     ItemPicker,
     LoadStatus,
     BuilderTabs,
+    TabBar,
+    ChallengePanel,
     EnhancementModal,
     CustomGoalModal,
     ShareLinkModal,
     TextExportModal,
+    ImageExportModal,
     UnitPanel,
     GoalPanel,
     EnemyPanel,
     RulesPanel,
+    SavedTeamsPanel,
     EquipmentsPanel,
     BuildResult,
     BuildHelp,
@@ -78,6 +90,8 @@ export class Builder {
   private readonly linkStore = inject(LinkStore);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly userData = inject(UserData);
+  protected readonly savedTeams = new SavedTeams(this.userData, this.toast);
 
   // --- Game data ---
   protected readonly game = new GameData();
@@ -113,6 +127,16 @@ export class Builder {
   protected get sharing(): BuildSharing {
     return this.tab.sharing;
   }
+  protected get challenge(): ParamChallenge {
+    return this.tab.challenge;
+  }
+
+  /** Building a unit, or looking for the unit that passes a Parameter Challenge. */
+  protected readonly mode = signal<'build' | 'challenge'>('build');
+  protected readonly modes: TabItem<'build' | 'challenge'>[] = [
+    { key: 'build', title: 'Build a unit' },
+    { key: 'challenge', title: 'Parameter challenges' },
+  ];
 
   protected tabNames(): string[] {
     return this.tabs().map((tab) => tab.s.unit()?.name ?? 'New unit');
@@ -138,7 +162,15 @@ export class Builder {
       items,
       customGoal,
     );
-    return { s, loader, items, customGoal, sharing };
+    const challenge = new ParamChallenge(
+      s,
+      loader,
+      this.runner,
+      this.toast,
+      () => this.inventory.units(),
+      (callbacks) => this.startRun(callbacks),
+    );
+    return { s, loader, items, customGoal, sharing, challenge };
   }
 
   protected addTab(): BuilderTab | null {
@@ -152,6 +184,37 @@ export class Builder {
   /** The tabs with a unit, the active one first: what the "all units" link and text are made of. */
   protected allSharing(): BuildSharing[] {
     return this.tabs().map((tab) => tab.sharing);
+  }
+
+  /** Saves the units of all the tabs over the team being edited (or as a new one with a name). */
+  protected saveTeam(name?: string): void {
+    const data = this.tab.sharing.linkData(this.allSharing());
+    if (name === undefined) void this.savedTeams.save(data);
+    else void this.savedTeams.saveAs(name, data);
+  }
+
+  /** Replaces the units of the builder with the ones of a saved team. */
+  protected async loadTeam(index: number): Promise<void> {
+    while (this.tabs().length > 1) this.closeTab(this.tabs().length - 1);
+    this.active.set(0);
+    this.savedTeams.current.set(index);
+    await this.tab.sharing.loadData(this.savedTeams.teams()[index].team, () => this.addTab()?.sharing ?? null);
+    this.active.set(0);
+  }
+
+  /** Adds the units of a saved team to the ones of the builder. */
+  protected async importTeam(index: number): Promise<void> {
+    const team = this.savedTeams.teams()[index].team;
+    const empty = this.tabs().length === 1 && !this.tab.s.unit();
+    if ((empty ? 0 : this.tabs().length) + team.units.length > this.maxTabs) {
+      this.toast.show(
+        'Importing this team would result in more than 10 units. Please remove some units before doing that.',
+        'error',
+      );
+      return;
+    }
+    const target = empty ? this.tab : this.addTab();
+    await target?.sharing.loadData(team, () => this.addTab()?.sharing ?? null);
   }
 
   protected closeTab(index: number): void {
@@ -179,20 +242,30 @@ export class Builder {
     this.game.espers = espers.map((esper) => getEsperItem(esper));
     this.dataStorage.setData(this.game.data);
     this.runner.init(this.s.workerCount(), enchantments);
+    if (this.inventory.status() === 'loading') await this.inventory.load();
+    if (this.inventory.status() === 'loaded') await this.useOwnedEspers();
     this.ready.set(true);
     await this.sharing.loadFromFragment(() => this.addTab()?.sharing ?? null);
     this.active.set(0);
   }
 
+  /** With owned Espers saved in the Esper page, those are the ones the builder uses instead of the default ones. */
+  private async useOwnedEspers(): Promise<void> {
+    try {
+      const owned = Object.values(await this.userData.read<Record<string, any>>('espers'));
+      for (const esper of owned) {
+        // old saves kept the ST Reflection Boost without the `all` level
+        if (esper.esperStatsBonus && !esper.esperStatsBonus.all) esper.esperStatsBonus = { all: esper.esperStatsBonus };
+      }
+      if (owned.length) this.game.espers = owned.map((esper) => getEsperItem(esper));
+    } catch {
+      // the default Espers stay
+    }
+  }
+
   protected onBuildClick(): void {
     const build = this.s.build();
     if (!build.unit) return;
-    if (build.unit.id === '777700004') {
-      this.s.message.set(
-        "Are you saying you want me to help you build my foe? I'm afraid not! You're on your own there !",
-      );
-      return;
-    }
     if (this.runner.running()) {
       this.runner.stop();
       this.s.message.set(
@@ -201,13 +274,19 @@ export class Builder {
       return;
     }
     this.s.message.set('');
+    this.startRun();
+  }
+
+  /** Looks for the best build of the unit of the tab; `callbacks` replace the ones of the page. */
+  private startRun(callbacks: Partial<RunCallbacks> = {}): void {
+    const build = this.s.build();
     build.emptyBuild();
     this.s.refresh();
     this.dataStorage.calculateAlreadyUsedItems([build], 0);
     readItemOptions(this.s, this.dataStorage, this.inventory);
-    this.dataStorage.useElementConditionedMateria = false;
+    this.dataStorage.useElementConditionedMateria = this.s.useElementConditionedMateria();
     const espers: Record<string, any> = {};
-    for (const esper of this.game.espers) espers[esper.id] = esper;
+    for (const esper of this.game.espersFor(this.s.source())) espers[esper.id] = esper;
     try {
       this.runner.run(
         build,
@@ -221,6 +300,7 @@ export class Builder {
           enemyStats: enemy(this.s),
           monsterAttackFormula: this.s.monsterAttackFormula(),
           goalVariation: this.s.goalVariation(),
+          reduceOvercapStat: this.s.tryReduceOvercap() ? this.s.reduceOvercapStat() : null,
         },
         {
           onBetter: () => this.s.tick.update((n) => n + 1),
@@ -229,6 +309,7 @@ export class Builder {
             this.s.message.set('The build rules chosen are not compatible with available equipments'),
           onConditionNotMet: () => this.s.message.set('The condition set in the goal are impossible to meet.'),
           onWeaponsSwitched: () => this.toast.show('Weapons hands were switched to optimize build', 'success'),
+          ...callbacks,
         },
         this.s.excluded(),
       );

@@ -1,5 +1,7 @@
-import { ailmentList, baseStats, elementList, weaponList } from '../../../../core/constants';
-import { calculateBuildValueWithFormula, calculateMonsterDamage } from '../../../../core/builder/damage-calculation';
+import { ailmentList, baseStats, elementList } from '../../../../core/constants/base-lists';
+import { weaponList } from '../../../../core/constants/item-types';
+import { calculateBuildValueWithFormula } from '../../../../core/builder/damage-calculation';
+import { calculateMonsterDamage } from '../../../../core/builder/damage/damage-monster';
 import { EnemyStats } from '../../../../core/builder/enemy-stats';
 import { calculateStatValue, getEquipmentStatBonus, getStatBonusCap } from '../../../../core/builder/stat-calculation';
 import { formulaByGoal } from './goal';

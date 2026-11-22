@@ -36,16 +36,6 @@
           </select>
         </div>
       }
-      <label class="line">
-        Chain multiplier
-        <input
-          type="text"
-          class="short"
-          placeholder="1 or MAX"
-          [value]="s.chainMultiplier()"
-          (input)="s.chainMultiplier.set($any($event.target).value); s.refresh()"
-        />
-      </label>
       @if (s.showStack()) {
         <label class="line">
           Stack
@@ -59,47 +49,81 @@
         </label>
       }
       <div class="line">
-        <span class="label">Force elements</span>
-        <app-choice-group
-          [choices]="forcedElementChoices"
-          iconType="element"
-          [selected]="s.forcedElements()"
-          (selectedChange)="s.forcedElements.set($event); s.refresh()"
-        />
+        <button
+          app-button
+          type="button"
+          title="Display/Hide additional build conditions"
+          [attr.aria-expanded]="optionsOpen()"
+          (click)="optionsOpen.set(!optionsOpen())"
+        >
+          {{ optionsOpen() ? '−' : '+' }} options
+        </button>
       </div>
-      <div class="line">
-        <span class="label">Immune to</span>
-        <app-choice-group
-          [choices]="ailmentChoices"
-          iconType="ailment"
-          [selected]="s.ailmentImmunities()"
-          (selectedChange)="s.ailmentImmunities.set($event); s.refresh()"
-        />
-      </div>
-      <div class="line">
-        <span class="label">Resist</span>
-        <span class="resists">
-          @for (element of elements; track element) {
-            <label class="resist"
-              ><i [class]="'img img-element-' + element"></i>
-              <input
-                type="number"
-                min="0"
-                max="300"
-                [value]="s.goalResists()[element]"
-                (input)="setGoalResist(element, $event)"
-              />
-            </label>
-          }
-        </span>
-      </div>
-      <div class="line">
-        <app-choice-group
-          [choices]="variousChoices"
-          [selected]="s.various()"
-          (selectedChange)="s.various.set($event); s.refresh()"
-        />
-      </div>
+      @if (optionsOpen()) {
+        <label class="line">
+          Chain multiplier
+          <input
+            type="text"
+            class="short"
+            placeholder="1 or MAX"
+            [value]="s.chainMultiplier()"
+            (input)="s.chainMultiplier.set($any($event.target).value); s.refresh()"
+          />
+          <span class="hint"
+            >(<button type="button" class="switch" (click)="setChainMax()">MAX</button> for max chain multiplier,
+            calculate it on <a href="https://ffbe-chain.com/" target="_blank" rel="noreferrer">FFBE-Chain</a>)</span
+          >
+        </label>
+        <div class="line">
+          <span class="label">Force elements</span>
+          <app-choice-group
+            [choices]="forcedElementChoices"
+            iconType="element"
+            [selected]="s.forcedElements()"
+            (selectedChange)="s.forcedElements.set($event); s.refresh()"
+          />
+        </div>
+        <div class="line">
+          <button
+            type="button"
+            class="label switch"
+            title='Switch between "All ailment", "Disabling ailments" and "No ailments"'
+            (click)="switchAilments()"
+          >
+            Immune to
+          </button>
+          <app-choice-group
+            [choices]="ailmentChoices"
+            iconType="ailment"
+            [selected]="s.ailmentImmunities()"
+            (selectedChange)="s.ailmentImmunities.set($event); s.refresh()"
+          />
+        </div>
+        <div class="line">
+          <span class="label">Resist</span>
+          <span class="resists">
+            @for (element of elements; track element) {
+              <label class="resist" [title]="'Base ' + element + ' resistance'"
+                ><i [class]="'img img-element-' + element"></i>
+                <input
+                  type="number"
+                  min="0"
+                  max="300"
+                  [value]="s.goalResists()[element]"
+                  (input)="setGoalResist(element, $event)"
+                />
+              </label>
+            }
+          </span>
+        </div>
+        <div class="line">
+          <app-choice-group
+            [choices]="variousChoices"
+            [selected]="s.various()"
+            (selectedChange)="s.various.set($event); s.refresh()"
+          />
+        </div>
+      }
     </div>
   </app-panel>
 }

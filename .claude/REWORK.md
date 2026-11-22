@@ -1,22 +1,17 @@
 # Site Rework (branch `angular_migration`)
 
-Nothing committed yet; one descriptive commit at the end (ROADMAP included). Completed-work details: `REWORK-reference.md` (read only the relevant section, never at start).
+Committed and pushed on this branch.
 
 ## Status
-Phases 1 (TS core) and 2 (Angular shell) done; phase 3 (pages) migrated, builder incomplete. `ng build` passes, `ng test` 98 passing. TypeScript `~6.0.x`; Prettier: 2 spaces, single quotes, width 120. Ask the owner only when something is ambiguous.
+Phases 1 (TS core), 2 (Angular shell) and 3 (pages) done in code; `src/app` restructuring done; old pages removed and data/images moved to `public/`. `ng build` passes, `ng test` 105 passing, `npm test` 137. TypeScript `~6.0.x`; Prettier: 2 spaces, single quotes, width 120. Ask the owner only when something is ambiguous.
 
-## Priority: restructure `src/app`
-Run `ng build` + `ng test` after every step.
-Completed restructuring: see `REWORK-reference.md`.
-Checked on screen by the owner (look/aesthetics postponed): builder, units, inventory, espers. Not checked yet: unit search results (new components; killers now one line per kind) and the Esper board / table / tabs after the CSS split (phone view of the board, small-screen rules).
-1. Big files in `src/core` (`constants`, `damage-calculation`, `formula`, `data-storage`) only if touched often.
-
-## Builder — remaining
-1. Verify Monster panel. 2. Restore reduce-overcap-for-stat and Damage variance. 3. Compare goal panel, form, results, Parameter Challenges with old site. 4. Brave Shift. 5. Saved Teams (Google Drive). 6. Image export, Export for Battle. 7. Complete Parameter Challenges. 8. Owned Esper management, URL Esper loading.
+## Known differences from the old site (keep or fix in the check)
+- Espers: resist/killer sorting counts entries (the old one was wrong); levels above max are clamped, not thrown; wiki links use `exvius.fandom.com`; connectors are measured SVG instead of `jquery.line`; share URL `.../espers?server=GL&o#Name|r|l|hex`.
+- Builder: negative goal resists are ignored (as in the old site); Export for Battle and the Holiday Hero message were removed on purpose.
+- `noFallthroughCasesInSwitch` is off because of four suspicious switches in `tree-comparator.ts` (`shortcut:` in `tsconfig.json`).
 
 ## Final checks
-- Compare all pages with old site; verify dialogs, inventory, units, light theme, Drive loading.
-- Remove old pages; move data/images out of `static/`.
+- Compare all pages with the old site (code: `git show 0e9eee65d:static/<file>`); verify dialogs, inventory, units, light theme, Drive loading.
 - Present remaining differences to the owner.
 
-**Next:** finish restructuring `src/app`, then builder.
+**Next:** section-by-section check with the owner (compare with the old site, fix differences).

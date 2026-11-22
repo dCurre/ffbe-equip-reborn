@@ -1,4 +1,5 @@
-import { baseStats, itemEnhancementAbilities } from '../constants.js';
+import { baseStats } from '../constants/base-lists.js';
+import { itemEnhancementAbilities } from '../constants/item-enhancement-abilities.js';
 
 export const simpleAddCombineProperties = [
   'hp',

@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
-import { itemEnhancementLabels, typeCategories } from '../../../../core/constants';
+import { itemEnhancementLabels } from '../../../../core/constants/item-enhancement-labels';
+import { typeCategories } from '../../../../core/constants/item-types';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { Item } from '../../helpers/item';
 import { ItemEnchantments } from '../../models/item-context.model';

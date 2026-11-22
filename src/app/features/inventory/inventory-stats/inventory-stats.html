@@ -1,0 +1,15 @@
+@for (type of types; track type) {
+  @if (counts()[type]; as stat) {
+    <table [class.materia]="type === 'materia'">
+      <tbody>
+        <tr>
+          <td class="type"><i [class]="'img img-equipment-' + type"></i></td>
+          <td>{{ stat.different }}</td>
+          <td>/</td>
+          <td>{{ stat.total }}</td>
+          <td class="number">({{ stat.number }})</td>
+        </tr>
+      </tbody>
+    </table>
+  }
+}

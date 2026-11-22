@@ -1,0 +1,84 @@
+<app-panel>
+  <div panelHeading class="heading">
+    <span>{{ teams().title() }}</span>
+    <span class="buttons">
+      @if (hasUnits()) {
+        <button app-button type="button" title="Save" aria-label="Save" (click)="saveClicked()">
+          <app-icon name="save" />
+        </button>
+      }
+      @if (teams().current() >= 0) {
+        <button app-button type="button" title="Save as..." aria-label="Save as" (click)="nameOpen.set(true)">
+          <app-icon name="add-box" />
+        </button>
+      }
+      <button app-button type="button" title="Show saved teams list" aria-label="Saved teams list" (click)="showList()">
+        <app-icon name="list" />
+      </button>
+    </span>
+  </div>
+</app-panel>
+
+<app-modal heading="Saved teams" [wide]="true" [(open)]="listOpen">
+  @for (entry of entries(); track entry.index) {
+    <div class="team">
+      <div>
+        <div class="name">{{ entry.saved.name }}</div>
+        <div class="units">
+          @for (unit of entry.saved.team.units; track $index) {
+            <img class="unit" [src]="'img/units/unit_icon_' + unit.id + '.png'" alt="" />
+          }
+        </div>
+      </div>
+      <div class="actions">
+        <button
+          app-button
+          type="button"
+          title="Add this team to your current team"
+          (click)="importClicked(entry.index)"
+        >
+          Import
+        </button>
+        <button app-button type="button" title="Load this team, to modify it" (click)="loadClicked(entry.index)">
+          Load
+        </button>
+        <button
+          app-button
+          type="button"
+          title="Delete this team"
+          aria-label="Delete this team"
+          (click)="deleteClicked(entry.index)"
+        >
+          <app-icon name="remove" />
+        </button>
+      </div>
+    </div>
+  } @empty {
+    <p>No saved team yet.</p>
+  }
+  <ng-container modalFooter><button app-button type="button" (click)="listOpen.set(false)">Close</button></ng-container>
+</app-modal>
+
+<app-modal heading="Save team as..." [(open)]="nameOpen">
+  <app-input-group label="Build name">
+    <input type="text" [value]="name()" (input)="name.set($any($event.target).value)" (keydown.enter)="confirmName()" />
+  </app-input-group>
+  <ng-container modalFooter>
+    <button app-button type="button" (click)="nameOpen.set(false)">Cancel</button>
+    <button app-button type="button" (click)="confirmName()">Save</button>
+  </ng-container>
+</app-modal>
+
+<app-confirm-modal heading="Load saved team" confirmLabel="Load" [(open)]="loadOpen" (confirmed)="confirmLoad()">
+  <p>Loading this team will remove the units you currently have in the builder. Continue?</p>
+</app-confirm-modal>
+
+<app-confirm-modal
+  heading="Delete team"
+  confirmLabel="Delete"
+  [danger]="true"
+  [(open)]="deleteOpen"
+  (confirmed)="confirmDelete()"
+>
+  <p>Are you sure to delete that team ?</p>
+</app-confirm-modal>

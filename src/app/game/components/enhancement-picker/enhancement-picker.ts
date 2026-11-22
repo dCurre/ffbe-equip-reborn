@@ -1,5 +1,5 @@
 import { Component, computed, input, output } from '@angular/core';
-import { itemEnhancementLabels } from '../../../../core/constants';
+import { itemEnhancementLabels } from '../../../../core/constants/item-enhancement-labels';
 import { ENHANCEMENT_GROUPS } from '../../helpers/enhancement-groups';
 
 /** The enhancements an item can have, in columns: click a value to select or unselect it (`toggled`). */

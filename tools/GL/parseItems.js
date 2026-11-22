@@ -284,7 +284,7 @@ let notParsedSkillType = {};
 let currentItemName;
 
 console.log("Starting");
-if (!fs.existsSync('../../static/GL/data.json')) {
+if (!fs.existsSync('../../public/GL/data.json')) {
     console.log("old data not accessible");
 }
 getData('equipment.json', function (items) {
@@ -308,11 +308,11 @@ getData('equipment.json', function (items) {
                             skills[skillId].type = "MAGIC";
                         });
                         getData('units.json', function (units) {
-                            fs.readFile('../../static/GL/data.json', function (err, content) {
+                            fs.readFile('../../public/GL/data.json', function (err, content) {
                                 var oldItems = JSON.parse(content);
-                                fs.readFile('../../static/GL/releasedUnits.json', function (err, content) {
+                                fs.readFile('../../public/GL/releasedUnits.json', function (err, content) {
                                     releasedUnits = JSON.parse(content);
-                                    fs.readFile('../../static/GL/visionCards.json', function (err, content) {
+                                    fs.readFile('../../public/GL/visionCards.json', function (err, content) {
                                         JSON.parse(content).filter(vc => vc.name).forEach(vc => alreadyKnownVisionCardNames[vc.id] = vc.name);
                                         request.get('https://raw.githubusercontent.com/aEnigmatic/ffbe-gl-strings/master/MST_ABILITY_NAME.json', function (error, response, body) {
                                             if (!error && response.statusCode == 200) {
@@ -329,9 +329,9 @@ getData('equipment.json', function (items) {
                                                                 request.get('https://raw.githubusercontent.com/aEnigmatic/ffbe-gl-strings/master/MST_MAGIC_SHORTDESCRIPTION.json', function (error, response, body) {
                                                                     if (!error && response.statusCode == 200) {
                                                                         let magicDescTrads = JSON.parse(body);
-                                                                        fs.readFile('../../static/JP/data.json', function (err, content) {
+                                                                        fs.readFile('../../public/JP/data.json', function (err, content) {
                                                                             var jpItems = JSON.parse(content);
-                                                                            fs.readFile('../../static/JP/units.json', function (err, content) {
+                                                                            fs.readFile('../../public/JP/units.json', function (err, content) {
                                                                                 var jpUnits = JSON.parse(content);
                                                                                 Object.keys(magicDescTrads).forEach(skillId => {
                                                                                     skillDescTrads[skillId] = magicDescTrads[skillId];
@@ -2730,7 +2730,7 @@ function formatVisionCards(cards) {
 }
 
 function verifyImage(icon) {
-    var filePath = "../../static/img/items/" + icon;
+    var filePath = "../../public/img/items/" + icon;
     if (!fs.existsSync(filePath)) {
         //download("http://diffs.exvius.gg/asset_files/global/item_item1_common/122/" + icon ,filePath);
         //console.log("Missing image : " + icon);

@@ -2,7 +2,8 @@ import { areConditionOK } from './item-conditions.js';
 import { hasDualWield } from './item-values.js';
 import { calculateStatValue } from './stat-calculation.js';
 import { UnitShift } from './unit-shift.js';
-import { ailmentList, baseStats, bodyList, headList, shieldList, weaponList } from '../constants.js';
+import { ailmentList, baseStats } from '../constants/base-lists.js';
+import { bodyList, headList, shieldList, weaponList } from '../constants/item-types.js';
 
 export const involvedStatsByValue = {
   physicalDamage: ['atk', 'weaponElement', 'physicalKiller', 'meanDamageVariance', 'chainMastery'],

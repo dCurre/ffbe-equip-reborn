@@ -25,13 +25,26 @@
       <div class="line">
         <img class="unit-icon" [src]="'img/units/unit_icon_' + unit.id + '.png'" alt="" />
         <strong>{{ unit.name }}</strong>
+        <span class="rarity" [title]="'Rarity ' + unit.max_rarity">
+          @if (unit.max_rarity === 'NV') {
+            <img src="img/icons/NV.png" alt="NV" />
+          } @else {
+            {{ stars(unit.max_rarity) }}
+          }
+        </span>
+        <app-wiki-link [name]="unit.name" [page]="unit['wikiEntry']" [always]="true" />
+        @if (s.hasBraveShift()) {
+          <button app-button type="button" class="brave-shift" title="Brave Shift" (click)="loader().braveShift()">
+            <img src="img/icons/braveShift.png" alt="Brave Shift" />
+          </button>
+        }
       </div>
       @if (s.showLevel()) {
         <label class="line">
           Level
           <select [value]="s.level()" (change)="setLevel($any($event.target).value)">
-            @for (value of ['120', '110', '100', '90', '80', '70', '60']; track value) {
-              <option [value]="value">{{ value }}</option>
+            @for (value of levels; track value) {
+              <option [value]="value" [selected]="value === s.level()">{{ value }}</option>
             }
           </select>
         </label>

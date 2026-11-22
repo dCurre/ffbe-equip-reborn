@@ -1,7 +1,7 @@
 import fs from 'fs'
 
 console.log("Starting");
-let currentUnits = JSON.parse(fs.readFileSync('../../static/GL/units.json', {encoding: 'utf8'}));
+let currentUnits = JSON.parse(fs.readFileSync('../../public/GL/units.json', {encoding: 'utf8'}));
 
 
 let newUnits = JSON.parse(fs.readFileSync('./units.json', {encoding: 'utf8'}));
@@ -33,7 +33,7 @@ Object.keys(newUnits).forEach(newUnit => {
     }
 })
 
-let releasedUnits = JSON.parse(fs.readFileSync('../../static/GL/releasedUnits.json', {encoding: 'utf8'}));
+let releasedUnits = JSON.parse(fs.readFileSync('../../public/GL/releasedUnits.json', {encoding: 'utf8'}));
 
 Object.keys(changes).forEach((unit) => {
     currentUnits[changes[unit].id] = changes[unit]
@@ -46,8 +46,8 @@ Object.keys(changes).forEach((unit) => {
 })
 
 console.log("Writing to units.json...")
-fs.writeFileSync('../../static/GL/units.json', JSON.stringify(currentUnits))
+fs.writeFileSync('../../public/GL/units.json', JSON.stringify(currentUnits))
 console.log("Writing to releasedUnits.json...")
-fs.writeFileSync('../../static/GL/releasedUnits.json', JSON.stringify(releasedUnits))
+fs.writeFileSync('../../public/GL/releasedUnits.json', JSON.stringify(releasedUnits))
 console.log("Completed writing changes...")
 console.log("Please verify changes are correct.")

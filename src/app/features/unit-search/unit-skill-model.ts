@@ -1,4 +1,6 @@
-import { chainFamilySkillName, elementList, typeList } from '../../../core/constants';
+import { chainFamilySkillName } from '../../../core/constants/game-ids';
+import { elementList } from '../../../core/constants/base-lists';
+import { typeList } from '../../../core/constants/item-types';
 import type { SkillUnit } from './unit-search-model';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */

@@ -1,5 +1,5 @@
 import { Component, computed } from '@angular/core';
-import { elementList } from '../../../../core/constants';
+import { elementList } from '../../../../core/constants/base-lists';
 import { Choice, ChoiceGroup } from '../../../shared/components/choice-group/choice-group';
 import { Icon } from '../../../shared/components/icon/icon';
 import { InputGroup } from '../../../shared/components/input-group/input-group';

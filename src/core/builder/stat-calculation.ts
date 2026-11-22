@@ -1,5 +1,7 @@
 import { getValue, isTwoHanded } from './item-values.js';
-import { baseStats, percentValues, shieldList, weaponList } from '../constants.js';
+import { baseStats } from '../constants/base-lists.js';
+import { percentValues } from '../constants/stat-values.js';
+import { shieldList, weaponList } from '../constants/item-types.js';
 
 export const valuesToNotRoundDown = ['lbPerTurn', 'chainMastery', 'evoMag', 'lbDamage'];
 

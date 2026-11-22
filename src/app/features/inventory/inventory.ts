@@ -2,7 +2,8 @@ import { NgTemplateOutlet } from '@angular/common';
 import { ImportState } from '../../shared/state/import-state';
 import { Component, computed, ElementRef, HostListener, inject, linkedSignal, signal, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { itemEnhancementBySkillId, typeList, weaponList } from '../../../core/constants';
+import { itemEnhancementBySkillId } from '../../../core/constants/item-enhancement-skills';
+import { weaponList } from '../../../core/constants/item-types';
 import { computeFarmableStmr } from '../../../core/builder/item-entry';
 import { Item, containsText, buildSearchString } from '../../game/helpers/item';
 import { VisionCard } from '../../game/helpers/vision-cards';
@@ -18,6 +19,7 @@ import { Toast } from '../../shared/services/toast';
 import { Button } from '../../shared/components/button/button';
 import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
 import { InventoryCard } from './inventory-card/inventory-card';
+import { InventoryStats } from './inventory-stats/inventory-stats';
 import { InventoryEnhancementModal } from './inventory-enhancement-modal/inventory-enhancement-modal';
 import { ImportModal } from '../../shared/components/import-modal/import-modal';
 import { DropdownMenu, MenuItem } from '../../shared/components/dropdown-menu/dropdown-menu';
@@ -76,6 +78,7 @@ const HISTORY_FIRST = 4;
 @Component({
   selector: 'app-inventory',
   imports: [
+    InventoryStats,
     NgTemplateOutlet,
     PageContent,
     SiteFooter,
@@ -140,7 +143,6 @@ export class InventoryPage {
   private readonly searchBox = viewChild<ElementRef<HTMLInputElement>>('searchBox');
   private readonly debounce = debouncer();
 
-  protected readonly typeList = typeList;
   protected readonly sortLabel = computed(() => {
     if (this.search()) return '';
     return (

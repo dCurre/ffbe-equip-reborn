@@ -13,9 +13,8 @@
     "build:units": "node tools/generateUnitFiles.js",
     "ng": "ng",
     "build": "ng build",
-    "dev": "ng serve",
-    "start": "node tools/generateUnitFiles.js && npx --yes serve static -l 3000 -c ../serve.json"
-  },
+    "dev": "ng serve"
+      },
   "type": "module",
   "repository": {
     "type": "git",

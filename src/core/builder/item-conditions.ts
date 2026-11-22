@@ -1,5 +1,7 @@
 import { applyEnhancements } from './item-combination.js';
-import { baseStats, elementList, percentValues, typeList, weaponList } from '../constants.js';
+import { baseStats, elementList } from '../constants/base-lists.js';
+import { percentValues } from '../constants/stat-values.js';
+import { typeList, weaponList } from '../constants/item-types.js';
 
 export function isApplicable(item, unit) {
   if (item.exclusiveSex && item.exclusiveSex != unit.sex) {

@@ -7,9 +7,9 @@ const { nfkc } = unorm;
 console.log("Starting");
 
 
-fs.readFile('../../static/GL/releasedUnits.json', function (err, content) {
+fs.readFile('../../public/GL/releasedUnits.json', function (err, content) {
     var releasedUnitsIn = JSON.parse(content);
-    fs.readFile('../../static/GL/units.json', function (err, content) {
+    fs.readFile('../../public/GL/units.json', function (err, content) {
         let unitsIn = JSON.parse(content);
         let releasedUnitsOut = {};
         let releasedOK = Object.keys(releasedUnitsIn)
@@ -30,7 +30,7 @@ fs.readFile('../../static/GL/releasedUnits.json', function (err, content) {
             }
         })
         
-        fs.writeFileSync('../../static/GL/releasedUnits.json', JSON.stringify(releasedUnitsIn));
+        fs.writeFileSync('../../public/GL/releasedUnits.json', JSON.stringify(releasedUnitsIn));
     });
 });
 

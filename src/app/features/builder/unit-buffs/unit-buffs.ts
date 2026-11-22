@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { elementList, killerList } from '../../../../core/constants';
+import { elementList, killerList } from '../../../../core/constants/base-lists';
 import { StatePanel } from '../shared/state-panel';
 
 /** The killer and element buffs given to the unit. */

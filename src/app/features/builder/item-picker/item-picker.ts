@@ -12,7 +12,8 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { areConditionOK, isApplicable } from '../../../../core/builder/item-conditions';
-import { baseStats, typeList } from '../../../../core/constants';
+import { baseStats } from '../../../../core/constants/base-lists';
+import { typeList } from '../../../../core/constants/item-types';
 import { filterItems, Item, searchTokens, sortItems } from '../../../game/helpers/item';
 import { ItemLine } from '../../../game/components/item-line/item-line';
 import { highlightText } from '../../../shared/helpers/highlight';

@@ -24,12 +24,7 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              },
-              { "glob": "**/*.json", "input": "static/GL", "output": "GL" },
-              { "glob": "**/*.json", "input": "static/JP", "output": "JP" },
-              { "glob": "**/*", "input": "static/img", "output": "img" },
-              { "glob": "**/*", "input": "static/css-img", "output": "css-img" },
-              { "glob": "html2canvas.min.js", "input": "static/lib", "output": "lib" }
+              }
             ],
             "styles": [
               "src/styles.css"

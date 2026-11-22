@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { baseStats } from '../../../../core/constants';
+import { baseStats } from '../../../../core/constants/base-lists';
 import { KillerList } from '../../../game/components/killer-list/killer-list';
 import { ResistList } from '../../../game/components/resist-list/resist-list';
 import { Alert } from '../../../shared/components/alert/alert';

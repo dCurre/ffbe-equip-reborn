@@ -1,9 +1,9 @@
 #!/bin/bash
 
 node initReleasedUnits.js
-cp releasedUnits.json ../../static/JP
+cp releasedUnits.json ../../public/JP
 node parseUnits.js
-cp unit* ../../static/JP
+cp unit* ../../public/JP
 node parseItems.js
-cp data* ../../static/JP
-cp visionCards.json ../../static/JP
+cp data* ../../public/JP
+cp visionCards.json ../../public/JP

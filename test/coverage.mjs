@@ -9,7 +9,16 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const STATIC = fileURLToPath(new URL('../.tmp/core/', import.meta.url));
 const TARGETS = [
-  'formula.js',
+  ...['formula-data', 'formula-parser', 'formula-text', 'formula-conditions', 'formula-queries'].map(
+    (name) => 'formula/' + name + '.js',
+  ),
+  'builder/data-storage.js',
+  ...['item-ownership', 'item-usefulness', 'desirable-elements', 'item-preparation', 'prepare-data'].map(
+    (name) => 'builder/storage/' + name + '.js',
+  ),
+  ...['damage-data', 'damage-helpers', 'damage-monster', 'damage-attack', 'damage-value', 'damage-effects'].map(
+    (name) => 'builder/damage/' + name + '.js',
+  ),
   ...['item-values', 'damage-calculation', 'stat-calculation', 'item-conditions', 'item-combination', 'item-entry'].map(
     (name) => 'builder/' + name + '.js',
   ),

@@ -1,12 +1,10 @@
+import { formulaFromSkill, getSkillFromId } from '../../../../core/formula/formula-parser';
 import {
-  formulaFromSkill,
   getChainMultiplier,
-  getMulticastSkillAbleToMulticast,
-  getSkillFromId,
-  hasMulticast,
   isSimpleFormula,
   makeSureFormulaHaveSimpleConditions,
-} from '../../../../core/formula';
+} from '../../../../core/formula/formula-conditions';
+import { getMulticastSkillAbleToMulticast, hasMulticast } from '../../../../core/formula/formula-queries';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- formulas and skills are open data */
 

@@ -1,4 +1,6 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
+import { weaponList } from '../../../../core/constants/item-types';
+import { ItemLine } from '../../../game/components/item-line/item-line';
 import { Alert } from '../../../shared/components/alert/alert';
 import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';
@@ -34,7 +36,7 @@ const SLOTS = [
 /** The build button, the items of the build and its totals. */
 @Component({
   selector: 'app-build-result',
-  imports: [Alert, Button, Icon, ItemSummary, BuildResultStats],
+  imports: [Alert, Button, Icon, ItemLine, ItemSummary, BuildResultStats],
   templateUrl: './build-result.html',
   styleUrl: './build-result.css',
 })
@@ -46,6 +48,8 @@ export class BuildResult extends StatePanel {
   readonly runner = input.required<OptimizerRunner>();
   readonly game = input.required<GameData>();
   readonly ready = input.required<boolean>();
+  /** the Parameter Challenges search for the units: its own button starts the build */
+  readonly challenge = input(false);
   readonly build = output<void>();
 
   protected readonly slots = SLOTS;
@@ -63,7 +67,15 @@ export class BuildResult extends StatePanel {
     return SLOTS.map((slot) => {
       let item = build.build?.[slot.index] ?? build.fixedItems?.[slot.index] ?? null;
       if (item?.type === 'unavailable') item = null;
-      return { slot, item: item as Item | null, pinned: !!build.fixedItems?.[slot.index] };
+      return {
+        slot,
+        item: item as Item | null,
+        pinned: !!build.fixedItems?.[slot.index],
+        weapon: !!item && weaponList.includes(item.type),
+        hint: this.items().farmHint(slot.index, item),
+      };
     });
   });
+  /** The concise lines show the picture and the name of the items, the detailed ones all their effects. */
+  protected readonly concise = signal(true);
 }

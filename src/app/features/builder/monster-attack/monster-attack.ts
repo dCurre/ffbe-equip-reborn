@@ -1,5 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
-import { formulaToString, isAttackFormula, parseFormula } from '../../../../core/formula';
+import { formulaToString } from '../../../../core/formula/formula-text';
+import { isAttackFormula } from '../../../../core/formula/formula-queries';
+import { parseFormula } from '../../../../core/formula/formula-parser';
 import { Toast } from '../../../shared/services/toast';
 import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';

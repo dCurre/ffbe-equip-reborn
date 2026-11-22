@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import { loadOptimizerEnv } from './optimizerEnv.js';
 import { makeBaseValues, makeEnemy } from './builderEnv.js';
 
-const GL = new URL('../../../static/GL/', import.meta.url);
+const GL = new URL('../../../public/GL/', import.meta.url);
 const readJson = (name) => JSON.parse(fs.readFileSync(new URL(name, GL), 'utf8'));
 const passives = readJson('unitsWithPassives.json');
 const withSkills = readJson('unitsWithSkill.json');

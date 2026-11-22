@@ -189,7 +189,7 @@ function getData(filename, callback) {
 }
 
 console.log("Starting");
-if (!fs.existsSync('../../static/JP/data.json')) {
+if (!fs.existsSync('../../public/JP/data.json')) {
     console.log("old data not accessible");
     exit(0);
 }
@@ -214,7 +214,7 @@ getData('equipment.json', function (items) {
                             skills[skillId].type = "MAGIC";
                         });
                         getData('units.json', function (units) {
-                            fs.readFile('../../static/GL/data.json', function (err, glDatacontent) {
+                            fs.readFile('../../public/GL/data.json', function (err, glDatacontent) {
                                 var glData = JSON.parse(glDatacontent);
                                 for (var glIndex = glData.length; glIndex--;) {
                                     glNameById[glData[glIndex].id] = glData[glIndex].name;
@@ -242,7 +242,7 @@ getData('equipment.json', function (items) {
                                     }
                                 });
 
-                                fs.readFile('../../static/JP/data.json', function (err, content) {
+                                fs.readFile('../../public/JP/data.json', function (err, content) {
                                     var oldItems = JSON.parse(content);
                                     for (var index in oldItems) {
                                         oldItemsAccessById[oldItems[index].id] = oldItems[index].access;
@@ -256,9 +256,9 @@ getData('equipment.json', function (items) {
                                         }
                                     }
 
-                                    fs.readFile('../../static/JP/releasedUnits.json', function (err, content) {
+                                    fs.readFile('../../public/JP/releasedUnits.json', function (err, content) {
                                         releasedUnits = JSON.parse(content);
-                                        fs.readFile('../../static/JP/units.json', function (err, content) {
+                                        fs.readFile('../../public/JP/units.json', function (err, content) {
                                             jpUnits = JSON.parse(content);
 
                                             var result = {"items":[]};
@@ -1261,7 +1261,7 @@ function formatVisionCards(cards) {
 }
 
 function verifyImage(icon) {
-    var filePath = "../../static/img/items/" + icon;
+    var filePath = "../../public/img/items/" + icon;
     if (!fs.existsSync(filePath)) {
         //download("http://diffs.exvius.gg/asset_files/ja/item_item1/81/" + icon ,filePath);
         console.log("Missing image : " + icon);

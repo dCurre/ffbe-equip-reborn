@@ -107,7 +107,7 @@ function getData(filename, callback) {
 
 console.log("Starting");
 getData('units.json', function (units) {
-    fs.readFile('../../static/GL/releasedUnits.json', function (err, glDatacontent) {
+    fs.readFile('../../public/GL/releasedUnits.json', function (err, glDatacontent) {
         var glData = JSON.parse(glDatacontent);
         var unitsOut = {};
         var result = "{\n";

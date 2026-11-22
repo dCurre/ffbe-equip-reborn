@@ -1,4 +1,6 @@
-import { baseStats, importBoardConversion, percentValues } from '../../../core/constants';
+import { baseStats } from '../../../core/constants/base-lists';
+import { importBoardConversion } from '../../../core/constants/game-ids';
+import { percentValues } from '../../../core/constants/stat-values';
 
 // The rules of the Esper training board: SP, stats, what a node gives and the shared link. No DOM, no Angular.
 // The saved shape of an owned Esper is the one of the old site (the Drive file `espers_<server>.json`): the unit builder reads it.

@@ -1,5 +1,6 @@
 import { TreeComparator } from './tree-comparator.js';
-import { baseStats, percentValues } from '../constants.js';
+import { baseStats } from '../constants/base-lists.js';
+import { percentValues } from '../constants/stat-values.js';
 
 export class EsperTreeComparator {
   static sort(espers, alreadyUsedEspers, involvedStats, enemyStats) {

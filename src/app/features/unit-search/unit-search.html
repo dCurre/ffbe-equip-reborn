@@ -44,54 +44,7 @@
         </div>
       </app-panel>
 
-      <app-panel>
-        <div panelHeading class="heading">
-          <span>Chaining skills</span>
-          @if (state().skillFilter.chainFamily !== 'none') {
-            <span class="spacer"></span>
-            <app-choice-group
-              [choices]="chainAreas"
-              [selected]="state().skillFilter.targetAreaTypes"
-              (selectedChange)="setSkillFilter({ targetAreaTypes: [...$event] })"
-            />
-            <app-choice-group
-              [choices]="chainSkillTypes"
-              [selected]="state().skillFilter.skillTypes"
-              (selectedChange)="setSkillFilter({ skillTypes: [...$event] })"
-            />
-          }
-        </div>
-        <div class="line">
-          <span class="title">Chaining family:</span>
-          <select [value]="state().skillFilter.chainFamily" (change)="chooseChainFamily($any($event.target).value)">
-            <option value="none">No filter</option>
-            @for (family of chainFamilies; track family.id) {
-              <option [value]="family.id">{{ family.label }}</option>
-            }
-            <option value="chainTag">Chain by itself</option>
-          </select>
-        </div>
-        @if (state().skillFilter.chainFamily !== 'none') {
-          <div class="line">
-            <span class="title">Multicast count:</span>
-            <select [value]="state().skillFilter.multicastCount" (change)="chooseMulticast($any($event.target).value)">
-              @for (count of multicastCounts; track count[0]) {
-                <option [value]="count[0]">{{ count[1] }}</option>
-              }
-            </select>
-          </div>
-          @if (state().skillFilter.multicastCount > 1) {
-            <label class="line">
-              <input
-                type="checkbox"
-                [checked]="state().skillFilter.excludeUnlockedMulticast"
-                (change)="setSkillFilter({ excludeUnlockedMulticast: $any($event.target).checked })"
-              />
-              Exclude not available T1
-            </label>
-          }
-        }
-      </app-panel>
+      <app-chaining-panel [skillFilter]="state().skillFilter" (skillFilterChange)="setSkillFilter($event)" />
 
       @for (panel of panels; track panel.key) {
         <app-panel>

@@ -8,8 +8,7 @@ Open tasks only (delete done items). The `push` skill updates this file. Deploy:
 
 ## Code quality and optimizer
 - **Site rework:** finish the Angular migration per `.claude/REWORK.md`.
-- **Code quality review:** large legacy files remain in `static/` (`builder.js` ~5,200 lines, `common.js`, `builder/common.js`, `inventory.js`, `unitSearch.js`, `units.js`); they disappear with the migration. Keep intentional differences: `isTwoHanded` is duplicated (the optimizer Worker loads only `builder/common.js`); `unselectAll` signatures differ across pages.
-- **Optimizer review** (correctness, performance, readability; main files `buildOptimizer`, `typeCombinationGenerator`, `itemPool`, `optimizerWebWorker`, `formula`; algorithm in `static/algorithm.html`). Open points:
+- **Optimizer review** (correctness, performance, readability; main files `buildOptimizer`, `typeCombinationGenerator`, `itemPool`, `optimizerWebWorker`, `formula`; algorithm in the Algorithm page). Open points:
   - 15 `NaN` values across 5 skills (e.g. Energy Shot 1380140): physical damage uses `mpCoef` without `coef`.
   - Delayed-damage skills (Covering Fire, Missile Shelter, Spiteful Blade): wiki says Physical, game data says `None`. Also verify weapon/final variance on Fixed attacks (currently applied); use `exvius-wiki`.
   - `calculateStatValue` now floors non-ATK stats; inferred from code, not confirmed in-game.

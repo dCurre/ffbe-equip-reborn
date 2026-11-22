@@ -12,17 +12,9 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import {
-  ailmentList,
-  chainFamilySkillName,
-  elementList,
-  killerList,
-  racialMitigationList,
-  series,
-  typeList,
-  typeListLiterals,
-  weaponList,
-} from '../../../core/constants';
+import { ailmentList, elementList, killerList, racialMitigationList } from '../../../core/constants/base-lists';
+import { series } from '../../../core/constants/series';
+import { typeList, typeListLiterals, weaponList } from '../../../core/constants/item-types';
 import { Item, searchTokens } from '../../game/helpers/item';
 import { cardsAsItems, VisionCard } from '../../game/helpers/vision-cards';
 import { PageContent } from '../../layout/page-content/page-content';
@@ -41,6 +33,7 @@ import { Checkbox } from '../../shared/components/checkbox/checkbox';
 import { ResultsHeading } from '../../shared/components/results-heading/results-heading';
 import { ResultsSwitch } from '../../shared/components/results-switch/results-switch';
 import { showMoreOnScroll } from '../../shared/helpers/infinite-scroll';
+import { ChainingPanel } from './chaining-panel/chaining-panel';
 import { UnitResult } from './unit-result/unit-result';
 import {
   AllCriteria,
@@ -53,6 +46,7 @@ import {
   Result,
   SearchContext,
   SearchUnit,
+  SkillFilter,
   SkillUnit,
   sortResults,
   stateFromHash,
@@ -221,12 +215,11 @@ const PANELS: PanelConfig[] = [
   },
 ];
 
-const CHAIN_FAMILIES = Object.keys(chainFamilySkillName).sort();
-
 /** Looks for the units by what their skills do: killers, imperils, chains, resistances... */
 @Component({
   selector: 'app-unit-search',
   imports: [
+    ChainingPanel,
     UnitResult,
     PageContent,
     SearchColumns,
@@ -282,19 +275,6 @@ export class UnitSearch {
     ['7★', '7'],
     ['NV', 'NV'],
   );
-  protected readonly chainSkillTypes = text(['Active', 'actives'], ['LB', 'lb']);
-  protected readonly chainAreas = text(['ST', 'ST'], ['AOE', 'AOE']);
-  protected readonly chainFamilies = CHAIN_FAMILIES.map((id) => ({
-    id,
-    label: `${id} - ${(chainFamilySkillName as Record<string, string>)[id]}`,
-  }));
-  protected readonly multicastCounts = [
-    ['1', 'Single cast (1/Any)'],
-    ['2', 'W-cast (2)'],
-    ['3', 'T-cast (3)'],
-    ['4', 'Q-cast (4)'],
-    ['5', 'V-cast (5)'],
-  ];
   protected readonly typeChoices: Choice[] = typeList
     .slice(0, typeList.length - 2)
     .map((value) => ({ value, tooltip: (typeListLiterals as Record<string, string>)[value] }));
@@ -428,23 +408,8 @@ export class UnitSearch {
     return types.some((t) => ['actives', 'lb', 'counter'].includes(t));
   }
 
-  protected setSkillFilter(change: Partial<UnitSearchState['skillFilter']>): void {
-    this.state.update((state) => ({ ...state, skillFilter: { ...state.skillFilter, ...change } }));
-  }
-
-  protected chooseChainFamily(chainFamily: string): void {
-    this.setSkillFilter({
-      chainFamily,
-      multicastCount: chainFamily === 'none' ? 1 : this.state().skillFilter.multicastCount,
-    });
-  }
-
-  protected chooseMulticast(count: string): void {
-    const multicastCount = parseInt(count, 10);
-    this.setSkillFilter({
-      multicastCount,
-      excludeUnlockedMulticast: multicastCount > 1 && this.state().skillFilter.excludeUnlockedMulticast,
-    });
+  protected setSkillFilter(skillFilter: SkillFilter): void {
+    this.state.update((state) => ({ ...state, skillFilter }));
   }
 
   protected toggleAllSkills(unitId: string): void {

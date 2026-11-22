@@ -1,5 +1,5 @@
 import { Component, computed, inject, linkedSignal, resource, signal } from '@angular/core';
-import { elementList } from '../../../../core/constants';
+import { elementList } from '../../../../core/constants/base-lists';
 import { Item } from '../../../game/helpers/item';
 import { ItemLine } from '../../../game/components/item-line/item-line';
 import { ServerContext } from '../../../shared/services/server-context';

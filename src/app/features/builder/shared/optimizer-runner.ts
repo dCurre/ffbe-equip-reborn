@@ -3,7 +3,11 @@ import { DataStorage } from '../../../../core/builder/data-storage';
 import { OptimizerRequest, OptimizerResponse } from '../../../../core/builder/optimizer-session';
 import { TypeCombinationGenerator } from '../../../../core/builder/type-combination-generator';
 import { UnitBuild } from '../../../../core/builder/unit-build';
-import { calculateStatValue } from '../../../../core/builder/stat-calculation';
+import { getValue, isTwoHanded } from '../../../../core/builder/item-values';
+import { calculateStatValue, getEquipmentStatBonus, getStatBonusCap } from '../../../../core/builder/stat-calculation';
+import { baseStats } from '../../../../core/constants/base-lists';
+import { percentValues } from '../../../../core/constants/stat-values';
+import { weaponList } from '../../../../core/constants/item-types';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -17,6 +21,8 @@ export interface RunOptions {
   enemyStats: any;
   monsterAttackFormula: any;
   goalVariation: string;
+  /** after the search, tries again to free the overcap in favor of this stat (null: no second search) */
+  reduceOvercapStat: string | null;
 }
 
 export interface RunCallbacks {
@@ -51,6 +57,9 @@ export class OptimizerRunner {
   private callbacks: RunCallbacks | null = null;
   private options: RunOptions | null = null;
   private pinnedWeapons: any[] = [];
+  private itemsToExclude: string[] = [];
+  /** the fixed items and the goal of the first search, while the search to reduce the overcap runs */
+  private saved: { fixedItems: any[]; formula: any } | null = null;
 
   constructor(private readonly dataStorage: DataStorage) {}
 
@@ -91,6 +100,17 @@ export class OptimizerRunner {
     this.build = build;
     this.callbacks = callbacks;
     this.options = options;
+    this.itemsToExclude = itemsToExclude;
+    this.saved = null;
+    this.begin();
+  }
+
+  /** Sends the data to the workers and starts feeding them the type combinations. */
+  private begin(): void {
+    const build = this.build!;
+    const options = this.options!;
+    const callbacks = this.callbacks!;
+    const itemsToExclude = this.itemsToExclude;
     this.running.set(true);
     this.progress.set(0);
     this.builds.set(0);
@@ -153,6 +173,11 @@ export class OptimizerRunner {
   /** Stops the workers (the best build found so far stays) and starts fresh ones for the next run. */
   stop(): void {
     const count = this.workers.length;
+    if (this.saved && this.build) {
+      this.build.fixedItems = this.saved.fixedItems;
+      this.build.formula = this.saved.formula;
+      this.saved = null;
+    }
     this.terminate();
     this.workerWorkingCount = 0;
     this.running.set(false);
@@ -219,6 +244,11 @@ export class OptimizerRunner {
 
   private finish(): void {
     const build = this.build!;
+    if (this.saved) {
+      build.fixedItems = this.saved.fixedItems;
+      build.formula = this.saved.formula;
+      this.saved = null;
+    } else if (this.reduceOvercap()) return;
     if (!build.buildValue && build.formula.condition) this.callbacks!.onConditionNotMet();
     const [a, b] = this.pinnedWeapons;
     const switched =
@@ -227,5 +257,66 @@ export class OptimizerRunner {
     if (switched) this.callbacks!.onWeaponsSwitched();
     this.running.set(false);
     this.callbacks!.onDone();
+  }
+
+  /** The stats of the build that exceed their cap, written as the item values that raise them. */
+  private overcappedStats(build: UnitBuild): string[] {
+    const items = build.build;
+    const result: string[] = [];
+    for (let i = baseStats.length; i--;) {
+      const stat = baseStats[i];
+      if (calculateStatValue(items, stat, build).bonusPercent > getStatBonusCap(stat)) {
+        result.push((percentValues as Record<string, string>)[stat]);
+      }
+      const equipmentFlatStatBonus = Math.round((getEquipmentStatBonus(items, stat, false) - 1) * 100);
+      if (equipmentFlatStatBonus > 0) {
+        if (items[0] && items[1] && weaponList.includes(items[0].type) && weaponList.includes(items[1].type)) {
+          if (equipmentFlatStatBonus > 100) result.push(`dualWielding.${stat}`);
+        } else if (equipmentFlatStatBonus > 300) {
+          if (!isTwoHanded(items[0])) result.push(`singleWieldingOneHanded.${stat}`);
+          result.push(`singleWielding.${stat}`, `oneWeaponMastery.${stat}`);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Starts a second search when the best build has an overcap: the items that do not feed the overcapped stats stay,
+   * the others are free, and the goal becomes the stat to favor, for a build that is at least as good as the first.
+   * Returns false when there is nothing to reduce.
+   */
+  private reduceOvercap(): boolean {
+    const build = this.build!;
+    const options = this.options!;
+    if (!options.reduceOvercapStat || !build.buildValue) return false;
+    const overcapped = this.overcappedStats(build);
+    if (overcapped.length === 0) return false;
+    this.saved = { fixedItems: build.fixedItems.slice(), formula: JSON.parse(JSON.stringify(build.formula)) };
+    for (let i = 0; i < 11; i++) {
+      if (build.build[i] && !build.fixedItems[i] && !overcapped.some((stat) => getValue(build.build[i], stat) > 0)) {
+        build.fixedItems[i] = build.build[i];
+      } else {
+        build.build[i] = null;
+      }
+    }
+    const reached = {
+      type: '>',
+      value1: build.formula.type === 'condition' ? build.formula.formula : build.formula,
+      value2: { type: 'constant', value: Math.floor(build.buildValue[options.goalVariation]) },
+    };
+    build.formula = {
+      type: 'condition',
+      formula: { type: 'value', name: options.reduceOvercapStat },
+      condition:
+        build.formula.type === 'condition'
+          ? { type: 'AND', value1: reached, value2: build.formula.condition }
+          : reached,
+    };
+    build.buildValue[options.goalVariation] = 0;
+    this.dataStorage.calculateAlreadyUsedItems([build], 0);
+    build.prepareEquipable();
+    this.begin();
+    return true;
   }
 }

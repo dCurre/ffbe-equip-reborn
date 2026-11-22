@@ -49,7 +49,7 @@ fs.readFile('./data.json', function (err, content) {
 
     result.items = items;
 
-    fs.writeFileSync('../../static/GL/data.json', formatOutput(result.items))
+    fs.writeFileSync('../../public/GL/data.json', formatOutput(result.items))
 });
 
 function checkForJapanese(inputString) {

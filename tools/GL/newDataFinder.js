@@ -2,7 +2,7 @@ import _ from 'lodash';
 import fs from 'fs';
 
 console.log("Starting");
-let currentData = JSON.parse(fs.readFileSync('../../static/GL/data.json', {encoding: 'utf8'}));
+let currentData = JSON.parse(fs.readFileSync('../../public/GL/data.json', {encoding: 'utf8'}));
 
 let newDataArray = JSON.parse(fs.readFileSync('./data.json', {encoding: 'utf8'}));
 
@@ -38,7 +38,7 @@ Object.keys(changes).forEach((item) => {
     }
 })
 
-// let lastItemRelease = JSON.parse(fs.readFileSync('../../static/GL/lastItemReleases.json', {encoding: 'utf8'}));
+// let lastItemRelease = JSON.parse(fs.readFileSync('../../public/GL/lastItemReleases.json', {encoding: 'utf8'}));
 // let newItemRelease = {}
 
 // let newRelease = {
@@ -81,8 +81,8 @@ Object.keys(changes).forEach((changeItem) => {
 console.log(changes)
 
 console.log("Writing to data.json...")
-fs.writeFileSync('../../static/GL/changes.json', JSON.stringify(changes))
-//fs.writeFileSync('../../static/GL/data.json', JSON.stringify(currentData))
-//fs.writeFileSync('../../static/GL/lastItemReleases.json', JSON.stringify(newItemRelease))
+fs.writeFileSync('../../public/GL/changes.json', JSON.stringify(changes))
+//fs.writeFileSync('../../public/GL/data.json', JSON.stringify(currentData))
+//fs.writeFileSync('../../public/GL/lastItemReleases.json', JSON.stringify(newItemRelease))
 console.log("Completed writing changes...")
 console.log("Please verify changes are correct in data.json")

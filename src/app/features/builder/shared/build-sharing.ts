@@ -1,12 +1,15 @@
 import { signal } from '@angular/core';
 import type { ActivatedRoute, Router } from '@angular/router';
-import { baseStats, elementList, itemEnhancementLabels, typeList, weaponList } from '../../../../core/constants';
+import { baseStats, elementList } from '../../../../core/constants/base-lists';
+import { itemEnhancementLabels } from '../../../../core/constants/item-enhancement-labels';
+import { typeList, weaponList } from '../../../../core/constants/item-types';
 import type { DataStorage } from '../../../../core/builder/data-storage';
 import { findBestItemVersion, getEsperItem } from '../../../../core/builder/item-conditions';
 import { applyEnhancements } from '../../../../core/builder/item-combination';
 import { getPlaceHolder } from '../../../../core/builder/item-entry';
 import { calculateStatValue } from '../../../../core/builder/stat-calculation';
-import { formulaToString, parseFormula } from '../../../../core/formula';
+import { formulaToString } from '../../../../core/formula/formula-text';
+import { parseFormula } from '../../../../core/formula/formula-parser';
 import { copyToClipboard } from '../../../shared/helpers/clipboard';
 import { ShareLinkState } from '../../../shared/state/share-link-state';
 import type { Inventory } from '../../../shared/services/inventory';
@@ -31,6 +34,8 @@ export class BuildSharing {
   readonly share = new ShareLinkState();
   readonly textOpen = signal(false);
   readonly textValue = signal('');
+  readonly imageOpen = signal(false);
+  readonly imageUnits = signal<any[]>([]);
 
   constructor(
     private readonly s: BuilderState,
@@ -51,17 +56,18 @@ export class BuildSharing {
   private unitData(): any {
     this.s.refresh();
     const build = this.s.build();
-    const state = unitState(build);
+    const server = this.serverContext.server();
+    const state = unitState(build, server);
     if (build.hasBraveShift()) {
       build.braveShift();
-      state.braveShiftedUnit = unitState(build);
+      state.braveShiftedUnit = unitState(build, server);
       build.braveShift();
     }
     return state;
   }
 
   /** The data of the link: the units (this tab, or all the tabs), the enemy and the options of this tab. */
-  private linkData(all: BuildSharing[]): any {
+  linkData(all: BuildSharing[]): any {
     const units = all.filter((tab) => tab.s.unit()).map((tab) => tab.unitData());
     const build = this.s.build();
     const foe = enemy(this.s);
@@ -125,6 +131,12 @@ export class BuildSharing {
         .join('\n\n'),
     );
     this.textOpen.set(true);
+  }
+
+  openImage(all: BuildSharing[] = [this]): void {
+    if (!this.s.unit()) return;
+    this.imageUnits.set(this.linkData(all).units);
+    this.imageOpen.set(true);
   }
 
   private buildText(): string {
@@ -214,16 +226,21 @@ export class BuildSharing {
           data = oldLinkToData(parsed, (goal) => formulaToString(formulaByGoal[goal]));
         }
       }
-      await this.loadState(data, 0);
-      for (let i = 1; i < (data.units?.length ?? 0); i++) {
-        const tab = nextTab();
-        if (!tab) break;
-        await tab.loadState(data, i);
-      }
+      await this.loadData(data, nextTab);
       // the link is not kept in the address: a reload starts from an empty page
       this.router.navigate([], { fragment: undefined, queryParamsHandling: 'preserve', replaceUrl: true });
     } catch {
       this.toast.show('This build link does not exist or could not be loaded.', 'error');
+    }
+  }
+
+  /** Opens the data of a link: its first unit in this tab, the others in the tabs `nextTab` gives. */
+  async loadData(data: any, nextTab: () => BuildSharing | null): Promise<void> {
+    await this.loadState(data, 0);
+    for (let i = 1; i < (data.units?.length ?? 0); i++) {
+      const tab = nextTab();
+      if (!tab) break;
+      await tab.loadState(data, i);
     }
   }
 
@@ -285,6 +302,11 @@ export class BuildSharing {
       this.s.build().monsterAttackFormula = attack;
     }
     this.applyUnitState(state, version);
+    if (state.braveShiftedUnit) {
+      this.loader.braveShift();
+      this.applyUnitState(state.braveShiftedUnit, version);
+      this.loader.braveShift();
+    }
   }
 
   private applyUnitState(state: any, version: number): void {

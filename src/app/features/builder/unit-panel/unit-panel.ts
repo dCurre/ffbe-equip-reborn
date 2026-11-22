@@ -1,7 +1,9 @@
 import { Component, computed, input } from '@angular/core';
-import { elementList } from '../../../../core/constants';
+import { elementList } from '../../../../core/constants/base-lists';
 import { Choice, ChoiceGroup } from '../../../shared/components/choice-group/choice-group';
+import { Button } from '../../../shared/components/button/button';
 import { Panel } from '../../../shared/components/panel/panel';
+import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import type { UnitLoader } from '../shared/unit-loader';
 import { StatePanel } from '../shared/state-panel';
 import { UnitBuffs } from '../unit-buffs/unit-buffs';
@@ -13,12 +15,19 @@ const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.sl
 /** The unit of the page: its level, enhancements, stats with pots and buffs, and the equipment it can use. */
 @Component({
   selector: 'app-unit-panel',
-  imports: [Panel, ChoiceGroup, UnitStats, UnitBuffs, UnitEquipable],
+  imports: [Button, Panel, WikiLink, ChoiceGroup, UnitStats, UnitBuffs, UnitEquipable],
   templateUrl: './unit-panel.html',
   styleUrls: ['../shared/form-common.css', './unit-panel.css'],
 })
 export class UnitPanel extends StatePanel {
   readonly loader = input.required<UnitLoader>();
+
+  /** The levels above 100 (the core scales the stats between 100 and 130). */
+  protected readonly levels = Array.from({ length: 30 }, (_, i) => String(130 - i));
+
+  protected stars(rarity: string | number): string {
+    return '☆'.repeat(Number(rarity));
+  }
 
   protected readonly elementChoices: Choice[] = elementList.map((value) => ({ value, tooltip: ucFirst(value) }));
 

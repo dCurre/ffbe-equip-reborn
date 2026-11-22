@@ -1,4 +1,4 @@
-import { baseStats } from '../../../../core/constants';
+import { baseStats } from '../../../../core/constants/base-lists';
 import type { DataStorage } from '../../../../core/builder/data-storage';
 import { UnitBuild } from '../../../../core/builder/unit-build';
 import { UnitShift } from '../../../../core/builder/unit-shift';
@@ -88,6 +88,8 @@ export class UnitLoader {
       else build.fixItem({ name: 'Unavailable slot', type: 'unavailable', placeHolder: true }, 10);
     }
     this.s.build.set(build);
+    // the reduction of the overcap and the forced TMR are for the 7★ and NV units
+    if (data.max_rarity !== 7 && data.max_rarity !== 'NV') this.s.tryReduceOvercap.set(false);
     this.dataStorage.setUnitBuild(build);
     this.s.level.set(String(build.level || 120));
     this.s.exLevel.set(String(build._exAwakeningLevel > -1 ? build._exAwakeningLevel : 3));
@@ -102,6 +104,21 @@ export class UnitLoader {
     this.s.goalChoice.set(goal.choice);
     updateGoal(this.s);
     this.s.recalculateApplicableSkills();
+    this.s.refresh();
+  }
+
+  /** Switches the unit to its Brave Shift form, or back: the inputs take the values of the other form. */
+  braveShift(): void {
+    const build = this.s.build();
+    if (!build.hasBraveShift()) return;
+    build.braveShift();
+    this.s.level.set(String(build.level || 120));
+    this.s.exLevel.set(String(build._exAwakeningLevel > -1 ? build._exAwakeningLevel : 3));
+    this.resetStats(build, true);
+    this.s.customFormula.set(null);
+    this.s.recalculateApplicableSkills();
+    this.s.tick.update((n) => n + 1);
+    updateGoal(this.s);
     this.s.refresh();
   }
 

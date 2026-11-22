@@ -1,4 +1,5 @@
-import { baseStats, elementList, killerList, weaponList } from '../../../../core/constants';
+import { baseStats, elementList, killerList } from '../../../../core/constants/base-lists';
+import { weaponList } from '../../../../core/constants/item-types';
 import { EnemyStats } from '../../../../core/builder/enemy-stats';
 import type { BuilderState } from './builder-state';
 import type { DataStorage } from '../../../../core/builder/data-storage';
@@ -129,6 +130,7 @@ export function readItemOptions(s: BuilderState, storage: DataStorage, inventory
   storage.includeChocoboItems = s.includeChocoboItems();
   storage.includeEasilyObtainableItems = s.includeEasyItems();
   storage.itemsToInclude = s.included();
+  storage.defaultVisionCardLevel = int(s.defaultVisionCardLevel());
 }
 
 /** A goal chosen in the list: its inputs are read again. */

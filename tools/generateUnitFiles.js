@@ -1,5 +1,5 @@
-// Generates one static JSON file per unit from static/<server>/unitsWithSkill.json,
-// written to static/<server>/unit/<unitId>.json.
+// Generates one static JSON file per unit from public/<server>/unitsWithSkill.json,
+// written to public/<server>/unit/<unitId>.json.
 //
 // These files replace the former server endpoint GET /:server/unit/:unitId, so the
 // builder can load unit skills from any static host (e.g. GitHub Pages).
@@ -10,7 +10,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const STATIC_DIR = path.join(__dirname, '..', 'static');
+const STATIC_DIR = path.join(__dirname, '..', 'public');
 const SERVERS = ['GL', 'JP'];
 const STAMP_FILE = '.generated';
 const force = process.argv.includes('--force');

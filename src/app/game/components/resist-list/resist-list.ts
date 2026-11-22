@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { ailmentList, elementList } from '../../../../core/constants';
+import { ailmentList, elementList } from '../../../../core/constants/base-lists';
 import { Sprites } from '../../../shared/services/sprites';
 
 export interface ResistEntry {

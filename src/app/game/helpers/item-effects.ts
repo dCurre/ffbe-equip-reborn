@@ -1,4 +1,5 @@
-import { baseStats, typeList } from '../../../core/constants';
+import { baseStats } from '../../../core/constants/base-lists';
+import { typeList } from '../../../core/constants/item-types';
 import { KillerEntry } from '../components/killer-list/killer-list';
 import { ResistEntry } from '../components/resist-list/resist-list';
 import { Item } from './item';

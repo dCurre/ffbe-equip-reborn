@@ -1,6 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, input, output } from '@angular/core';
-import { weaponList } from '../../../../core/constants';
+import { weaponList } from '../../../../core/constants/item-types';
 import { ItemSummary } from '../../../game/components/item-summary/item-summary';
 import { ItemEntry, SELLABLE_ITEMS_ACCESS } from '../inventory-model';
 

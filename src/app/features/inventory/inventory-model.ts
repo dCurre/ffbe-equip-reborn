@@ -1,13 +1,7 @@
-import {
-  ailmentList,
-  baseStats,
-  elementList,
-  itemEnhancementLabels,
-  killerList,
-  skillIdByItemEnhancement,
-  typeList,
-  weaponList,
-} from '../../../core/constants';
+import { ailmentList, baseStats, elementList, killerList } from '../../../core/constants/base-lists';
+import { itemEnhancementLabels } from '../../../core/constants/item-enhancement-labels';
+import { skillIdByItemEnhancement } from '../../../core/constants/item-enhancement-skills';
+import { typeList, weaponList } from '../../../core/constants/item-types';
 import { applyEnhancements } from '../../../core/builder/item-combination';
 import { getItemEntry } from '../../../core/builder/item-entry';
 import { ItemPool } from '../../../core/builder/item-pool';

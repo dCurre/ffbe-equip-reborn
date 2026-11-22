@@ -2,7 +2,7 @@
 import fs from 'fs'
 
 console.log("Starting...")
-fs.readFile('../../static/GL/dataVersion.json', function(err, content) {
+fs.readFile('../../public/GL/dataVersion.json', function(err, content) {
     var dataVersion = JSON.parse(content)
     iterateDataVersion(dataVersion)
 
@@ -14,5 +14,5 @@ fs.readFile('../../static/GL/dataVersion.json', function(err, content) {
 function iterateDataVersion(dataVersion) {
     dataVersion.version = dataVersion.version + 1;
     console.log("Setting new dataVersion to: " + dataVersion.version)
-    fs.writeFileSync('../../static/GL/dataVersion.json', JSON.stringify(dataVersion))
+    fs.writeFileSync('../../public/GL/dataVersion.json', JSON.stringify(dataVersion))
 }

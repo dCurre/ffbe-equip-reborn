@@ -1,5 +1,5 @@
 import { Component, computed, inject, input } from '@angular/core';
-import { killerList } from '../../../../core/constants';
+import { killerList } from '../../../../core/constants/base-lists';
 import { Sprites } from '../../../shared/services/sprites';
 
 export interface KillerEntry {

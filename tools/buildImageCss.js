@@ -3,8 +3,8 @@
  * Generates CSS files containing all image from specific folders as background Data URI
  * Good for performance (less HTTP request on server)
  * 
- * Image are found in static/img folder
- * Generated CSS are found in static/css-img folder
+ * Image are found in public/img folder
+ * Generated CSS are found in public/css-img folder
  * See the LISTING constants
  * 
  * Usage in code:
@@ -29,88 +29,88 @@ import * as imageSize from 'image-size'
 const LISTING = [
     {
         className: 'banner',
-        basePath: '../static/img/banner', 
-        outPath: '../static/css-img/banner.css'
+        basePath: '../public/img/banner', 
+        outPath: '../public/css-img/banner.css'
     },
     {
         className: 'homepage',  // there is already "background-" in the file name
-        basePath: '../static/img/homepage/backgrounds', 
-        outPath: '../static/css-img/homepage-backgrounds.css'
+        basePath: '../public/img/homepage/backgrounds', 
+        outPath: '../public/css-img/homepage-backgrounds.css'
     },
     {
         className: 'homepage',
-        basePath: '../static/img/homepage', 
-        outPath: '../static/css-img/homepage.css'
+        basePath: '../public/img/homepage', 
+        outPath: '../public/css-img/homepage.css'
     },
     {
         className: 'esper',
-        basePath: '../static/img/espers', 
-        outPath: '../static/css-img/espers.css'
+        basePath: '../public/img/espers', 
+        outPath: '../public/css-img/espers.css'
     },
     {
         className: 'crystal',
-        basePath: '../static/img/icons/crystals', 
-        outPath: '../static/css-img/crystals.css'
+        basePath: '../public/img/icons/crystals', 
+        outPath: '../public/css-img/crystals.css'
     },
     {
         className: 'equipment',
-        basePath: '../static/img/icons/equipments', 
-        outPath: '../static/css-img/equipments.css'
+        basePath: '../public/img/icons/equipments', 
+        outPath: '../public/css-img/equipments.css'
     },
     {
         className: 'element',
-        basePath: '../static/img/icons/elements', 
-        outPath: '../static/css-img/elements.css'
+        basePath: '../public/img/icons/elements', 
+        outPath: '../public/css-img/elements.css'
     },
     {
         className: 'ailment',
-        basePath: '../static/img/icons/ailments', 
-        outPath: '../static/css-img/ailments.css'
+        basePath: '../public/img/icons/ailments', 
+        outPath: '../public/css-img/ailments.css'
     },
     {
         className: '', // there is already "sort" in the file name
-        basePath: '../static/img/icons/sort', 
-        outPath: '../static/css-img/sorts.css'
+        basePath: '../public/img/icons/sort', 
+        outPath: '../public/css-img/sorts.css'
     },
     {
         className: 'killer',
-        basePath: '../static/img/icons/killers', 
-        outPath: '../static/css-img/killers.css'
+        basePath: '../public/img/icons/killers', 
+        outPath: '../public/css-img/killers.css'
     },
     {
         className: 'slot',
-        basePath: '../static/img/icons/slots', 
-        outPath: '../static/css-img/slots.css'
+        basePath: '../public/img/icons/slots', 
+        outPath: '../public/css-img/slots.css'
     },
     {
         className: 'tab',
-        basePath: '../static/img/icons/tabs', 
-        outPath: '../static/css-img/tabs.css'
+        basePath: '../public/img/icons/tabs', 
+        outPath: '../public/css-img/tabs.css'
     },
     {
         className: 'stat',
-        basePath: '../static/img/icons/stats', 
-        outPath: '../static/css-img/stats.css'
+        basePath: '../public/img/icons/stats', 
+        outPath: '../public/css-img/stats.css'
     },
     {
         className: 'access',
-        basePath: '../static/img/icons/access', 
-        outPath: '../static/css-img/access.css'
+        basePath: '../public/img/icons/access', 
+        outPath: '../public/css-img/access.css'
     },
     {
         className: 'tankAbilities',
-        basePath: '../static/img/icons/tankAbilities', 
-        outPath: '../static/css-img/tankAbilities.css'
+        basePath: '../public/img/icons/tankAbilities', 
+        outPath: '../public/css-img/tankAbilities.css'
     },
     {
         className: 'mitigation',
-        basePath: '../static/img/icons/mitigationAbilities',
-        outPath: '../static/css-img/mitigationAbilities.css'
+        basePath: '../public/img/icons/mitigationAbilities',
+        outPath: '../public/css-img/mitigationAbilities.css'
     },
     {
         className: 'racialMitigations',
-        basePath: '../static/img/icons/racialMitigationAbilities',
-        outPath: '../static/css-img/racialMitigationAbilities.css'
+        basePath: '../public/img/icons/racialMitigationAbilities',
+        outPath: '../public/css-img/racialMitigationAbilities.css'
     },
 ];
 

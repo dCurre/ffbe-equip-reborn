@@ -1,7 +1,7 @@
 import { computed, signal, type WritableSignal } from '@angular/core';
 import { areConditionOK } from '../../../../core/builder/item-conditions';
 import { UnitBuild } from '../../../../core/builder/unit-build';
-import { hasStack } from '../../../../core/formula';
+import { hasStack } from '../../../../core/formula/formula-queries';
 import { ServerContext } from '../../../shared/services/server-context';
 import { readGoal, syncBaseValues } from './build-inputs';
 import { defaultMonsterAttackFormula, GoalOption, goalOptions, multicastChoices, multicastEffect } from './goal';
@@ -64,7 +64,7 @@ export class BuilderState {
   readonly ailmentImmunities = signal<readonly string[]>([]);
   readonly goalResists = signal<Record<string, string>>({});
   readonly various = signal<readonly string[]>([]);
-  readonly goalVariation = signal('min');
+  readonly goalVariation = signal('avg');
   readonly customFormula = signal<any>(null);
 
   // --- The enemy ---
@@ -84,7 +84,12 @@ export class BuilderState {
   readonly forceDoubleHand = signal(false);
   readonly forceDualWield = signal(false);
   readonly tryEquipSources = signal(false);
+  readonly tryReduceOvercap = signal(false);
+  /** the stat that gets the room freed by the reduced overcap */
+  readonly reduceOvercapStat = signal('hp');
   readonly forceTmrAbility = signal(false);
+  readonly useElementConditionedMateria = signal(false);
+  readonly defaultVisionCardLevel = signal('10');
   readonly excludeEvent = signal(false);
   readonly excludeTmr5 = signal(false);
   readonly excludeNotReleased = signal(true);
@@ -109,6 +114,7 @@ export class BuilderState {
     return build.unit ? build : null;
   });
   readonly unit = computed<BuilderUnit | null>(() => this.current()?.unit ?? null);
+  readonly hasBraveShift = computed(() => !!this.current()?.hasBraveShift());
   readonly unitWithSkills = computed(() => {
     this.tick();
     const unit = this.unit();

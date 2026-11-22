@@ -6,5 +6,11 @@ import type { Item } from '../../../game/helpers/item';
 export class GameData {
   data: Item[] = [];
   enchantments: Record<string, any> = {};
+  /** the owned Espers when the user saved some, else the default ones */
   espers: any[] = [];
+
+  /** The Espers the build can use: none for the items "available for expedition". */
+  espersFor(source: string): any[] {
+    return source === 'ownedAvailableForExpedition' ? [] : this.espers;
+  }
 }

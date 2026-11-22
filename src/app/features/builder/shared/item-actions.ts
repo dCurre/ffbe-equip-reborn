@@ -1,5 +1,6 @@
 import { computed, signal } from '@angular/core';
-import { baseStats, bodyList, headList, shieldList, typeList, weaponList } from '../../../../core/constants';
+import { baseStats } from '../../../../core/constants/base-lists';
+import { bodyList, headList, shieldList, typeList, weaponList } from '../../../../core/constants/item-types';
 import type { DataStorage } from '../../../../core/builder/data-storage';
 import { findBestItemVersion, getEsperItem } from '../../../../core/builder/item-conditions';
 import { addToStat, applyEnhancements } from '../../../../core/builder/item-combination';
@@ -26,7 +27,7 @@ export class ItemActions {
     this.s.tick();
     return {
       items: this.game.data,
-      espers: this.game.espers,
+      espers: this.game.espersFor(this.s.source()),
       build: this.s.build(),
       units: this.s.units(),
       enchantments: this.game.enchantments,
@@ -59,6 +60,33 @@ export class ItemActions {
       return;
     }
     this.openPicker('equip', types, slot);
+  }
+
+  /** The window of the enhancements of the weapon of a slot (pinning it with them). */
+  enhanceSlot(slot: number): void {
+    const build = this.s.build();
+    const item = build.fixedItems[slot] ?? build.build[slot];
+    if (!item) return;
+    this.pickerSlot = slot;
+    this.openEnhancements(item);
+  }
+
+  /** Why an item of an owned-items build is worth a look: a TMR to farm, an STMR to get or a trial reward (the old marker). */
+  farmHint(slot: number, item: any): string | null {
+    const build = this.s.build();
+    if (!item || item.placeHolder || slot >= 10 || !this.dataStorage.onlyUseOwnedItems) return null;
+    let used = this.dataStorage.alreadyUsedItems?.[item.id] ?? 0;
+    for (let i = 0; i < slot; i++) {
+      const other = build.build[i];
+      if (other && !build.fixedItems[i] && other.id && other.id === item.id) used++;
+    }
+    const owned = this.dataStorage.getOwnedNumber(item);
+    if (owned.totalOwnedNumber > used || owned.total <= used) return null;
+    const units = this.s.units();
+    if (item.tmrUnit) return `TMR you may want to farm. TMR of ${units[item.tmrUnit]?.name}`;
+    if (item.stmrUnit) return `STMR you can acquire. STMR of ${units[item.stmrUnit]?.name}`;
+    if (item.access?.includes('trial')) return 'Trial reward';
+    return null;
   }
 
   /** The window that chooses the items to exclude from the builds, or to always allow. */

@@ -56,5 +56,20 @@
         />
       </td>
     </tr>
+    @for (extra of extras; track extra.key) {
+      <tr>
+        <th>{{ extra.label }}</th>
+        <td></td>
+        <td></td>
+        <td>
+          <input
+            type="number"
+            min="0"
+            [value]="extraValue(extra.key)"
+            (input)="setExtra(extra.key, $any($event.target).value)"
+          />
+        </td>
+      </tr>
+    }
   </tbody>
 </table>

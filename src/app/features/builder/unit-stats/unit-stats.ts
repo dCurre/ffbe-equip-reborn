@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { baseStats } from '../../../../core/constants';
+import { baseStats } from '../../../../core/constants/base-lists';
 import { MAX_POTS } from '../shared/unit-loader';
 import { StatePanel } from '../shared/state-panel';
 
@@ -11,6 +11,28 @@ import { StatePanel } from '../shared/state-panel';
 })
 export class UnitStats extends StatePanel {
   protected readonly stats = baseStats;
+
+  /** The buffs of the unit that are not a stat: the percents of mitigation, draw attacks and LB damage. */
+  protected readonly extras = [
+    { key: 'physical', label: 'Phys. mitigation' },
+    { key: 'magical', label: 'Mag. mitigation' },
+    { key: 'global', label: 'Global mitigation' },
+    { key: 'drawAttacks', label: 'Draw attacks' },
+    { key: 'lbDamage', label: 'LB damage' },
+  ];
+
+  protected extraValue(key: string): string {
+    if (key === 'drawAttacks') return this.s.drawAttacks();
+    if (key === 'lbDamage') return this.s.lbDamage();
+    return (this.s.mitigations() as Record<string, string>)[key];
+  }
+
+  protected setExtra(key: string, value: string): void {
+    if (key === 'drawAttacks') this.s.drawAttacks.set(value);
+    else if (key === 'lbDamage') this.s.lbDamage.set(value);
+    else this.s.mitigations.update((mitigations) => ({ ...mitigations, [key]: value }));
+    this.s.refresh();
+  }
 
   protected setPot(stat: string, value: string): void {
     const max = Math.floor((this.s.unit()?.stats.pots[stat] ?? 0) * MAX_POTS);

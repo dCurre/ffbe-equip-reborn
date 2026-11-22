@@ -1,6 +1,7 @@
 import { getValue } from './item-values.js';
 import { TreeComparator } from './tree-comparator.js';
-import { baseStats, weaponList } from '../constants.js';
+import { baseStats } from '../constants/base-lists.js';
+import { weaponList } from '../constants/item-types.js';
 
 export class ItemPool {
   maxDepth: any;

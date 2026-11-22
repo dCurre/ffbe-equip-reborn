@@ -1,0 +1,41 @@
+<app-panel>
+  <div panelHeading class="heading unit-heading">
+    <span>Target unit</span>
+    <input
+      type="text"
+      class="unit-input"
+      list="unit-names"
+      placeholder="Select a unit..."
+      [value]="unitName()"
+      (change)="chooseUnit($any($event.target).value)"
+    />
+    <datalist id="unit-names">
+      @for (unit of unitList(); track unit.id) {
+        <option [value]="unit.name"></option>
+      }
+    </datalist>
+    <span class="stars">
+      @for (star of stars(); track $index) {
+        <i class="star">★</i>
+      }
+    </span>
+    @if (unit(); as unit) {
+      <img class="unit-picture" [src]="'img/units/unit_ills_' + unit.id + '.png'" alt="" />
+    }
+  </div>
+  <div class="base-stats">
+    @for (stat of baseStatList; track stat) {
+      <label class="input-row">
+        <span class="addon">{{ stat.toUpperCase() }}</span>
+        <input
+          type="text"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          [placeholder]="stat === 'hp' ? '3500' : '180'"
+          [value]="baseStatText()[stat] ?? ''"
+          (input)="setBaseStat(stat, $event)"
+        />
+      </label>
+    }
+  </div>
+</app-panel>

@@ -1,12 +1,8 @@
 import { signal } from '@angular/core';
-import { elementList } from '../../../../core/constants';
-import {
-  formulaToString,
-  getChainMultiplier,
-  getSimpleConditions,
-  isSimpleFormula,
-  parseFormula,
-} from '../../../../core/formula';
+import { elementList } from '../../../../core/constants/base-lists';
+import { formulaToString } from '../../../../core/formula/formula-text';
+import { getChainMultiplier, getSimpleConditions, isSimpleFormula } from '../../../../core/formula/formula-conditions';
+import { parseFormula } from '../../../../core/formula/formula-parser';
 import type { Toast } from '../../../shared/services/toast';
 import { chooseGoal, updateGoal } from './build-inputs';
 import type { BuilderState } from './builder-state';

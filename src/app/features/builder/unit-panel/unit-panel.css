@@ -5,3 +5,16 @@
 .unit-icon {
   height: 38px;
 }
+
+.brave-shift {
+  margin-left: auto;
+}
+
+.brave-shift img {
+  display: block;
+}
+
+.rarity img {
+  height: 1em;
+  vertical-align: middle;
+}

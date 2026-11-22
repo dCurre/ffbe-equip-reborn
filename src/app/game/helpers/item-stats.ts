@@ -1,4 +1,4 @@
-import { baseStats } from '../../../core/constants';
+import { baseStats } from '../../../core/constants/base-lists';
 import { Item } from '../models/item.model';
 
 /**

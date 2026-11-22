@@ -22,7 +22,7 @@ function getData(filename, callback) {
             }
         });
     } else {
-        fs.readFile('../static/GL/' + filename, function (err, content) {
+        fs.readFile('../public/GL/' + filename, function (err, content) {
             if (err) {
                 console.log(err)
             }

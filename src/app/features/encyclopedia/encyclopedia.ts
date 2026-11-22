@@ -11,19 +11,17 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { ailmentList, baseStats, elementList, killerList } from '../../../core/constants/base-lists';
 import {
-  ailmentList,
-  baseStats,
-  elementList,
-  killerList,
   shieldList,
   bodyList,
   headList,
   typeList,
   typeListLiterals,
   weaponList,
-} from '../../../core/constants';
+} from '../../../core/constants/item-types';
 import { Item, ItemQuery, filterItems, sortItems, searchTokens, buildSearchString } from '../../game/helpers/item';
+import { FullUnit, TargetUnitPanel } from './target-unit-panel/target-unit-panel';
 import { ItemLine } from '../../game/components/item-line/item-line';
 import { cardsAsItems, VisionCard } from '../../game/helpers/vision-cards';
 import { PageContent } from '../../layout/page-content/page-content';
@@ -41,16 +39,6 @@ import { Checkbox } from '../../shared/components/checkbox/checkbox';
 import { ResultsHeading } from '../../shared/components/results-heading/results-heading';
 import { ResultsSwitch } from '../../shared/components/results-switch/results-switch';
 import { showMoreOnScroll } from '../../shared/helpers/infinite-scroll';
-
-interface FullUnit {
-  id: string;
-  name: string;
-  max_rarity: string;
-  roles?: string[];
-  sex?: string;
-  equip: string[];
-  stats: { maxStats: Record<string, number>; pots: Record<string, number> };
-}
 
 /** The filters as they are saved in the `#...` of the URL (base64 of this object; the old site wrote the same). */
 interface SavedState {
@@ -113,6 +101,7 @@ const connector = (what: string): Choice[] => [
     ChoiceGroup,
     ItemLine,
     ResultsSwitch,
+    TargetUnitPanel,
     FormsModule,
   ],
   templateUrl: './encyclopedia.html',
@@ -185,12 +174,10 @@ export class Encyclopedia {
   protected readonly elementsConnector = connector('elements');
   protected readonly ailmentsConnector = connector('ailments');
   protected readonly killersConnector = connector('killers');
-  protected readonly baseStatList = baseStats;
   protected readonly weapons = weaponList;
   protected readonly armors = [...shieldList, ...headList, ...bodyList];
 
   protected readonly unit = computed(() => this.unitList().find((u) => u.name === this.unitName()));
-  protected readonly stars = computed(() => Array.from({ length: Number(this.unit()?.max_rarity ?? 0) }));
 
   protected readonly selectedStat = computed(() => this.stat()[0] ?? '');
   /** the unit's base stat for the selected stat: what the % of the items is computed on */
@@ -378,21 +365,6 @@ export class Encyclopedia {
   protected onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.debounce(() => this.search.set(value));
-  }
-
-  protected setBaseStat(stat: string, event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.debounce(() => this.baseStatText.update((v) => ({ ...v, [stat]: value })));
-  }
-
-  /** A unit sets the base stats (max stats with its potentials) and clears the types. */
-  protected chooseUnit(name: string): void {
-    this.unitName.set(name);
-    const unit = this.unitList().find((u) => u.name === name);
-    this.baseStatText.set(
-      unit ? Object.fromEntries(baseStats.map((s) => [s, String(unit.stats.maxStats[s] + unit.stats.pots[s])])) : {},
-    );
-    this.types.set([]);
   }
 
   protected selectTypes(types: readonly string[], onlyUnit = false): void {

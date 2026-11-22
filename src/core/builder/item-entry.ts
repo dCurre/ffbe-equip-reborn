@@ -1,4 +1,4 @@
-import { baseStats } from '../constants.js';
+import { baseStats } from '../constants/base-lists.js';
 
 export function computeFarmableStmr(data, ownedUnits, itemInventory) {
   let result = {};

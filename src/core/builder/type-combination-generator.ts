@@ -1,5 +1,5 @@
 import { isTwoHanded } from './item-values.js';
-import { bodyList, headList, shieldList, weaponList } from '../constants.js';
+import { bodyList, headList, shieldList, weaponList } from '../constants/item-types.js';
 
 export class TypeCombinationGenerator {
   forceDoubleHand: any;

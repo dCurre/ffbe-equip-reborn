@@ -8,7 +8,7 @@
           <option value="owned">Only owned equipments</option>
           <option value="ownedAvailableForExpedition">Owned, available for expeditions</option>
         }
-        <option value="shop">Only shop and recipe equipments</option>
+        <option value="shop">Only unlimited equipments (not event shop/recipe)</option>
       </select>
     </label>
     @if (s.source() === 'all') {
@@ -45,30 +45,32 @@
         Exclude not released yet</label
       >
     } @else if (s.source() !== 'shop') {
-      <label
-        ><input
-          type="checkbox"
-          [checked]="s.includeTmrOfOwnedUnits()"
-          (change)="s.includeTmrOfOwnedUnits.set($any($event.target).checked)"
-        />
-        Include TMR of owned units</label
-      >
-      <label
-        ><input
-          type="checkbox"
-          [checked]="s.includeTmrMoogles()"
-          (change)="s.includeTmrMoogles.set($any($event.target).checked)"
-        />
-        Include TMR obtainable with moogles</label
-      >
-      <label
-        ><input
-          type="checkbox"
-          [checked]="s.includeFarmableStmr()"
-          (change)="s.includeFarmableStmr.set($any($event.target).checked)"
-        />
-        Include obtainable STMR</label
-      >
+      @if (hasOwnedUnits()) {
+        <label
+          ><input
+            type="checkbox"
+            [checked]="s.includeTmrOfOwnedUnits()"
+            (change)="s.includeTmrOfOwnedUnits.set($any($event.target).checked)"
+          />
+          Include TMR of owned units</label
+        >
+        <label
+          ><input
+            type="checkbox"
+            [checked]="s.includeTmrMoogles()"
+            (change)="s.includeTmrMoogles.set($any($event.target).checked)"
+          />
+          Include TMR obtainable with moogles</label
+        >
+        <label
+          ><input
+            type="checkbox"
+            [checked]="s.includeFarmableStmr()"
+            (change)="s.includeFarmableStmr.set($any($event.target).checked)"
+          />
+          Include obtainable STMR</label
+        >
+      }
       <label
         ><input
           type="checkbox"
@@ -94,6 +96,14 @@
         Include easily obtainable items</label
       >
     }
+    <label class="line">
+      Default Vision Card level
+      <select [value]="s.defaultVisionCardLevel()" (change)="s.defaultVisionCardLevel.set($any($event.target).value)">
+        @for (level of visionCardLevels; track level) {
+          <option [value]="level" [selected]="level === s.defaultVisionCardLevel()">Lvl {{ level }}</option>
+        }
+      </select>
+    </label>
     <div class="line">
       Weapon enhancement
       <button app-button type="button" (click)="items().openDefaultEnhancements()">

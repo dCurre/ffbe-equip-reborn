@@ -27,51 +27,6 @@
 
 /* --- Layout: the statistics on the left, the items on the right --- */
 
-.stats {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.stats table {
-  width: 100%;
-  max-width: 180px;
-  margin: 0 auto;
-}
-
-.stats table.materia {
-  padding-bottom: 5px;
-  margin-bottom: 5px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.stats td {
-  padding-left: 5px;
-  text-align: right;
-}
-
-.stats .type {
-  width: 40px;
-  padding: 0;
-  text-align: center;
-}
-
-.stats .type i {
-  width: 20px;
-  height: 20px;
-}
-
-.stats td {
-  padding-top: 2px;
-  padding-bottom: 2px;
-}
-
-.stats .number {
-  font-size: 0.9em;
-  color: var(--soft-text);
-}
-
 /* --- Actions and tabs --- */
 
 .sort-label {
@@ -201,18 +156,4 @@
 
 .end {
   height: 1px;
-}
-
-@media (max-width: 991px) {
-  .stats {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-
-  .stats table {
-    width: auto;
-    padding: 0 4px;
-  }
 }

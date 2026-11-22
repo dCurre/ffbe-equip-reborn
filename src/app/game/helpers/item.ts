@@ -1,4 +1,5 @@
-import { accessList, ailmentList, baseStats, elementList, typeListWithEsper } from '../../../core/constants';
+import { accessList, typeListWithEsper } from '../../../core/constants/item-types';
+import { ailmentList, baseStats, elementList } from '../../../core/constants/base-lists';
 import { itemStats } from './item-stats';
 
 export type { Item } from '../models/item.model';

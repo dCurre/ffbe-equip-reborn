@@ -2,7 +2,7 @@ import { Component, computed, HostListener, inject, signal, viewChild } from '@a
 import { ShareLinkState } from '../../shared/state/share-link-state';
 import { ImportState } from '../../shared/state/import-state';
 import { ActivatedRoute } from '@angular/router';
-import { baseStats } from '../../../core/constants';
+import { baseStats } from '../../../core/constants/base-lists';
 import { PageContent } from '../../layout/page-content/page-content';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { showLoadError, showSaveError } from '../../shared/helpers/drive-errors';

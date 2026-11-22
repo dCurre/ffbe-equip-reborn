@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
-import { elementList, weaponList } from '../../../../core/constants';
+import { elementList } from '../../../../core/constants/base-lists';
+import { weaponList } from '../../../../core/constants/item-types';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { Item } from '../../helpers/item';
 import { ItemUnits } from '../../models/item-context.model';

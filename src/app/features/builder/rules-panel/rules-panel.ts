@@ -11,4 +11,13 @@ import { StatePanel } from '../shared/state-panel';
 })
 export class RulesPanel extends StatePanel {
   readonly workers = output<string>();
+  protected readonly overcapStats = [
+    ['hp', 'HP'],
+    ['mp', 'MP'],
+    ['atk', 'ATK'],
+    ['def', 'DEF'],
+    ['mag', 'MAG'],
+    ['spr', 'SPR'],
+    ['lbPerTurn', 'LB/turn'],
+  ];
 }

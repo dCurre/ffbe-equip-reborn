@@ -1,0 +1,5 @@
+.experimental {
+  font-size: 0.8em;
+  font-weight: bold;
+  color: var(--color-warning, #e67e22);
+}

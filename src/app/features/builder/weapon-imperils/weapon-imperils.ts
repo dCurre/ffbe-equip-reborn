@@ -1,5 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
-import { weaponList } from '../../../../core/constants';
+import { weaponList } from '../../../../core/constants/item-types';
 import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';
 import { InputGroup } from '../../../shared/components/input-group/input-group';

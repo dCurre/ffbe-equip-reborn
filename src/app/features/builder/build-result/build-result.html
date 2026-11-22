@@ -3,9 +3,11 @@
 }
 @if (s.unit()) {
   <div class="build-bar">
-    <button app-button type="button" class="build-button" [disabled]="!ready()" (click)="build.emit()">
-      {{ runner().running() ? 'STOP' : 'Build !' }}
-    </button>
+    @if (!challenge()) {
+      <button app-button type="button" class="build-button" [disabled]="!ready()" (click)="build.emit()">
+        {{ runner().running() ? 'STOP' : 'Build !' }}
+      </button>
+    }
     <div class="progress">
       <div class="progress-bar" [style.width.%]="runner().progress()">{{ runner().progress() }}%</div>
     </div>
@@ -14,7 +16,16 @@
       <app-icon name="link" /> Link
     </button>
     <button app-button type="button" title="The build as text" (click)="sharing().openText()">Text</button>
+    <button app-button type="button" title="The build as an image" (click)="sharing().openImage()">Image</button>
     @if (allSharing().length > 1) {
+      <button
+        app-button
+        type="button"
+        title="The builds of all the tabs as an image"
+        (click)="sharing().openImage(allSharing())"
+      >
+        Image (all units)
+      </button>
       <button
         app-button
         type="button"
@@ -40,6 +51,12 @@
     </button>
   </div>
 
+  <div class="view-switch">
+    <button type="button" (click)="concise.set(!concise())">
+      {{ concise() ? 'Detailed view' : 'Concise view' }}
+    </button>
+  </div>
+
   <div class="build-result">
     @for (line of lines(); track line.slot.index) {
       @if (line.item) {
@@ -57,10 +74,33 @@
             <button type="button" title="Remove this item" (click)="items().removeItem(line.slot.index)">
               &#128465;
             </button>
+            @if (!line.pinned && !line.item['placeHolder']) {
+              <button type="button" title="Exclude this item from builds" (click)="items().toggleExclude(line.item.id)">
+                <app-icon name="ban" />
+              </button>
+            }
+            @if (line.weapon) {
+              <button
+                type="button"
+                title="Modify this weapon enchantment"
+                (click)="items().enhanceSlot(line.slot.index)"
+              >
+                <app-icon name="edit" />
+              </button>
+            }
           </div>
-          <div class="item-cards" (click)="items().openSlot(line.slot.index)">
-            <app-item-summary [item]="line.item" [enchantments]="game().enchantments" />
-          </div>
+          @if (concise()) {
+            <div class="item-cards" (click)="items().openSlot(line.slot.index)">
+              <app-item-summary [item]="line.item" [enchantments]="game().enchantments" />
+            </div>
+          } @else {
+            <div class="items detailed" (click)="items().openSlot(line.slot.index)">
+              <app-item-line [item]="line.item" [enchantments]="game().enchantments" [units]="s.units()" />
+            </div>
+          }
+          @if (line.hint) {
+            <span class="hint" [title]="line.hint">&#9678;</span>
+          }
         </div>
       } @else {
         <div class="slot-line empty" (click)="items().openSlot(line.slot.index)">

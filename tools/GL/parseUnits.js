@@ -80,7 +80,7 @@ getData('units.json', function (units) {
                                     fs.readFile('../imgUrls.json', function (err, imgUrlContent) {
                                         let imgUrls = JSON.parse(imgUrlContent);
 
-                                        fs.readFile('../../static/JP/units.json', function (err, nameDatacontent) {
+                                        fs.readFile('../../public/JP/units.json', function (err, nameDatacontent) {
 
                                             var nameData = JSON.parse(nameDatacontent);
                                             for (var unitId in nameData) {
@@ -291,25 +291,25 @@ function manageNV(units) {
 }
 
 function getJPUnitData(glUnitIds, callback) {
-    fs.readFile('../../static/JP/units.json', function (err, content) {
+    fs.readFile('../../public/JP/units.json', function (err, content) {
         let jpUnits = JSON.parse(content);
         let jpUnitsString = Object.keys(jpUnits)
             .filter(unitId => !glUnitIds.includes(unitId))
             .map(unitId => '  "' + unitId + '":' + JSON.stringify(jpUnits[unitId]))
             .join(',\n');
-        fs.readFile('../../static/JP/unitsWithPassives.json', function (err, content) {
+        fs.readFile('../../public/JP/unitsWithPassives.json', function (err, content) {
             let jpUnitsWithPassive = JSON.parse(content);
             let jpUnitsWithPassiveString = Object.keys(jpUnitsWithPassive)
                 .filter(unitId => !glUnitIds.includes(unitId))
                 .map(unitId => '  "' + unitId + '":' + JSON.stringify(jpUnitsWithPassive[unitId]))
                 .join(',\n');
-            fs.readFile('../../static/JP/unitsWithSkill.json', function (err, content) {
+            fs.readFile('../../public/JP/unitsWithSkill.json', function (err, content) {
                 let jpUnitsWithSkill = JSON.parse(content);
                 let jpUnitsWithSkillString = Object.keys(jpUnitsWithSkill)
                     .filter(unitId => !glUnitIds.includes(unitId))
                     .map(unitId => '  "' + unitId + '":' + JSON.stringify(jpUnitsWithSkill[unitId]))
                     .join(',\n');
-                fs.readFile('../../static/JP/unitSearch.json', function (err, content) {
+                fs.readFile('../../public/JP/unitSearch.json', function (err, content) {
                     let jpUnitSearch = JSON.parse(content);
                     let jpUnitSearchString = jpUnitSearch
                         .filter(entry => !glUnitIds.includes(entry.id))
@@ -324,22 +324,22 @@ function getJPUnitData(glUnitIds, callback) {
 }
 
 function getCustomUnitData(callback) {
-    fs.readFile('../../static/custom/GL/units.json', function (err, content) {
+    fs.readFile('../custom/GL/units.json', function (err, content) {
         let customUnits = JSON.parse(content);
         let customUnitsString = Object.keys(customUnits)
             .map(unitId => '  "' + unitId + '":' + JSON.stringify(customUnits[unitId]))
             .join(',\n');
-        fs.readFile('../../static/custom/GL/unitsWithPassives.json', function (err, content) {
+        fs.readFile('../custom/GL/unitsWithPassives.json', function (err, content) {
             let customUnitsWithPassive = JSON.parse(content);
             let customUnitsWithPassiveString = Object.keys(customUnitsWithPassive)
                 .map(unitId => '  "' + unitId + '":' + JSON.stringify(customUnitsWithPassive[unitId]))
                 .join(',\n');
-            fs.readFile('../../static/custom/GL/unitsWithSkill.json', function (err, content) {
+            fs.readFile('../custom/GL/unitsWithSkill.json', function (err, content) {
                 let customUnitsWithSkill = JSON.parse(content);
                 let customUnitsWithSkillString = Object.keys(customUnitsWithSkill)
                     .map(unitId => '  "' + unitId + '":' + JSON.stringify(customUnitsWithSkill[unitId]))
                     .join(',\n');
-                fs.readFile('../../static/custom/GL/unitSearch.json', function (err, content) {
+                fs.readFile('../custom/GL/unitSearch.json', function (err, content) {
                     let customUnitSearch = JSON.parse(content);
                     let customUnitSearchString = customUnitSearch
                         .map(entry => ' ' + JSON.stringify(entry))
@@ -516,7 +516,7 @@ function lowerCaseKeys(obj) {
 function verifyImage(serieId, minRarity, maxRarity) {
     for (var i = minRarity; i <= maxRarity; i++) {
         var unitId = serieId.substring(0, serieId.length - 1) + i;
-        var basePath = "../../static/img/units/";
+        var basePath = "../../public/img/units/";
         var illus = "unit_ills_" + unitId + ".png";
         var icon = "unit_icon_" + unitId + ".png";
         var filePath = basePath + illus;

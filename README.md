@@ -38,7 +38,7 @@ except for a small Cloudflare Worker ([`worker/`](worker)) that stores the share
 
 Most of the tool works: builder and optimizer, unit search, encyclopedia and espers. Log in with Google
 to save your units, inventory, espers and teams: they are stored in a hidden app folder of **your own**
-Google Drive, directly from the browser (`static/googleDrive.js`); the site only has access to that
+Google Drive, directly from the browser (`src/app/shared/services/google-drive.ts`); the site only has access to that
 folder. Bug reports and suggestions are sent as GitHub issues from the Contribute
 page. Shared build links and public unit collection links work through the Worker (the old links of
 FFBE Equip Next are lost). See [.claude/ROADMAP.md](.claude/ROADMAP.md) for the full list of open work.
@@ -51,21 +51,22 @@ website itself is static): both the deploy and local development use the version
 
 ```bash
 npm install
-npm start
+npm run build:units
+npm run dev
 ```
 
-Open http://localhost:3000.
+Open http://localhost:4200.
 
-`npm start` generates the per-unit data files (see below) and serves the `static/` folder with
-[`serve`](https://www.npmjs.com/package/serve) (downloaded by `npx` the first time). The first run takes a
-little longer; later runs skip the generation if the data didn't change.
+`npm run build:units` generates the per-unit data files (see below); run it again only if the data changes.
+`npm run dev` starts the Angular development server (`ng serve`).
 
 ## How the site is built and deployed
 
-- **The website is the `static/` folder**: plain HTML, CSS and JavaScript, plus the game data as JSON
-  (`static/GL` for the Global version, `static/JP` for the Japanese one) and the images. Asset and data
-  paths are relative, so the site works under a sub-path such as `/ffbe-equip-reborn/`.
-- **Per-unit files**: the builder loads each unit's skills from `static/<server>/unit/<id>.json`. These
+- **The website is an Angular app** (`src/`; the calculation core is in `src/core/`). The game data as JSON
+  (`public/GL` for the Global version, `public/JP` for the Japanese one) and the images (`public/img`,
+  `public/css-img`) are copied into the build as they are. Asset and data paths are relative, so the site
+  works under a sub-path such as `/ffbe-equip-reborn/`.
+- **Per-unit files**: the builder loads each unit's skills from `public/<server>/unit/<id>.json`. These
   files are generated from `unitsWithSkill.json` by `tools/generateUnitFiles.js` (`npm run build:units`)
   and are not committed.
 - **Deploy**: every push to `master` runs the GitHub Actions workflow

@@ -181,8 +181,8 @@ function beginScript() {
                                 }
                             }
 
-                            console.log("Writing esperBoards.json to static/GL")
-                            fs.writeFileSync('../../static/GL/esperBoards.json', JSON.stringify(out));
+                            console.log("Writing esperBoards.json to public/GL")
+                            fs.writeFileSync('../../public/GL/esperBoards.json', JSON.stringify(out));
                             //once this is done also write it to esperBoards.json in the tools/GL folder
                             fs.writeFileSync('./esperBoards.json', JSON.stringify(out));
                     });
