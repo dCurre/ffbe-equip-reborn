@@ -1,0 +1,60 @@
+:host {
+  display: block;
+}
+
+.unit-input {
+  flex: 1 1 200px;
+  border-radius: var(--radius);
+}
+
+.stars {
+  font-size: 2em;
+  line-height: 1;
+}
+
+.unit-picture {
+  height: 60px;
+}
+
+.base-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 15px;
+}
+
+app-choice-group {
+  margin: 4px;
+}
+
+.toggle {
+  padding: 3px 8px;
+}
+
+.toggle.active {
+  color: var(--color-button-selected-text);
+  background-color: var(--color-button-selected-background);
+}
+
+.items {
+  width: 100%;
+}
+
+.end {
+  height: 1px;
+}
+
+/* the stats that are not asked for are dimmed in the rows */
+.dim-hp ::ng-deep .detail .hp,
+.dim-mp ::ng-deep .detail .mp,
+.dim-atk ::ng-deep .detail .atk,
+.dim-def ::ng-deep .detail .def,
+.dim-mag ::ng-deep .detail .mag,
+.dim-spr ::ng-deep .detail .spr {
+  opacity: 0.5;
+}
+
+::ng-deep ::highlight(search) {
+  color: inherit;
+  background-color: #c5c5f5;
+}

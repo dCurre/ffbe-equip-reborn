@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+
+.columns {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.filters-column,
+.results-column {
+  flex: 1 1 50%;
+  min-width: 0;
+}
+
+@media (max-width: 991px) {
+  .columns {
+    display: block;
+  }
+
+  .hidden-on-phone {
+    display: none;
+  }
+}

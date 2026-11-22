@@ -1,0 +1,39 @@
+.unit-stats {
+  border-collapse: collapse;
+}
+
+.unit-stats th,
+.unit-stats td {
+  padding: 2px 6px;
+  text-align: left;
+}
+
+.unit-stats input {
+  width: 100px;
+}
+
+.unit-stats input.poted {
+  background-color: #4b6b2e;
+}
+
+.unit-stats input.maxPot {
+  background-color: #2e6b4b;
+}
+
+.unit-stats input.door {
+  background-color: #6b4b2e;
+}
+
+.unit-stats input.maxDoor {
+  background-color: #6b2e4b;
+}
+
+.pot-button,
+.link-button {
+  padding: 0 6px;
+  font: inherit;
+  color: var(--color-link);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}

@@ -1,0 +1,28 @@
+h5 {
+  margin: 12px 0 6px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+ul,
+ol {
+  margin: 0 0 10px;
+  padding-left: 40px;
+}
+
+ul {
+  list-style: disc;
+}
+
+ol {
+  list-style: decimal;
+}
+
+li {
+  margin: 4px 0;
+}
+
+li ul {
+  list-style: '- ';
+  padding-left: 15px;
+}

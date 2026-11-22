@@ -1,0 +1,43 @@
+:host {
+  display: block;
+}
+
+.notice {
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.threshold input {
+  width: 100px;
+  text-align: right;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  margin: 4px;
+  font-weight: normal;
+}
+
+.line .title {
+  width: 110px;
+}
+
+.line .sub-title {
+  width: 50px;
+  margin-right: 5px;
+}
+
+app-choice-group {
+  margin: 4px;
+}
+
+.end {
+  height: 1px;
+}
+
+::ng-deep ::highlight(search) {
+  color: inherit;
+  background-color: #c5c5f5;
+}

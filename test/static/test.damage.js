@@ -61,3 +61,23 @@ describe('calculateBuildValueWithFormula: magical damage', () => {
         assert.equal(result.max, (800 * 800) / 200 * 2);
     });
 });
+
+describe('calculateBuildValueWithFormula: stat cap of a skill (use.max)', () => {
+    // a magical SPR skill: the stat it uses is limited to `max` (the data has max 99999 in practice)
+    const sprSkill = (max) => ({ id: '1', name: 'test', effects: [{ effect: { area: 'ST', target: 'ENEMY',
+        damage: { mechanism: 'magical', damageType: 'mind', coef: 1, use: { stat: 'spr', percent: 100, max } } } }] });
+    const value = (skillData) => {
+        const unitBuild = makeUnitBuild(ctx, { level: 100, stats: { spr: 1000, mag: 1 } });
+        const formula = ctx.formulaFromSkill(skillData);
+        unitBuild.formula = formula;
+        return ctx.calculateBuildValueWithFormula(NO_ITEMS(), unitBuild, makeEnemy(ctx, { spr: 100 }), formula, 'avg');
+    };
+
+    it('uses the stat as is below the cap', () => {
+        assert.equal(value(sprSkill(99999)).max, (1000 * 1000) / 100 * 2);
+    });
+
+    it('limits the stat to the cap (it used to throw a ReferenceError)', () => {
+        assert.equal(value(sprSkill(50)).max, (50 * 50) / 100 * 2);
+    });
+});

@@ -1,0 +1,15 @@
+<ul class="tabs">
+  @for (tab of tabs(); track tab.key) {
+    <li [class.active]="tab.key === active()" [title]="tab.title" (click)="selected.emit(tab.key)">
+      <a [class]="tab.kind ? tab.kind + '-tab' : ''">
+        @if (tab.icon) {
+          <i [class]="'img img-tab-' + tab.icon + ' tab'"></i>
+        } @else if (tab.image) {
+          <img [src]="tab.image" alt="" />
+        } @else {
+          {{ tab.title }}
+        }
+      </a>
+    </li>
+  }
+</ul>

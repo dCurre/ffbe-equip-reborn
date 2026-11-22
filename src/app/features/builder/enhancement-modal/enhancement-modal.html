@@ -1,0 +1,22 @@
+<app-modal
+  [heading]="items().enhancingDefault() ? 'Default weapon enhancement' : 'Item enhancements'"
+  [(open)]="items().enhancingOpen"
+>
+  @if (items().enhancingItem(); as current) {
+    <div class="enhancing-title">
+      <app-item-summary [item]="current" [enchantments]="game().enchantments" />
+    </div>
+  }
+  <app-enhancement-picker
+    [enchantments]="game().enchantments"
+    [itemId]="items().enhancingItem()?.id"
+    [selected]="items().enhancementValues()"
+    (toggled)="items().toggleEnhancement($event)"
+  />
+  <ng-container modalFooter>
+    <button app-button type="button" (click)="items().pinEnhanced()">
+      {{ items().enhancingDefault() ? 'Set as default' : 'Pin this item' }}
+    </button>
+    <button app-button type="button" (click)="items().enhancingOpen.set(false)">Close</button>
+  </ng-container>
+</app-modal>

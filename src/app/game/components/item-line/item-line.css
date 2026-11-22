@@ -1,0 +1,12 @@
+:host {
+  display: table-row;
+}
+
+/* an item line inside another row: its cells become cells of that row */
+:host(.inline) {
+  display: contents;
+}
+
+.value {
+  font-weight: bold;
+}

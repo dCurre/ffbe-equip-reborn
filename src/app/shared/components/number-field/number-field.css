@@ -1,0 +1,52 @@
+:host {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-input-background);
+}
+input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 32px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+  text-align: right;
+  background: transparent;
+  border: 0;
+  appearance: textfield;
+}
+input.with-icon {
+  padding-left: 22px;
+}
+input.with-suffix {
+  padding-right: 22px;
+}
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.leading,
+.suffix {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  opacity: 0.7;
+}
+.leading {
+  left: 5px;
+  z-index: 1;
+}
+.suffix {
+  right: 5px;
+  font-size: 14px;
+  pointer-events: none;
+}
+:host(.buff) input:not(:placeholder-shown) {
+  color: forestgreen;
+}
+:host(.debuff) input:not(:placeholder-shown) {
+  color: crimson;
+}

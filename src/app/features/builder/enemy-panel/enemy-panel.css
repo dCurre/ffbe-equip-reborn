@@ -1,0 +1,56 @@
+.stats,
+.elements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+}
+
+.elements {
+  gap: 4px 5px;
+}
+
+.element {
+  display: flex;
+  align-items: center;
+}
+
+.element-icon {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  margin-right: 4px;
+}
+
+.element-icon i.img {
+  width: 100%;
+  height: 100%;
+}
+
+.element-icon i.shield {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 20px;
+  height: 20px;
+}
+
+/* the old red label (bootstrap label-danger) */
+.warning {
+  padding: 3px 8px;
+  color: #fff;
+  font-size: 75%;
+  font-weight: bold;
+  line-height: 1.4;
+  background: #d9534f;
+  border-radius: 0.25em;
+}
+
+/* the toggle of the break is a button inside the field */
+button[leading] {
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}

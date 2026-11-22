@@ -1,0 +1,20 @@
+.search ::ng-deep .body {
+  display: none;
+}
+
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.link {
+  font-size: 0.9em;
+  white-space: nowrap;
+  cursor: pointer;
+}

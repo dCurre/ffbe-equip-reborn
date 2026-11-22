@@ -1,0 +1,24 @@
+<app-modal heading="Custom formula" [(open)]="goal().open">
+  <label class="custom-field">
+    Formula
+    <textarea
+      rows="4"
+      [value]="goal().text().formula"
+      (input)="goal().text.set({ formula: $any($event.target).value, condition: goal().text().condition })"
+    ></textarea>
+  </label>
+  <label class="custom-field">
+    Condition (optional)
+    <textarea
+      rows="2"
+      [value]="goal().text().condition"
+      (input)="goal().text.set({ formula: goal().text().formula, condition: $any($event.target).value })"
+    ></textarea>
+  </label>
+  <p>See the <a href="builderHelp" target="_blank">builder help</a> for the formula syntax.</p>
+  <ng-container modalFooter>
+    <button app-button type="button" (click)="goal().apply()">Use this formula</button>
+    <button app-button type="button" (click)="goal().remove()">Remove custom goal</button>
+    <button app-button type="button" (click)="goal().open.set(false)">Cancel</button>
+  </ng-container>
+</app-modal>

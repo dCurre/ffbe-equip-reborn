@@ -1,0 +1,58 @@
+.invisible {
+  visibility: hidden;
+}
+
+.error {
+  font-weight: bold;
+  color: red;
+}
+
+.bonus {
+  color: #19983d;
+}
+
+.esper-header {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-around;
+  min-height: 150px;
+  margin-top: 10px;
+  padding-right: 30px;
+}
+
+.esper-choice {
+  min-width: 280px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-line {
+  display: flex;
+  flex-direction: row;
+}
+
+.form-label {
+  min-width: 75px;
+  padding-right: 5px;
+  line-height: 34px;
+  text-align: right;
+}
+
+.form-value {
+  padding-left: 5px;
+  line-height: 34px;
+}
+
+select,
+input[type='number'] {
+  height: 34px;
+}
+
+.other-stats {
+  position: relative;
+  padding-bottom: 15px;
+  padding-left: 40px;
+}

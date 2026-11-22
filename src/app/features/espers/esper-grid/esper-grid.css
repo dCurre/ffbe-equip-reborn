@@ -1,0 +1,333 @@
+:host {
+  display: contents;
+}
+
+.error {
+  font-weight: bold;
+  color: red;
+}
+
+.toggle-grid,
+.sp-fixed {
+  position: fixed;
+  z-index: 9999;
+  color: #ffffff;
+  background-color: #052464;
+  opacity: 0.5;
+}
+
+.toggle-grid:hover,
+.sp-fixed:hover {
+  opacity: 1;
+}
+
+.toggle-grid {
+  display: none;
+  right: 10px;
+  bottom: 10px;
+  width: 75px;
+  height: 75px;
+  font-size: 30px;
+  border: 0;
+  border-radius: 75px;
+  cursor: pointer;
+}
+
+.sp-fixed {
+  display: none;
+  left: 10px;
+  bottom: 20px;
+  padding: 5px 10px;
+  font-size: 1.1em;
+  border-radius: 5px;
+  cursor: help;
+}
+
+.sp-fixed.shown {
+  display: block;
+}
+
+.sp-fixed .name {
+  font-weight: bold;
+}
+
+/* --- Training board --- */
+
+.pan-wrapper {
+  padding: 8px;
+  overflow: auto;
+}
+
+.grid-trimmer {
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.grid-trimmer.star1 {
+  width: 540px;
+  height: 470px;
+}
+
+.grid-trimmer.star2 {
+  width: 740px;
+  height: 660px;
+}
+
+.grid-trimmer.star3 {
+  width: 970px;
+  height: 860px;
+}
+
+.grid-trimmer.star1 .grid-container {
+  margin: -170px 0 0 -180px;
+}
+
+.grid-trimmer.star2 .grid-container {
+  margin: -80px 0 0 -90px;
+}
+
+.grid-trimmer.star3 .grid-container {
+  margin: 20px 0 0 -1px;
+}
+
+.grid-container {
+  position: relative;
+  width: 1000px;
+  height: 1000px;
+}
+
+.lines {
+  position: absolute;
+  inset: 0;
+  width: 1000px;
+  height: 1000px;
+}
+
+.lines line {
+  stroke: grey;
+  stroke-width: 12;
+}
+
+.grid {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+}
+
+.grid li {
+  position: relative;
+  float: left;
+  width: 9.285714286%;
+  padding: 0 0 10.722533817% 0;
+  overflow: hidden;
+  visibility: hidden;
+  list-style-type: none;
+  transform: rotate(-60deg) skewY(30deg);
+}
+
+.grid li * {
+  visibility: visible;
+}
+
+.grid li:nth-child(9n + 2),
+.grid li:nth-child(9n + 4),
+.grid li:nth-child(9n + 6),
+.grid li:nth-child(9n + 8) {
+  margin: 0 1%;
+}
+
+.grid li:nth-child(18n + 10),
+.grid li:nth-child(18n + 11),
+.grid li:nth-child(18n + 12),
+.grid li:nth-child(18n + 13),
+.grid li:nth-child(18n + 14),
+.grid li:nth-child(18n + 15),
+.grid li:nth-child(18n + 16),
+.grid li:nth-child(18n + 17),
+.grid li:nth-child(18n + 18) {
+  margin-top: -2%;
+  margin-bottom: -2%;
+  transform: translateX(50%) rotate(-60deg) skewY(30deg);
+}
+
+.grid li:nth-child(18n + 10) {
+  margin-left: 0.5%;
+}
+
+.hexagon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: var(--hex-color);
+  background-color: var(--hex-background);
+  transform: skewY(-30deg) rotate(60deg);
+}
+
+.hexagon.selected {
+  color: black;
+}
+
+.hexagon .icon {
+  opacity: 0.6;
+}
+
+.hexagon.selected .icon {
+  opacity: 1;
+}
+
+.hexagon a {
+  color: inherit;
+}
+
+.hexagon:hover,
+.hexagon.hover {
+  cursor: pointer;
+  filter: contrast(70%);
+}
+
+.hexagon.selected {
+  filter: contrast(100%);
+}
+
+.hexagon:hover *,
+.hexagon.hover *,
+.hexagon.selected * {
+  opacity: 1;
+}
+
+.hexagon.not-used {
+  visibility: hidden;
+}
+
+/* A rarity shows only its own rings of the board */
+.grid.star1 .hexagon.star2,
+.grid.star1 .hexagon.star3,
+.grid.star2 .hexagon.star3,
+.grid.star1 .hexagon.star2 *,
+.grid.star1 .hexagon.star3 *,
+.grid.star2 .hexagon.star3 * {
+  visibility: hidden;
+}
+
+.icon-holder {
+  position: absolute;
+  top: 7px;
+}
+
+.hexagon.killer .icon-holder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 72px;
+}
+
+.cost {
+  position: absolute;
+  bottom: 10px;
+}
+
+.text {
+  z-index: 10;
+  font-weight: bold;
+  text-align: center;
+}
+
+.hexagon.ability i.img {
+  width: 20px;
+  height: 20px;
+}
+
+.hexagon.selected.hp {
+  background-color: #ffffba;
+}
+
+.hexagon.selected.mp {
+  background-color: #baffc9;
+}
+
+.hexagon.selected.atk {
+  background-color: #ffb3ba;
+}
+
+.hexagon.selected.def {
+  background-color: #ffdfba;
+}
+
+.hexagon.selected.mag {
+  background-color: #bfaebf;
+}
+
+.hexagon.selected.spr {
+  background-color: #bae1ff;
+}
+
+.hexagon.selected.ability {
+  background-color: #e9dace;
+}
+
+.hexagon.selected.resist {
+  background-color: #e3e79f;
+}
+
+.hexagon.selected.killer {
+  background-color: #f1ded3;
+}
+
+/* On phones the board is a full screen view that the round button opens */
+@media (max-width: 768px), (pointer: coarse) and (hover: none) {
+  .toggle-grid {
+    display: block;
+  }
+
+  .pan-wrapper {
+    position: absolute;
+    top: -100000px;
+    left: -100000px;
+    box-shadow: inset 0 2px 5px #00000050;
+  }
+
+  :host-context(.viewing-grid) .pan-wrapper {
+    position: relative;
+    top: 0;
+    left: 0;
+  }
+
+  .grid-container {
+    transform: scale(0.7);
+  }
+
+  .grid-trimmer.star1 {
+    width: 378px;
+    height: 330px;
+  }
+
+  .grid-trimmer.star1 .grid-container {
+    margin: -270px 0 0 -280px;
+  }
+
+  .grid-trimmer.star2 {
+    width: 518px;
+    height: 462px;
+  }
+
+  .grid-trimmer.star2 .grid-container {
+    margin: -205px 0 0 -210px;
+  }
+
+  .grid-trimmer.star3 {
+    width: 658px;
+    height: 602px;
+  }
+
+  .grid-trimmer.star3 .grid-container {
+    margin: -135px 0 0 -140px;
+  }
+}

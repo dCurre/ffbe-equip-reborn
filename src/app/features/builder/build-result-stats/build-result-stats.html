@@ -1,0 +1,72 @@
+<div class="result-stats">
+  <div class="totals">
+    @for (total of result().totals; track total.stat) {
+      <div class="total" [class.involved]="total.involved">
+        <span class="stat-name">{{ total.stat.toUpperCase() }}</span>
+        <span class="stat-value">{{ total.total }}</span>
+        <span
+          class="bonus"
+          [title]="
+            total.flat > 0
+              ? total.stat.toUpperCase() +
+                ' increase % - Equipped ' +
+                total.stat.toUpperCase() +
+                ' (DH) increase %, capped individually.'
+              : total.stat.toUpperCase() + ' increase % modifier.'
+          "
+        >
+          <span
+            [class.over]="total.bonusOver"
+            [title]="total.bonusOver ? 'Only ' + total.bonusCap + '% taken into account' : ''"
+            >{{ total.bonus }}%</span
+          >
+          @if (total.flat > 0) {
+            -
+            <span
+              [class.over]="total.flatOver"
+              [title]="total.flatOver ? 'Only ' + total.flatCap + '% taken into account' : ''"
+              >{{ total.flat }}%</span
+            >
+          }
+        </span>
+      </div>
+    }
+    <div
+      class="total"
+      [class.involved]="result().ehpGoal === 'physical'"
+      title="Physical eHP : HP x DEF / (1 - Mitigation)"
+    >
+      <span class="stat-name">P. eHP</span><span class="stat-value">{{ result().physicalEhp.toLocaleString() }}</span>
+    </div>
+    <div
+      class="total"
+      [class.involved]="result().ehpGoal === 'magical'"
+      title="Magical eHP : HP x SPR / (1 - Mitigation)"
+    >
+      <span class="stat-name">M. eHP</span><span class="stat-value">{{ result().magicalEhp.toLocaleString() }}</span>
+    </div>
+    @for (extra of result().extras; track extra.key) {
+      <div class="total" [class.involved]="extra.involved" [title]="extra.title ?? ''">
+        <span class="stat-name">{{ extra.label }}</span>
+        <span
+          class="stat-value"
+          [class.over]="extra.over"
+          [title]="extra.over ? 'Only ' + extra.cap + extra.suffix + ' taken into account' : ''"
+          >{{ extra.value }}{{ extra.suffix }}</span
+        >
+      </div>
+    }
+  </div>
+  <div class="resists-line">
+    <app-resist-list [resist]="resistEntries()" />
+  </div>
+  <app-killer-list [killers]="result().killers" />
+  @for (line of result().damage; track line.kind) {
+    <div class="result-line" [class.secondary]="line.secondary">
+      {{ line.label }}: <strong>{{ displayValue(line.value) }}</strong>
+    </div>
+  }
+  <div class="result-line">
+    Damage taken: <strong>{{ result().damageTaken.toLocaleString() }}</strong>
+  </div>
+</div>

@@ -1,0 +1,51 @@
+.tabs {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+li {
+  margin-bottom: -1px;
+  cursor: pointer;
+}
+
+a {
+  display: block;
+  margin-right: 2px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+}
+
+li:hover a {
+  border-color: var(--color-border);
+}
+
+li.active a {
+  background-color: var(--color-background);
+  border-color: var(--color-border);
+  border-bottom-color: transparent;
+}
+
+i.tab {
+  width: 50px;
+  height: 50px;
+}
+
+.stmr-tab {
+  width: 72px;
+  height: 62px;
+}
+
+.stmr-tab img {
+  position: absolute;
+  height: 70px;
+  margin: -10px 0 0 -10px;
+}
+
+.small-tab img {
+  height: 40px;
+  margin: 5px;
+}

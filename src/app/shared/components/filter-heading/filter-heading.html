@@ -1,0 +1,6 @@
+<span>{{ title() }}</span>
+@if (clearable()) {
+  <a (click)="cleared.emit()">unselect all</a>
+}
+<span class="spacer"></span>
+<ng-content />

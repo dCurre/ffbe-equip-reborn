@@ -1,0 +1,112 @@
+<app-panel>
+  <div panelHeading class="heading"><span>Equipments</span></div>
+  <div class="options">
+    <label class="line">
+      <select [value]="s.source()" (change)="s.source.set($any($event.target).value)">
+        <option value="all">All equipments</option>
+        @if (inventory.status() === 'loaded') {
+          <option value="owned">Only owned equipments</option>
+          <option value="ownedAvailableForExpedition">Owned, available for expeditions</option>
+        }
+        <option value="shop">Only shop and recipe equipments</option>
+      </select>
+    </label>
+    @if (s.source() === 'all') {
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.excludeEvent()"
+          (change)="s.excludeEvent.set($any($event.target).checked)"
+        />
+        Exclude event equipment</label
+      >
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.excludePremium()"
+          (change)="s.excludePremium.set($any($event.target).checked)"
+        />
+        Exclude premium equipment</label
+      >
+      <label
+        ><input type="checkbox" [checked]="s.excludeTmr5()" (change)="s.excludeTmr5.set($any($event.target).checked)" />
+        Exclude 5★ TMR</label
+      >
+      <label
+        ><input type="checkbox" [checked]="s.excludeStmr()" (change)="s.excludeStmr.set($any($event.target).checked)" />
+        Exclude STMR</label
+      >
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.excludeNotReleased()"
+          (change)="s.excludeNotReleased.set($any($event.target).checked)"
+        />
+        Exclude not released yet</label
+      >
+    } @else if (s.source() !== 'shop') {
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.includeTmrOfOwnedUnits()"
+          (change)="s.includeTmrOfOwnedUnits.set($any($event.target).checked)"
+        />
+        Include TMR of owned units</label
+      >
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.includeTmrMoogles()"
+          (change)="s.includeTmrMoogles.set($any($event.target).checked)"
+        />
+        Include TMR obtainable with moogles</label
+      >
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.includeFarmableStmr()"
+          (change)="s.includeFarmableStmr.set($any($event.target).checked)"
+        />
+        Include obtainable STMR</label
+      >
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.includeTrialRewards()"
+          (change)="s.includeTrialRewards.set($any($event.target).checked)"
+        />
+        Include trial rewards</label
+      >
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.includeChocoboItems()"
+          (change)="s.includeChocoboItems.set($any($event.target).checked)"
+        />
+        Include chocobo items</label
+      >
+      <label
+        ><input
+          type="checkbox"
+          [checked]="s.includeEasyItems()"
+          (change)="s.includeEasyItems.set($any($event.target).checked)"
+        />
+        Include easily obtainable items</label
+      >
+    }
+    <div class="line">
+      Weapon enhancement
+      <button app-button type="button" (click)="items().openDefaultEnhancements()">
+        Set default ({{ items().defaultEnhancements().length }})
+      </button>
+    </div>
+    <div class="line">
+      <button app-button type="button" (click)="items().openList('exclude')">
+        Excluded items ({{ s.excluded().length }})
+      </button>
+      <button app-button type="button" (click)="items().openList('include')">
+        Included items ({{ s.included().length }})
+      </button>
+    </div>
+  </div>
+</app-panel>

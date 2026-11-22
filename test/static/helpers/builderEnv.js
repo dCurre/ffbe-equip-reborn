@@ -1,21 +1,8 @@
-import fs from 'node:fs';
-import vm from 'node:vm';
+import { core } from './core.js';
 
-// The calculation code is made of plain browser scripts (globals, no exports). Like the optimizer
-// Web Worker does, load them in an isolated context; the browser-only parts are not needed.
-const ROOT = new URL('../../../static/', import.meta.url);
-const SCRIPTS = ['constants.js', 'formula.js', 'builder/common.js', 'builder/unitShift.js', 'builder/unitBuild.js', 'builder/enemyStats.js'];
-
+// The calculation core is TypeScript (src/core, compiled by npm test): a plain copy of its exports, so a test can add what it needs.
 export function loadBuilderEnv() {
-    // `caracts` is declared in builder.js and filled by formulaFromSkill
-    const ctx = vm.createContext({ console, caracts: [] });
-    for (const file of SCRIPTS) {
-        vm.runInContext(fs.readFileSync(new URL(file, ROOT), 'utf8'), ctx, { filename: new URL(file, ROOT).href });
-    }
-    // `class` and `const` declarations are not properties of the context: expose what the tests need
-    ctx.UnitBuild = vm.runInContext('UnitBuild', ctx);
-    ctx.EnemyStats = vm.runInContext('EnemyStats', ctx);
-    return ctx;
+    return { ...core };
 }
 
 const BASE_STATS = ['hp', 'mp', 'atk', 'def', 'mag', 'spr'];

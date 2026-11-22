@@ -1,0 +1,13 @@
+.warning {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #d9534f;
+  border-radius: 0.25em;
+}
+
+.error {
+  font-weight: bold;
+  color: red;
+}

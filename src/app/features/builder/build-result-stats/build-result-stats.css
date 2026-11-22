@@ -1,0 +1,62 @@
+.result-stats {
+  padding: 10px;
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.totals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 25px;
+}
+
+.total {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.stat-name {
+  font-weight: bold;
+}
+
+.stat-value {
+  font-size: 1.3em;
+}
+
+.bonus {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+.bonus.over {
+  color: red;
+}
+
+.goal-value {
+  margin-top: 8px;
+  font-size: 1.1em;
+}
+
+.total.involved .stat-value,
+.total.involved .stat-name {
+  color: var(--color-link, #4a90e2);
+  font-weight: bold;
+}
+
+.over {
+  color: red;
+}
+
+.result-line {
+  margin: 5px 0;
+}
+
+.result-line.secondary {
+  opacity: 0.7;
+}
+
+.resists-line {
+  margin: 5px 0;
+}

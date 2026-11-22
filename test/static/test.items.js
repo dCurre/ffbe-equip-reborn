@@ -164,8 +164,8 @@ describe('applyEnhancements', () => {
     });
 
     it('looks the numeric enhancements up in the item enchantments', () => {
-        ctx.itemEnchantments = { 42: { enchant: { atk: 30 } } }; // normally loaded by common.js
-        const result = ctx.applyEnhancements({ id: '1', atk: 10 }, [42, 999]);
+        const itemEnchantments = { 42: { enchant: { atk: 30 } } };
+        const result = ctx.applyEnhancements({ id: '1', atk: 10 }, [42, 999], itemEnchantments);
         assert.equal(result.atk, 40); // 999 is unknown: ignored
     });
 
@@ -190,26 +190,6 @@ describe('item flags', () => {
         assert.ok(ctx.hasDualWieldOrPartialDualWield({ special: ['dualWield'] }));
         assert.ok(ctx.hasDualWieldOrPartialDualWield({ partialDualWield: [{ x: 1 }] }));
         assert.ok(!ctx.hasDualWieldOrPartialDualWield({}));
-    });
-});
-
-describe('item list helpers', () => {
-    it('addToList creates the list and does not add a value twice', () => {
-        const skill = {};
-        ctx.addToList(skill, 'tags', 'a');
-        ctx.addToList(skill, 'tags', 'b');
-        ctx.addToList(skill, 'tags', 'a');
-        assert.deepEqual(j(skill), { tags: ['a', 'b'] });
-    });
-
-    it('addAilmentResist adds a resist for each ailment with a value', () => {
-        ctx.ailments = ['poison', 'blind', 'sleep']; // normally loaded by common.js
-        const item = {};
-        ctx.addAilmentResist(item, [10, 0, 30]);
-        assert.deepEqual(j(item), { resist: [{ name: 'poison', percent: 10 }, { name: 'sleep', percent: 30 }] });
-        const untouched = {};
-        ctx.addAilmentResist(untouched, [0, 0, 0]);
-        assert.deepEqual(j(untouched), {});
     });
 });
 

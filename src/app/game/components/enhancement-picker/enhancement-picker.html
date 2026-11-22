@@ -1,0 +1,12 @@
+<div class="enhancement-types">
+  @for (column of columns(); track column.title) {
+    <div class="enhancement-type">
+      <div class="title">{{ column.title }}</div>
+      @for (choice of column.choices; track choice.key) {
+        <div class="value" [class.selected]="selected().includes(choice.key)" (click)="toggled.emit(choice.key)">
+          {{ choice.label }}
+        </div>
+      }
+    </div>
+  }
+</div>

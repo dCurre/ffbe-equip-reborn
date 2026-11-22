@@ -1,0 +1,91 @@
+<app-panel>
+  <div panelHeading class="heading"><span>Monster</span><app-monster-list [state]="s" /></div>
+  <div class="enemy">
+    @if (negativeValues()) {
+      <div class="warning">
+        <app-icon name="alert" /> You entered negative breaks or imperils. Break and imperil usually are positive
+        numbers. You are currently buffing the enemy
+      </div>
+    }
+    <div class="stats">
+      @for (stat of stats; track stat) {
+        <app-input-group [label]="stat.toUpperCase()">
+          <app-number-field
+            placeholder="100"
+            [title]="'Base ' + stat.toUpperCase()"
+            [value]="s.monster()[stat]"
+            (valueChange)="setMonsterStat(stat, $event)"
+          />
+          <app-number-field
+            withIcon
+            suffix="%"
+            tone="debuff"
+            [title]="stat.toUpperCase() + ' break (positive)'"
+            [disabled]="!s.monsterBreakability()[stat]"
+            [value]="s.monsterBreaks()[stat] ?? ''"
+            (valueChange)="setStatField('monsterBreaks', stat, $event)"
+          >
+            <button
+              leading
+              type="button"
+              [title]="
+                s.monsterBreakability()[stat] ? 'Can be broken: click to forbid' : 'Cannot be broken: click to allow'
+              "
+              (click)="toggleBreakability(stat)"
+            >
+              <app-icon [name]="s.monsterBreakability()[stat] ? 'arrow-down' : 'ban'" />
+            </button>
+          </app-number-field>
+          <app-number-field
+            withIcon
+            suffix="%"
+            tone="buff"
+            [title]="stat.toUpperCase() + ' buff (positive)'"
+            [value]="s.monsterBuffs()[stat] ?? ''"
+            (valueChange)="setStatField('monsterBuffs', stat, $event)"
+          >
+            <app-icon leading name="arrow-up" />
+          </app-number-field>
+        </app-input-group>
+      }
+    </div>
+
+    <app-choice-group
+      [choices]="raceChoices"
+      [selected]="s.races()"
+      (selectedChange)="s.races.set($event); s.refresh()"
+    />
+
+    <div class="elements">
+      @for (element of elements; track element) {
+        <div class="element">
+          <span class="element-icon"
+            ><i [class]="'img img-element-' + element"></i><i class="img img-equipment-heavyShield shield"></i
+          ></span>
+          <app-input-group>
+            <app-number-field
+              [width]="60"
+              [tone]="tone(s.monsterResists()[element], true)"
+              [title]="element + ' resistance (negative: weakness)'"
+              [value]="s.monsterResists()[element] ?? ''"
+              (valueChange)="setMonsterResist(element, $event)"
+            />
+            <app-number-field
+              withIcon
+              [width]="60"
+              [tone]="tone(s.monsterImperils()[element], false)"
+              [title]="element + ' imperil (positive)'"
+              [value]="s.monsterImperils()[element] ?? ''"
+              (valueChange)="setMonsterImperil(element, $event)"
+            >
+              <app-icon leading name="arrow-down" />
+            </app-number-field>
+          </app-input-group>
+        </div>
+      }
+    </div>
+
+    <app-weapon-imperils [state]="s" />
+    <app-monster-attack [state]="s" />
+  </div>
+</app-panel>

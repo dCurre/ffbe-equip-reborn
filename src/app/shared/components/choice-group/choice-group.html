@@ -1,0 +1,15 @@
+@for (choice of choices(); track choice.value) {
+  <button
+    type="button"
+    [class.active]="isSelected(choice.value)"
+    [title]="choice.tooltip ?? choice.value"
+    [attr.aria-pressed]="isSelected(choice.value)"
+    (click)="toggle(choice.value)"
+  >
+    @if (choice.label !== undefined) {
+      {{ choice.label }}
+    } @else {
+      <i [class]="iconClass(choice)"></i>
+    }
+  </button>
+}

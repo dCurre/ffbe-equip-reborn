@@ -1,0 +1,80 @@
+<app-page-content>
+  <app-load-status
+    [ready]="ready()"
+    [loginNeeded]="!logged() && !linkMode()"
+    subject="your Espers"
+    note="Changes made won't be saved."
+  />
+
+  @if (ready()) {
+    <div class="espers">
+      @if (!linkMode() && !gridView()) {
+        <app-esper-tabs [espers]="espers()" [owned]="owned()" [tab]="tab()" (selected)="showTab($event)" />
+      }
+
+      @if (tab() === 'ALL') {
+        <app-esper-table
+          [rows]="rows()"
+          [columns]="columns"
+          [sort]="sort()"
+          [logged]="logged()"
+          [ownedCount]="ownedCount()"
+          (sorted)="sortBy($event)"
+          (opened)="showTab($event)"
+          (importing)="openImport()"
+        />
+      } @else if (currentInfo(); as info) {
+        <div class="esper" [class.viewing-grid]="gridView()">
+          <app-esper-header
+            [info]="info"
+            [current]="current()"
+            [logged]="logged()"
+            [sp]="sp()"
+            (rarityChange)="setRarity($event)"
+            (levelInput)="onLevelInput($event)"
+          />
+
+          @if (current()) {
+            <div class="share-link">
+              <button app-button (click)="openShare()"><app-icon name="link" /> Get a link to this Esper build</button>
+            </div>
+          }
+
+          <app-esper-grid
+            #board
+            [info]="info"
+            [current]="current()"
+            [board]="currentBoard()"
+            [sp]="sp()"
+            [spFixed]="spFixedVisible()"
+            [(gridView)]="gridView"
+            (changed)="touch()"
+          />
+        </div>
+      }
+    </div>
+  }
+
+  <app-site-footer />
+</app-page-content>
+
+<app-import-modal
+  heading="Import espers"
+  warning="This feature is a Work in Progress. It will override your inventory on FFBE Equip Reborn"
+  [summary]="importing.summary()"
+  [(open)]="importing.open"
+  (fileLoaded)="loadImportFile($event)"
+  (confirmed)="runImport()"
+/>
+
+<app-share-link-modal
+  heading="Link to your Esper build"
+  intro="This link will allow anyone to visualize your Esper build"
+  [link]="share.link()"
+  [copied]="share.copied()"
+  [(open)]="share.open"
+/>
+
+@if (busy()) {
+  <app-busy-overlay />
+}

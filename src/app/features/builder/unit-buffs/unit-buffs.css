@@ -1,0 +1,32 @@
+.buffs {
+  margin: 8px 0;
+}
+
+.killer-buffs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 4px;
+  margin: 6px 0;
+}
+
+.killer-buff {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.killer-buff input,
+.element-buffs input {
+  width: 55px;
+}
+
+.killer-buff i.img {
+  width: 28px;
+  height: 28px;
+}
+
+.element-buffs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}

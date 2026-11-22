@@ -1,0 +1,81 @@
+:host {
+  display: block;
+  flex: 0 0 250px;
+  width: 250px;
+  padding: 0 10px;
+}
+
+:host(.collapsed) {
+  flex-basis: 100px;
+  width: 100px;
+}
+
+/* the old page fixed the sidebar with a script when the page scrolled: sticky does the same */
+.internal {
+  position: sticky;
+  top: 5px;
+}
+
+button {
+  display: block;
+  margin: 20px auto 0;
+  padding: 6px;
+  color: #747474;
+  background: #f7f7f7;
+  border: 1px solid #c8c8c8;
+  border-radius: 4px;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #f0f0f0;
+  border-color: #808080;
+  opacity: 1;
+}
+
+:host(.collapsed) button {
+  opacity: 0.85;
+}
+
+.chevron {
+  display: inline-block;
+  font-weight: bold;
+  transition: transform 0.3s;
+}
+
+:host(.collapsed) .chevron {
+  transform: rotate(180deg);
+}
+
+:host(.collapsed) .collapsed-hidden {
+  display: none;
+}
+
+/* on a phone the pages stack the sidebar above the content */
+@media (max-width: 991px) {
+  :host,
+  :host(.collapsed) {
+    width: auto;
+  }
+
+  .internal {
+    position: static;
+  }
+
+  button {
+    margin: 5px 0 15px;
+  }
+
+  .chevron {
+    transform: rotate(-90deg);
+  }
+
+  :host(.collapsed) .chevron {
+    transform: rotate(90deg);
+  }
+
+  :host(.collapsed) button .collapsed-hidden {
+    display: inline;
+  }
+}

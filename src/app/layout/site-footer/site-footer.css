@@ -1,0 +1,9 @@
+footer {
+  margin: 15px 0;
+}
+
+footer a {
+  margin-left: 10px;
+  font-size: 0.9em;
+  white-space: nowrap;
+}

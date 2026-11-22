@@ -1,0 +1,14 @@
+<app-modal heading="Item management" [(open)]="open">
+  @if (line(); as current) {
+    <div class="enhancing-title item">
+      <app-item-summary [item]="current.item" [enchantments]="enchantments()" />
+    </div>
+    <app-enhancement-picker
+      [enchantments]="enchantments()"
+      [itemId]="current.item.id"
+      [selected]="current.enhancements"
+      (toggled)="toggled.emit($event)"
+    />
+  }
+  <ng-container modalFooter><button app-button type="button" (click)="open.set(false)">Close</button></ng-container>
+</app-modal>

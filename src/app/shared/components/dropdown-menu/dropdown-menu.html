@@ -1,0 +1,14 @@
+<div class="dropdown" (click)="$event.stopPropagation()">
+  <a class="link" (click)="open.set(!open())"
+    ><app-icon name="link" /> <span>{{ label() }} &#9662;</span></a
+  >
+  @if (open()) {
+    <ul class="menu">
+      @for (item of items(); track item.label) {
+        <li>
+          <a (click)="run(item)">{{ item.label }}</a>
+        </li>
+      }
+    </ul>
+  }
+</div>

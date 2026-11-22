@@ -1,0 +1,255 @@
+:host {
+  display: contents;
+}
+
+.unit {
+  position: relative;
+  display: flex;
+  width: 300px;
+  margin: 5px;
+  padding: 5px;
+  border: 1px solid var(--unit-border);
+  border-radius: 10px;
+}
+
+.unit.owned {
+  background-color: var(--unit-owned);
+}
+
+.unit.owned.sevenStars {
+  background-color: var(--unit-owned-seven);
+  border-color: var(--unit-seven-border);
+}
+
+.unit:hover {
+  background-color: #337ab7 !important;
+}
+
+.unit.notOwned .base-number,
+.unit.notOwned .second-column,
+.unit.notOwned .third-column {
+  opacity: 0.3;
+}
+
+:host-context(.read-only) .unit {
+  cursor: default;
+}
+
+:host-context(.read-only) .unit:hover {
+  background-color: var(--unit-owned) !important;
+}
+
+:host-context(.read-only) .unit.notOwned:hover {
+  background-color: transparent !important;
+}
+
+:host-context(.read-only) .unit.notOwned .owned-numbers {
+  display: none;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 1.2em;
+  font-weight: bold;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  background-color: #777;
+  border-radius: 10px;
+}
+
+.badge.seven-star {
+  background-color: var(--badge-seven);
+}
+
+.owned-numbers {
+  display: flex;
+  flex: 0 0 50px;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 50px;
+}
+
+.nv-number,
+.seven-star-number,
+.moogles,
+.fragments {
+  display: none;
+}
+
+.sevenStars .seven-star-number,
+.NV .nv-number,
+.NVA .nv-number {
+  display: block;
+}
+
+.NV .base-number {
+  display: none;
+}
+
+.tmrMoogles .moogles,
+.NV .fragments,
+.NVA .fragments {
+  position: relative;
+  display: block;
+  padding-left: 22px;
+}
+
+.moogles img {
+  position: absolute;
+  top: -10px;
+  left: -6px;
+  width: 32px;
+}
+
+.fragments img {
+  position: absolute;
+  top: -7px;
+  left: -7px;
+  width: 36px;
+}
+
+.moogles .badge {
+  cursor: help;
+}
+
+.second-column {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: flex-start;
+}
+
+.image-and-name {
+  display: flex;
+}
+
+.unit-image {
+  margin: 0 5px;
+}
+
+.name-and-rarity {
+  display: flex;
+  flex-direction: column;
+}
+
+.unit-name {
+  font-weight: bold;
+}
+
+.time {
+  margin-left: 5px;
+  color: #999;
+}
+
+.unit:hover .time {
+  color: #fff;
+}
+
+:host-context(.read-only) .unit:hover .time {
+  color: #999;
+}
+
+.rarity {
+  opacity: 0.6;
+}
+
+.third-column {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  align-items: flex-end;
+  justify-content: space-evenly;
+}
+
+.trust-counter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  cursor: help;
+}
+
+.trust-counter .badge {
+  margin-left: 3px;
+}
+
+.trust-counter.stmr,
+.trust-counter.tmr {
+  opacity: 0.4;
+}
+
+.unit:not(.showStmr) .trust-counter.stmr {
+  display: none;
+}
+
+.sevenStars .trust-counter.stmr,
+.owned .trust-counter.tmr {
+  opacity: 1;
+}
+
+/* --- The buttons that appear when the pointer is on a card --- */
+
+.actions {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  visibility: hidden;
+}
+
+.unit:hover .actions {
+  visibility: visible;
+}
+
+.action-button {
+  width: 24px;
+  height: 24px;
+  margin: 0 5px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--unit-action-text);
+  background-color: var(--unit-action-background);
+  border: 1px solid var(--unit-action-border);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.action-button.edit {
+  font-size: 14px;
+}
+
+.farmed-button {
+  display: none;
+  height: 44px;
+  margin: -10px -5px;
+  cursor: pointer;
+}
+
+.farmable .farmed-button.tmr,
+.farmableStmr .farmed-button.stmr {
+  display: block;
+}
+
+.awaken-button {
+  display: none;
+  cursor: pointer;
+}
+
+.awakenable .awaken-button {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .actions {
+    visibility: visible;
+  }
+
+  .farmable .farmed-button,
+  .awakenable .awaken-button {
+    display: block;
+  }
+}

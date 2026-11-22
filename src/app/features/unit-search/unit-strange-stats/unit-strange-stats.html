@@ -1,0 +1,8 @@
+@if (strange(); as strange) {
+  <span class="strangeStatsUsed"
+    ><span class="warnIcon">&#9888;</span>Uses <span class="stat">{{ strange.stat }}</span>
+    @if (strange.monsterStat) {
+      to damage monster <span class="monsterStat">{{ strange.monsterStat }}</span>
+    }
+  </span>
+}

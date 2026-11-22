@@ -1,0 +1,23 @@
+<div class="tabs" role="tablist">
+  @for (name of names(); track $index; let i = $index) {
+    <div class="tab" role="presentation" [class.active]="i === active()">
+      <button
+        type="button"
+        role="tab"
+        [attr.aria-selected]="i === active()"
+        [disabled]="disabled()"
+        (click)="active.set(i)"
+      >
+        {{ name }}
+      </button>
+      @if (names().length > 1) {
+        <button type="button" class="close" [disabled]="disabled()" aria-label="Close tab" (click)="close.emit(i)">
+          ×
+        </button>
+      }
+    </div>
+  }
+  @if (names().length < max()) {
+    <button type="button" class="add" [disabled]="disabled()" aria-label="New tab" (click)="add.emit()">+</button>
+  }
+</div>

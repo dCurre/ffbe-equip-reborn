@@ -1,0 +1,12 @@
+<div class="wrapper">
+  <app-stats-sidebar [(collapsed)]="collapsed">
+    <ng-content select="[stats]" />
+  </app-stats-sidebar>
+
+  <div class="content" [class.narrow]="narrow()">
+    @if (!hideActions()) {
+      <div class="link-actions"><ng-content select="[actions]" /></div>
+    }
+    <ng-content />
+  </div>
+</div>

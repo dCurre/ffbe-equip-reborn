@@ -1,0 +1,10 @@
+<div>
+  Results :
+  @if (filtered()) {
+    {{ count() }}
+  } @else {
+    Add filters to see results
+  }
+</div>
+<span class="spacer"></span>
+<ng-content />

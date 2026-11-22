@@ -1,0 +1,17 @@
+:host {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+}
+:host(.info) {
+  color: var(--color-alert-info-text);
+  background-color: var(--color-alert-info-background);
+  border-color: var(--color-alert-info-border);
+}
+:host(.danger) {
+  color: var(--color-alert-danger-text);
+  background-color: var(--color-alert-danger-background);
+  border-color: var(--color-alert-danger-border);
+}

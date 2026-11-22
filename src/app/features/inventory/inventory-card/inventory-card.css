@@ -1,0 +1,207 @@
+:host {
+  display: contents;
+}
+
+.item.notOwned {
+  background-color: var(--card-not-owned);
+}
+
+.item.notOwned .number,
+.item.notOwned .minus {
+  display: none;
+}
+
+.item.notOwned ::ng-deep .td.type,
+.item.notOwned ::ng-deep .td.name {
+  opacity: 0.3;
+}
+
+.item.stmr {
+  padding: 25px 5px;
+  background-color: var(--card-stmr);
+}
+
+.item.maxNumberOverflow {
+  background-color: indianred;
+}
+
+.item.clickable:hover {
+  color: white;
+  cursor: pointer;
+  background-color: #337ab7 !important;
+}
+
+.item.clickable:hover ::ng-deep a,
+.item.clickable:hover ::ng-deep .rarity {
+  color: white;
+}
+
+.td.inventory {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 10px;
+  margin-top: 1px;
+  padding: 3px 7px;
+  font-size: 1.2em;
+  font-weight: bold;
+  line-height: 1;
+  color: var(--badge-text);
+  text-align: center;
+  background-color: var(--badge-background);
+  border-radius: 10px;
+}
+
+.step {
+  padding: 0 6px;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--step-color);
+  background: none;
+  border: 0;
+}
+
+.item:hover .step {
+  color: var(--step-color);
+  cursor: pointer;
+}
+
+.item.notOwned .step {
+  color: var(--step-color-empty);
+}
+
+.farmed-button,
+.item-world-button,
+.exclude-button {
+  display: none;
+  position: absolute;
+  cursor: pointer;
+}
+
+.farmable:hover .farmed-button {
+  display: block;
+  right: 30px;
+  bottom: 0;
+  height: 45px;
+}
+
+.item-world-button {
+  top: 2px;
+  right: 5px;
+  height: 28px;
+  opacity: 0.8;
+  filter: grayscale(100%);
+}
+
+.item:hover .item-world-button {
+  display: block;
+}
+
+.exclude-button {
+  top: 40px;
+  right: 4px;
+  width: 28px;
+}
+
+.item:not(.notOwned).excludedFromExpeditions .exclude-button {
+  display: block;
+  opacity: 1;
+}
+
+.item:not(.notOwned):hover .exclude-button {
+  display: block;
+  opacity: 0.8;
+  filter: grayscale(100%);
+}
+
+.item:not(.notOwned).excludedFromExpeditions:hover .exclude-button {
+  filter: none;
+}
+
+.card-level {
+  position: absolute;
+  right: 38px;
+  bottom: 5px;
+}
+
+.item.notOwned .card-level {
+  display: none;
+}
+
+.sellable-reasons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  margin-left: 5px;
+}
+
+.better {
+  margin-top: 5px;
+  font-size: 16px;
+  white-space: nowrap;
+  cursor: help;
+}
+
+.stmr-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.item.stmr {
+  flex-wrap: wrap;
+}
+
+.stmr-recipe {
+  display: flex;
+  margin-left: auto;
+}
+
+.stmr-recipe .column {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+}
+
+.stmr-recipe .recipe {
+  display: flex;
+  align-items: center;
+}
+
+.stmr-recipe .img-crystal-sevenStarCrystal {
+  margin: 0 4px;
+}
+
+.stmr-moogle-icon {
+  width: 40px;
+  height: 40px;
+  margin: -10px 0 0 -4px;
+}
+
+.unit-name {
+  font-weight: bold;
+}
+
+@media (max-width: 991px) {
+  .farmable .farmed-button {
+    display: block;
+    right: 30px;
+    bottom: 0;
+    height: 45px;
+    opacity: 0.8;
+    filter: grayscale(100%);
+  }
+
+  .item:not(.notOwned) .exclude-button,
+  .item-world-button {
+    display: block;
+    opacity: 0.8;
+    filter: grayscale(100%);
+  }
+}

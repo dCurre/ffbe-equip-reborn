@@ -1,0 +1,81 @@
+<div #panWrapper class="pan-wrapper">
+  @if (current(); as esper) {
+    <div class="sp-fixed" [class.shown]="gridView() || spFixed()" title="SP">
+      <span class="name">SP</span>
+      <span [class.error]="sp()!.used > sp()!.available">{{ sp()!.used }} / {{ sp()!.available }}</span>
+    </div>
+    <div class="grid-trimmer" [class]="'grid-trimmer star' + esper.rarity">
+      <div #gridContainer class="grid-container">
+        <svg class="lines" viewBox="0 0 1000 1000" aria-hidden="true">
+          @for (line of lines(); track $index) {
+            <line [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2" />
+          }
+        </svg>
+        <ul class="grid" [class]="'grid star' + esper.rarity">
+          @for (cell of cells(); track cell.position) {
+            <li [class.center]="cell.isCenter">
+              <div
+                #hexagon
+                [attr.data-position]="cell.position"
+                class="hexagon"
+                [class]="'hexagon ' + cell.tier"
+                [class.not-used]="cell.hidden"
+                [class.selected]="cell.selected"
+                [class.hover]="isHover(cell)"
+                [class.hp]="cell.view?.kinds?.includes('hp')"
+                [class.mp]="cell.view?.kinds?.includes('mp')"
+                [class.atk]="cell.view?.kinds?.includes('atk')"
+                [class.def]="cell.view?.kinds?.includes('def')"
+                [class.mag]="cell.view?.kinds?.includes('mag')"
+                [class.spr]="cell.view?.kinds?.includes('spr')"
+                [class.ability]="cell.view?.kinds?.includes('ability')"
+                [class.resist]="cell.view?.kinds?.includes('resist')"
+                [class.killer]="cell.view?.kinds?.includes('killer')"
+                (click)="selectNode(cell)"
+                (mouseenter)="hoverNode(cell)"
+                (mouseleave)="hoverNode(null)"
+              >
+                @if (cell.isCenter) {
+                  <i [class]="sprite(info().name) + ' center-icon'"></i>
+                } @else if (cell.view; as view) {
+                  <span class="icon-holder">
+                    @if (view.icon) {
+                      <img class="icon" [src]="'img/items/' + view.icon" alt="" />
+                    }
+                    @if (view.killers) {
+                      <app-killer-list [killers]="view.killers" />
+                    }
+                  </span>
+                  @if (view.text) {
+                    <span class="text">
+                      {{ view.text }}
+                      @if (view.wiki) {
+                        <a [href]="view.wiki" target="_blank" rel="noreferrer" (click)="$event.stopPropagation()">
+                          <app-icon name="new-window" />
+                        </a>
+                      }
+                    </span>
+                  } @else if (view.resist) {
+                    <span class="text"><app-resist-list [resist]="view.resist" /></span>
+                  } @else if (view.conditional) {
+                    <span class="text">
+                      @for (part of view.conditional; track part.equipment) {
+                        <img class="icon" [src]="'img/items/' + part.icon" alt="" />
+                        {{ part.stats }} if <i [class]="'img img-equipment-' + part.equipment"></i>
+                      }
+                    </span>
+                  }
+                  <span class="cost">{{ view.cost }} SP</span>
+                }
+              </div>
+            </li>
+          }
+        </ul>
+      </div>
+    </div>
+  }
+</div>
+
+<button type="button" class="toggle-grid" title="Toggle Esper training grid" (click)="toggleGrid()">
+  <app-icon [name]="gridView() ? 'list' : 'grid'" />
+</button>

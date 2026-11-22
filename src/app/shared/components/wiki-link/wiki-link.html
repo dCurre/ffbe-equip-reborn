@@ -1,0 +1,6 @@
+<span>{{ name() }}</span>
+@if (always() || server.server() === 'GL') {
+  <a [href]="url()" target="_blank" rel="noreferrer" title="Open the wiki page" (click)="$event.stopPropagation()"
+    ><app-icon name="new-window"
+  /></a>
+}

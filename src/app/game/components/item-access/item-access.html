@@ -1,0 +1,43 @@
+@for (access of accesses(); track $index) {
+  <div class="access" [class.notSelected]="access.blocked" [class.forbiddenAccess]="access.blocked">
+    {{ access.label }}
+  </div>
+}
+@if (tmrUnit(); as tmr) {
+  <div class="unit">
+    @if (tmr.unit; as unit) {
+      <app-wiki-link [name]="unit.name" [page]="unit.wikiEntry ?? unit.name" />
+    } @else {
+      TMR of not released yet unit ({{ tmr.id }})
+    }
+  </div>
+}
+@if (stmrUnit(); as stmr) {
+  <div class="unit">
+    @if (stmr.unit; as unit) {
+      <app-wiki-link [name]="unit.name" />
+    } @else {
+      STMR of not released yet unit ({{ stmr.id }})
+    }
+  </div>
+}
+@if (item()['exclusiveUnits']) {
+  <div class="exclusive">Unit Exclusive Attribute(s)</div>
+}
+@if (item()['exclusiveSex']) {
+  <div class="exclusive">{{ sex() }} Only</div>
+}
+@if (item()['exclusiveRoles']) {
+  <div class="exclusive">{{ roles() }} Only</div>
+}
+@if (conditions().length) {
+  <div class="exclusive">
+    If equiped with
+    @for (condition of conditions(); track condition.name; let last = $last) {
+      <i [class]="'img img-' + condition.kind + '-' + condition.name"></i>
+      @if (!last) {
+        <ng-container>{{ conditionSeparator() }}</ng-container>
+      }
+    }
+  </div>
+}

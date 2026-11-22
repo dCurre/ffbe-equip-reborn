@@ -1,0 +1,29 @@
+<div class="line">
+  <button app-button type="button" (click)="open.set(!open())"><app-icon name="edit" /> Weapon imperils</button>
+  @if (!open()) {
+    @for (item of active(); track item.weapon) {
+      <span class="summary"><i [class]="'img img-equipment-' + item.weapon"></i>{{ item.value }}%</span>
+    }
+  }
+</div>
+@if (open()) {
+  <div class="weapons">
+    @for (weapon of weapons; track weapon) {
+      <div class="weapon">
+        <i [class]="'img img-equipment-' + weapon" [title]="weapon + ' imperil'"></i>
+        <app-input-group>
+          <app-number-field
+            withIcon
+            suffix="%"
+            [tone]="tone(s.monsterImperils()[weapon], false)"
+            [title]="weapon + ' imperil (positive)'"
+            [value]="s.monsterImperils()[weapon] ?? ''"
+            (valueChange)="set(weapon, $event)"
+          >
+            <app-icon leading name="arrow-down" />
+          </app-number-field>
+        </app-input-group>
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,40 @@
+<app-panel>
+  <div panelHeading class="heading"><span>Build rules</span></div>
+  <div class="options">
+    <label
+      ><input
+        type="checkbox"
+        [checked]="s.forceDoubleHand()"
+        (change)="s.forceDoubleHand.set($any($event.target).checked); s.forceDualWield.set(false)"
+      />
+      Force two-handed weapon</label
+    >
+    <label
+      ><input
+        type="checkbox"
+        [checked]="s.forceDualWield()"
+        (change)="s.forceDualWield.set($any($event.target).checked); s.forceDoubleHand.set(false)"
+      />
+      Force dual wield</label
+    >
+    <label
+      ><input
+        type="checkbox"
+        [checked]="s.tryEquipSources()"
+        (change)="s.tryEquipSources.set($any($event.target).checked)"
+      />
+      Try equipment that gives access to more equipment</label
+    >
+    <label class="line">
+      Cores used
+      <input
+        type="number"
+        min="1"
+        max="16"
+        class="short"
+        [value]="s.workerCount()"
+        (change)="workers.emit($any($event.target).value)"
+      />
+    </label>
+  </div>
+</app-panel>

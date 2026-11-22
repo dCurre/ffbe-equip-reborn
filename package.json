@@ -6,10 +6,14 @@
     "node": ">=24"
   },
   "scripts": {
+    "pretest": "tsc -p tsconfig.core.json",
     "test": "node --test \"test/static/*.js\"",
-    "test:coverage": "node test/coverage.mjs",
+    "test:coverage": "tsc -p tsconfig.core.json && node test/coverage.mjs",
     "test:golden:update": "node test/static/golden/update.mjs",
     "build:units": "node tools/generateUnitFiles.js",
+    "ng": "ng",
+    "build": "ng build",
+    "dev": "ng serve",
     "start": "node tools/generateUnitFiles.js && npx --yes serve static -l 3000 -c ../serve.json"
   },
   "type": "module",
@@ -28,10 +32,25 @@
   },
   "homepage": "https://dcurre.github.io/ffbe-equip-reborn/",
   "dependencies": {
+    "@angular/common": "^22.3.0",
+    "@angular/compiler": "^22.3.0",
+    "@angular/core": "^22.3.0",
+    "@angular/forms": "^22.3.0",
+    "@angular/platform-browser": "^22.3.0",
+    "@angular/router": "^22.3.0",
     "pngjs": "6.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.9.1",
     "unorm": "^1.6.0"
   },
   "devDependencies": {
-    "image-size": "^1.0.2"
+    "@angular/build": "^22.3.0",
+    "@angular/cli": "^22.3.0",
+    "@angular/compiler-cli": "^22.3.0",
+    "image-size": "^1.0.2",
+    "jsdom": "^31.0.1",
+    "prettier": "^3.10.1",
+    "typescript": "~6.0.2",
+    "vitest": "^5.1.1"
   }
 }

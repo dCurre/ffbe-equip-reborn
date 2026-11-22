@@ -1,0 +1,13 @@
+.custom-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: monospace;
+  color: var(--color-text);
+  background-color: var(--color-input, transparent);
+  border: 1px solid var(--color-border);
+}
+
+.custom-field {
+  display: block;
+  margin-bottom: 10px;
+}

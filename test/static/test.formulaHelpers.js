@@ -240,11 +240,8 @@ describe('parseConstant', () => {
         assert.deepEqual(j(ctx.parseConstant('1.5', 0)), { type: 'constant', value: 1.5 });
     });
 
-    it('shows an alert and returns nothing for a non number', () => {
-        const alerts = [];
-        ctx.alert = (message) => alerts.push(message);
-        assert.equal(ctx.parseConstant('abc', 4), undefined);
-        assert.deepEqual(alerts, ['Error at position 4. Expected constant.']);
+    it('throws a FormulaError for a non number', () => {
+        assert.throws(() => ctx.parseConstant('abc', 4), { name: 'FormulaError', message: 'Error at position 4. Expected constant.' });
     });
 });
 

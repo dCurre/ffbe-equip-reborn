@@ -1,0 +1,43 @@
+:host {
+  display: block;
+}
+
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.summary i.img {
+  width: 34px;
+  height: 38px;
+}
+
+/* the old column was a bit inside */
+.weapons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 5px;
+  margin: 8px 0 0 18px;
+}
+
+/* the icon overlaps the field */
+.weapon {
+  display: flex;
+  align-items: center;
+}
+
+.weapon i.img {
+  position: relative;
+  z-index: 2;
+  width: 34px;
+  height: 38px;
+  margin: -2px -6px -2px 0;
+}

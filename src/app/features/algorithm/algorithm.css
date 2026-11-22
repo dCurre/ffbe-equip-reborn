@@ -1,0 +1,32 @@
+/* A centered column that steps up with the screen width (the old Bootstrap `container`). */
+:host {
+  display: block;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+@media (min-width: 768px) {
+  :host {
+    width: 750px;
+  }
+}
+
+@media (min-width: 992px) {
+  :host {
+    width: 970px;
+  }
+}
+
+@media (min-width: 1200px) {
+  :host {
+    width: 1170px;
+  }
+}
+
+.column {
+  padding: 0 15px;
+}
+
+img {
+  display: block;
+}

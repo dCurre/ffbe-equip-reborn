@@ -1,0 +1,67 @@
+.heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: center;
+}
+
+label {
+  font-weight: normal;
+}
+
+input[type='text'],
+input[type='number'],
+select {
+  padding: 4px 8px;
+}
+
+input.short {
+  width: 90px;
+}
+
+.unit-body,
+.goal,
+.enemy,
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  margin: 0;
+}
+
+.label {
+  min-width: 90px;
+  font-weight: bold;
+}
+.resists {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.resist {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.resist i.img {
+  width: 28px;
+  height: 28px;
+}
+
+.resist input {
+  width: 56px;
+}
+
+app-choice-group i.img {
+  width: 30px;
+  height: 30px;
+}

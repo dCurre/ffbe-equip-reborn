@@ -1,0 +1,121 @@
+:host {
+  display: block;
+  --unit-owned: #d2edf9;
+  --unit-owned-seven: #f9d2da;
+  --unit-border: transparent;
+  --unit-seven-border: transparent;
+  --unit-action-background: aliceblue;
+  --unit-action-text: #333;
+  --unit-action-border: grey;
+  --badge-seven: #ff8888;
+  --soft-text: #808080;
+}
+
+:host-context([data-theme='dark']) {
+  --unit-owned: #222;
+  --unit-owned-seven: #222;
+  --unit-border: #222;
+  --unit-seven-border: indianred;
+  --unit-action-background: #424242;
+  --unit-action-text: #ddd;
+  --unit-action-border: #888;
+  --badge-seven: indianred;
+}
+
+.search {
+  width: 100%;
+}
+
+/* --- Layout: the statistics on the left, the units on the right --- */
+
+/* --- Filters --- */
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px;
+}
+
+.search {
+  flex: 1 1 250px;
+  width: auto;
+}
+
+.filters {
+  display: flex;
+  flex: 1 1 250px;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-height: 64px;
+  padding-top: 0;
+}
+
+.filters label {
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px 10px;
+}
+
+.results.export-all {
+  padding-bottom: 150px;
+}
+
+.results.export-rare {
+  padding-bottom: 20px;
+}
+
+.separator {
+  margin-top: 30px;
+  font-size: 2em;
+}
+
+.jump-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  font-size: 0.9em;
+}
+
+.jump-list span {
+  color: var(--soft-text);
+}
+
+.jump-list span,
+.jump-list a {
+  margin: 5px 0;
+}
+
+.jump-list a {
+  margin-left: 10px;
+  padding: 4px 6px;
+  white-space: nowrap;
+  color: var(--color-button-text);
+  background: var(--color-button-background);
+  border: 1px solid var(--color-button-border);
+  border-radius: 4px;
+}
+
+.jump-list a:hover {
+  background: var(--color-button-hover-background);
+  text-decoration: none;
+}
+
+/* --- The unit cards --- */
+
+.unit-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* --- Modals --- */

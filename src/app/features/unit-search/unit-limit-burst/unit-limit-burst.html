@@ -1,0 +1,29 @@
+<div class="skill">
+  <div><img class="skillIcon" src="img/icons/lb.png" alt="" /></div>
+  <div class="nameAndEffects">
+    <span class="name"
+      >Limit Burst : {{ lb().name }}<app-unit-skill-tags [skill]="lb()" [effects]="lb().maxEffects"
+    /></span>
+    <app-unit-strange-stats [effects]="lb().maxEffects" />
+    <div class="subSkill">
+      <span class="case">Min :</span>
+      <div class="skill">
+        <div class="nameAndEffects">
+          @for (effect of lb().minEffects; track $index) {
+            <app-unit-effect [entry]="effect" skillId="0" />
+          }
+        </div>
+      </div>
+    </div>
+    <div class="subSkill">
+      <span class="case">Max :</span>
+      <div class="skill">
+        <div class="nameAndEffects">
+          @for (effect of lb().maxEffects; track $index) {
+            <app-unit-effect [entry]="effect" skillId="0" />
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

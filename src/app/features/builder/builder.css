@@ -1,0 +1,53 @@
+:host {
+  display: block;
+}
+
+.columns {
+  display: flex;
+  align-items: flex-start;
+}
+
+.left,
+.right {
+  flex: 0 0 50%;
+  min-width: 0;
+  padding: 0 15px;
+}
+
+/* the old page order: unit, goal, build rules, monster, equipments */
+.left {
+  display: flex;
+  flex-direction: column;
+}
+
+app-unit-panel {
+  order: 1;
+}
+
+app-goal-panel {
+  order: 2;
+}
+
+app-rules-panel {
+  order: 3;
+}
+
+app-enemy-panel {
+  order: 4;
+}
+
+app-equipments-panel {
+  order: 5;
+}
+
+@media (max-width: 991px) {
+  .columns {
+    flex-direction: column;
+  }
+
+  .left,
+  .right {
+    flex: none;
+    width: 100%;
+  }
+}

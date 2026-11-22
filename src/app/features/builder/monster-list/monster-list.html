@@ -1,0 +1,16 @@
+@if (bestiary.hasValue()) {
+  <a href="#" (click)="$event.preventDefault(); open.set(true)">Monster list</a>
+}
+
+<app-modal heading="Monster List" [wide]="true" [(open)]="open">
+  <app-tab-bar [tabs]="categories()" [active]="category()" (selected)="category.set($event)" />
+  <div class="items results">
+    <div class="tbody">
+      @for (row of rows(); track row.monster.name) {
+        <div class="tr selectable" (click)="choose(row.monster)">
+          <app-item-line class="inline" [item]="row.item" />
+        </div>
+      }
+    </div>
+  </div>
+</app-modal>

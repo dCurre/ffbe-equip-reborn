@@ -1,0 +1,70 @@
+<app-page-content>
+  <app-page-column>
+    <div class="navbar">FFBE Equip Reborn - Builder Help</div>
+    <div class="group">
+      <details class="help panel-box" open>
+        <summary>Custom goal usage</summary>
+        <div class="help-body">
+          Custom goals are used to define how you want to build your unit. Each custom goal contains one or more
+          [formulae], separated by semicolons [;], without a semicolon at the end. Custom goals can be as simple as a
+          single [EXPRESSION] using a single [VARIABLE], as complex as dealing damage while self-sustaining mp, or even
+          as complex as to be immune to death, elements, and status ailments, while being self-sustaining. Be
+          forewarned, however, that the more unique variables that are included in a custom goal, the more time it will
+          take to calculate the build, or the higher the risk you run of freezing up your device. Reducing the number of
+          cores in use can help prevent freezes, but increases the time needed to calculate the build. The first
+          [formula] is an [EXPRESSION] that provides the builder with it's overall goal; what to maximize, while meeting
+          any following conditions. This [EXPRESSION] is how the builder decides that one build is better than another.
+          [EXPRESSIONS] may contain one or more [variables], using multiplication [*], division [/], or addition [+] to
+          create a single overall value. However, they may not contain the comparison operator [>], which will cause an
+          error. Valid examples: &#123;HP&#125;, &#123;HP * DEF&#125;, &#123;2.6 * P_DAMAGE&#125;. Invalid examples:
+          &#123;HP;&#125;, &#123;HP * SPR > 1&#125; Each [FORMULA] after the first is a [CONDITION] or a [SHORTCUT] for
+          a condition. Each [CONDITION] must compare an [expression] to a specific value; [expression > VALUE]. The [>]
+          operates as [>=], making the [VALUE] provided the minimum goal to satisfy the condition. The right side of the
+          [CONDITION] must be a number. [SHORTCUTS] contain one or more sets [CONDITIONS] with fixed [expression >
+          VALUE] pairs, and cannot be part of a [CONDITION]. For example, the [CONDITION] &#123;R_CONFUSION > 100&#125;
+          is the same as the [SHORTCUT] &#123;I_CONFUSION&#125;. Valid examples: &#123;M_DAMAGE; HP > 6000&#125;,
+          &#123;P_DAMAGE; MP * MP_REFRESH > 45&#125;, &#123;H_DAMAGE; I_PHYSICAL; R_FIRE > 200&#125; Invalid examples:
+          &#123;HP; SPR&#125;, &#123;MP; MAG > 1;&#125;, &#123;MP; M_DAMAGE > 1 + 1&#125;, &#123;DEF; DEF > SPR&#125;,
+          &#123;SPR; R_THUNDER * I_FIRE > 1&#125;
+        </div>
+      </details>
+      <details class="help panel-box">
+        <summary>Simulating unit skills</summary>
+        <div class="help-body">
+          <div class="group">
+            <details class="help panel-box" open>
+              <summary>Unit skill multipliers</summary>
+              <div class="help-body">
+                Unit Skill Multiplers: Skill Multipliers can be entered directly into the custom goal as a multiplier of
+                the damage variable. For example, to calculate damage using a physical attack with a 2.6x multiplier,
+                you would use &#123;2.6 * p_damage&#125;.
+              </div>
+            </details>
+            <details class="help panel-box" open>
+              <summary>Unit buffs and breaks</summary>
+              <div class="help-body">
+                Unit Buffs and Breaks: Unit Buffs and Breaks are entered into the unit's information, in the third box
+                next to the affected attribute. Buffs and Breaks stack additively, but only the strongest of each is
+                applied. A 120% buff does not gain anything from applying a 50% buff, but does lose some potency to a
+                50% break, which results in a 70% buff. To calculate this combination of Buff and Break as part of
+                Noctis' Atk, we enter this number (70%) next to his Atk attribute, so that his unit information reads as
+                [atk : 158 (base) : +30 (pots) : 70% (buff)].
+              </div>
+            </details>
+          </div>
+        </div>
+      </details>
+      <details class="help panel-box">
+        <summary>3. What is CSS?</summary>
+        <div class="help-body">
+          <p>
+            CSS stands for Cascading Style Sheet. CSS allows you to specify various style properties for a given HTML
+            element such as colors, backgrounds, fonts etc.
+            <a href="https://www.tutorialrepublic.com/css-tutorial/" target="_blank" rel="noreferrer">Learn more.</a>
+          </p>
+        </div>
+      </details>
+    </div>
+    <app-site-footer />
+  </app-page-column>
+</app-page-content>

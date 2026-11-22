@@ -1,0 +1,399 @@
+import { Component, computed, HostListener, inject, signal, viewChild } from '@angular/core';
+import { ShareLinkState } from '../../shared/state/share-link-state';
+import { ImportState } from '../../shared/state/import-state';
+import { ActivatedRoute } from '@angular/router';
+import { baseStats } from '../../../core/constants';
+import { PageContent } from '../../layout/page-content/page-content';
+import { SiteFooter } from '../../layout/site-footer/site-footer';
+import { showLoadError, showSaveError } from '../../shared/helpers/drive-errors';
+import { PageChrome } from '../../shared/services/page-chrome';
+import { ServerContext } from '../../shared/services/server-context';
+import { Sprites } from '../../shared/services/sprites';
+import { StaticData } from '../../shared/services/static-data';
+import { Toast } from '../../shared/services/toast';
+import { UserData } from '../../shared/services/user-data';
+import { Button } from '../../shared/components/button/button';
+import { Icon } from '../../shared/components/icon/icon';
+import { BusyOverlay } from '../../shared/components/busy-overlay/busy-overlay';
+import { LoadStatus } from '../../shared/components/load-status/load-status';
+import { ImportModal } from '../../shared/components/import-modal/import-modal';
+import { ShareLinkModal } from '../../shared/components/share-link-modal/share-link-modal';
+import {
+  applySelectedNodes,
+  calculateSp,
+  decodeBoard,
+  decodeEsperLink,
+  encodeEsperLink,
+  EsperBoard,
+  EsperInfo,
+  esperSprite,
+  IMPORT_ESPER_NAMES,
+  MAX_LEVEL_BY_STAR,
+  newEsper,
+  OwnedEsper,
+  parsePosition,
+  Stat,
+  statBonus,
+  toggleNode,
+  updateStats,
+} from './esper-model';
+import { EsperGrid } from './esper-grid/esper-grid';
+import { EsperHeader } from './esper-header/esper-header';
+import { EsperTable, type Column } from './esper-table/esper-table';
+import { EsperTabs } from './esper-tabs/esper-tabs';
+
+interface ImportedEsper {
+  id: string;
+  rarity: number;
+  level: number;
+  board: string;
+}
+
+const SAVE_DELAY_MS = 3000;
+const LEVEL_DELAY_MS = 300;
+const STATS = baseStats as Stat[];
+
+const isImportFile = (data: unknown): data is ImportedEsper[] =>
+  Array.isArray(data) &&
+  data.length <= 20 &&
+  data.every(
+    (e) =>
+      typeof e?.id === 'string' &&
+      e.id.length <= 2 &&
+      typeof e.rarity === 'number' &&
+      typeof e.level === 'number' &&
+      typeof e.board === 'string' &&
+      e.board.length <= 40,
+  );
+
+/**
+ * The Esper page: the table of the owned Espers and, for each Esper, its rarity, level and training board. Opened from a
+ * shared link (`#...`) it shows that one Esper only.
+ */
+@Component({
+  selector: 'app-espers',
+  imports: [
+    EsperTabs,
+    EsperTable,
+    EsperHeader,
+    EsperGrid,
+    PageContent,
+    SiteFooter,
+    Button,
+    Icon,
+    LoadStatus,
+    BusyOverlay,
+    ImportModal,
+    ShareLinkModal,
+  ],
+  templateUrl: './espers.html',
+  styleUrl: './espers.css',
+})
+export class Espers {
+  private readonly route = inject(ActivatedRoute);
+  private readonly staticData = inject(StaticData);
+  private readonly userData = inject(UserData);
+  private readonly serverContext = inject(ServerContext);
+  private readonly toast = inject(Toast);
+  private readonly chrome = inject(PageChrome);
+
+  protected readonly espers = signal<EsperInfo[]>([]);
+  private boards: Record<string, EsperBoard> = {};
+  private readonly ownedMap = signal<Record<string, OwnedEsper>>({});
+  protected readonly ready = signal(false);
+  protected readonly linkMode = signal(false);
+  protected readonly logged = signal(false);
+  /** The current tab: `ALL` or the name of an Esper. */
+  protected readonly tab = signal('ALL');
+  protected readonly sort = signal<{ column: Column; descending: boolean }>({ column: 'index', descending: false });
+  protected readonly gridView = signal(false);
+  protected readonly spFixedVisible = signal(false);
+  protected readonly busy = signal(false);
+  protected readonly importing = new ImportState();
+  protected readonly share = new ShareLinkState();
+  private importedEspers: ImportedEsper[] | null = null;
+
+  protected readonly stats = STATS;
+  protected readonly columns: { column: Column; label: string }[] = [
+    { column: 'index', label: 'Esper' },
+    { column: 'level', label: 'Level' },
+    ...STATS.map((stat) => ({ column: stat, label: stat.toUpperCase() })),
+    { column: 'resists', label: 'Resists' },
+    { column: 'killers', label: 'Killers' },
+  ];
+
+  private saveNeeded = false;
+  private saveTimer: ReturnType<typeof setTimeout> | undefined;
+  private levelTimer: ReturnType<typeof setTimeout> | undefined;
+
+  private readonly header = viewChild(EsperHeader);
+  private readonly board = viewChild(EsperGrid);
+
+  /** The owned Espers, as a signal that changes after each edit (the Esper objects are edited in place). */
+  protected readonly owned = this.ownedMap.asReadonly();
+  protected readonly ownedCount = computed(() => Object.keys(this.owned()).length);
+  protected readonly currentInfo = computed(() => this.espers().find((e) => e.name === this.tab()));
+  protected readonly current = computed(() => this.owned()[this.tab()]);
+  protected readonly currentBoard = computed(() => this.boards[this.tab()]);
+
+  protected readonly sp = computed(() => {
+    const esper = this.current();
+    return esper ? calculateSp(this.boards[esper.name], esper) : null;
+  });
+
+  /** The table rows in the chosen order. */
+  protected readonly rows = computed(() => {
+    const owned = this.owned();
+    const { column, descending } = this.sort();
+    const rows = this.espers()
+      .map((info, index) => ({ info, index, esper: owned[info.name] }))
+      .filter((row) => row.esper)
+      .map((row) => ({ ...row, sp: calculateSp(this.boards[row.info.name], row.esper) }));
+    const value = (row: (typeof rows)[number]): number => {
+      switch (column) {
+        case 'index':
+          return row.index;
+        case 'level':
+          return row.esper.level;
+        case 'resists':
+          return row.esper.resist?.length ?? 0;
+        case 'killers':
+          return row.esper.killers?.length ?? 0;
+        default:
+          return statBonus(row.esper, column);
+      }
+    };
+    return rows.sort((a, b) => (descending ? value(b) - value(a) : value(a) - value(b)));
+  });
+
+  constructor() {
+    inject(Sprites).load('espers', 'equipments', 'elements', 'ailments', 'killers');
+    this.start();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  protected warnUnsaved(event: BeforeUnloadEvent): void {
+    if (this.saveNeeded) event.preventDefault();
+  }
+
+  @HostListener('window:scroll')
+  protected onScroll(): void {
+    const sp = this.header()?.spLabel()?.nativeElement;
+    this.spFixedVisible.set(!!sp && window.scrollY > sp.getBoundingClientRect().top + window.scrollY);
+  }
+
+  // --- Loading ---
+
+  private async start(): Promise<void> {
+    const snapshot = this.route.snapshot;
+    const fragment = snapshot.fragment ?? '';
+    const linkMode = fragment.length > 0;
+    const withoutAccount = snapshot.queryParamMap.has('o');
+    this.linkMode.set(linkMode);
+    this.chrome.headerHidden.set(linkMode);
+
+    const [espers, boards] = await Promise.all([
+      this.staticData.get<EsperInfo[]>('espers'),
+      this.staticData.get<Record<string, EsperBoard>>('esperBoards'),
+    ]);
+    this.espers.set(espers);
+    this.boards = boards;
+
+    let owned: Record<string, OwnedEsper> = {};
+    if (!withoutAccount && this.userData.loggedIn()) {
+      try {
+        owned = await this.userData.read<Record<string, OwnedEsper>>('espers');
+        this.logged.set(true);
+        for (const esper of Object.values(owned)) {
+          // old saves kept the ST Reflection Boost without the `all` level
+          if (esper.esperStatsBonus && !esper.esperStatsBonus.all) {
+            esper.esperStatsBonus = { all: esper.esperStatsBonus as never };
+          }
+          updateStats(boards[esper.name], esper);
+        }
+      } catch (error) {
+        showLoadError(this.toast, error);
+      }
+    }
+    if (linkMode) owned = this.loadLink(fragment);
+    else if (!this.logged()) owned = this.demoEspers();
+
+    this.ownedMap.set(owned);
+    this.tab.set(linkMode ? (Object.keys(owned)[0] ?? 'ALL') : 'ALL');
+    this.ready.set(true);
+  }
+
+  /** Without a Google login the page shows every Esper at its best, to look around (nothing is saved). */
+  private demoEspers(): Record<string, OwnedEsper> {
+    return Object.fromEntries(
+      this.espers().map((info) => [info.name, newEsper(info, info.maxLevel, this.boards[info.name])]),
+    );
+  }
+
+  /** `#Name|rarity|level|board`, `#<base64 of the owned Espers>` (older links) or `#Name` (a new Esper). */
+  private loadLink(fragment: string): Record<string, OwnedEsper> {
+    let owned: Record<string, OwnedEsper> | null = null;
+    if (decodeURI(fragment).includes('|')) {
+      const esper = decodeEsperLink(fragment, this.espers());
+      if (esper) owned = { [esper.name]: esper };
+    } else {
+      try {
+        owned = JSON.parse(atob(fragment)) as Record<string, OwnedEsper>;
+      } catch {
+        const info = this.espers().find((e) => e.id.toUpperCase() === fragment.replace('_', ' ').toUpperCase());
+        if (info) owned = { [info.name]: newEsper(info, info.maxLevel, this.boards[info.name]) };
+      }
+    }
+    if (!owned) return {};
+    for (const esper of Object.values(owned)) {
+      const board = this.boards[esper.name];
+      if (!board) continue;
+      esper.resist = structuredClone(board.resist[esper.rarity]);
+      applySelectedNodes(board, esper);
+      updateStats(board, esper);
+    }
+    return owned;
+  }
+
+  // --- Display helpers ---
+
+  protected sprite = esperSprite;
+
+  protected stars(count: number): string {
+    return '★'.repeat(count);
+  }
+
+  // --- Actions ---
+
+  protected sortBy(column: Column): void {
+    this.sort.update((s) => ({ column, descending: s.column === column ? !s.descending : column !== 'index' }));
+  }
+
+  protected showTab(name: string): void {
+    window.scrollTo(0, 0);
+    this.board()?.close();
+    this.tab.set(name);
+  }
+
+  protected openFromTable(name: string): void {
+    this.showTab(name);
+  }
+
+  protected setRarity(value: string): void {
+    const name = this.tab();
+    if (value === 'notOwned') {
+      this.ownedMap.update(({ [name]: _removed, ...rest }) => rest);
+    } else {
+      const esper = newEsper(this.currentInfo()!, parseInt(value), this.boards[name]);
+      this.ownedMap.update((owned) => ({ ...owned, [name]: esper }));
+    }
+    this.markChanged();
+  }
+
+  protected onLevelInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    clearTimeout(this.levelTimer);
+    this.levelTimer = setTimeout(() => {
+      const esper = this.current();
+      const level = parseInt(input.value);
+      if (!esper || Number.isNaN(level)) return;
+      esper.level = Math.min(Math.max(level, 1), MAX_LEVEL_BY_STAR[esper.rarity]);
+      input.value = String(esper.level);
+      updateStats(this.boards[esper.name], esper);
+      this.touch();
+    }, LEVEL_DELAY_MS);
+  }
+
+  protected openShare(): void {
+    const data = encodeEsperLink(this.current());
+    const url = new URL('espers', document.baseURI);
+    url.search = `?server=${this.serverContext.server()}&o`;
+    this.share.show(`${url.href}#${data}`);
+  }
+
+  // --- Saving ---
+
+  /** The Esper objects were edited in place: tell the signals, and save later. */
+  private touch(): void {
+    this.ownedMap.update((owned) => ({ ...owned }));
+    this.markChanged();
+  }
+
+  private markChanged(): void {
+    if (this.linkMode() || !this.logged()) return;
+    this.saveNeeded = true;
+    clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => this.save(), SAVE_DELAY_MS);
+  }
+
+  private async save(): Promise<void> {
+    clearTimeout(this.saveTimer);
+    if (
+      this.ownedCount() === 0 &&
+      !confirm("You're trying to save empty espers. Are you sure you want to erase your espers ?")
+    ) {
+      return;
+    }
+    this.saveNeeded = false;
+    try {
+      await this.userData.write('espers', this.owned());
+      this.toast.show('Data saved');
+    } catch (error) {
+      this.saveNeeded = showSaveError(this.toast, error);
+    }
+  }
+
+  // --- Import ---
+
+  protected openImport(): void {
+    this.importedEspers = null;
+    this.importing.start();
+  }
+
+  protected loadImportFile(data: unknown): void {
+    if (!isImportFile(data)) {
+      this.toast.show("The imported file doesn't have the correct form", 'error');
+      return;
+    }
+    this.importedEspers = data;
+    this.importing.summary.set(`Espers to import : ${data.length}`);
+  }
+
+  /** Replaces the owned Espers with the ones of the file (the game ids are converted to Esper names). */
+  protected runImport(): void {
+    if (!this.importedEspers) {
+      this.toast.show('Please select a file to import', 'warn');
+      return;
+    }
+    const known = this.importedEspers.filter((e) => IMPORT_ESPER_NAMES[Number(e.id)]);
+    if (known.length === 0) {
+      this.toast.show('No known esper found in the file', 'warn');
+      return;
+    }
+    this.importing.open.set(false);
+    this.busy.set(true);
+    setTimeout(() => {
+      const owned: Record<string, OwnedEsper> = {};
+      for (const data of known) {
+        const info = this.espers().find((e) => e.name === IMPORT_ESPER_NAMES[Number(data.id)]);
+        const rarity = Math.round(data.rarity);
+        if (!info || rarity < 1 || rarity > info.maxLevel) continue;
+        const board = this.boards[info.name];
+        const esper = newEsper(info, rarity, board);
+        esper.level = Math.min(Math.max(Math.round(data.level), 1), MAX_LEVEL_BY_STAR[rarity]);
+        for (const position of decodeBoard(data.board)) {
+          if (position === '0_0' || esper.selectedSkills.includes(position)) continue;
+          const { x, y } = parsePosition(position);
+          toggleNode(board, esper, x, y);
+        }
+        updateStats(board, esper);
+        owned[info.name] = esper;
+      }
+      this.ownedMap.set(owned);
+      this.tab.set('ALL');
+      this.busy.set(false);
+      this.saveNeeded = true;
+      this.save();
+    }, 200);
+  }
+}

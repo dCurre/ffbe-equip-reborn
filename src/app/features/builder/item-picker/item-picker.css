@@ -1,0 +1,112 @@
+.search-line {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.search {
+  flex: 1;
+}
+
+select {
+  padding: 4px 8px;
+}
+
+.options {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 8px;
+}
+
+label {
+  font-weight: normal;
+}
+
+.types {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.types button {
+  padding: 2px 6px;
+}
+
+.types button.active {
+  background-color: var(--color-button-selected-background);
+}
+
+.types i.img {
+  width: 34px;
+  height: 34px;
+}
+
+.tr.excluded {
+  opacity: 0.4;
+}
+
+.flag {
+  width: 30px;
+}
+
+.flag .on {
+  color: #d9534f;
+}
+
+.flag span {
+  opacity: 0.3;
+}
+
+.flag span.on {
+  opacity: 1;
+}
+
+.enchantment .dwarf {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.enchantment img {
+  height: 28px;
+}
+
+.levels button {
+  margin: 0 2px;
+  padding: 0 6px;
+}
+
+.levels button.available {
+  background-color: #337ab7;
+  color: #fff;
+}
+
+.levels button.notEnough {
+  background-color: indianred;
+  color: #fff;
+}
+
+.badge {
+  padding: 3px 7px;
+  background-color: #555;
+  border-radius: 10px;
+}
+
+.badge.notEnough {
+  background-color: indianred;
+}
+
+.custom {
+  display: inline-block;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.custom img {
+  height: 24px;
+}
+
+.end {
+  height: 1px;
+}

@@ -1,0 +1,16 @@
+:host {
+  display: inline-flex;
+  gap: 1px; /* the gap shows the border color between the fields */
+  overflow: hidden;
+  vertical-align: middle;
+  background: var(--color-input-border);
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius);
+}
+.addon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  background: var(--color-panel-heading);
+}

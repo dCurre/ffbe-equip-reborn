@@ -1,0 +1,297 @@
+/* Design tokens, reset and page base. Every value is taken from the current site (Bootstrap 3 defaults, common.css, dark-mode.css):
+   the look does not change. Components use only these tokens; the theme is the `data-theme` attribute of <html>. */
+
+:root,
+:root[data-theme='light'] {
+  --color-background: #ffffff;
+  --color-text: #333333;
+  --color-link: #337ab7;
+  --color-link-hover: #23527c;
+  --color-border: #dddddd;
+  --color-panel: #ffffff;
+  --color-panel-heading: #f5f5f5;
+  --color-accent: #2a9fd6;
+  --color-scrollbar-track: #ffffff;
+  --color-scrollbar-thumb: #2a9fd6;
+
+  --color-header-background: #f8f8f8;
+  --color-header-border: #e7e7e7;
+  --color-tab-background: #f8f8f8;
+  --color-tab-border: #e7e7e7;
+  --color-tab-text: #777777;
+  --color-tab-text-hover: #555555;
+  --color-tab-active-border: #b8b8b8;
+  --color-tab-active-text: #777777;
+  --color-button-background: #ffffff;
+  --color-button-border: #cccccc;
+  --color-button-text: #333333;
+  --color-button-hover-background: #e6e6e6;
+  --color-button-selected-background: #337ab7;
+  --color-button-selected-border: #2e6da4;
+  --color-button-selected-text: #ffffff;
+  --color-status-background: #ffffff;
+  --color-status-border: #cccccc;
+  --color-status-text: #333333;
+  --color-status-label: #aeaeae;
+  --color-menu-background: #ffffff;
+  --color-menu-hover-background: #f5f5f5;
+  --color-menu-hover-text: #262626;
+  --color-menu-text: #333333;
+  --color-input-background: #ffffff;
+  --color-input-border: #cccccc;
+  --color-input-text: #555555;
+  --hex-background: #f5f6f5;
+  --hex-color: #b0b0b0;
+  --color-alert-info-text: #31708f;
+  --color-alert-info-background: #d9edf7;
+  --color-alert-info-border: #bce8f1;
+  --color-alert-danger-text: #a94442;
+  --color-alert-danger-background: #f2dede;
+  --color-alert-danger-border: #ebccd1;
+  --tab-margin-top: 0;
+
+  --font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-size: 14px;
+  --line-height: 1.42857143;
+
+  --radius: 4px;
+  --shadow-panel: 0 1px 1px rgba(0, 0, 0, 0.05);
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+}
+
+:root[data-theme='dark'] {
+  --color-background: #222222;
+  --color-text: #dddddd;
+  --color-link: #2a9fd6;
+  --color-link-hover: #2a9fd6;
+  --color-border: #464545;
+  --color-panel: #303030;
+  --color-panel-heading: #464545;
+  --color-scrollbar-track: #222222;
+
+  --color-header-background: #222222;
+  --color-header-border: #464545;
+  --color-tab-background: #464545;
+  --color-tab-border: #464545;
+  --color-tab-text: #aaaaaa;
+  --color-tab-text-hover: #aaaaaa;
+  --color-tab-active-border: #999999;
+  --color-tab-active-text: #dddddd;
+  --color-button-background: rgba(0, 0, 0, 0.25);
+  --color-button-border: rgba(0, 0, 0, 0.5);
+  --color-button-text: #dddddd;
+  --color-button-hover-background: rgba(0, 0, 0, 0.1);
+  --color-status-background: #424242;
+  --color-status-border: #464545;
+  --color-status-text: #dddddd;
+  --color-menu-background: #303030;
+  --color-menu-hover-background: #375a7f;
+  --color-menu-hover-text: #ffffff;
+  --color-menu-text: #dddddd;
+  --color-input-background: rgba(0, 0, 0, 0.25);
+  --color-input-border: rgba(0, 0, 0, 0.5);
+  --color-input-text: #dddddd;
+  --hex-background: #292929;
+  --hex-color: #606060;
+  --color-alert-info-text: #ffffff;
+  --color-alert-info-background: #3498db;
+  --color-alert-info-border: #3498db;
+  --color-alert-danger-text: #ffffff;
+  --color-alert-danger-background: #e74c3c;
+  --color-alert-danger-border: #e74c3c;
+  --tab-margin-top: 1px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  color: var(--color-link-hover);
+  text-decoration: underline;
+}
+
+/* Typography of the old site (Bootstrap 3 defaults) */
+h1,
+h2,
+h3,
+h4 {
+  margin: 20px 0 10px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+h1 {
+  font-size: 36px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+h4 {
+  font-size: 18px;
+}
+
+p {
+  margin: 0 0 10px;
+}
+
+/* the old common.css removed the markers of every list */
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+code {
+  padding: 2px 4px;
+  font-family: Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-size: 90%;
+  color: #c7254e;
+  background-color: #f9f2f4;
+  border-radius: var(--radius);
+}
+
+/* The sprite pictures of css-img/ (the sheets set the size and the image of each `img-<sheet>-<name>`) */
+i.img {
+  display: inline-block;
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+  vertical-align: middle;
+}
+
+/* the checkboxes of the old site: a dark square with a check */
+input[type='checkbox'] {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin: 0 6px 0 0;
+  vertical-align: middle;
+  cursor: pointer;
+  background: var(--color-input-background) center / 14px no-repeat;
+  border: 1px solid var(--color-input-border);
+  border-radius: 3px;
+}
+
+input[type='checkbox']:checked {
+  background-color: var(--color-button-selected-background);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2 7.5l3 3 7-7' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E");
+}
+
+/* The table of item lines (`app-item-line` inside `.items`): the cells are the hosts of the item components. */
+.items {
+  display: table;
+  margin-bottom: 0;
+  font-size: 16px;
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+.items .tbody {
+  display: table-row-group;
+}
+.items .tr {
+  display: table-row;
+}
+.items .td {
+  display: table-cell;
+  padding: 8px;
+  line-height: 1.42857143;
+  vertical-align: middle;
+  border-top: 1px solid var(--color-border);
+}
+/* the lists of the pickers (items, monsters): scrolling rows to click */
+.items.results {
+  max-height: 55vh;
+  overflow-y: auto;
+}
+.items .tr.selectable {
+  cursor: pointer;
+}
+.items .tr.selectable:hover {
+  background-color: var(--color-menu-hover-background);
+}
+.items.notSorted .sort {
+  display: none !important;
+}
+.item-cards .td {
+  line-height: 1.42857143;
+}
+
+/* --- The white box of a panel (`app-panel`, or a plain element that needs the same look) --- */
+
+.panel-box {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-panel);
+}
+
+/* --- Form fields (shared by every page) --- */
+
+input[type='text'],
+input[type='number'],
+select,
+textarea {
+  padding: 6px 12px;
+  color: var(--color-input-text);
+  background-color: var(--color-input-background);
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius);
+}
+
+/* a label on the left of a text field: `<label class="input-row"><span class="addon">Search</span><input type="text" /></label>` */
+.input-row {
+  display: flex;
+  align-items: stretch;
+  margin: 0;
+}
+
+.input-row .addon {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  color: var(--color-input-text);
+  background-color: var(--color-panel-heading);
+  border: 1px solid var(--color-input-border);
+  border-right: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.input-row input[type='text'] {
+  flex: 1;
+  min-width: 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* the panel under the tabs of the collection pages */
+.tab-pane {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-top: 0;
+  border-radius: 0 0 5px 5px;
+}

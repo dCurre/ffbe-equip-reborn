@@ -1,0 +1,43 @@
+<div class="itemName">
+  @if (item().rarity) {
+    <span class="rarity">{{ item().rarity }}★</span>{{ ' ' }}
+  }
+  @if (item()['placeHolder']) {
+    <app-wiki-link [name]="item().name" [page]="categoryPage()" />
+  } @else if (item()['wikiEntry']) {
+    <app-wiki-link [name]="item().name" [page]="item()['wikiEntry']" />
+  } @else if (item().type !== 'unavailable') {
+    <app-wiki-link [name]="item().name" />
+  }
+  @if (item()['level']) {
+    {{ ' ' }}<span class="rarity">level {{ item()['level'] }}</span>
+  }
+  @if (item()['buildLink']) {
+    <a [href]="item()['buildLink']" target="_blank" rel="noreferrer" class="buildLink">&#x2637;</a>
+  }
+  @if (item()['outclassedBy']) {
+    <img
+      src="img/icons/gil.png"
+      class="outclassedByIcon"
+      [title]="'Can be sold. Strictly outclassed by ' + item()['outclassedBy']"
+      alt=""
+    />
+  }
+</div>
+@if (item()['jpname']) {
+  <div>{{ item()['jpname'] }}</div>
+}
+<div class="detail">
+  @if (showTypeIcon()) {
+    <i [class]="'img miniIcon img-equipment-' + item().type"></i>
+  }
+  @for (stat of stats(); track stat.stat) {
+    <span [class]="stat.stat">{{ stat.text }}</span>
+  }
+</div>
+@if (item()['userPseudo']) {
+  <div class="userPseudo">item added by {{ item()['userPseudo'] }}</div>
+}
+@if (item()['enhancements']) {
+  <div class="enhancements"><img src="img/icons/dwarf.png" alt="" />{{ enhancements() }}</div>
+}

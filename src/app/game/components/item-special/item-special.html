@@ -1,0 +1,62 @@
+@if (effects().length) {
+  <ul>
+    @for (effect of effects(); track $index) {
+      <li>
+        @switch (effect.kind) {
+          @case ('elements') {
+            <div class="specialValueGroup">
+              @for (element of effect.elements; track element) {
+                <div class="specialValueItem">
+                  <div class="specialImg">
+                    <i class="img miniIcon img-equipment-sword"></i>
+                    <i [class]="'img withMiniIcon img-element-' + element"></i>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          @case ('inflict') {
+            <app-resist-list [resist]="effect.entries" icon="sword" />
+          }
+          @case ('resist') {
+            <app-resist-list [resist]="effect.entries" />
+          }
+          @case ('killers') {
+            <app-killer-list [killers]="effect.killers" />
+          }
+          @case ('conditional') {
+            <div>
+              <img class="icon" [src]="'img/items/' + effect.icon" alt="" />{{ effect.stats }} if
+              <i [class]="'img img-equipment-' + effect.equipment"></i>
+            </div>
+          }
+          @case ('line') {
+            <div [class.skill]="effect.skill">
+              @for (part of effect.parts; track $index) {
+                @switch (part.type) {
+                  @case ('text') {
+                    <ng-container>{{ part.text }}</ng-container>
+                  }
+                  @case ('upper') {
+                    <span class="uppercase">{{ part.text }}</span>
+                  }
+                  @case ('equipment') {
+                    <i [class]="'img inline img-equipment-' + part.name"></i>
+                  }
+                  @case ('gameText') {
+                    <app-game-text [text]="part.text" />
+                  }
+                  @case ('skill') {
+                    <img class="icon" [src]="'img/items/' + part.icon" alt="" />
+                    <app-wiki-link [name]="part.name" />
+                    <ng-container>: {{ part.description }}</ng-container>
+                  }
+                }
+              }
+            </div>
+          }
+        }
+      </li>
+    }
+  </ul>
+}

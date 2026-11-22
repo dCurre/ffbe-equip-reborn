@@ -32,22 +32,24 @@ jobs:
       - name: Generate per-unit files
         run: node tools/generateUnitFiles.js --force
 
-      - name: Assemble site
+      - run: npm ci
+
+      # Data (GL, JP), images and the generated unit files are copied into the build as assets (see angular.json);
+      # the extraction scripts and static/custom are not, so they never reach the site.
+      - name: Build the site
+        run: npx ng build
+
+      # GitHub Pages serves 404.html for unknown paths: the copy of index.html lets the Angular router handle /builder, ...
+      - name: Add the 404 fallback
         run: |
-          mkdir _site
-          cp -r static/. _site/
-          # Data-extraction scripts and their sources are not part of the website
-          rm -f _site/GL/*.js _site/JP/*.js
-          rm -rf _site/custom
-          # GitHub Pages serves index.html as the start page; the project uses homepage.html
-          cp _site/homepage.html _site/index.html
-          du -sh _site
+          cp dist/ffbe-equip-reborn/browser/index.html dist/ffbe-equip-reborn/browser/404.html
+          du -sh dist/ffbe-equip-reborn/browser
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v4
         with:
-          path: _site
+          path: dist/ffbe-equip-reborn/browser
 
   deploy:
     needs: build

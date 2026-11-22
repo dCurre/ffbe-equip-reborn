@@ -1,0 +1,76 @@
+<app-panel>
+  <div panelHeading class="heading unit-heading">
+    <span>Unit</span>
+    <input
+      class="unit-input"
+      type="text"
+      list="builder-units"
+      placeholder="Select a unit..."
+      [value]="unitName()"
+      (change)="chooseUnitByName($any($event.target).value)"
+    />
+    <datalist id="builder-units">
+      @for (option of s.unitOptions(); track option.id) {
+        <option [value]="option.label"></option>
+      }
+    </datalist>
+    <label class="nv-only">
+      <input type="checkbox" [checked]="s.onlyNvUnits()" (change)="s.onlyNvUnits.set($any($event.target).checked)" />
+      Only NV units
+    </label>
+  </div>
+
+  @if (s.unit(); as unit) {
+    <div class="unit-body">
+      <div class="line">
+        <img class="unit-icon" [src]="'img/units/unit_icon_' + unit.id + '.png'" alt="" />
+        <strong>{{ unit.name }}</strong>
+      </div>
+      @if (s.showLevel()) {
+        <label class="line">
+          Level
+          <select [value]="s.level()" (change)="setLevel($any($event.target).value)">
+            @for (value of ['120', '110', '100', '90', '80', '70', '60']; track value) {
+              <option [value]="value">{{ value }}</option>
+            }
+          </select>
+        </label>
+      }
+      @if (s.showExLevel()) {
+        <label class="line">
+          EX
+          <select [value]="s.exLevel()" (change)="setExLevel($any($event.target).value)">
+            @for (value of ['0', '1', '2', '3']; track value) {
+              <option [value]="value">EX+{{ value }}</option>
+            }
+          </select>
+        </label>
+      }
+      @for (enhancement of unit.enhancements ?? []; track $index; let i = $index) {
+        <label class="line">
+          <select [value]="unit.enhancementLevels?.[i]" (change)="changeEnhancement(i, $event)">
+            @for (option of enhancementOptions(i); track option.value) {
+              <option [value]="option.value" [selected]="unit.enhancementLevels?.[i] === option.value">
+                {{ option.label }}
+              </option>
+            }
+          </select>
+        </label>
+      }
+
+      <app-unit-stats [state]="state()" />
+
+      <app-unit-buffs [state]="state()" />
+      <app-unit-equipable [state]="state()" />
+      <div class="line">
+        <span class="label">Attack element</span>
+        <app-choice-group
+          [choices]="elementChoices"
+          iconType="element"
+          [selected]="s.innateElements()"
+          (selectedChange)="s.innateElements.set($event); s.refresh()"
+        />
+      </div>
+    </div>
+  }
+</app-panel>
