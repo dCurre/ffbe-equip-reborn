@@ -28,79 +28,68 @@ export const SPRITE_SHEETS = {
   sort: 'sorts',
   stat: 'stats',
   tab: 'tabs',
+  tankAbilities: 'tankAbilities',
+  mitigation: 'mitigationAbilities',
+  racialMitigations: 'racialMitigationAbilities',
 } as const;
 
 export const ICONS = {
   // --- Drawings ---
   info: {
     kind: 'svg',
-    path:
-      'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z',
+    path: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z',
   },
   help: {
     kind: 'svg',
-    path:
-      'M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z',
+    path: 'M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z',
   },
   save: {
     kind: 'svg',
-    path:
-      'M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z',
+    path: 'M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z',
   },
   link: {
     kind: 'svg',
-    path:
-      'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z',
+    path: 'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z',
   },
   grid: {
     kind: 'svg',
-    path:
-      'M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z',
+    path: 'M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z',
   },
   list: {
     kind: 'svg',
-    path:
-      'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z',
+    path: 'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z',
   },
   'new-window': {
     kind: 'svg',
-    path:
-      'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z',
+    path: 'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z',
   },
   alert: {
     kind: 'svg',
-    path:
-      'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z',
+    path: 'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z',
   },
   'thumbs-up': {
     kind: 'svg',
-    path:
-      'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z',
+    path: 'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z',
   },
   'arrow-down': {
     kind: 'svg',
-    path:
-      'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM10.5 7h3v5h2.6L12 16.8 8.9 12h1.6z',
+    path: 'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM10.5 7h3v5h2.6L12 16.8 8.9 12h1.6z',
   },
   'arrow-up': {
     kind: 'svg',
-    path:
-      'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM10.5 17h3v-5h2.6L12 7.2 8.9 12h1.6z',
+    path: 'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM10.5 17h3v-5h2.6L12 7.2 8.9 12h1.6z',
   },
   ban: {
     kind: 'svg',
-    path:
-      'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM6.6 5.4l12 12-1.2 1.2-12-12z',
+    path: 'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM6.6 5.4l12 12-1.2 1.2-12-12z',
   },
   edit: {
     kind: 'svg',
-    path:
-      'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+    path: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
   },
   'add-box': {
     kind: 'svg',
-    path:
-      'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z',
+    path: 'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z',
   },
   logout: {
     kind: 'svg',
@@ -108,68 +97,55 @@ export const ICONS = {
   },
   remove: {
     kind: 'svg',
-    path:
-      'M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
+    path: 'M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
   },
   'chevron-left': {
     kind: 'svg',
-    path:
-      'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z',
+    path: 'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z',
   },
   'caret-down': {
     kind: 'svg',
-    path:
-      'M7 10l5 5 5-5z',
+    path: 'M7 10l5 5 5-5z',
   },
   'caret-up': {
     kind: 'svg',
-    path:
-      'M7 14l5-5 5 5z',
+    path: 'M7 14l5-5 5 5z',
   },
   add: {
     kind: 'svg',
-    path:
-      'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',
+    path: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',
   },
   minus: {
     kind: 'svg',
-    path:
-      'M19 13H5v-2h14v2z',
+    path: 'M19 13H5v-2h14v2z',
   },
   timer: {
     kind: 'svg',
-    path:
-      'M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z',
+    path: 'M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z',
   },
   'lock-open': {
     kind: 'svg',
-    path:
-      'M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z',
+    path: 'M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z',
   },
   search: {
     kind: 'svg',
-    path:
-      'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
+    path: 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
   },
   settings: {
     kind: 'svg',
-    path:
-      'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
+    path: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
   },
   cart: {
     kind: 'svg',
-    path:
-      'M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z',
+    path: 'M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z',
   },
   document: {
     kind: 'svg',
-    path:
-      'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z',
+    path: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z',
   },
   'double-up': {
     kind: 'svg',
-    path:
-      'M6 17.59 7.41 19 12 14.42 16.59 19 18 17.59l-6-6zM6 11l1.41 1.41L12 7.83l4.59 4.58L18 11l-6-6z',
+    path: 'M6 17.59 7.41 19 12 14.42 16.59 19 18 17.59l-6-6zM6 11l1.41 1.41L12 7.83l4.59 4.58L18 11l-6-6z',
   },
   check: {
     kind: 'svg',
@@ -347,23 +323,44 @@ export const ICONS = {
   'tab-units': { kind: 'sprite', title: 'Units' },
   'tab-units_stars': { kind: 'sprite', title: 'Units by rarity' },
   'tab-units_tmr': { kind: 'sprite', title: 'Units by TMR' },
+  // --- Sprites: tank abilities, mitigations, racial mitigations (Unit Search) ---
+  'tankAbilities-drawAttacks': { kind: 'sprite', title: 'Draws attacks (provoke)' },
+  'tankAbilities-stCover': { kind: 'sprite', title: 'Covers allies from single-target attacks' },
+  'tankAbilities-physicalAoeCover': { kind: 'sprite', title: 'Covers allies from physical area attacks' },
+  'tankAbilities-magicalAoeCover': { kind: 'sprite', title: 'Covers allies from magical area attacks' },
+  'mitigation-globalMitigation': { kind: 'sprite', title: 'Global damage mitigation' },
+  'mitigation-magicalMitigation': { kind: 'sprite', title: 'Magical damage mitigation' },
+  'mitigation-physicalMitigation': { kind: 'sprite', title: 'Physical damage mitigation' },
+  'mitigation-mirage': { kind: 'sprite', title: 'Mirage (evades attacks)' },
+  'racialMitigations-aquatic': { kind: 'sprite', title: 'Mitigation against Aquatic enemies' },
+  'racialMitigations-beast': { kind: 'sprite', title: 'Mitigation against Beast enemies' },
+  'racialMitigations-bird': { kind: 'sprite', title: 'Mitigation against Bird enemies' },
+  'racialMitigations-bug': { kind: 'sprite', title: 'Mitigation against Bug enemies' },
+  'racialMitigations-demon': { kind: 'sprite', title: 'Mitigation against Demon enemies' },
+  'racialMitigations-dragon': { kind: 'sprite', title: 'Mitigation against Dragon enemies' },
+  'racialMitigations-human': { kind: 'sprite', title: 'Mitigation against Human enemies' },
+  'racialMitigations-machine': { kind: 'sprite', title: 'Mitigation against Machine enemies' },
+  'racialMitigations-plant': { kind: 'sprite', title: 'Mitigation against Plant enemies' },
+  'racialMitigations-spirit': { kind: 'sprite', title: 'Mitigation against Spirit enemies' },
+  'racialMitigations-stone': { kind: 'sprite', title: 'Mitigation against Stone enemies' },
+  'racialMitigations-undead': { kind: 'sprite', title: 'Mitigation against Undead enemies' },
   // --- Fixed pictures ---
-  'dwarf': { kind: 'image', src: 'img/icons/dwarf.png', title: 'Enhancements' },
-  'nv': { kind: 'image', src: 'img/icons/NV.png', title: 'NV' },
+  dwarf: { kind: 'image', src: 'img/icons/dwarf.png', title: 'Enhancements' },
+  nv: { kind: 'image', src: 'img/icons/NV.png', title: 'NV' },
   'brave-shift': { kind: 'image', src: 'img/icons/braveShift.png', title: 'Brave Shift' },
-  'killer': { kind: 'image', src: 'img/icons/killer.png', title: 'Killers' },
+  killer: { kind: 'image', src: 'img/icons/killer.png', title: 'Killers' },
   'limit-burst': { kind: 'image', src: 'img/icons/lb.png', title: 'Limit Burst' },
   'lb-shard': { kind: 'image', src: 'img/icons/lbShard.png', title: 'LB cost' },
-  'gil': { kind: 'image', src: 'img/icons/gil.png', title: 'Gil' },
+  gil: { kind: 'image', src: 'img/icons/gil.png', title: 'Gil' },
   'not-stackable': { kind: 'image', src: 'img/icons/notStackable.png', title: 'Not stackable' },
   'two-handed': { kind: 'image', src: 'img/icons/twoHanded.png', title: 'Two-handed' },
-  'fragment': { kind: 'image', src: 'img/icons/fragment.png', title: 'Fragment' },
+  fragment: { kind: 'image', src: 'img/icons/fragment.png', title: 'Fragment' },
   'tmr-moogle': { kind: 'image', src: 'img/units/unit_ills_904000103.png', title: 'TMR Moogle' },
   'tmr-farmed': { kind: 'image', src: 'img/units/unit_ills_904000105.png', title: 'TMR' },
   'stmr-farmed': { kind: 'image', src: 'img/units/unit_ills_906000105.png', title: 'STMR' },
-  'awaken': { kind: 'image', src: 'img/icons/crystals/sevenStarCrystal.png', title: 'Awaken' },
+  awaken: { kind: 'image', src: 'img/icons/crystals/sevenStarCrystal.png', title: 'Awaken' },
   'ex-level': { kind: 'image', src: 'img/icons/exLevel.png', title: 'EX level' },
-  'exclude': { kind: 'image', src: 'img/icons/excludeExpedition.png', title: 'Exclude from expeditions' },
+  exclude: { kind: 'image', src: 'img/icons/excludeExpedition.png', title: 'Exclude from expeditions' },
 } as const satisfies Record<string, IconInfo>;
 
 export type IconId = keyof typeof ICONS;

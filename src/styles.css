@@ -11,6 +11,9 @@
   --color-border: #dddddd;
   --color-panel: #ffffff;
   --color-panel-heading: #f5f5f5;
+  --color-modal-header: #ffffff;
+  --modal-padding: 15px;
+  --modal-backdrop-opacity: 0.5;
   --color-accent: #2a9fd6;
   --color-scrollbar-track: #ffffff;
   --color-scrollbar-thumb: #2a9fd6;
@@ -71,6 +74,9 @@
   --color-border: #464545;
   --color-panel: #303030;
   --color-panel-heading: #464545;
+  --color-modal-header: #464545;
+  --modal-padding: 20px;
+  --modal-backdrop-opacity: 0.7;
   --color-scrollbar-track: #222222;
 
   --color-header-background: #222222;
@@ -288,10 +294,15 @@ select option {
   border-radius: 0 var(--radius) var(--radius) 0;
 }
 
-/* the panel under the tabs of the collection pages */
-.tab-pane {
-  background-color: var(--color-panel);
-  border: 1px solid var(--color-border);
-  border-top: 0;
-  border-radius: 0 0 5px 5px;
+/* inside a dialog: text fields as wide as the dialog, and a list of choices as stacked buttons */
+app-modal input[type='text'],
+app-modal textarea {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.modal-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }

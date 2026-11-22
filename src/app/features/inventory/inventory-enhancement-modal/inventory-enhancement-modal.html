@@ -1,4 +1,7 @@
 <app-modal heading="Item management" [(open)]="open">
+  @if (line()) {
+    <button app-button modalFooter type="button" class="danger" (click)="cleared.emit()">Clear all</button>
+  }
   @if (line(); as current) {
     <div class="enhancing-title item">
       <app-item-summary [item]="current.item" [enchantments]="enchantments()" />

@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { Button } from '../../shared/components/button/button';
+import { Alert } from '../../shared/components/alert/alert';
 import { Modal } from '../../shared/components/modal/modal';
 import { Icon } from '../../shared/components/icon/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
@@ -39,7 +40,7 @@ const MENU = [
 /** Page title, menu, login status, theme, language and server buttons: the old `layout.js` header. */
 @Component({
   selector: 'app-site-header',
-  imports: [RouterLink, RouterLinkActive, Button, Icon, Modal],
+  imports: [Alert, RouterLink, RouterLinkActive, Button, Icon, Modal],
   templateUrl: './site-header.html',
   styleUrl: './site-header.css',
 })

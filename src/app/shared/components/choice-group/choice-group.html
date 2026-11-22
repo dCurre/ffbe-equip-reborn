@@ -7,7 +7,7 @@
     (click)="toggle(choice.value)"
   >
     @if (choice.icon !== undefined || choice.label === undefined) {
-      <app-icon [name]="iconId(choice)" [size]="pills() ? undefined : 38" />
+      <app-icon [name]="iconId(choice)" [size]="iconSize() ?? (pills() ? undefined : 38)" />
     }
     @if (choice.label !== undefined) {
       {{ choice.label }}

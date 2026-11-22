@@ -35,7 +35,8 @@ import { DropdownMenu, MenuItem } from '../../shared/components/dropdown-menu/dr
 import { LoadStatus } from '../../shared/components/load-status/load-status';
 import { ActionLink, GAME_DATA_URL } from '../../shared/components/action-link/action-link';
 import { CollectionLayout } from '../../shared/components/collection-layout/collection-layout';
-import { TabBar, TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { TabPanel } from '../../shared/components/tab-panel/tab-panel';
 import { ShareLinkModal } from '../../shared/components/share-link-modal/share-link-modal';
 import { TextExportModal } from '../../shared/components/text-export-modal/text-export-modal';
 import { Card, UnitCard } from './unit-card/unit-card';
@@ -110,7 +111,7 @@ interface ReleasedUnit {
     LoadStatus,
     ActionLink,
     CollectionLayout,
-    TabBar,
+    TabPanel,
     ChoiceGroup,
     SearchBox,
     Button,

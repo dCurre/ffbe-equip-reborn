@@ -6,7 +6,6 @@ import { Modal } from '../modal/modal';
   selector: 'app-share-link-modal',
   imports: [Modal],
   templateUrl: './share-link-modal.html',
-  styleUrl: './share-link-modal.css',
 })
 export class ShareLinkModal {
   readonly heading = input.required<string>();

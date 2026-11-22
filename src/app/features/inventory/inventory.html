@@ -11,22 +11,16 @@
         <app-action-link icon="new-window" label="Export your data from the game" [href]="gameDataUrl" />
       </div>
 
-      <app-tab-bar [tabs]="tabs" [active]="tab()" (selected)="showTab($event)" />
-      <div class="sort-label">{{ sortLabel() }}</div>
-
-      <div class="tab-pane">
+      <app-tab-panel [tabs]="tabs" [active]="tab()" (selected)="showTab($event)">
+        <div corner class="sort-label">{{ sortLabel() }}</div>
         <div class="search-header">
-          @if (tab() === 'equipment' || tab() === 'materia' || tab() === 'farmableStmr') {
-            <input
-              #searchBox
-              type="text"
-              class="search"
-              placeholder="Enter item name or name of TMR's unit"
-              aria-label="Search"
-              [value]="search()"
-              (input)="onSearch($event)"
-            />
-          }
+          <app-search-box
+            #searchBox
+            class="search-box"
+            [hidden]="!searchable()"
+            placeholder="Enter item name or name of TMR's unit"
+            (search)="search.set($event)"
+          />
           @if (tab() === 'farmableStmr') {
             <div class="stmr-moogle">
               Available <app-icon name="stmr-farmed" size="40" />
@@ -48,52 +42,52 @@
               </label>
             </div>
           }
-          @if (tab() === 'sellable') {
-            <div class="work-in-progress">
-              <div><app-icon name="alert" /> This is a work in progress</div>
-              <div>
-                It displays the items you own, that either can be bought in a shop, or for which you own at least X
-                strictly better items
-              </div>
-              <div>Hover on the second number to display the list of better owned items</div>
-              <div class="number-line">
-                <span>Number of strictly better items required:</span>
-                <input
-                  type="number"
-                  min="1"
-                  [value]="betterItemsNumber()"
-                  (input)="numberInput($event.target, betterItemsNumber, 4)"
-                />
-              </div>
-              <label>
-                <input
-                  type="checkbox"
-                  [checked]="includeRecipes()"
-                  (change)="includeRecipes.set($any($event.target).checked)"
-                />
-                Include recipe items
-              </label>
-            </div>
-          }
-          @if (tab() === 'candidates') {
-            <div class="work-in-progress">
-              <div><app-icon name="alert" /> This is a work in progress</div>
-              <div>
-                It displays the items you own, not enhanced, that have at most X strictly better item you own, that is,
-                good candidates for Item World
-              </div>
-              <div class="number-line">
-                <span>Number max of strictly better items:</span>
-                <input
-                  type="number"
-                  min="0"
-                  [value]="candidatesDepth()"
-                  (input)="numberInput($event.target, candidatesDepth, 1)"
-                />
-              </div>
-            </div>
-          }
         </div>
+
+        @if (showSort() || (byType() && typeChoices().length > 1)) {
+          <div class="filter-panel">
+            @if (activeFilters() > 0) {
+              <button
+                app-button
+                small
+                type="button"
+                class="chip clear"
+                title="Show every type, sorted by ATK"
+                (click)="clearFilters()"
+              >
+                <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
+              </button>
+            }
+            @if (byType() && typeChoices().length > 1) {
+              <span class="filter-label">Type</span>
+              <div class="type-rows">
+                @for (row of [weaponChoices(), defenseChoices()]; track $index) {
+                  @if (row.length) {
+                    <app-choice-group
+                      pills
+                      iconType="equipment"
+                      [iconSize]="28"
+                      [choices]="row"
+                      [(selected)]="selectedTypes"
+                    />
+                  }
+                }
+              </div>
+            }
+            @if (showSort()) {
+              <span class="filter-label">Sort by</span>
+              <app-choice-group
+                pills
+                [single]="true"
+                iconType="stat"
+                [iconSize]="28"
+                [choices]="sortChoices()"
+                [selected]="[sort()?.stat ?? defaultSortStat()]"
+                (selectedChange)="pickSort($event)"
+              />
+            }
+          </div>
+        }
 
         <div class="results item-cards">
           @if (tab() === 'settings') {
@@ -115,26 +109,11 @@
                 <ng-container *ngTemplateOutlet="cardList; context: { lines: source.items }" />
               }
             }
-            @if (historyCount() < history().length) {
-              <div class="load-more">
-                <button app-button type="button" (click)="historyCount.set(historyCount() + 10)">Load more...</button>
-                <button app-button type="button" (click)="historyCount.set(history().length)">Load All</button>
-              </div>
-            }
+            <div #end class="end"></div>
           } @else {
-            @if (byType() && groups().length > 1) {
-              <div class="type-jump" data-html2canvas-ignore>
-                <span>Jump to</span>
-                @for (group of groups(); track group.type) {
-                  <a [href]="'#type-' + group.type" (click)="jumpTo(group.type, $event)">
-                    <app-icon [name]="'equipment-' + group.type" size="24" />
-                  </a>
-                }
-              </div>
-            }
             @for (group of visibleGroups(); track group.type) {
               @if (byType()) {
-                <div class="separator" [id]="'type-' + group.type">
+                <div class="separator">
                   <app-icon [name]="'equipment-' + group.type" size="50" />
                 </div>
               }
@@ -146,7 +125,7 @@
             <div #end class="end"></div>
           }
         </div>
-      </div>
+      </app-tab-panel>
     </app-collection-layout>
   }
 
@@ -156,8 +135,10 @@
 <app-inventory-enhancement-modal
   [line]="enhancingLine()"
   [enchantments]="enchantments()"
-  [(open)]="enhancingOpen"
+  [open]="enhancingOpen()"
+  (openChange)="setEnhancingOpen($event)"
   (toggled)="toggleEnhancementValue($event)"
+  (cleared)="clearEnhancementValues()"
 />
 
 <app-modal heading="Limited item" confirmLabel="Add anyway" [(open)]="limitOpen" (confirmed)="addAnyway()">

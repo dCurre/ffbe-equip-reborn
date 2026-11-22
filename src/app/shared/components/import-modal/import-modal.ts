@@ -1,6 +1,7 @@
-import { Component, inject, input, model, output } from '@angular/core';
+import { Component, ElementRef, inject, input, model, output, signal, viewChild } from '@angular/core';
 import { Toast } from '../../services/toast';
 import { GAME_DATA_URL } from '../action-link/action-link';
+import { Alert } from '../alert/alert';
 import { Modal } from '../modal/modal';
 
 /**
@@ -9,7 +10,7 @@ import { Modal } from '../modal/modal';
  */
 @Component({
   selector: 'app-import-modal',
-  imports: [Modal],
+  imports: [Alert, Modal],
   templateUrl: './import-modal.html',
   styleUrl: './import-modal.css',
 })
@@ -25,8 +26,32 @@ export class ImportModal {
   readonly confirmed = output<void>();
   private readonly toast = inject(Toast);
 
-  protected async chooseFile(event: Event): Promise<void> {
-    const file = (event.target as HTMLInputElement).files?.[0];
+  protected readonly dragging = signal(false);
+  private readonly fileInput = viewChild.required<ElementRef<HTMLInputElement>>('file');
+
+  protected chooseFile(event: Event): Promise<void> {
+    return this.readFile((event.target as HTMLInputElement).files?.[0]);
+  }
+
+  protected dragOver(event: DragEvent): void {
+    event.preventDefault(); // without it the browser does not accept the drop
+    this.dragging.set(true);
+  }
+
+  /** A file dropped on the zone is read like a chosen one, and shown in the field. */
+  protected dropped(event: DragEvent): Promise<void> {
+    event.preventDefault();
+    this.dragging.set(false);
+    const files = event.dataTransfer?.files;
+    try {
+      if (files?.length) this.fileInput().nativeElement.files = files;
+    } catch {
+      // only the name shown in the field is lost
+    }
+    return this.readFile(files?.[0]);
+  }
+
+  private async readFile(file: File | undefined): Promise<void> {
     if (!file) return;
     try {
       this.fileLoaded.emit(JSON.parse(await file.text()));

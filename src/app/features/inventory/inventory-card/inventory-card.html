@@ -37,60 +37,44 @@
 
 <ng-template #cardBody>
   <div class="td inventory">
-    @if (tab() !== 'sellable' && tab() !== 'candidates') {
-      <button app-button variant="flat" type="button" class="step plus" title="Add one" (click)="$event.stopPropagation(); add.emit()">
-        <app-icon name="add" />
-      </button>
-    }
+    <button app-button variant="flat" type="button" class="step plus" title="Add one" (click)="$event.stopPropagation(); add.emit()">
+      <app-icon name="add" />
+    </button>
     <span class="number badge">{{ line().ownedNumber }}</span>
-    @if (tab() !== 'sellable' && tab() !== 'candidates') {
-      <button app-button variant="flat" type="button" class="step minus" title="Remove one" (click)="$event.stopPropagation(); remove.emit()">
-        <app-icon name="minus" />
-      </button>
-      @if (line().item.tmrUnit) {
-        <app-icon
-          class="farmed-button"
-          name="tmr-farmed"
-          height="45"
-          title="TMR Farmed ! Click here to indicate you farmed this TMR. It will decrease the number you can farm and increase the number you own this TMR by 1"
-          (click)="$event.stopPropagation(); farmedTmr.emit()"
-        />
-      }
-      @if (canEnhance()) {
-        <app-icon
-          class="item-world-button"
-          name="dwarf"
-          height="28"
-          title="Open item management popup"
-          (click)="$event.stopPropagation(); enhance.emit()"
-        />
-      }
+    <button app-button variant="flat" type="button" class="step minus" title="Remove one" (click)="$event.stopPropagation(); remove.emit()">
+      <app-icon name="minus" />
+    </button>
+    @if (line().item.tmrUnit) {
       <app-icon
-        class="exclude-button"
-        name="exclude"
-        width="28"
-        title="Exclude this item from builds made for expeditions"
-        (click)="$event.stopPropagation(); excluded.emit()"
+        class="farmed-button"
+        name="tmr-farmed"
+        height="45"
+        title="TMR Farmed ! Click here to indicate you farmed this TMR. It will decrease the number you can farm and increase the number you own this TMR by 1"
+        (click)="$event.stopPropagation(); farmedTmr.emit()"
       />
     }
+    @if (canEnhance()) {
+      <app-icon
+        class="item-world-button"
+        name="dwarf"
+        height="28"
+        title="Open item management popup"
+        (click)="$event.stopPropagation(); enhance.emit()"
+      />
+    }
+    <app-icon
+      class="exclude-button"
+      name="exclude"
+      width="28"
+      title="Exclude this item from builds made for expeditions"
+      (click)="$event.stopPropagation(); excluded.emit()"
+    />
   </div>
   @if (line().visionCard?.levels?.length && line().visionCard!.levels.length > 1) {
     <span class="card-level">
       <button app-button small type="button" title="Level up" (click)="$event.stopPropagation(); levelChange.emit(1)">&#8593;</button>
       <button app-button small type="button" title="Level down" (click)="$event.stopPropagation(); levelChange.emit(-1)">&#8595;</button>
     </span>
-  }
-  @if (tab() === 'sellable') {
-    <div class="td sellable-reasons">
-      @if (sellReason(); as reason) {
-        <span class="better" [title]="reason === 'shop' ? 'Can be bought in a shop' : 'Can be crafted'">
-          <app-icon [name]="reason === 'shop' ? 'cart' : 'document'" />
-        </span>
-      }
-      @if (line().betterItems && !line().item.special) {
-        <span class="better" [title]="betterItemsText()">{{ betterItemsTotal() }}<app-icon name="double-up" /></span>
-      }
-    </div>
   }
   <app-item-summary [item]="line().item" [enchantments]="enchantments()" />
 </ng-template>

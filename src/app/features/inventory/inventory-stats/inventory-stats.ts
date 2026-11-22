@@ -12,5 +12,5 @@ import { Icon } from '../../../shared/components/icon/icon';
 })
 export class InventoryStats {
   readonly counts = input.required<Record<string, TypeStat>>();
-  protected readonly types = ['materia', ...typeList];
+  protected readonly types = ['materia', ...typeList.filter((type) => type !== 'materia')];
 }

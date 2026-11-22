@@ -129,21 +129,6 @@
   display: none;
 }
 
-.sellable-reasons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  margin-left: 5px;
-}
-
-.better {
-  margin-top: 5px;
-  font-size: 16px;
-  white-space: nowrap;
-  cursor: help;
-}
-
 .stmr-wrapper {
   display: flex;
   align-items: center;

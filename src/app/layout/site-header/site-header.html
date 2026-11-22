@@ -123,24 +123,17 @@
 </header>
 
 <app-modal heading="Google Authentication" confirmLabel="Continue" [(open)]="loginOpen" (confirmed)="login()">
-  <p>A Google login window will open.</p>
+  <p>A Google login window will open. Logging in is optional: it lets you save your units, inventory, espers, consumables and builder teams.</p>
   <p>
-    This account is only for FFBE Equip Reborn to store your data. It will NOT link automatically to your FFBE account.
-    You don't need to switch to Google to log in FFBE.
+    Your data is stored in a hidden
+    <a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer">app folder</a>
+    of your own Google Drive; FFBE Equip Reborn can only access that folder and no other file. The site never sees your Google password.
   </p>
-  <p class="detail">
-    This site is using
-    <a href="https://en.wikipedia.org/wiki/OAuth" target="_blank" rel="noreferrer">OAuth2</a>
-    to access the stored inventory data, so it will never know your google login and password.
+  <p>
+    To keep you logged in until you log out, a small service of this site keeps the Google renewal token. Logging out deletes it.
   </p>
-  <p class="detail">
-    The data is stored on the secure FFBE Equip Reborn
-    <a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer"
-      >app folder on Google Drive</a
-    >. FFBE Equip Reborn can only access this folder, and no personal file.
-  </p>
-  <p class="detail"><a routerLink="/privacy" target="_blank">Privacy policy</a></p>
+  <p><a routerLink="/privacy" target="_blank">Privacy policy</a></p>
   @if (loginError()) {
-    <p class="error" role="alert">Login failed: {{ loginError() }}</p>
+    <app-alert kind="danger">Login failed: {{ loginError() }}</app-alert>
   }
 </app-modal>

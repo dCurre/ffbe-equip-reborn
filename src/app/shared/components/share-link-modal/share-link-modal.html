@@ -2,7 +2,7 @@
   @if (intro()) {
     <p>{{ intro() }}</p>
   }
-  <input class="link-input" type="text" readonly [value]="link()" (focus)="select($event)" />
+  <input type="text" readonly [value]="link()" (focus)="select($event)" />
   @if (copied()) {
     <p>Link copied to your clipboard.</p>
   }

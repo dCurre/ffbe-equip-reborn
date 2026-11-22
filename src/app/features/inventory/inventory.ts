@@ -3,7 +3,7 @@ import { ImportState } from '../../shared/state/import-state';
 import { Component, computed, ElementRef, HostListener, inject, linkedSignal, signal, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { itemEnhancementBySkillId } from '../../../core/constants/item-enhancement-skills';
-import { weaponList } from '../../../core/constants/item-types';
+import { typeList, typeListLiterals, weaponList } from '../../../core/constants/item-types';
 import { computeFarmableStmr } from '../../../core/builder/item-entry';
 import { Item, containsText, buildSearchString } from '../../game/helpers/item';
 import { VisionCard } from '../../game/helpers/vision-cards';
@@ -12,7 +12,7 @@ import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { downloadBlob } from '../../shared/helpers/export';
 import { Inventory as UserInventory } from '../../shared/services/inventory';
 import { ServerContext } from '../../shared/services/server-context';
-import { clearSearchBox, debouncer } from '../../shared/helpers/search-input';
+import { SearchBox } from '../../shared/components/search-box/search-box';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
 import { Button } from '../../shared/components/button/button';
@@ -25,7 +25,8 @@ import { DropdownMenu, MenuItem } from '../../shared/components/dropdown-menu/dr
 import { LoadStatus } from '../../shared/components/load-status/load-status';
 import { ActionLink, GAME_DATA_URL } from '../../shared/components/action-link/action-link';
 import { CollectionLayout } from '../../shared/components/collection-layout/collection-layout';
-import { TabBar, TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { TabPanel } from '../../shared/components/tab-panel/tab-panel';
 import { showMoreOnScroll } from '../../shared/helpers/infinite-scroll';
 import {
   ADD_ALL_EQUIPMENT,
@@ -34,8 +35,9 @@ import {
   addItem,
   buildEntries,
   changeCardLevel,
+  clearEnhancements,
+  dropEmptyCopy,
   Enchantments,
-  enhancementCandidates,
   ImportedItem,
   exportCsv,
   exportJson,
@@ -44,17 +46,17 @@ import {
   isItemFile,
   ItemEntry,
   removeItem,
-  sellableItems,
   sortEntries,
   startEnhancement,
   toggleEnhancement,
   toggleExcludedFromExpedition,
   farmTmr,
-  SELLABLE_ITEMS_ACCESS,
 } from './inventory-model';
 import { Icon } from '../../shared/components/icon/icon';
+import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
 
-type Tab = 'equipment' | 'materia' | 'farmableStmr' | 'sellable' | 'candidates' | 'history' | 'settings';
+type SortChoice = { stat: string; ascending: boolean };
+type Tab = 'equipment' | 'materia' | 'farmableStmr' | 'history' | 'settings';
 
 interface Group {
   type: string;
@@ -73,6 +75,7 @@ interface UnitInfo {
 
 const PAGE_SIZE = 60;
 const HISTORY_FIRST = 4;
+const HISTORY_PAGE = 3;
 
 /** The items the user owns: add, remove, enhance, with the statistics, the STMR that can be made and the items to sell. */
 @Component({
@@ -87,12 +90,14 @@ const HISTORY_FIRST = 4;
     LoadStatus,
     ActionLink,
     CollectionLayout,
-    TabBar,
+    TabPanel,
     InventoryCard,
     InventoryEnhancementModal,
     Modal,
     ImportModal,
     Icon,
+    ChoiceGroup,
+    SearchBox,
   ],
   templateUrl: './inventory.html',
   styleUrl: './inventory.css',
@@ -120,13 +125,11 @@ export class InventoryPage {
 
   // --- What is shown ---
   protected readonly tab = signal<Tab>('equipment');
-  private readonly searches = signal<Record<string, string>>({});
-  protected readonly search = computed(() => this.searches()[this.tab()] ?? '');
+  /** the search is the same on every tab (the box is only hidden on the others) */
+  protected readonly search = signal('');
+  protected readonly searchable = computed(() => ['equipment', 'materia', 'farmableStmr'].includes(this.tab()));
   protected readonly stmrMoogle = signal(0);
   protected readonly onlyTimeLimited = signal(false);
-  protected readonly betterItemsNumber = signal(4);
-  protected readonly includeRecipes = signal(false);
-  protected readonly candidatesDepth = signal(1);
   protected readonly sidebarCollapsed = signal(window.innerWidth < 990);
   protected readonly exportItems: MenuItem[] = [
     { label: 'Export as CSV', run: () => this.exportCsv() },
@@ -136,21 +139,51 @@ export class InventoryPage {
     { key: 'equipment', title: 'Show all equipments', icon: 'equipments' },
     { key: 'materia', title: 'Show all materia', icon: 'materia' },
     { key: 'farmableStmr', title: 'Show obtainable STMR', image: 'img/units/unit_ills_906000105.png', kind: 'stmr' },
-    { key: 'sellable', title: 'Show sellable items', image: 'img/icons/gil.png', kind: 'small' },
-    { key: 'candidates', title: 'Show enhancement candidates', image: 'img/icons/dwarf.png', kind: 'small' },
     { key: 'history', title: 'Show inventory by events', icon: 'history' },
     { key: 'settings', title: 'Show inventory tools', icon: 'settings' },
   ];
-  private readonly searchBox = viewChild<ElementRef<HTMLInputElement>>('searchBox');
-  private readonly debounce = debouncer();
+  private readonly searchBox = viewChild(SearchBox);
+
+  /** the types to show on the tabs that list by type; none selected shows every type */
+  protected readonly selectedTypes = signal<readonly string[]>([]);
+  /** the sort chosen on each tab (none: the default of the tab, shown as selected): a stat from the highest and off, the name ascending, descending and off */
+  private readonly sorts = signal<Record<string, SortChoice | null>>({});
+  /** the sort of the open tab: each tab keeps its own */
+  protected readonly sort = computed(() => this.sorts()[this.tab()] ?? null);
+  private setSort(value: SortChoice | null): void {
+    this.sorts.update((sorts) => ({ ...sorts, [this.tab()]: value }));
+  }
+  protected readonly sortChoices = computed<Choice[]>(() => {
+    const current = this.sort();
+    return [
+      ...['hp', 'mp', 'atk', 'def', 'mag', 'spr'].map((value) => ({ value }) as Choice),
+      { value: 'name', label: 'A-Z' },
+    ].map((choice) => {
+      const on = current?.stat === choice.value;
+      const single = choice.value !== 'name';
+      const standard = this.defaultSortStat() === 'name' ? 'A-Z' : 'ATK, from the highest';
+      const next = single
+        ? on
+          ? `the default (${standard})`
+          : 'the highest first'
+        : !on
+          ? 'ascending'
+          : current.ascending
+            ? 'descending'
+            : `the default (${standard})`;
+      return {
+        ...choice,
+        label: on && !single ? `${choice.label ?? ''} ${current.ascending ? '↑' : '↓'}`.trim() : choice.label,
+        tooltip: `Sort by ${choice.value === 'name' ? 'name' : choice.value.toUpperCase()}: click for ${next}`,
+      };
+    });
+  });
 
   protected readonly sortLabel = computed(() => {
     if (this.search()) return '';
     return (
       (
         {
-          equipment: 'Sorted by Type (Strength)',
-          materia: 'Sorted by Name',
           history: 'Sorted by release date',
         } as Record<string, string>
       )[this.tab()] ?? ''
@@ -194,10 +227,6 @@ export class InventoryPage {
         return this.entries().materia;
       case 'farmableStmr':
         return this.stmrLines();
-      case 'sellable':
-        return sellableItems(this.allLines(), this.user.items(), this.betterItemsNumber(), this.includeRecipes());
-      case 'candidates':
-        return enhancementCandidates(this.entries().equipments, this.user.items(), this.candidatesDepth());
       default:
         return [];
     }
@@ -206,21 +235,48 @@ export class InventoryPage {
   protected readonly lines = computed<ItemEntry[]>(() => {
     const tab = this.tab();
     if (tab === 'history' || tab === 'settings') return [];
-    // the sellable items and the candidates ignore the search, as the old page did
-    const text = tab === 'sellable' || tab === 'candidates' ? '' : this.search();
+    const text = this.search();
     const lines = this.shownLines(this.tabLines()).filter((line) => !text || containsText(text, line.item));
-    return sortEntries(lines);
+    const types = this.shownTypes();
+    return sortEntries(
+      lines.filter((line) => !this.byType() || !types.length || types.includes(line.item.type)),
+      this.sort()?.stat ?? this.defaultSortStat(),
+      // the stats go from the highest and the names from A unless turned around
+      this.sort() ? this.sort()!.ascending !== (this.sort()!.stat === 'name') : false,
+    );
   });
 
-  protected readonly byType = computed(() => ['equipment', 'sellable', 'candidates'].includes(this.tab()));
+  /** The types of the tab (before the type filter), to choose from. */
+  protected readonly typeChoices = computed<Choice[]>(() => {
+    const present = new Set(this.shownLines(this.tabLines()).map((line) => line.item.type));
+    return typeList
+      .filter((type) => present.has(type))
+      .map((value) => ({ value, tooltip: typeListLiterals[value as keyof typeof typeListLiterals] ?? value }));
+  });
+  /** The type buttons in two rows: the weapons, then what protects (and the materia, the cards). */
+  protected readonly weaponChoices = computed(() => this.typeChoices().filter((c) => weaponList.includes(c.value)));
+  protected readonly defenseChoices = computed(() => this.typeChoices().filter((c) => !weaponList.includes(c.value)));
+  /** What is selected and still on the tab (a type of another tab is ignored). */
+  private readonly shownTypes = computed(() => {
+    const available = new Set(this.typeChoices().map((choice) => choice.value));
+    return this.selectedTypes().filter((type) => available.has(type));
+  });
+  /** how many of the filters are on: the types chosen, a sort */
+  protected readonly activeFilters = computed(() => this.shownTypes().length + (this.sort() ? 1 : 0));
+  protected readonly showSort = computed(() => !['history', 'settings'].includes(this.tab()));
+  /** what is selected while nothing is chosen: the materia go by name, the equipment by ATK */
+  private readonly defaultSortStat = computed(() => (this.tab() === 'materia' ? 'name' : 'atk'));
+
+  protected readonly byType = computed(() => this.tab() === 'equipment');
   protected readonly groups = computed<Group[]>(() => {
-    const groups: Group[] = [];
+    // one group for each type, even when the lines of a type are not next to each other (the groups are tracked by type)
+    const groups = new Map<string, Group>();
     for (const line of this.lines()) {
-      const last = groups[groups.length - 1];
-      if (last?.type === line.item.type) last.lines.push(line);
-      else groups.push({ type: line.item.type, lines: [line] });
+      const group = groups.get(line.item.type) ?? { type: line.item.type, lines: [] };
+      group.lines.push(line);
+      groups.set(line.item.type, group);
     }
-    return groups;
+    return [...groups.values()];
   });
 
   /** The lines drawn: more of them are drawn when the end of the list comes into view. */
@@ -274,7 +330,10 @@ export class InventoryPage {
   protected readonly enhancingLine = computed(() => {
     const current = this.enhancing();
     if (!current) return null;
-    const enhancements = (this.user.items().enchantments[current.item.id]?.[current.pos] ?? []) as (string | number)[];
+    // a copy: the picker sees a new list when the bonuses change in place
+    const enhancements = [...(this.user.items().enchantments[current.item.id]?.[current.pos] ?? [])] as (
+      string | number
+    )[];
     return { item: current.item, enhancements };
   });
   protected readonly limitOpen = signal(false);
@@ -290,13 +349,20 @@ export class InventoryPage {
 
   constructor() {
     showMoreOnScroll(this.end, this.limit, () => this.lines().length, PAGE_SIZE, '600px');
+    showMoreOnScroll(
+      this.end,
+      this.historyCount,
+      () => (this.tab() === 'history' ? this.history().length : 0),
+      HISTORY_PAGE,
+      '600px',
+    );
     this.start();
   }
 
   @HostListener('window:keyup.escape')
   protected clearSearch(): void {
-    this.setSearchValue('');
-    clearSearchBox(this.searchBox());
+    this.search.set('');
+    this.searchBox()?.clear();
   }
 
   private async start(): Promise<void> {
@@ -330,23 +396,23 @@ export class InventoryPage {
     this.tab.set(tab);
   }
 
-  protected onSearch(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.debounce(() => this.setSearchValue(value));
+  /** A stat: pressed once it sorts from the highest, again it goes back to the default. The name: ascending, descending, off. */
+  protected pickSort(value: readonly string[]): void {
+    const stat = value[0];
+    const current = this.sort();
+    // the stats have one order only (the highest first): a press turns it on, the next off
+    if (stat !== 'name') {
+      const selected = current?.stat ?? this.defaultSortStat();
+      this.setSort(stat && selected !== stat ? { stat, ascending: false } : null);
+      return;
+    }
+    if (!stat || current?.stat !== stat) this.setSort(stat ? { stat, ascending: true } : null);
+    else this.setSort(current.ascending ? { stat, ascending: false } : null);
   }
 
-  private setSearchValue(value: string): void {
-    this.searches.update((s) => ({ ...s, [this.tab()]: value }));
-  }
-
-  protected jumpTo(type: string, event: Event): void {
-    event.preventDefault();
-    const index = this.groups().findIndex((g) => g.type === type);
-    const before = this.groups()
-      .slice(0, index)
-      .reduce((sum, g) => sum + g.lines.length, 0);
-    this.limit.update((n) => Math.max(n, before + PAGE_SIZE));
-    setTimeout(() => document.getElementById(`type-${type}`)?.scrollIntoView());
+  protected clearFilters(): void {
+    this.selectedTypes.set([]);
+    this.setSort(null);
   }
 
   protected numberInput(target: EventTarget | null, signalToSet: { set(value: number): void }, fallback: number): void {
@@ -428,7 +494,22 @@ export class InventoryPage {
       this.toast.show('No more than 3 item enhancements can be selected', 'warn');
       return;
     }
-    if (result === 'copyRemoved') this.enhancingOpen.set(false);
+    if (result === 'copyRemoved') this.setEnhancingOpen(false);
+    this.user.changed('itemInventory');
+  }
+
+  protected setEnhancingOpen(open: boolean): void {
+    this.enhancingOpen.set(open);
+    if (open) return;
+    const current = this.enhancing();
+    this.enhancing.set(null);
+    if (current && dropEmptyCopy(this.user.items(), current.item.id, current.pos)) this.user.changed('itemInventory');
+  }
+
+  protected clearEnhancementValues(): void {
+    const current = this.enhancing();
+    if (!current) return;
+    clearEnhancements(this.user.items(), current.item.id, current.pos);
     this.user.changed('itemInventory');
   }
 

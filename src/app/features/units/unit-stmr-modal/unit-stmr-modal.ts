@@ -9,7 +9,6 @@ import type { GameUnit } from '../unit-model';
   selector: 'app-unit-stmr-modal',
   imports: [Modal, Button],
   templateUrl: './unit-stmr-modal.html',
-  styleUrl: './unit-stmr-modal.css',
 })
 export class UnitStmrModal {
   readonly unit = input.required<GameUnit | null>();

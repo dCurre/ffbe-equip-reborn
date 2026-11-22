@@ -6,7 +6,6 @@ import { Modal } from '../modal/modal';
   selector: 'app-text-export-modal',
   imports: [Modal],
   templateUrl: './text-export-modal.html',
-  styleUrl: './text-export-modal.css',
 })
 export class TextExportModal {
   readonly heading = input.required<string>();

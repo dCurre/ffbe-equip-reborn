@@ -1,13 +1,14 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Inventory, OwnedUnit } from '../../../shared/services/inventory';
+import { Alert } from '../../../shared/components/alert/alert';
 import { Modal } from '../../../shared/components/modal/modal';
 import { applyEdit, GameUnit, maxTrust, num, parseMoogles, UnitEdit } from '../unit-model';
 
 /** Edits what the user owns of one unit: the copies, the TMR / STMR owned, the NV extras and the TMR moogles. */
 @Component({
   selector: 'app-unit-edit-modal',
-  imports: [FormsModule, Modal],
+  imports: [Alert, FormsModule, Modal],
   templateUrl: './unit-edit-modal.html',
   styleUrl: './unit-edit-modal.css',
 })

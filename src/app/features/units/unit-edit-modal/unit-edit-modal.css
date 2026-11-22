@@ -1,14 +1,19 @@
-.error {
-  font-weight: bold;
-  color: red;
-}
-
-.edit-form input {
-  width: 100%;
-}
-
+/* a label and its number side by side; the text field of the moogles takes its own row */
 .edit-form label {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin-bottom: 10px;
   font-weight: normal;
+}
+
+.edit-form input[type='number'] {
+  width: 90px;
+}
+
+.edit-form label.stacked {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
 }

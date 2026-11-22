@@ -44,9 +44,13 @@
   padding: 0 10px;
 }
 
-.search {
+.search-box {
   flex: 1;
   margin: 10px 0;
+}
+
+.search-box[hidden] {
+  display: none;
 }
 
 .stmr-moogle {
@@ -56,7 +60,6 @@
   padding-left: 30px;
 }
 
-
 .stmr-moogle input[type='number'] {
   width: 80px;
   margin-right: 5px;
@@ -65,20 +68,6 @@
 .stmr-moogle label {
   margin: 0 0 0 20px;
   font-weight: normal;
-}
-
-.work-in-progress {
-  padding: 10px 0;
-}
-
-.number-line {
-  display: flex;
-  align-items: center;
-}
-
-.number-line input {
-  width: 60px;
-  margin-left: 5px;
 }
 
 /* --- The cards --- */
@@ -92,32 +81,80 @@
   text-align: center;
 }
 
-
-.type-jump {
-  display: flex;
-  flex-wrap: wrap;
+/* the filters in a panel: a label, then its buttons */
+.filter-panel {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px 14px;
   align-items: center;
-  padding: 10px 0;
+  padding: 0 10px 10px;
 }
 
-.type-jump span {
-  margin-right: 10px;
+/* the weapons on one row, the defensive items below */
+.type-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* turns the filters off: it shows how many are on */
+.chip {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 3px 11px;
+  border-radius: 999px;
+}
+
+/* top right of the panel, over the rows: it appears without moving anything */
+.chip.clear {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  color: var(--color-link);
+  background-color: transparent;
+  border-style: dashed;
+}
+
+.chip.clear:hover {
+  background-color: color-mix(in srgb, var(--color-link) 12%, transparent);
+}
+
+.clear-count {
+  min-width: 18px;
+  padding: 0 5px;
+  font-size: 0.85em;
+  line-height: 18px;
+  color: #fff;
+  text-align: center;
+  background-color: var(--color-accent);
+  border-radius: 999px;
+}
+
+.filter-label {
+  font-size: 0.8em;
+  font-weight: bold;
   color: var(--soft-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.type-jump a {
-  margin: 2px;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-}
-
-
-.date,
 .source {
   font-size: 1.3em;
   font-weight: bold;
   color: #337ab7;
   margin-top: 10px;
+}
+
+/* the release date: a centered heading with a line, set apart from the sources under it */
+.date {
+  margin: 30px 15px 5px;
+  padding-bottom: 5px;
+  font-size: 1.8em;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 2px solid var(--color-border);
 }
 
 .cards {
@@ -134,19 +171,6 @@
   margin-right: 15px;
 }
 
-.load-more {
-  text-align: center;
-}
-
-.load-more button {
-  margin: 1em;
-}
-
 .end {
   height: 1px;
-}
-
-/* the active tab has the color of the panel under it */
-app-tab-bar {
-  --tab-active-background: var(--color-panel);
 }

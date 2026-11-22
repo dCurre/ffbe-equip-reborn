@@ -1,6 +1,4 @@
 .custom-field textarea {
-  width: 100%;
-  box-sizing: border-box;
   font-family: monospace;
   color: var(--color-text);
   background-color: var(--color-input, transparent);

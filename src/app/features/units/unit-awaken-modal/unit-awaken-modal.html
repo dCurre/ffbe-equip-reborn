@@ -1,6 +1,6 @@
 <app-modal [heading]="'Awaken ' + (unit()?.name ?? '')" [(open)]="open">
   <p>How to awaken ?</p>
-  <div class="choices">
+  <div class="modal-choices">
     <button app-button type="button" (click)="chosen.emit(2)">Awaken using 2 units</button>
     <button app-button type="button" (click)="chosen.emit(1)">Awaken using 1 unit and a prism</button>
   </div>

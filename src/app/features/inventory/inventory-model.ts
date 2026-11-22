@@ -1,10 +1,8 @@
-import { ailmentList, baseStats, elementList, killerList } from '../../../core/constants/base-lists';
 import { itemEnhancementLabels } from '../../../core/constants/item-enhancement-labels';
 import { skillIdByItemEnhancement } from '../../../core/constants/item-enhancement-skills';
-import { typeList, weaponList } from '../../../core/constants/item-types';
+import { typeList } from '../../../core/constants/item-types';
 import { applyEnhancements } from '../../../core/builder/item-combination';
 import { getItemEntry } from '../../../core/builder/item-entry';
-import { ItemPool } from '../../../core/builder/item-pool';
 import { Item } from '../../game/helpers/item';
 import { cardInstance, VisionCard } from '../../game/helpers/vision-cards';
 import { ItemInventory } from '../../shared/services/inventory';
@@ -22,8 +20,6 @@ export interface ItemEntry {
   visionCard?: VisionCard;
   /** the recipe of an STMR that can still be made */
   stmrAccess?: { base: string; sevenStar: number; sixStar: number; stmrMoogle: number };
-  /** the items that make this one sellable, with how many of each the user owns */
-  betterItems?: Record<string, { name: string; available: number }>;
   [field: string]: unknown;
 }
 
@@ -149,18 +145,31 @@ export function compareName(name1: string, name2: string): number {
   return Math.sign(name1.length - name2.length);
 }
 
-/** By type, then by the stats the type is chosen for, then by name. */
-export function sortEntries(entries: readonly ItemEntry[]): ItemEntry[] {
+/** The stats the lines can be sorted by. */
+export const SORT_STATS = ['atk', 'mag', 'def', 'spr', 'hp', 'mp'];
+
+/**
+ * By type, then by the stats the type is chosen for (or by `stat` first, or `'name'`), then by name.
+ * `reverse` turns the order inside each type around (the stats go from the highest, the names from A).
+ */
+export function sortEntries(entries: readonly ItemEntry[], stat?: string, reverse = false): ItemEntry[] {
+  const byName = stat === 'name';
+  const chosen = stat && !byName ? [stat, ...SORT_STATS.filter((s) => s !== stat), 'sortId'] : undefined;
   return [...entries].sort((a, b) => {
     const type1 = statOf(a.item, 'type');
     const type2 = statOf(b.item, 'type');
     if (type1 !== type2) return type2 - type1;
-    for (const stat of SORT_ORDER_BY_TYPE[a.item.type] ?? SORT_ORDER_DEFAULT) {
-      const value1 = statOf(a.item, stat);
-      const value2 = statOf(b.item, stat);
-      if (value1 !== value2) return value2 - value1;
+    // the materia have percent boosts (`atk%`) and no stats of their own: by name unless a stat is asked
+    const materia = a.item.type === 'materia';
+    const order = byName ? [] : materia ? (stat ? [stat] : []) : (chosen ?? SORT_ORDER_BY_TYPE[a.item.type] ?? SORT_ORDER_DEFAULT);
+    const flip = reverse ? -1 : 1;
+    for (const sortStat of order) {
+      const key = materia ? `${sortStat}%` : sortStat;
+      const value1 = statOf(a.item, key);
+      const value2 = statOf(b.item, key);
+      if (value1 !== value2) return flip * (value2 - value1);
     }
-    return compareName(a.item['jpname'] || a.item.name, b.item['jpname'] || b.item.name);
+    return flip * compareName(a.item['jpname'] || a.item.name, b.item['jpname'] || b.item.name);
   });
 }
 
@@ -267,6 +276,20 @@ export function toggleEnhancement(
   return 'added';
 }
 
+/** Removes every enhancement of a copy; the copy stays, empty, so the dialog can go on. */
+export function clearEnhancements(inventory: ItemInventory, itemId: string, pos: number): void {
+  inventory.enchantments[itemId][pos].length = 0;
+}
+
+/** Takes away a copy left without enhancements (the dialog was closed with nothing chosen): it goes back to the plain ones. */
+export function dropEmptyCopy(inventory: ItemInventory, itemId: string, pos: number): boolean {
+  const copies = inventory.enchantments[itemId];
+  if (copies?.[pos]?.length !== 0) return false;
+  copies.splice(pos, 1);
+  if (copies.length === 0) delete inventory.enchantments[itemId];
+  return true;
+}
+
 /** What the "tools" tab adds: up to this many copies of each item. */
 export const ADD_ALL_EQUIPMENT = 2;
 export const ADD_ALL_MATERIA = 4;
@@ -295,139 +318,6 @@ export function farmTmr(
   addItem(inventory, line, true);
   units[unitId].farmable -= 1;
   return item;
-}
-
-// --- Sellable items and enhancement candidates ---
-
-export const SELLABLE_ITEMS_ACCESS = ['shop', 'recipe', 'recipe-chest', 'recipe-key', 'recipe-quest', 'recipe-shop'];
-
-const ENEMY = {
-  races: killerList,
-  def: 100,
-  spr: 100,
-  elementalResists: { dark: 0, light: 0, earth: 0, wind: 0, water: 0, lightning: 0, ice: 0, fire: 0 },
-  breaks: { atk: 0, def: 0, mag: 0, spr: 0 },
-  buffs: { atk: 0, def: 0, mag: 0, spr: 0 },
-  breakability: { atk: true, def: true, mag: true, spr: true },
-  imperils: { fire: 0, ice: 0, lightning: 0, water: 0, earth: 0, wind: 0, light: 0, dark: 0 },
-};
-
-const INVOLVED_STATS = [
-  ...baseStats,
-  'physicalKiller',
-  'magicalKiller',
-  'meanDamageVariance',
-  'evoMag',
-  'jumpDamage',
-  'lbDamage',
-  'drawAttacks',
-  'lbPerTurn',
-  'evade.physical',
-  'evade.magical',
-  'mpRefresh',
-  ...ailmentList.map((a) => `resist|${a}.percent`),
-  ...elementList.map((e) => `resist|${e}.percent`),
-];
-
-const elementsKey = (item: Item): string => (item['element'] ? [...item['element']].sort().join('-') : 'none');
-
-/** The weapons are compared only with the weapons of the same type and elements, the other items by type. */
-function groupForComparison(lines: readonly ItemEntry[]): ItemEntry[][] {
-  const groups = new Map<string, ItemEntry[]>();
-  for (const line of lines) {
-    const key = weaponList.includes(line.item.type) ? `${line.item.type}|${elementsKey(line.item)}` : line.item.type;
-    groups.set(key, [...(groups.get(key) ?? []), line]);
-  }
-  return typeList.flatMap((type) =>
-    [...groups].filter(([key]) => key === type || key.startsWith(`${type}|`)).map(([, group]) => group),
-  );
-}
-
-type Pool = InstanceType<typeof ItemPool>;
-interface Group {
-  id: string;
-  betterGroups: string[];
-  equivalents: ItemEntry[];
-  active?: boolean;
-}
-
-/** Walks the groups from the best items down: `visit` tells each group how many better items the user has. */
-function walkGroups(pool: Pool, visit: (group: Group, betterNumber: number) => void): void {
-  const done = new Set<string>();
-  const walk = (group: Group): void => {
-    if (done.has(group.id)) return;
-    done.add(group.id);
-    const better = group.betterGroups.reduce((sum, id) => sum + pool.groupByIds[id].available, 0);
-    visit(group, better);
-    for (const id of pool.lesserGroupsById[group.id] ?? []) walk(pool.groupByIds[id]);
-  };
-  (pool.keptItems as Group[]).filter((group) => group.active).forEach(walk);
-}
-
-function poolOf(lines: readonly ItemEntry[], depth: number): Pool {
-  const pool = new ItemPool(depth, INVOLVED_STATS, ENEMY, [], [], [], true, true, undefined);
-  pool.addItems(lines);
-  pool.prepare();
-  return pool;
-}
-
-const owned = (inventory: ItemInventory, line: ItemEntry): boolean => !!inventory[line.item.id];
-
-/** The weapons the user owns that are among the best ones (at most `depth` better items): worth enhancing in the Item World. */
-export function enhancementCandidates(
-  equipments: readonly ItemEntry[],
-  inventory: ItemInventory,
-  depth: number,
-): ItemEntry[] {
-  const weapons = equipments.filter((line) => weaponList.includes(line.item.type) && owned(inventory, line));
-  const ids = new Set<string>();
-  for (const group of groupForComparison(weapons)) {
-    const pool = poolOf(group, depth + 1);
-    walkGroups(pool, (found, better) => {
-      if (better <= depth) found.equivalents.forEach((line) => ids.add(line.key));
-    });
-  }
-  return weapons.filter(
-    (line) => line.item['partialDualWield'] || line.item['special']?.includes('dualWield') || ids.has(line.key),
-  );
-}
-
-/** The items that can be bought or crafted again, or that have more than `depth` strictly better items owned. */
-export function sellableItems(
-  lines: readonly ItemEntry[],
-  inventory: ItemInventory,
-  depth: number,
-  includeRecipes: boolean,
-): ItemEntry[] {
-  const candidates = lines.filter(
-    (line) => !line.item['exclusiveUnits'] && !line.item['equipedConditions'] && owned(inventory, line),
-  );
-  const sellable = new Map<string, Record<string, { name: string; available: number }>>();
-  for (const group of groupForComparison(candidates)) {
-    const pool = poolOf(group, 9999);
-    walkGroups(pool, (found, better) => {
-      if (better <= depth) return;
-      const betterItems: Record<string, { name: string; available: number }> = {};
-      for (const id of found.betterGroups) {
-        for (const equivalent of pool.groupByIds[id].equivalents as ItemEntry[]) {
-          betterItems[equivalent.key] ??= { name: equivalent.item.name, available: equivalent['available'] as number };
-        }
-      }
-      for (const line of found.equivalents) if (!sellable.has(line.key)) sellable.set(line.key, betterItems);
-    });
-  }
-  const access = includeRecipes ? SELLABLE_ITEMS_ACCESS : ['shop'];
-  return candidates
-    .filter(
-      (line) =>
-        line.item.access.some((a) => access.includes(a)) ||
-        (!line.item['partialDualWield'] &&
-          !line.item['equipedConditions'] &&
-          !line.item['allowUseOf'] &&
-          !line.item['special'] &&
-          sellable.has(line.key)),
-    )
-    .map((line) => ({ ...line, betterItems: sellable.get(line.key) }));
 }
 
 // --- Import and export ---

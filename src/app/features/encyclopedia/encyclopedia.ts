@@ -370,8 +370,4 @@ export class Encyclopedia {
     const added = onlyUnit ? types.filter((t) => equip.includes(t)) : types;
     this.types.set([...new Set([...this.types(), ...added])]);
   }
-
-  protected scrollToTop(): void {
-    window.scrollTo({ top: 0 });
-  }
 }

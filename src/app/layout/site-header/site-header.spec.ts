@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { vi } from 'vitest';
+import { GoogleDrive } from '../../shared/services/google-drive';
 import { Inventory } from '../../shared/services/inventory';
 import { ServerContext } from '../../shared/services/server-context';
 import { SiteHeader } from './site-header';
@@ -57,6 +58,23 @@ describe('SiteHeader', () => {
     fixture.detectChanges();
     const links = [...page.querySelectorAll('.desktop a:not(.logo)')].map((a) => a.getAttribute('href'));
     expect(links).toContain('/builder?l=de');
+  });
+
+  it('starts the Google login from the login dialog', async () => {
+    const proto = HTMLDialogElement.prototype;
+    proto.showModal ??= function (this: HTMLDialogElement) {
+      this.setAttribute('open', '');
+    };
+    proto.close ??= function (this: HTMLDialogElement) {
+      this.removeAttribute('open');
+    };
+    const login = vi.spyOn(TestBed.inject(GoogleDrive), 'login').mockReturnValue(new Promise(() => undefined));
+    await click('.login');
+    const buttons = [...page.querySelectorAll('app-modal .footer button')] as HTMLElement[];
+    expect(buttons.map((button) => button.textContent?.trim())).toEqual(['Cancel', 'Continue']);
+    buttons[1].click();
+    expect(login).toHaveBeenCalled();
+    login.mockRestore();
   });
 
   it('opens and closes the mobile menu', async () => {

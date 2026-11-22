@@ -140,8 +140,3 @@
 .end {
   height: 1px;
 }
-
-/* the active tab has the color of the panel under it */
-app-tab-bar {
-  --tab-active-background: var(--color-panel);
-}

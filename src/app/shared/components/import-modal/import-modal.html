@@ -1,13 +1,22 @@
 <app-modal [heading]="heading()" confirmLabel="Import" [(open)]="open" (confirmed)="confirmed.emit()">
   @if (warning()) {
-    <p class="warning">{{ warning() }}</p>
+    <app-alert kind="danger">{{ warning() }}</app-alert>
   }
-  <input type="file" accept=".json,application/json" (change)="chooseFile($event)" />
+  <div
+    class="drop"
+    [class.over]="dragging()"
+    (dragover)="dragOver($event)"
+    (dragleave)="dragging.set(false)"
+    (drop)="dropped($event)"
+  >
+    <input #file type="file" accept=".json,application/json" (change)="chooseFile($event)" />
+    <span class="hint">or drop the file here</span>
+  </div>
   <p>
     <a [href]="gameDataUrl" target="_blank" rel="noreferrer">Instructions to import your data directly from the game</a>
   </p>
   <p>{{ summary() }}</p>
   @for (message of messages(); track $index) {
-    <p class="error">{{ message }}</p>
+    <app-alert kind="danger">{{ message }}</app-alert>
   }
 </app-modal>

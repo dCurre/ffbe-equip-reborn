@@ -1,0 +1,5 @@
+<app-tab-bar [tabs]="tabs()" [active]="active()" (selected)="selected.emit($event)" />
+<ng-content select="[corner]" />
+<div class="pane">
+  <ng-content />
+</div>

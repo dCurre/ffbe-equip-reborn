@@ -306,7 +306,6 @@ export class UnitSearch {
   });
 
   constructor() {
-    for (const sheet of ['tankAbilities', 'mitigationAbilities', 'racialMitigationAbilities']) this.addSheet(sheet);
     // the filters in the URL, so a search can be shared
     afterRenderEffect(() => {
       const state = this.state();
@@ -320,13 +319,6 @@ export class UnitSearch {
       if (results) highlightText(results, searchTokens(this.state().searchText));
     });
     this.start();
-  }
-
-  private addSheet(name: string): void {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `css-img/${name}.css`;
-    document.head.appendChild(link);
   }
 
   @HostListener('window:keyup.escape')

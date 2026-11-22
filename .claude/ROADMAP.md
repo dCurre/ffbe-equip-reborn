@@ -6,12 +6,14 @@ Open tasks only (delete done items). The `push` skill updates this file. Deploy:
 - **Persistent login (works locally, Worker deployed):** after the push, try login, renewal and logout on `https://dcurre.github.io` (its origin must be authorized in Google Cloud). Old logged-in users must log in once. If Google returns no refresh token (409), the user removes the app at myaccount.google.com/permissions and retries. Optional: rotate the Google client secret (shown once in a session transcript) with `npx wrangler secret put GOOGLE_CLIENT_SECRET` in `worker/`.
 - **Extraction tools:** `diffs.exvius.gg`/`diffs.exviusdb.com` are down (2026-11-20): `tools/buildImageLinks`, `tools/JP/getImages.js` and image downloads in `GL|JP/parseItems.js` fail; JSON downloads work. `tools/request.js` is a `fetch` shim.
 - **Unused image export helpers:** `elementToPng` and `picturesLoaded` in `src/app/shared/helpers/export.ts` (and the html2canvas loading) lost their only caller when the Units image export was removed; delete them, and the html2canvas dependency or script if nothing else uses it.
+- **Unused icons:** `cart`, `document`, `double-up` and `gil` in `shared/components/icon/icon-map.ts` lost their users with the removed Inventory tabs (sellable items, enhancement candidates); delete them if nothing else needs them (`gil.png` too).
 - **Builder number fields:** `min="0"` only stops the arrows; a typed negative value is not corrected (the Units edit dialog does clamp).
 - **Test coverage:** `npm test` covers formulas, stats/damage, GL golden master, optimizer invariants and reduced-pool goldens. Regenerate goldens only with `npm run test:golden:update`. Gaps: `computeFarmableStmr`, `getItemEntry` with inventory, optimizer owned-only/esper/forced-TMR paths. Reduced-pool goldens don't prove global optimality.
 
 ## Code quality and optimizer
 - **Angular migration check:** compare each page with the old site (`git show 0e9eee65d:static/<file>`), fix differences. Intended differences: negative goal resists ignored; no Export for Battle; `noFallthroughCasesInSwitch` off (`tree-comparator.ts`). Mark what to fix, delete what is fine:
-  - Pages: Builder, Encyclopedia, Unit Search, Inventory
+  - Pages: Builder, Encyclopedia, Unit Search
+  - Inventory: still to compare look and CSS, item line (`app-item-summary`), sidebar toggle (the logic was compared and fixed). Check on screen: the active tab touching the panel (`app-tab-panel`; `align-items: flex-end` in the tab bar), the sort of each tab (materia too: stats from the highest, A-Z asc/desc, each tab keeps its own), the centered dates and the infinite scroll of the event history, the back-to-top button (`app-scroll-top`) on every page and on a phone
   - Cross-page: dialogs, light theme, Drive loading
 - **Optimizer review** (correctness, performance, readability; main files `buildOptimizer`, `typeCombinationGenerator`, `itemPool`, `optimizerWebWorker`, `formula`; algorithm in the Algorithm page). Open points:
   - 15 `NaN` values across 5 skills (e.g. Energy Shot 1380140): physical damage uses `mpCoef` without `coef`.

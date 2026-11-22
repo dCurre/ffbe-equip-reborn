@@ -26,6 +26,8 @@ export class ChoiceGroup {
   readonly choices = input.required<readonly Choice[]>();
   readonly iconType = input('');
   readonly single = input(false);
+  /** the size of the pictures (a number is in pixels): by default their own size in the pills, 38 in the joined bar */
+  readonly iconSize = input<number | string>();
   /** separate round buttons, with the pictures at their own size, instead of one joined bar */
   readonly pills = input(false, { transform: booleanAttribute });
   /** the values selected (for `single`, zero or one value) */

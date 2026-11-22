@@ -1,13 +1,26 @@
-.warning {
-  display: inline-block;
-  padding: 0.2em 0.6em;
-  font-weight: bold;
-  color: #ffffff;
-  background-color: #d9534f;
-  border-radius: 0.25em;
+.drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 12px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius);
 }
 
-.error {
-  font-weight: bold;
-  color: red;
+.drop.over {
+  background-color: color-mix(in srgb, var(--color-accent) 15%, transparent);
+  border-color: var(--color-accent);
+}
+
+/* drag and drop is for a computer: a phone only has the file field */
+.hint {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hint {
+    display: inline;
+  }
 }

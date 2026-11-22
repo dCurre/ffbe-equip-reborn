@@ -4,13 +4,14 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { BannerName, SiteHeader } from './layout/site-header/site-header';
 import { PageChrome } from './shared/services/page-chrome';
+import { ScrollTop } from './shared/components/scroll-top/scroll-top';
 import { Toasts } from './shared/components/toasts/toasts';
 import { Inventory } from './shared/services/inventory';
 import { StaticData } from './shared/services/static-data';
 import { Theme, ThemeName } from './shared/services/theme';
 
 @Component({
-  imports: [RouterOutlet, SiteHeader, Toasts],
+  imports: [RouterOutlet, ScrollTop, SiteHeader, Toasts],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.css',

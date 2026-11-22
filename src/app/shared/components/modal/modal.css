@@ -1,38 +1,67 @@
+/* The look of the Bootstrap 3 modal of the old site (and its dark theme): top aligned, a shadow, a colored header. */
 dialog {
   width: min(600px, calc(100vw - 20px));
+  max-height: calc(100vh - 60px);
+  margin: 30px auto auto;
   padding: 0;
+  overflow: auto;
   color: var(--color-text);
   background-color: var(--color-panel);
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+dialog[open] {
+  animation: modal-in 0.3s ease-out;
+}
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-25%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog[open] {
+    animation: none;
+  }
 }
 dialog.wide {
-  width: min(1000px, calc(100vw - 20px));
+  width: min(900px, calc(100vw - 20px));
 }
 dialog::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, var(--modal-backdrop-opacity, 0.5));
 }
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 15px;
+  background-color: var(--color-modal-header);
   border-bottom: 1px solid var(--color-border);
 }
 h4 {
   margin: 0;
+  font-size: 19px;
+  font-weight: 400;
+  line-height: 1.42857143;
 }
 .close {
   font-size: 21px;
   line-height: 1;
-  opacity: 0.5;
+  color: inherit;
+  opacity: 0.2;
+}
+.close:hover,
+.close:focus {
+  opacity: 1;
 }
 .body {
-  padding: 15px;
+  padding: var(--modal-padding);
 }
 .footer {
   display: flex;
   justify-content: flex-end;
   gap: 5px;
-  padding: 0 15px 15px;
+  padding: var(--modal-padding);
+  border-top: 1px solid var(--color-border);
 }

@@ -28,7 +28,7 @@
       <label>EX Level <input type="number" min="0" max="3" name="exRank" [(ngModel)]="edit.exRank" /></label>
     }
     @if (canEdit('moogles')) {
-      <label>
+      <label class="stacked">
         TMR Moogles owned
         <input
           type="text"
@@ -39,7 +39,7 @@
       </label>
     }
     @if (error()) {
-      <p class="error" role="alert">{{ error() }}</p>
+      <app-alert kind="danger">{{ error() }}</app-alert>
     }
   </form>
 </app-modal>

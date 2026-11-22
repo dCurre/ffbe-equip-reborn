@@ -16,6 +16,7 @@ import {
   oneOfEach,
   removeItem,
   sortEntries,
+  dropEmptyCopy,
   startEnhancement,
   toggleEnhancement,
   toggleExcludedFromExpedition,
@@ -88,6 +89,42 @@ describe('inventory lines', () => {
     expect(sorted.map((l) => l.item.id)).toEqual(['102', '101', '100']);
   });
 
+  it('sorts by the chosen stat inside each type, the types keeping their order', () => {
+    const strong = item('200', 'Strong', { atk: 100, hp: 10 });
+    const tough = item('201', 'Tough', { atk: 10, hp: 500 });
+    const other = item('202', 'Other', { type: 'dagger', atk: 1 });
+    const byHp = sortEntries([line(strong), line(tough), line(other)], 'hp');
+    expect(byHp.map((l) => l.item.id)).toEqual(['202', '201', '200']);
+    const byAtk = sortEntries([line(tough), line(strong), line(other)], 'atk');
+    expect(byAtk.map((l) => l.item.id)).toEqual(['202', '200', '201']);
+  });
+
+  it('sorts by name, and turns each type around with `reverse`', () => {
+    const a = item('300', 'Apple');
+    const b = item('301', 'Berry');
+    const dagger = item('302', 'Zed', { type: 'dagger' });
+    expect(sortEntries([line(b), line(dagger), line(a)], 'name').map((l) => l.item.id)).toEqual(['302', '300', '301']);
+    expect(sortEntries([line(a), line(dagger), line(b)], 'name', true).map((l) => l.item.id)).toEqual([
+      '302',
+      '301',
+      '300',
+    ]);
+    const strong = item('310', 'S', { atk: 100 });
+    const weak = item('311', 'W', { atk: 1 });
+    expect(sortEntries([line(strong), line(weak)], 'atk', true).map((l) => l.item.id)).toEqual(['311', '310']);
+  });
+
+  it('sorts the materia by name, or by the percent they add to a stat', () => {
+    const a = item('320', 'Apple', { type: 'materia', 'atk%': 5 });
+    const b = item('321', 'Berry', { type: 'materia', 'atk%': 10 });
+    const ids = (stat?: string, reverse?: boolean) =>
+      sortEntries([line(a), line(b)], stat, reverse).map((l) => l.item.id);
+    expect(ids()).toEqual(['320', '321']);
+    expect(ids('name', true)).toEqual(['321', '320']);
+    expect(ids('atk')).toEqual(['321', '320']);
+    expect(ids('atk', true)).toEqual(['320', '321']);
+  });
+
   it('puts the capital letters first when comparing names', () => {
     expect(compareName('Abc', 'abc')).toBeLessThan(0);
     expect(compareName('abc', 'abd')).toBeLessThan(0);
@@ -156,6 +193,18 @@ describe('inventory changes', () => {
     expect(toggleEnhancement(inventory, '100', 0, 'atk_20')).toBe('copyRemoved');
     expect(inventory.enchantments['100']).toBeUndefined();
     expect(inventory['100']).toBe(2);
+  });
+
+  it('drops a copy left without enhancements, and only that one', () => {
+    const inventory = empty();
+    inventory['100'] = 2;
+    inventory.enchantments['100'] = [['atk_20'], []];
+    expect(dropEmptyCopy(inventory, '100', 0)).toBe(false);
+    expect(dropEmptyCopy(inventory, '100', 1)).toBe(true);
+    expect(inventory.enchantments['100']).toEqual([['atk_20']]);
+    inventory.enchantments['100'] = [[]];
+    expect(dropEmptyCopy(inventory, '100', 0)).toBe(true);
+    expect(inventory.enchantments['100']).toBeUndefined();
   });
 
   it('removes an enhanced copy, and the item with its last copy', () => {

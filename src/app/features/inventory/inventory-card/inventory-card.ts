@@ -2,13 +2,13 @@ import { NgTemplateOutlet } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { weaponList } from '../../../../core/constants/item-types';
 import { ItemSummary } from '../../../game/components/item-summary/item-summary';
-import { ItemEntry, SELLABLE_ITEMS_ACCESS } from '../inventory-model';
+import { ItemEntry } from '../inventory-model';
 import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the enchantments of the game are open */
 
-/** One item of the inventory: how many are owned, the buttons to change them, and what the tab adds (STMR recipe, sell reason). */
+/** One item of the inventory: how many are owned, the buttons to change them, and what the tab adds (the STMR recipe). */
 @Component({
   selector: 'app-inventory-card',
   imports: [NgTemplateOutlet, Button, ItemSummary, Icon],
@@ -35,27 +35,12 @@ export class InventoryCard {
 
   /** What a click on the card does: add one (not in the tabs that only show a list). */
   protected clickable(): boolean {
-    return !['sellable', 'candidates', 'farmableStmr'].includes(this.tab());
+    return this.tab() !== 'farmableStmr';
   }
 
   protected onCardClick(event: MouseEvent): void {
     if (!this.clickable() || (event.target as HTMLElement).closest('a')) return;
     this.add.emit();
-  }
-
-  protected betterItemsText(): string {
-    return Object.values(this.line().betterItems ?? {})
-      .map((b) => `${b.name} x${b.available}`)
-      .join(', ');
-  }
-
-  protected betterItemsTotal(): number {
-    return Object.values(this.line().betterItems ?? {}).reduce((sum, b) => sum + b.available, 0);
-  }
-
-  protected sellReason(): 'shop' | 'recipe' | null {
-    if (!this.line().item.access.some((a) => SELLABLE_ITEMS_ACCESS.includes(a))) return null;
-    return this.line().item.access.includes('shop') ? 'shop' : 'recipe';
   }
 
   protected stmrImage(): string {

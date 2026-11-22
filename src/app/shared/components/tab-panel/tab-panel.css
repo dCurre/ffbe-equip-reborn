@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+/* the active tab has the color of the panel under it */
+app-tab-bar {
+  --tab-active-background: var(--color-panel);
+}
+
+.pane {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-top: 0;
+  border-radius: 0 0 5px 5px;
+}

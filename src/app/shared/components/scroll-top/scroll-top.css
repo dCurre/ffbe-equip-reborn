@@ -1,0 +1,42 @@
+button {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+  z-index: 9999;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  cursor: pointer;
+  background-color: #052464;
+  border: 0;
+  border-radius: 50px;
+  opacity: 0.5;
+}
+
+:host-context([data-theme='dark']) button {
+  background-color: #2a9fd6;
+}
+
+button:hover {
+  opacity: 1;
+}
+
+/* the white triangle */
+span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  margin: -12px 0 0 -8px;
+  border: 8px solid transparent;
+  border-bottom-color: #ffffff;
+}
+
+/* a phone: above the round button of the filters (25px margin, 75px high) */
+@media (max-width: 991px) {
+  button.raised {
+    right: 37px;
+    bottom: 110px;
+  }
+}

@@ -1,5 +1,6 @@
 .tabs {
   display: flex;
+  align-items: flex-end; /* a short tab next to the tall STMR one still touches the line */
   margin: 0;
   padding: 0;
   list-style: none;

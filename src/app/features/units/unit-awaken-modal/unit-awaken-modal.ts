@@ -8,7 +8,6 @@ import type { GameUnit } from '../unit-model';
   selector: 'app-unit-awaken-modal',
   imports: [Modal, Button],
   templateUrl: './unit-awaken-modal.html',
-  styleUrl: './unit-awaken-modal.css',
 })
 export class UnitAwakenModal {
   readonly unit = input.required<GameUnit | null>();
