@@ -1,7 +1,3 @@
-<app-modal heading="Export as image" [wide]="true" [(open)]="open">
+<app-modal heading="Export as image" [wide]="true" confirmLabel="Download" closeLabel="Close" [(open)]="open" (confirmed)="download()">
   <canvas #canvas class="team-image"></canvas>
-  <ng-container modalFooter>
-    <button app-button type="button" (click)="download()">Download</button>
-    <button app-button type="button" (click)="open.set(false)">Close</button>
-  </ng-container>
 </app-modal>

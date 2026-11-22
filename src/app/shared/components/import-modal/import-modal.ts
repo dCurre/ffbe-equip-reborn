@@ -1,6 +1,6 @@
 import { Component, inject, input, model, output } from '@angular/core';
 import { Toast } from '../../services/toast';
-import { Button } from '../button/button';
+import { GAME_DATA_URL } from '../action-link/action-link';
 import { Modal } from '../modal/modal';
 
 /**
@@ -9,11 +9,12 @@ import { Modal } from '../modal/modal';
  */
 @Component({
   selector: 'app-import-modal',
-  imports: [Modal, Button],
+  imports: [Modal],
   templateUrl: './import-modal.html',
   styleUrl: './import-modal.css',
 })
 export class ImportModal {
+  protected readonly gameDataUrl = GAME_DATA_URL;
   readonly heading = input.required<string>();
   readonly open = model(false);
   /** a red warning on top of the dialog */

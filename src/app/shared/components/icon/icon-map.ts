@@ -171,6 +171,10 @@ export const ICONS = {
     path:
       'M6 17.59 7.41 19 12 14.42 16.59 19 18 17.59l-6-6zM6 11l1.41 1.41L12 7.83l4.59 4.58L18 11l-6-6z',
   },
+  check: {
+    kind: 'svg',
+    path: 'M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z',
+  },
   pin: {
     kind: 'svg',
     path: 'M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z',
@@ -358,6 +362,7 @@ export const ICONS = {
   'tmr-farmed': { kind: 'image', src: 'img/units/unit_ills_904000105.png', title: 'TMR' },
   'stmr-farmed': { kind: 'image', src: 'img/units/unit_ills_906000105.png', title: 'STMR' },
   'awaken': { kind: 'image', src: 'img/icons/crystals/sevenStarCrystal.png', title: 'Awaken' },
+  'ex-level': { kind: 'image', src: 'img/icons/exLevel.png', title: 'EX level' },
   'exclude': { kind: 'image', src: 'img/icons/excludeExpedition.png', title: 'Exclude from expeditions' },
 } as const satisfies Record<string, IconInfo>;
 

@@ -5,6 +5,8 @@ Open tasks only (delete done items). The `push` skill updates this file. Deploy:
 ## Bugs and technical debt
 - **Persistent login (works locally, Worker deployed):** after the push, try login, renewal and logout on `https://dcurre.github.io` (its origin must be authorized in Google Cloud). Old logged-in users must log in once. If Google returns no refresh token (409), the user removes the app at myaccount.google.com/permissions and retries. Optional: rotate the Google client secret (shown once in a session transcript) with `npx wrangler secret put GOOGLE_CLIENT_SECRET` in `worker/`.
 - **Extraction tools:** `diffs.exvius.gg`/`diffs.exviusdb.com` are down (2026-11-20): `tools/buildImageLinks`, `tools/JP/getImages.js` and image downloads in `GL|JP/parseItems.js` fail; JSON downloads work. `tools/request.js` is a `fetch` shim.
+- **Unused image export helpers:** `elementToPng` and `picturesLoaded` in `src/app/shared/helpers/export.ts` (and the html2canvas loading) lost their only caller when the Units image export was removed; delete them, and the html2canvas dependency or script if nothing else uses it.
+- **Builder number fields:** `min="0"` only stops the arrows; a typed negative value is not corrected (the Units edit dialog does clamp).
 - **Test coverage:** `npm test` covers formulas, stats/damage, GL golden master, optimizer invariants and reduced-pool goldens. Regenerate goldens only with `npm run test:golden:update`. Gaps: `computeFarmableStmr`, `getItemEntry` with inventory, optimizer owned-only/esper/forced-TMR paths. Reduced-pool goldens don't prove global optimality.
 
 ## Code quality and optimizer
@@ -18,5 +20,6 @@ Open tasks only (delete done items). The `push` skill updates this file. Deploy:
 - **Icon tooltips:** the titles in `shared/components/icon/icon-map.ts` are drafts (e.g. access, slots, ailments): check the wording; the encyclopedia choice tooltips (`encyclopedia.ts`) could now come from that table.
 
 ## Features (after the rework)
+- **GitHub wiki:** write it (`https://github.com/dCurre/ffbe-equip-reborn/wiki`); the "Export your data from the game" link on Units and Inventory already points there (`GAME_DATA_URL`), so the first page must explain how to export the game data and import it here.
 - **Builder unit filters:** owned-only and NVA+ only beside "Only Nv Units".
 - **Community app import:** extend manual JSON import (`readJsonFile`) to offline community exports (e.g. Elvlin's); research formats, validate, show imported data.

@@ -86,6 +86,12 @@ export function sortByRarity(units: readonly GameUnit[], released: ReleasedIds):
   });
 }
 
+/** The letter a name is filed under (accents ignored); every other first character goes under "#". */
+export function initialOf(name: string): string {
+  const letter = name.normalize('NFD').replace(/[̀-ͯ]/g, '').charAt(0).toUpperCase();
+  return /^[A-Z]$/.test(letter) ? letter : '#';
+}
+
 export const sortAlphabetically = (units: readonly GameUnit[]): GameUnit[] =>
   [...units].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -112,7 +118,8 @@ export function filterByTrustName(
 
 // --- Collection statistics ---
 
-export type RarityKey = '7' | '5' | '4' | '3';
+/** The rows of the statistics: the NV / NVA are counted by their NV copies, the others by the copies of that base rarity. */
+export type RarityKey = 'NV' | 'NVA' | '7' | '5' | '4' | '3';
 export interface StatLine {
   /** units owned (different ones) */
   different: number;
@@ -128,6 +135,8 @@ export interface CollectionStats {
 }
 
 const emptyGroup = (): StatGroup => ({
+  NV: { different: 0, total: 0, number: 0 },
+  NVA: { different: 0, total: 0, number: 0 },
   '7': { different: 0, total: 0, number: 0 },
   '5': { different: 0, total: 0, number: 0 },
   '4': { different: 0, total: 0, number: 0 },
@@ -149,12 +158,26 @@ export function collectionStats(units: readonly GameUnit[], owned: OwnedUnits): 
       group['7'].different++;
     }
   };
+  /** An NV unit, or the NVA form of a unit: it counts when the unit has NV copies. */
+  const addNv = (group: StatGroup, key: 'NV' | 'NVA', mine: OwnedUnit | undefined): void => {
+    group[key].total++;
+    if (!mine?.nv) return;
+    group[key].different++;
+    group[key].number += mine.nv;
+  };
   for (const unit of units) {
-    // the old page counted the NV units too, but had no row to show them
+    const mine = owned[unit.id];
+    const groups = unit.summon_type === 'event' ? [all, timeLimited] : [all];
+    if (isNV(unit)) {
+      for (const group of groups) addNv(group, 'NV', mine);
+      continue;
+    }
     if (!['3', '4', '5'].includes(String(unit.min_rarity))) continue;
     const sevenStar = String(shownMaxRarity(unit)) === '7';
-    add(all, unit, owned[unit.id], sevenStar);
-    if (unit.summon_type === 'event') add(timeLimited, unit, owned[unit.id], sevenStar);
+    for (const group of groups) {
+      add(group, unit, mine, sevenStar);
+      if (isNVA(unit)) addNv(group, 'NVA', mine);
+    }
   }
   const notLimited = emptyGroup();
   for (const key of Object.keys(all) as RarityKey[]) {
@@ -182,12 +205,40 @@ export function addOne(
     ? { number: 0, farmable: 0, farmableStmr: 0, ...(nv ? { nv: 0 } : {}) }
     : { number: 0, farmable: 0 };
   const mine = owned[unit.id];
-  mine.number += 1;
-  const count = mine.number + (mine.sevenStar ?? 0) * 2;
+  // the copies of an NV unit live in `nv` only (like in an import); `number` stays 0
+  if (nv) mine.nv = (mine.nv ?? 0) + 1;
+  else mine.number += 1;
+  const count = (nv ? mine.nv! : mine.number) + (mine.sevenStar ?? 0) * 2;
   if (!farmedTmr[unit.id] || farmedTmr[unit.id] < count) mine.farmable += 1;
-  if (nv && (!farmedStmr[unit.id] || farmedStmr[unit.id] < count)) {
-    mine.nv = (mine.nv ?? 0) + 1;
-    mine.farmableStmr = (mine.farmableStmr ?? 0) + 1;
+  if (nv && (!farmedStmr[unit.id] || farmedStmr[unit.id] < count)) mine.farmableStmr = (mine.farmableStmr ?? 0) + 1;
+}
+
+/** A copy can be removed when there is a base copy, or an NV copy of an NV unit (an import stores those in `nv` only). */
+export const canRemove = (unit: GameUnit, mine: OwnedUnit | undefined): boolean =>
+  !!mine && (unit.min_rarity === 'NV' ? (mine.nv ?? 0) : mine.number) >= 1;
+
+/**
+ * One copy less (the reverse of `addOne`): the TMR / STMR still to farm cannot be more than the copies left minus the ones
+ * already farmed. The unit leaves the collection when nothing is left.
+ */
+export function removeOne(
+  owned: OwnedUnits,
+  unit: GameUnit,
+  farmedTmr: Readonly<Record<string, number>>,
+  farmedStmr: Readonly<Record<string, number>>,
+): void {
+  const mine = owned[unit.id];
+  if (!mine || !canRemove(unit, mine)) return;
+  const nv = unit.min_rarity === 'NV';
+  if (nv) {
+    mine.nv! -= 1;
+    mine.number = 0; // an NV unit never keeps base copies
+  } else mine.number -= 1;
+  const count = (nv ? mine.nv! : mine.number) + (mine.sevenStar ?? 0) * 2;
+  mine.farmable = Math.min(mine.farmable, Math.max(0, count - (farmedTmr[unit.id] ?? 0)));
+  if (nv) mine.farmableStmr = Math.min(mine.farmableStmr ?? 0, Math.max(0, count - (farmedStmr[unit.id] ?? 0)));
+  if (!mine.number && !mine.farmable && !mine.tmrMoogles && !mine.sevenStar && !mine.farmableStmr && !mine.nv) {
+    delete owned[unit.id];
   }
 }
 
@@ -228,12 +279,10 @@ export function useStmrSource(mine: OwnedUnit, source: StmrSource): void {
   }
 }
 
-/** What the edit dialog holds; empty or invalid numbers count as 0. */
+/** What the edit dialog holds; empty, invalid or negative numbers count as 0. */
 export interface UnitEdit {
   number: number;
-  farmable: number;
   sevenStar: number;
-  farmableStmr: number;
   nv: number;
   exRank: string;
   fragments: number;
@@ -242,7 +291,7 @@ export interface UnitEdit {
 
 export const num = (value: string | number): number => {
   const parsed = typeof value === 'number' ? value : parseInt(value, 10);
-  return Number.isNaN(parsed) ? 0 : parsed;
+  return Number.isNaN(parsed) ? 0 : Math.max(0, parsed);
 };
 
 /** The values of "TMR Moogles owned" (`50, 100`): null if one of them is not a number. */
@@ -257,19 +306,36 @@ export function parseMoogles(text: string): number[] | null {
   return result;
 }
 
-/** Applies the edit dialog to the unit; the unit is removed from `owned` when nothing is left. */
-export function applyEdit(owned: OwnedUnits, unit: GameUnit, edit: UnitEdit, moogles: number[]): void {
+/** The most TMR / STMR a unit can have: one per copy (two per 7* copy) for the TMR, one per awakened copy for the STMR. */
+export function maxTrust(unit: GameUnit, mine: Pick<UnitEdit, 'number' | 'sevenStar' | 'nv'>): { tmr: number; stmr: number } {
+  const copies = unit.min_rarity === 'NV' ? mine.nv : mine.number;
+  return { tmr: Math.max(0, copies + mine.sevenStar * 2), stmr: Math.max(0, mine.sevenStar + mine.nv) };
+}
+
+/**
+ * Applies the edit dialog to the unit; the unit is removed from `owned` when nothing is left. The TMR / STMR still to farm are
+ * not edited: they are the copies owned minus the ones already farmed (`farmed`, from the inventory).
+ */
+export function applyEdit(
+  owned: OwnedUnits,
+  unit: GameUnit,
+  edit: UnitEdit,
+  moogles: number[],
+  farmed: { tmr: number; stmr: number } = { tmr: 0, stmr: 0 },
+): void {
   const mine = (owned[unit.id] ??= { number: 0, farmable: 0, sevenStar: 0, farmableStmr: 0 });
   const max = String(unit.max_rarity);
-  mine.number = edit.number;
-  mine.farmable = edit.farmable;
+  mine.number = unit.min_rarity === 'NV' ? 0 : edit.number; // an NV unit has its copies in `nv` only
   if (max === 'NV') {
     mine.nv = edit.nv;
     const exRank = edit.exRank.trim();
     mine.exRank = exRank ? Math.max(0, Math.min(3, num(exRank))) : undefined;
   }
   if (max === '7' || (max === 'NV' && unit.min_rarity !== 'NV')) mine.sevenStar = edit.sevenStar;
-  if (max === '7' || max === 'NV') mine.farmableStmr = edit.farmableStmr;
+  const nvUnit = unit.min_rarity === 'NV';
+  mine.farmable = Math.max(0, (nvUnit ? (mine.nv ?? 0) : mine.number) + (mine.sevenStar ?? 0) * 2 - farmed.tmr);
+  // shortcut: the STMR of a 7* is counted per awakened copy, not per fusion that used copies up; fine until fusions are tracked
+  if (max === '7' || max === 'NV') mine.farmableStmr = Math.max(0, (mine.sevenStar ?? 0) + (mine.nv ?? 0) - farmed.stmr);
   if (moogles.length > 0) mine.tmrMoogles = moogles;
   else delete mine.tmrMoogles;
   if (!mine.number && !mine.farmable && !mine.tmrMoogles && !mine.sevenStar && !mine.farmableStmr && !mine.nv) {

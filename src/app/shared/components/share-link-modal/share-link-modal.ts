@@ -1,11 +1,10 @@
 import { Component, input, model } from '@angular/core';
-import { Button } from '../button/button';
 import { Modal } from '../modal/modal';
 
 /** The "Link to…" dialog: a read-only link that selects itself on focus, and a note once it was copied. */
 @Component({
   selector: 'app-share-link-modal',
-  imports: [Modal, Button],
+  imports: [Modal],
   templateUrl: './share-link-modal.html',
   styleUrl: './share-link-modal.css',
 })

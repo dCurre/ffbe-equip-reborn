@@ -15,3 +15,14 @@ button {
 app-icon {
   display: block;
 }
+
+/* the pills: round buttons apart from each other */
+:host(.pills) {
+  gap: 6px;
+}
+
+:host(.pills) button {
+  margin: 0;
+  padding: 3px 11px;
+  border-radius: 999px;
+}

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Inventory } from '../../shared/services/inventory';
+import { UserData } from '../../shared/services/user-data';
 import { StaticData } from '../../shared/services/static-data';
 import { GameUnit } from './unit-model';
 import { Units } from './units';
@@ -61,9 +62,9 @@ describe('Units page', () => {
   });
 
   it('counts the owned units in the statistics', () => {
-    expect(page.querySelector('app-unit-collection-stats tbody tr')?.textContent?.replace(/\s+/g, ' ')).toContain(
-      '1/1(1)',
-    );
+    const rows = [...page.querySelectorAll('app-unit-collection-stats tbody tr')];
+    const sevenStar = rows.find((row) => row.querySelector('[data-icon="crystal-sevenStarCrystal"]'));
+    expect(sevenStar?.textContent?.replace(/\s+/g, ' ')).toContain('1/1(1)');
   });
 
   it('shows the TMR still to farm and the buttons to change the collection', () => {
@@ -74,12 +75,41 @@ describe('Units page', () => {
 
   it('adds a copy of a unit and marks the inventory to be saved', async () => {
     const save = vi.spyOn(inventory, 'save').mockResolvedValue();
-    (page.querySelector('.unit.notOwned .action-button') as HTMLElement).click();
+    (page.querySelector('.unit.notOwned .actions .add') as HTMLElement).click();
     await settle();
     expect(inventory.units()['100000206'].number).toBe(1);
     expect(page.querySelectorAll('.unit.owned').length).toBe(2);
     save.mockRestore();
     clearTimeout((inventory as unknown as { saveTimer: ReturnType<typeof setTimeout> }).saveTimer);
+  });
+
+  it('saves the edit dialog into the inventory and writes the three tables to Drive', async () => {
+    const proto = HTMLDialogElement.prototype;
+    proto.showModal ??= function (this: HTMLDialogElement) {
+      this.setAttribute('open', '');
+    };
+    proto.close ??= function (this: HTMLDialogElement) {
+      this.removeAttribute('open');
+    };
+    const write = vi.spyOn(TestBed.inject(UserData), 'write').mockResolvedValue();
+    const changed = vi.spyOn(inventory, 'changed');
+    (page.querySelector('.unit.owned .actions .edit') as HTMLElement).click();
+    await settle();
+    const field = page.querySelector('app-unit-edit-modal input[name="number"]') as HTMLInputElement;
+    field.value = '2';
+    field.dispatchEvent(new Event('input'));
+    await settle();
+    const buttons = [...page.querySelectorAll('app-unit-edit-modal .footer button')] as HTMLElement[];
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    buttons.find((button) => button.textContent?.trim() === 'Save')!.click();
+    await vi.advanceTimersByTimeAsync(3500);
+    vi.useRealTimers();
+    expect(write).toHaveBeenCalledTimes(3);
+    await settle();
+    expect(inventory.units()['100000107'].number).toBe(2);
+    expect(changed).toHaveBeenCalled();
+    changed.mockRestore();
+    write.mockRestore();
   });
 
   it('searches by name and keeps the owned units only on request', async () => {
@@ -92,7 +122,7 @@ describe('Units page', () => {
     box.value = '';
     box.dispatchEvent(new Event('input'));
     await new Promise((done) => setTimeout(done, 350));
-    (page.querySelector('.filters input') as HTMLInputElement).click();
+    (page.querySelector('.chips .chip') as HTMLElement).click();
     await settle();
     expect(page.querySelectorAll('.unit').length).toBe(1);
   });

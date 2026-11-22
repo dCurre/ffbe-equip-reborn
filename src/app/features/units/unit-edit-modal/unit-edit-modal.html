@@ -1,28 +1,31 @@
-<app-modal [heading]="'Edit ' + (unit()?.name ?? '')" [(open)]="open">
+<app-modal [heading]="'Edit ' + (unit()?.name ?? '')" confirmLabel="Save" [(open)]="open" (confirmed)="save()">
   <form class="edit-form" (submit)="$event.preventDefault(); save()">
     @if (canEdit('nv')) {
-      <label>Owned NV number <input type="number" name="nv" [(ngModel)]="edit.nv" /></label>
+      <label>NV owned <input type="number" min="0" name="nv" [(ngModel)]="edit.nv" /></label>
     }
     @if (canEdit('sevenStar')) {
-      <label>Owned 7* number <input type="number" name="sevenStar" [(ngModel)]="edit.sevenStar" /></label>
+      <label>7* owned <input type="number" min="0" name="sevenStar" [(ngModel)]="edit.sevenStar" /></label>
     }
     @if (canEdit('number')) {
-      <label>Owned 6* or under number <input type="number" name="number" [(ngModel)]="edit.number" /></label>
+      <label>6* or under owned <input type="number" min="0" name="number" [(ngModel)]="edit.number" /></label>
+    }
+    @if (canEdit('tmr')) {
+      <label>
+        TMR owned
+        <input type="number" min="0" [max]="max().tmr" name="tmrOwned" [(ngModel)]="owned.tmr" />
+      </label>
     }
     @if (canEdit('stmr')) {
       <label>
-        Number of STMR that can still be farmed
-        <input type="number" name="farmableStmr" [(ngModel)]="edit.farmableStmr" />
+        STMR owned
+        <input type="number" min="0" [max]="max().stmr" name="stmrOwned" [(ngModel)]="owned.stmr" />
       </label>
     }
-    <label>
-      Number of TMR that can still be farmed <input type="number" name="farmable" [(ngModel)]="edit.farmable" />
-    </label>
     @if (canEdit('nvExtras')) {
       <label
-        >Owned Fragment number <input type="number" step="5" name="fragments" [(ngModel)]="edit.fragments"
+        >Fragments owned <input type="number" min="0" step="5" name="fragments" [(ngModel)]="edit.fragments"
       /></label>
-      <label>EX Level <input type="number" name="exRank" [(ngModel)]="edit.exRank" /></label>
+      <label>EX Level <input type="number" min="0" max="3" name="exRank" [(ngModel)]="edit.exRank" /></label>
     }
     @if (canEdit('moogles')) {
       <label>
@@ -39,8 +42,4 @@
       <p class="error" role="alert">{{ error() }}</p>
     }
   </form>
-  <ng-container modalFooter>
-    <button app-button type="button" (click)="open.set(false)">Cancel</button>
-    <button app-button type="button" (click)="save()">Save</button>
-  </ng-container>
 </app-modal>

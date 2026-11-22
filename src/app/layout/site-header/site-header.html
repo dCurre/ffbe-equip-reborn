@@ -122,8 +122,7 @@
   <div class="banner-person" [style.background-image]="bannerPersonImage()"></div>
 </header>
 
-<dialog #loginDialog class="login-dialog" aria-labelledby="login-title">
-  <h2 id="login-title">Google Authentication</h2>
+<app-modal heading="Google Authentication" confirmLabel="Continue" [(open)]="loginOpen" (confirmed)="login()">
   <p>A Google login window will open.</p>
   <p>
     This account is only for FFBE Equip Reborn to store your data. It will NOT link automatically to your FFBE account.
@@ -144,8 +143,4 @@
   @if (loginError()) {
     <p class="error" role="alert">Login failed: {{ loginError() }}</p>
   }
-  <div class="dialog-buttons">
-    <button app-button type="button" (click)="loginDialog.close()">Cancel</button>
-    <button app-button variant="primary" type="button" (click)="login()">Continue</button>
-  </div>
-</dialog>
+</app-modal>

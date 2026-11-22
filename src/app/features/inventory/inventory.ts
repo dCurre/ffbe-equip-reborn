@@ -16,7 +16,7 @@ import { clearSearchBox, debouncer } from '../../shared/helpers/search-input';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
 import { Button } from '../../shared/components/button/button';
-import { ConfirmModal } from '../../shared/components/confirm-modal/confirm-modal';
+import { Modal } from '../../shared/components/modal/modal';
 import { InventoryCard } from './inventory-card/inventory-card';
 import { InventoryStats } from './inventory-stats/inventory-stats';
 import { InventoryEnhancementModal } from './inventory-enhancement-modal/inventory-enhancement-modal';
@@ -90,7 +90,7 @@ const HISTORY_FIRST = 4;
     TabBar,
     InventoryCard,
     InventoryEnhancementModal,
-    ConfirmModal,
+    Modal,
     ImportModal,
     Icon,
   ],

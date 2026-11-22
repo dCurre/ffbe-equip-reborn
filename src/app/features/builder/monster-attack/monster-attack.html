@@ -6,7 +6,7 @@
   </button>
 </div>
 
-<app-modal heading="Monster Attack Formula" [(open)]="open">
+<app-modal heading="Monster Attack Formula" confirmLabel="OK" [(open)]="open" (confirmed)="apply()">
   <input
     type="text"
     placeholder="Enter monster damage formula"
@@ -14,8 +14,4 @@
     (input)="text.set($any($event.target).value)"
     (keydown.enter)="apply()"
   />
-  <ng-container modalFooter>
-    <button app-button type="button" (click)="apply()">OK</button>
-    <button app-button type="button" (click)="open.set(false)">Cancel</button>
-  </ng-container>
 </app-modal>

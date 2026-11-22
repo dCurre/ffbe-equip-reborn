@@ -20,4 +20,6 @@ export class NumberField {
   readonly tone = input('');
   readonly withIcon = input(false, { transform: booleanAttribute });
   readonly disabled = input(false);
+  /** the lowest value the arrows reach; no limit when not given (a resistance can be negative) */
+  readonly min = input<number | null>(null);
 }

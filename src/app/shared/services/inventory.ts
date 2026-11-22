@@ -54,7 +54,11 @@ export class Inventory {
   readonly status = signal<'loading' | 'loaded' | 'notLoaded'>('loading');
 
   readonly unitCount = computed(() =>
-    Object.values(this.units()).reduce((sum, unit) => sum + (unit.number || 0) + (unit.sevenStar || 0), 0),
+    // an NV unit keeps its copies in `nv` only
+    Object.values(this.units()).reduce(
+      (sum, unit) => sum + Math.max((unit.number || 0) + (unit.sevenStar || 0), unit.nv || 0),
+      0,
+    ),
   );
   /** Items by slot occupied, not by amount: every enchanted copy counts as one more. */
   readonly itemCount = computed(() => {
@@ -197,6 +201,18 @@ export class Inventory {
     }
     for (const [id, value] of Object.entries(entries)) {
       if (typeof value === 'number') entries[id] = { number: value, farmable: 0 };
+    }
+    // an NV unit keeps its copies in `nv` only: older saves also counted them in `number` (and a unit taken to 0 with "-"
+    // kept its `number`, so it was never darkened)
+    const legacy = Object.entries(entries as OwnedUnits).filter(([, unit]) => unit.number > 0);
+    if (legacy.length) {
+      const allUnits = await this.staticData.get<Record<string, { min_rarity: string | number }>>('units');
+      for (const [id, unit] of legacy) {
+        if (allUnits[id]?.min_rarity !== 'NV') continue;
+        if (unit.nv) unit.nv = Math.max(unit.nv, unit.number);
+        unit.number = 0;
+        migrated = true;
+      }
     }
     return { owned: entries as OwnedUnits, migrated };
   }

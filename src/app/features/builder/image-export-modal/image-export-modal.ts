@@ -1,5 +1,4 @@
 import { Component, effect, ElementRef, input, model, viewChild } from '@angular/core';
-import { Button } from '../../../shared/components/button/button';
 import { Modal } from '../../../shared/components/modal/modal';
 import { downloadBlob } from '../../../shared/helpers/export';
 import { drawTeam } from '../shared/build-image';
@@ -7,7 +6,7 @@ import { drawTeam } from '../shared/build-image';
 /** The picture of the team (one card per unit) with a Download button. */
 @Component({
   selector: 'app-image-export-modal',
-  imports: [Modal, Button],
+  imports: [Modal],
   templateUrl: './image-export-modal.html',
   styleUrl: './image-export-modal.css',
 })

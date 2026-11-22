@@ -1,34 +1,47 @@
+/* A card is a grid cell: the picture, the name with the copies owned and the buttons, the TMR / STMR progress. */
 :host {
-  display: contents;
+  display: block;
+  min-width: 0;
+  container-type: inline-size;
 }
 
 .unit {
   position: relative;
-  display: flex;
-  width: 300px;
-  margin: 5px;
-  padding: 5px;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  height: 100%;
+  padding: 10px 12px;
+  background-color: var(--unit-not-owned);
   border: 1px solid var(--unit-border);
+  border-left: 4px solid transparent;
   border-radius: 10px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .unit.owned {
   background-color: var(--unit-owned);
+  border-left-color: var(--unit-accent);
+  box-shadow: 0 4px 12px #00000047;
 }
 
 .unit.owned.sevenStars {
   background-color: var(--unit-owned-seven);
   border-color: var(--unit-seven-border);
+  border-left-color: var(--unit-seven-accent);
+}
+
+.unit.notOwned {
+  opacity: 0.8;
 }
 
 .unit:hover {
-  background-color: #337ab7 !important;
-}
-
-.unit.notOwned .base-number,
-.unit.notOwned .second-column,
-.unit.notOwned .trust-label {
-  opacity: 0.3;
+  border-color: var(--unit-accent);
+  opacity: 1;
 }
 
 :host-context(.read-only) .unit {
@@ -36,131 +49,145 @@
 }
 
 :host-context(.read-only) .unit:hover {
-  background-color: var(--unit-owned) !important;
+  border-color: var(--unit-border);
 }
 
-:host-context(.read-only) .unit.notOwned:hover {
-  background-color: transparent !important;
-}
-
-:host-context(.read-only) .unit.notOwned .owned-numbers {
+:host-context(.read-only) .unit.notOwned .counts {
   display: none;
 }
 
-.badge {
-  display: inline-block;
-  min-width: 10px;
-  padding: 3px 7px;
-  font-size: 1.2em;
-  font-weight: bold;
-  line-height: 1;
-  color: #fff;
-  text-align: center;
-  white-space: nowrap;
-  background-color: #777;
-  border-radius: 10px;
-}
-
-.badge.seven-star {
-  background-color: var(--badge-seven);
-}
-
-.owned-numbers {
-  display: flex;
-  flex: 0 0 50px;
-  flex-direction: column;
-  justify-content: space-evenly;
-  width: 50px;
-}
-
-.nv-number,
-.seven-star-number,
-.moogles,
-.fragments {
-  display: none;
-}
-
-.sevenStars .seven-star-number,
-.NV .nv-number,
-.NVA .nv-number {
-  display: block;
-}
-
-.NV .base-number {
-  display: none;
-}
-
-.tmrMoogles .moogles,
-.NV .fragments,
-.NVA .fragments {
+.avatar {
   position: relative;
-  display: block;
-  padding-left: 22px;
-}
-
-.moogles app-icon {
-  position: absolute;
-  top: -10px;
-  left: -6px;
-}
-
-.fragments app-icon {
-  position: absolute;
-  top: -7px;
-  left: -7px;
-}
-
-.moogles .badge {
-  cursor: help;
-}
-
-.second-column {
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
-  justify-content: flex-start;
-}
-
-.image-and-name {
-  display: flex;
+  align-self: start;
+  line-height: 0;
 }
 
 .unit-image {
-  margin: 0 5px;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: 1px solid var(--unit-pill-border);
+  border-radius: 8px;
 }
 
-.name-and-rarity {
+.unit.notOwned .unit-image {
+  filter: grayscale(85%) brightness(0.85);
+}
+
+/* the NV / NVA crystal on the corner of the picture */
+.avatar-tag {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  padding: 2px 4px;
+  background-color: var(--unit-tag);
+  border-radius: 5px;
+}
+
+.main {
   display: flex;
   flex-direction: column;
+  gap: 6px;
+  min-width: 0;
 }
 
 .unit-name {
+  display: -webkit-box;
+  overflow: hidden;
   font-weight: bold;
+  line-height: 1.25;
+  word-break: break-word;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.unit.notOwned .unit-name {
+  color: var(--soft-text);
 }
 
 .time {
   margin-left: 5px;
-  color: #999;
-}
-
-.unit:hover .time {
-  color: #fff;
-}
-
-:host-context(.read-only) .unit:hover .time {
-  color: #999;
+  color: var(--soft-text);
 }
 
 .rarity {
   opacity: 0.6;
 }
 
-.third-column {
+/* the numbers: copies owned, and how far the TMR / STMR are */
+.pill {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 9px;
+  font-size: 0.9em;
+  font-weight: bold;
+  line-height: 1.3;
+  white-space: nowrap;
+  background-color: var(--unit-pill);
+  border: 1px solid var(--unit-pill-border);
+  border-radius: 999px;
+}
+
+.pill.has {
+  color: #fff;
+  background-color: var(--unit-pill-owned);
+  border-color: var(--unit-accent);
+}
+
+.pill.partial {
+  color: var(--unit-partial-text);
+  background-color: var(--unit-partial-bg);
+  border-color: var(--unit-partial);
+}
+
+.pill.complete {
+  color: var(--unit-complete-text);
+  background-color: var(--unit-complete-bg);
+  border-color: var(--unit-complete);
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.count.nv,
+.count.seven-star-count,
+.count.moogles,
+.count.fragments,
+.count.ex {
+  display: none;
+}
+
+.sevenStars .count.seven-star-count,
+.NV .count.nv,
+.NVA .count.nv,
+.tmrMoogles .count.moogles,
+.NV .count.fragments,
+.NVA .count.fragments,
+.NV .count.ex,
+.NVA .count.ex {
+  display: inline-flex;
+}
+
+.NV .count.base {
+  display: none;
+}
+
+.count.moogles,
+.count.fragments,
+.count.ex {
+  cursor: help;
+}
+
+.progress {
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-  align-items: flex-end;
-  justify-content: space-evenly;
+  gap: 6px;
+  min-width: 0;
 }
 
 .trust-counter {
@@ -168,29 +195,28 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
+  white-space: nowrap;
 }
 
 .trust-label {
   display: flex;
   flex: 1;
+  gap: 8px;
   align-items: center;
   justify-content: space-between;
 }
-.trust-counter .badge {
-  margin-left: 3px;
-}
+
 .trust-help {
   position: relative;
   display: inline-flex;
-  margin-right: 3px;
+  margin-right: 4px;
   color: var(--color-link);
   cursor: help;
 }
 
 .trust-counter.stmr .trust-label,
 .trust-counter.tmr .trust-label {
-  opacity: 0.4;
+  opacity: 0.45;
 }
 
 .unit:not(.showStmr) .trust-counter.stmr {
@@ -202,65 +228,94 @@
   opacity: 1;
 }
 
-/* --- The buttons that appear when the pointer is on a card --- */
+/* --- The buttons of a card --- */
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   align-items: center;
-  margin-top: 5px;
-  visibility: hidden;
 }
 
-.unit:hover .actions {
-  visibility: visible;
+.stepper {
+  display: inline-flex;
 }
 
+.stepper button,
+.farm-button,
 .action-button {
-  width: 24px;
-  height: 24px;
-  margin: 0 5px;
-  padding: 0;
-  font-size: 18px;
-  line-height: 1;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  justify-content: center;
+  height: 26px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: bold;
   color: var(--unit-action-text);
   background-color: var(--unit-action-background);
   border-color: var(--unit-action-border);
-  border-radius: 5px;
+  border-radius: 6px;
 }
 
-.action-button.edit {
-  font-size: 14px;
+.stepper button {
+  width: 28px;
+  padding: 0;
+  border-radius: 0;
 }
 
-.farmed-button {
-  display: none;
-  margin: -10px -5px;
-  cursor: pointer;
+.stepper button:first-child {
+  border-radius: 6px 0 0 6px;
 }
 
-.farmable .farmed-button.tmr,
-.farmableStmr .farmed-button.stmr {
-  display: block;
+.stepper button:last-child {
+  margin-left: -1px;
+  border-radius: 0 6px 6px 0;
 }
 
-.awaken-button {
-  display: none;
-  cursor: pointer;
+.action-button {
+  width: 28px;
+  padding: 0;
 }
 
-.awakenable .awaken-button {
-  display: block;
+/* a TMR / STMR that can be marked as farmed */
+.farm-button.ready {
+  color: var(--unit-partial-text);
+  background-color: var(--unit-partial-bg);
+  border-color: var(--unit-partial);
+}
+
+.unit.notOwned .actions {
+  opacity: 0.7;
+}
+
+/* a narrow card (several columns): the progress goes under the name, in a row */
+@container (max-width: 380px) {
+  .unit {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 10px;
+    padding: 9px 10px;
+  }
+
+  .unit-image {
+    width: 48px;
+    height: 48px;
+  }
+
+  .progress {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-top: 8px;
+    border-top: 1px solid var(--unit-border-soft);
+  }
+
+  .trust-counter {
+    gap: 8px;
+  }
 }
 
 @media (max-width: 768px) {
-  .actions {
-    visibility: visible;
-  }
-
-  .farmable .farmed-button,
-  .awakenable .awaken-button {
-    display: block;
-  }
   /* a sheet at the bottom of the screen, as wide as the screen: the item line does not fit in the card */
   .trust-tip {
     position: fixed;
@@ -275,6 +330,7 @@
     overflow: auto;
   }
 }
+
 /* the item line of a TMR / STMR, under the "?" while the pointer is on it */
 .trust-tip {
   position: absolute;
@@ -283,6 +339,7 @@
   z-index: 10;
   max-width: 600px;
   color: var(--color-text);
+  white-space: normal;
   cursor: default;
   background-color: var(--color-panel);
   border: 1px solid var(--color-border);

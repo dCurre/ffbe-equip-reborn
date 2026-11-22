@@ -3,12 +3,16 @@ import { importUnits, isUnitFile } from './unit-import';
 import {
   addOne,
   applyEdit,
+  initialOf,
+  maxTrust,
   awaken,
   collectionStats,
   filterByName,
   GameUnit,
   parseMoogles,
   rarityLabel,
+  canRemove,
+removeOne,
   sortByRarity,
   unitImage,
   useStmrSource,
@@ -68,6 +72,26 @@ describe('unit model', () => {
     expect(stats.all['3']).toEqual({ different: 0, total: 1, number: 0 });
   });
 
+  it('counts the NV and the NVA units by their NV copies', () => {
+    const list = [
+      unit('1', 'NV', 'NV'),
+      unit('2', '5', 'NV', { summon_type: 'event' }),
+      unit('3', '5', 'NV'),
+      unit('4', '4', '6'),
+    ];
+    const owned: OwnedUnits = {
+      '1': { number: 0, farmable: 0, nv: 2 },
+      '2': { number: 1, farmable: 0, nv: 1 },
+      '3': { number: 1, farmable: 0 }, // owned, but not awakened
+    };
+    const stats = collectionStats(list, owned);
+    expect(stats.all.NV).toEqual({ different: 1, total: 1, number: 2 });
+    expect(stats.all.NVA).toEqual({ different: 1, total: 2, number: 1 });
+    expect(stats.timeLimited.NVA).toEqual({ different: 1, total: 1, number: 1 });
+    expect(stats.notLimited.NVA).toEqual({ different: 0, total: 1, number: 0 });
+    expect(stats.all['5']).toEqual({ different: 2, total: 2, number: 2 }); // the NVA keep counting in their base rarity
+  });
+
   it('adds a copy: the TMR is farmable until the farmed ones cover the copies', () => {
     const owned: OwnedUnits = {};
     const seven = unit('7', '5', '7');
@@ -82,7 +106,44 @@ describe('unit model', () => {
   it('adds an NV unit with its NV count', () => {
     const owned: OwnedUnits = {};
     addOne(owned, unit('9', 'NV', 'NV'), {}, {});
-    expect(owned['9']).toEqual({ number: 1, farmable: 1, farmableStmr: 1, nv: 1 });
+    expect(owned['9']).toEqual({ number: 0, farmable: 1, farmableStmr: 1, nv: 1 });
+  });
+
+  it('counts an NV copy even when its STMR is already farmed', () => {
+    const owned: OwnedUnits = {};
+    addOne(owned, unit('9', 'NV', 'NV'), {}, { '9': 1 });
+    addOne(owned, unit('9', 'NV', 'NV'), {}, { '9': 1 });
+    expect(owned['9']).toMatchObject({ number: 0, nv: 2, farmableStmr: 1 });
+  });
+
+  it('removes a copy and clamps what can still be farmed', () => {
+    const owned: OwnedUnits = {};
+    const seven = unit('7', '5', '7');
+    addOne(owned, seven, {}, {});
+    addOne(owned, seven, {}, {});
+    removeOne(owned, seven, {}, {});
+    expect(owned['7']).toEqual({ number: 1, farmable: 1, farmableStmr: 0 });
+    removeOne(owned, seven, { '7': 0 }, {});
+    expect(owned['7']).toBeUndefined(); // nothing left
+    removeOne(owned, seven, {}, {}); // no copy: nothing happens
+    expect(owned['7']).toBeUndefined();
+  });
+
+  it('removes the NV copies of an imported NV unit (number 0) down to nothing', () => {
+    const nv = unit('9', 'NV', 'NV');
+    const owned: OwnedUnits = { '9': { number: 0, farmable: 1, farmableStmr: 1, nv: 1 } };
+    expect(canRemove(nv, owned['9'])).toBe(true);
+    removeOne(owned, nv, {}, {});
+    expect(owned['9']).toBeUndefined();
+  });
+
+  it('removes an NV copy with its NV count', () => {
+    const owned: OwnedUnits = {};
+    const nv = unit('9', 'NV', 'NV');
+    addOne(owned, nv, {}, {});
+    addOne(owned, nv, {}, {});
+    removeOne(owned, nv, {}, {});
+    expect(owned['9']).toEqual({ number: 0, farmable: 1, farmableStmr: 1, nv: 1 });
   });
 
   it('awakens with two copies or with one and a prism', () => {
@@ -116,18 +177,22 @@ describe('unit model', () => {
     const seven = unit('7', '5', '7');
     const edit = {
       number: 1,
-      farmable: 1,
       sevenStar: 2,
-      farmableStmr: 3,
       nv: 0,
       exRank: '',
       fragments: 0,
       tmrMoogles: '',
     };
-    applyEdit(owned, seven, edit, [50]);
-    expect(owned['7']).toEqual({ number: 1, farmable: 1, sevenStar: 2, farmableStmr: 3, tmrMoogles: [50] });
-    applyEdit(owned, seven, { ...edit, number: 0, farmable: 0, sevenStar: 0, farmableStmr: 0 }, []);
+    applyEdit(owned, seven, edit, [50], { tmr: 2, stmr: 1 });
+    // to farm: the copies (1 + 2 per 7*) and the awakened ones, minus what is farmed
+    expect(owned['7']).toEqual({ number: 1, farmable: 3, sevenStar: 2, farmableStmr: 1, tmrMoogles: [50] });
+    expect(maxTrust(seven, edit)).toEqual({ tmr: 5, stmr: 2 });
+    applyEdit(owned, seven, { ...edit, number: 0, sevenStar: 0 }, []);
     expect(owned['7']).toBeUndefined();
+  });
+
+  it('files a name under its first letter, accents ignored, anything else under #', () => {
+    expect([initialOf('Béatrice'), initialOf('2B -Neo Vision-'), initialOf('')]).toEqual(['B', '#', '#']);
   });
 
   it('clamps the EX level of an NV unit to 0..3', () => {
@@ -135,9 +200,7 @@ describe('unit model', () => {
     const nv = unit('9', 'NV', 'NV');
     const edit = {
       number: 0,
-      farmable: 1,
       sevenStar: 0,
-      farmableStmr: 0,
       nv: 1,
       exRank: '9',
       fragments: 0,

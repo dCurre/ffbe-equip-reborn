@@ -56,24 +56,19 @@
   } @empty {
     <p>No saved team yet.</p>
   }
-  <ng-container modalFooter><button app-button type="button" (click)="listOpen.set(false)">Close</button></ng-container>
 </app-modal>
 
-<app-modal heading="Save team as..." [(open)]="nameOpen">
+<app-modal heading="Save team as..." confirmLabel="Save" [(open)]="nameOpen" (confirmed)="confirmName()">
   <app-input-group label="Build name">
     <input type="text" [value]="name()" (input)="name.set($any($event.target).value)" (keydown.enter)="confirmName()" />
   </app-input-group>
-  <ng-container modalFooter>
-    <button app-button type="button" (click)="nameOpen.set(false)">Cancel</button>
-    <button app-button type="button" (click)="confirmName()">Save</button>
-  </ng-container>
 </app-modal>
 
-<app-confirm-modal heading="Load saved team" confirmLabel="Load" [(open)]="loadOpen" (confirmed)="confirmLoad()">
+<app-modal heading="Load saved team" confirmLabel="Load" [(open)]="loadOpen" (confirmed)="confirmLoad()">
   <p>Loading this team will remove the units you currently have in the builder. Continue?</p>
-</app-confirm-modal>
+</app-modal>
 
-<app-confirm-modal
+<app-modal
   heading="Delete team"
   confirmLabel="Delete"
   [danger]="true"
@@ -81,4 +76,4 @@
   (confirmed)="confirmDelete()"
 >
   <p>Are you sure to delete that team ?</p>
-</app-confirm-modal>
+</app-modal>

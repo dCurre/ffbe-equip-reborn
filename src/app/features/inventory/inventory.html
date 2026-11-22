@@ -160,14 +160,14 @@
   (toggled)="toggleEnhancementValue($event)"
 />
 
-<app-confirm-modal heading="Limited item" confirmLabel="Add anyway" [(open)]="limitOpen" (confirmed)="addAnyway()">
+<app-modal heading="Limited item" confirmLabel="Add anyway" [(open)]="limitOpen" (confirmed)="addAnyway()">
   <p>
     You can only have up to {{ limitNumber() }} of these. If you own more, please report it to correct that value. Do
     you want to add the item nonetheless?
   </p>
-</app-confirm-modal>
+</app-modal>
 
-<app-confirm-modal
+<app-modal
   heading="Add all equipment and materia to inventory?"
   confirmLabel="Add all items"
   [(open)]="addAllOpen"
@@ -175,9 +175,9 @@
 >
   <p>This will add up to 2 of each equipment and 4 of each materia to your inventory.</p>
   <p><strong>Are you sure you want to continue?</strong></p>
-</app-confirm-modal>
+</app-modal>
 
-<app-confirm-modal
+<app-modal
   heading="Remove all equipment and materia from inventory?"
   confirmLabel="Empty inventory"
   [danger]="true"
@@ -187,7 +187,7 @@
   <p>This will empty your equipment and materia inventory (on this site).</p>
   <p><strong>This is not reversible</strong></p>
   <p><strong>Are you sure you want to continue?</strong></p>
-</app-confirm-modal>
+</app-modal>
 
 <app-import-modal
   heading="Import inventory"

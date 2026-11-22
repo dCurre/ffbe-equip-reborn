@@ -1,6 +1,5 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { Button } from '../../../shared/components/button/button';
-import { ConfirmModal } from '../../../shared/components/confirm-modal/confirm-modal';
 import { Icon } from '../../../shared/components/icon/icon';
 import { InputGroup } from '../../../shared/components/input-group/input-group';
 import { Modal } from '../../../shared/components/modal/modal';
@@ -11,7 +10,7 @@ import type { SavedTeams } from '../shared/saved-teams';
 /** The teams saved in the Drive: the one being edited with its save buttons, and the list to load, import or delete. */
 @Component({
   selector: 'app-saved-teams',
-  imports: [Panel, Button, Icon, Modal, ConfirmModal, InputGroup],
+  imports: [Panel, Button, Icon, Modal, InputGroup],
   templateUrl: './saved-teams.html',
   styleUrl: './saved-teams.css',
 })

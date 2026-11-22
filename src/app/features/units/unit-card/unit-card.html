@@ -1,87 +1,119 @@
 <div [class]="'unit ' + card().classes">
-  <div class="owned-numbers">
-    <div class="nv-number">
-      <app-icon name="crystal-NV" title="NV copies owned" /><span class="badge">{{ card().nv }}</span>
-    </div>
-    <div class="seven-star-number">
-      <app-icon name="crystal-sevenStarCrystal" title="7★ copies owned" /><span class="badge seven-star">{{ card().sevenStar }}</span>
-    </div>
-    <div class="base-number">
-      @if (card().crystal) {
-        <app-icon [name]="card().crystal!" title="Copies owned (not 7★)" />
-      }
-      <span class="badge">{{ card().base }}</span>
-    </div>
-    <div class="moogles">
-      <app-icon name="tmr-moogle" title="TMR Moogles owned" width="32" />
-      <span class="badge" [title]="card().moogles.length ? card().moogles.join('%, ') + '%' : ''">{{
-        card().moogles.length
-      }}</span>
-    </div>
-    <div class="fragments">
-      <app-icon name="fragment" width="36" />
-      <span class="badge" [title]="card().fragments + ' fragments'">{{ card().fragments }}</span>
-    </div>
+  <div class="avatar">
+    <img
+      class="unit-image"
+      [src]="card().image"
+      loading="lazy"
+      width="56"
+      height="56"
+      alt=""
+    />
+    @if (card().rarity.icon) {
+      <app-icon class="avatar-tag" [name]="card().rarity.icon!" />
+    }
   </div>
-
-  <div class="second-column">
-    <div class="image-and-name">
-      <div>
-        <img
-          class="unit-image"
-          [src]="card().image"
-          [attr.loading]="eager() ? 'eager' : 'lazy'"
-          width="56"
-          height="38"
-          alt=""
-        />
-      </div>
-      <div class="name-and-rarity">
-        <div class="unit-name">
-          @if (tab() === 'tmr') {
-            <app-wiki-link [name]="card().name" />
-          } @else {
-            <app-wiki-link [name]="card().unit.name" [always]="true" />
-          }
-          @if (card().timeLimited) {
-            <span class="time" title="Time limited unit"><app-icon name="timer" /></span>
-          }
-        </div>
-        <div class="rarity">
-          @if (card().rarity.icon) {
-            <app-icon [name]="card().rarity.icon!" />
-          }
-          {{ card().rarity.text }}
-        </div>
-      </div>
+  <div class="main">
+    <div class="unit-name">
+      @if (tab() === 'tmr') {
+        <app-wiki-link [name]="card().name" />
+      } @else {
+        <app-wiki-link [name]="card().unit.name" [always]="true" />
+      }
+      @if (card().timeLimited) {
+        <span class="time" title="Time limited unit"><app-icon name="timer" /></span>
+      }
+    </div>
+    @if (card().rarity.text) {
+      <div class="rarity">{{ card().rarity.text }}</div>
+    }
+    <div class="counts">
+      <span class="pill count nv" [class.has]="card().nv > 0">
+        <app-icon name="crystal-NV" title="NV copies owned" />{{ card().nv }}
+      </span>
+      <span class="pill count seven-star-count" [class.has]="card().sevenStar > 0">
+        <app-icon name="crystal-sevenStarCrystal" title="7★ copies owned" />{{ card().sevenStar }}
+      </span>
+      <span class="pill count base" [class.has]="card().base > 0">
+        @if (card().crystal) {
+          <app-icon [name]="card().crystal!" title="Copies owned (not 7★)" />
+        }
+        {{ card().base }}
+      </span>
+      <span
+        class="pill count moogles has"
+        [title]="card().moogles.length ? card().moogles.join('%, ') + '%' : ''"
+      >
+        <app-icon name="tmr-moogle" title="TMR Moogles owned" height="20" />{{ card().moogles.length }}
+      </span>
+      <span class="pill count fragments" [class.has]="card().fragments! > 0" [title]="card().fragments + ' fragments'">
+        <app-icon name="fragment" height="20" />{{ card().fragments }}
+      </span>
+      <span class="pill count ex" [class.has]="card().exRank > 0" title="EX level (0 to 3)">
+        <app-icon name="ex-level" />{{ card().exRank }}
+      </span>
     </div>
     @if (!readOnly()) {
       <div class="actions">
+        <span class="stepper">
+          <button
+            app-button
+            type="button"
+            [disabled]="!card().canRemove"
+            [title]="'Remove one ' + card().unit.name + ' from your collection'"
+            (click)="remove.emit()"
+          >
+            <app-icon name="minus" />
+          </button>
+          <button
+            app-button
+            type="button"
+            class="add"
+            [title]="'Add one ' + card().unit.name + ' to your collection'"
+            (click)="add.emit()"
+          >
+            <app-icon name="add" />
+          </button>
+        </span>
+        @if (card().canStmr) {
+          <button
+            app-button
+            type="button"
+            class="farm-button"
+            [class.ready]="card().farmableStmr"
+            [disabled]="!card().farmableStmr"
+            title="STMR Farmed ! Click here to indicate you farmed this STMR. It will add 1 of this STMR to your inventory"
+            (click)="farmedStmr.emit()"
+          >
+            <app-icon name="stmr-farmed" height="18" />STMR
+          </button>
+        }
         <button
           app-button
           type="button"
-          class="action-button"
-          [title]="'Add one ' + card().unit.name + ' to your collection'"
-          (click)="add.emit()"
-        >
-          <app-icon name="add" />
-        </button>
-        <app-icon
-          class="farmed-button tmr"
-          name="tmr-farmed"
-          height="44"
+          class="farm-button"
+          [class.ready]="card().farmable"
+          [disabled]="!card().farmable"
           title="TMR Farmed ! Click here to indicate you farmed this TMR. It will add 1 of this TMR to your inventory"
           (click)="farmedTmr.emit()"
-        />
-        <app-icon
-          class="farmed-button stmr"
-          name="stmr-farmed"
-          height="44"
-          title="STMR Farmed ! Click here to indicate you farmed this STMR. It will add 1 of this STMR to your inventory"
-          (click)="farmedStmr.emit()"
-        />
-        @if (card().unit.max_rarity === '7') {
-          <app-icon class="awaken-button" name="awaken" title="Awaken this unit !" (click)="awaken.emit()" />
+        >
+          <app-icon name="tmr-farmed" height="18" />TMR
+        </button>
+        @if (card().hasEx) {
+          <button
+            app-button
+            type="button"
+            class="action-button"
+            [disabled]="!card().canRaiseEx"
+            title="Raise the EX level by one (up to 3)"
+            (click)="raiseEx.emit()"
+          >
+            <app-icon name="ex-level" height="18" />
+          </button>
+        }
+        @if (card().canAwaken) {
+          <button app-button type="button" class="action-button" title="Awaken this unit !" (click)="awaken.emit()">
+            <app-icon name="awaken" height="18" />
+          </button>
         }
         <button app-button type="button" class="action-button edit" title="Edit unit values" (click)="edit.emit()">
           <app-icon name="edit" />
@@ -89,14 +121,13 @@
       </div>
     }
   </div>
-
-  <div class="third-column">
+  <div class="progress">
     @if (readOnly()) {
-      @if (card().sevenStars && card().stmr; as stmr) {
+      @if ((card().sevenStars || card().nv > 0) && card().stmr; as stmr) {
         <ng-container
           *ngTemplateOutlet="
             counter;
-            context: { which: 'stmr', label: 'STMR', text: stmr.farmed, item: stmr.item, seven: true }
+            context: { which: 'stmr', label: 'STMR', text: stmr.farmed, item: stmr.item, state: 'none' }
           "
         />
       }
@@ -104,7 +135,7 @@
         <ng-container
           *ngTemplateOutlet="
             counter;
-            context: { which: 'tmr', label: 'TMR', text: tmr.farmed, item: tmr.item, seven: false }
+            context: { which: 'tmr', label: 'TMR', text: tmr.farmed, item: tmr.item, state: 'none' }
           "
         />
       }
@@ -117,21 +148,27 @@
             label: 'STMR',
             text: (card().stmr?.farmed ?? 0) + '/' + (card().stmr?.total ?? 0),
             item: card().stmr?.item,
-            seven: true,
+            state: state(card().stmr),
           }
         "
       />
       <ng-container
         *ngTemplateOutlet="
           counter;
-          context: { which: 'tmr', label: 'TMR', text: tmr.farmed + '/' + tmr.total, item: tmr.item, seven: false }
+          context: {
+            which: 'tmr',
+            label: 'TMR',
+            text: tmr.farmed + '/' + tmr.total,
+            item: tmr.item,
+            state: state(tmr),
+          }
         "
       />
     }
   </div>
 </div>
 <!-- A TMR / STMR counter; the item line is drawn only while the pointer is on its "?" -->
-<ng-template #counter let-which="which" let-label="label" let-text="text" let-item="item" let-seven="seven">
+<ng-template #counter let-which="which" let-label="label" let-text="text" let-item="item" let-state="state">
   <div [class]="which + ' trust-counter'">
     @if (item) {
       <span
@@ -148,14 +185,14 @@
         @if (tip() === which) {
           <div class="items trust-tip">
             <div class="tbody">
-              <app-item-line class="tr" [item]="item" [units]="units()" />
+              <app-item-line class="tr" [item]="item" hideUnit />
             </div>
           </div>
         }
       </span>
     }
     <span class="trust-label">
-      {{ label }} <span class="badge" [class.seven-star]="seven">{{ text }}</span>
+      {{ label }} <span class="pill" [class]="state">{{ text }}</span>
     </span>
   </div>
 </ng-template>

@@ -10,13 +10,13 @@
     <div class="stats">
       @for (stat of stats; track stat) {
         <app-input-group [label]="stat.toUpperCase()">
-          <app-number-field
+          <app-number-field [min]="0"
             placeholder="100"
             [title]="'Base ' + stat.toUpperCase()"
             [value]="s.monster()[stat]"
             (valueChange)="setMonsterStat(stat, $event)"
           />
-          <app-number-field
+          <app-number-field [min]="0"
             withIcon
             suffix="%"
             tone="debuff"
@@ -38,7 +38,7 @@
               <app-icon [name]="s.monsterBreakability()[stat] ? 'arrow-down' : 'ban'" />
             </button>
           </app-number-field>
-          <app-number-field
+          <app-number-field [min]="0"
             withIcon
             suffix="%"
             tone="buff"
@@ -71,7 +71,7 @@
               [value]="s.monsterResists()[element] ?? ''"
               (valueChange)="setMonsterResist(element, $event)"
             />
-            <app-number-field
+            <app-number-field [min]="0"
               withIcon
               [width]="60"
               [tone]="tone(s.monsterImperils()[element], false)"

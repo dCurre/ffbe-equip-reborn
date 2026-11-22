@@ -1,5 +1,6 @@
-import { Component, computed, ElementRef, inject, input, signal, viewChild } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { Button } from '../../shared/components/button/button';
+import { Modal } from '../../shared/components/modal/modal';
 import { Icon } from '../../shared/components/icon/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { GoogleDrive } from '../../shared/services/google-drive';
@@ -38,7 +39,7 @@ const MENU = [
 /** Page title, menu, login status, theme, language and server buttons: the old `layout.js` header. */
 @Component({
   selector: 'app-site-header',
-  imports: [RouterLink, RouterLinkActive, Button, Icon],
+  imports: [RouterLink, RouterLinkActive, Button, Icon, Modal],
   templateUrl: './site-header.html',
   styleUrl: './site-header.css',
 })
@@ -57,7 +58,7 @@ export class SiteHeader {
   protected readonly loggedIn = this.drive.loggedIn;
   protected readonly menuOpen = signal(false);
   protected readonly loginError = signal('');
-  private readonly loginDialog = viewChild.required<ElementRef<HTMLDialogElement>>('loginDialog');
+  protected readonly loginOpen = signal(false);
 
   protected readonly bannerPersonImage = computed(() => `url(img/banner/${this.banner()}.png)`);
   protected readonly bannerBlankImage = computed(
@@ -82,7 +83,7 @@ export class SiteHeader {
 
   protected openLoginDialog(): void {
     this.loginError.set('');
-    this.loginDialog().nativeElement.showModal();
+    this.loginOpen.set(true);
   }
 
   /** Runs inside the click, so the browser allows the Google login popup; the page reloads to load the user data. */

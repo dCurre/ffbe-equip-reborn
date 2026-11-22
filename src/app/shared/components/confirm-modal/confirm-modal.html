@@ -1,7 +1,0 @@
-<app-modal [heading]="heading()" [(open)]="open">
-  <ng-content />
-  <ng-container modalFooter>
-    <button app-button type="button" (click)="open.set(false)">Cancel</button>
-    <button app-button type="button" [class.danger]="danger()" (click)="confirmed.emit()">{{ confirmLabel() }}</button>
-  </ng-container>
-</app-modal>

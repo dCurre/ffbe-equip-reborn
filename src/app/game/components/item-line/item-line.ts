@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { Item } from '../../helpers/item';
 import { ItemEnchantments, ItemUnits } from '../../models/item-context.model';
 import { ItemAccess } from '../item-access/item-access';
@@ -21,6 +21,8 @@ export class ItemLine {
   /** the stat the table is sorted by: its value is shown in a column (none: no column) */
   readonly stat = input<string>();
   readonly units = input<ItemUnits>({});
+  /** do not name the unit a TMR / STMR belongs to */
+  readonly hideUnit = input(false, { transform: booleanAttribute });
   readonly enchantments = input<ItemEnchantments>();
   readonly accessToRemove = input<readonly string[]>([]);
   /** how many the user owns (a column is added; none: no column, for a user who is not logged in) */

@@ -6,5 +6,15 @@
     </button>
   </div>
   <div class="body"><ng-content /></div>
-  <div class="footer"><ng-content select="[modalFooter]" /></div>
+  <div class="footer">
+    <ng-content select="[modalFooter]" />
+    <button app-button type="button" (click)="open.set(false)">
+      {{ closeLabel() || (confirmLabel() ? 'Cancel' : 'Close') }}
+    </button>
+    @if (confirmLabel()) {
+      <button app-button variant="primary" type="button" [class.danger]="danger()" (click)="confirmed.emit()">
+        {{ confirmLabel() }}
+      </button>
+    }
+  </div>
 </dialog>

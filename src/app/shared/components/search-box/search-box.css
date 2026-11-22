@@ -1,0 +1,58 @@
+:host {
+  display: block;
+}
+
+.box {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  height: 38px;
+  margin: 0;
+  padding: 0 8px 0 14px;
+  font-weight: normal;
+  color: var(--color-input-text);
+  cursor: text;
+  background-color: var(--color-input-background);
+  border: 1px solid var(--color-input-border);
+  border-radius: 999px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.box:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 25%, transparent);
+}
+
+app-icon {
+  opacity: 0.55;
+}
+
+.search {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  outline: 0;
+}
+
+.search::placeholder {
+  color: var(--color-input-text);
+  opacity: 0.5;
+}
+
+.clear {
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 50%;
+  opacity: 0.6;
+}
+
+.clear:hover {
+  opacity: 1;
+}

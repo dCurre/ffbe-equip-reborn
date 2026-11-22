@@ -1,4 +1,4 @@
-<app-modal heading="Custom formula" [(open)]="goal().open">
+<app-modal heading="Custom formula" confirmLabel="Use this formula" [(open)]="goal().open" (confirmed)="goal().apply()">
   <label class="custom-field">
     Formula
     <textarea
@@ -17,8 +17,6 @@
   </label>
   <p>See the <a href="builderHelp" target="_blank">builder help</a> for the formula syntax.</p>
   <ng-container modalFooter>
-    <button app-button type="button" (click)="goal().apply()">Use this formula</button>
     <button app-button type="button" (click)="goal().remove()">Remove custom goal</button>
-    <button app-button type="button" (click)="goal().open.set(false)">Cancel</button>
   </ng-container>
 </app-modal>

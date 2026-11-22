@@ -12,7 +12,7 @@
       <div class="weapon">
         <app-icon [name]="'equipment-' + weapon" width="34" height="38" [title]="weapon + ' imperil'" />
         <app-input-group>
-          <app-number-field
+          <app-number-field [min]="0"
             withIcon
             suffix="%"
             [tone]="tone(s.monsterImperils()[weapon], false)"

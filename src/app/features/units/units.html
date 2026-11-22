@@ -18,34 +18,73 @@
         <div class="tab-pane">
           <div class="controls">
             @if (tab() !== 'history') {
-              <input
-                #searchBox
-                type="text"
-                class="search"
-                [placeholder]="placeholder()"
-                [attr.aria-label]="placeholder()"
-                (input)="setSearch($event)"
-              />
+              <app-search-box #searchBox class="search-box" [placeholder]="placeholder()" (search)="search.set($event)" />
             }
-            <div class="filters">
-              <app-checkbox [checked]="onlyOwned()" (checkedChange)="toggleOnlyOwned($event)">
-                Only show owned units
-              </app-checkbox>
-              @if (onlyOwned()) {
-                <app-checkbox [(checked)]="onlySevenStar">Only show 7★ units</app-checkbox>
+            <div class="filter-panel">
+              <span class="filter-label">Show</span>
+              <div class="chips">
+                <button
+                  app-button
+                  small
+                  type="button"
+                  class="chip"
+                  [active]="onlyOwned()"
+                  title="Show only the units you own"
+                  (click)="toggleOnlyOwned(!onlyOwned())"
+                >
+                  <app-icon name="check" />Owned
+                </button>
+                <button
+                  app-button
+                  small
+                  type="button"
+                  class="chip"
+                  [active]="onlySevenStar()"
+                  [disabled]="!onlyOwned()"
+                  title="Among the units you own, only those awakened to 7★"
+                  (click)="onlySevenStar.set(!onlySevenStar())"
+                >
+                  <app-icon name="crystal-sevenStarCrystal" title="" />7★
+                </button>
+                <button
+                  app-button
+                  small
+                  type="button"
+                  class="chip"
+                  [active]="onlyTimeLimited()"
+                  title="Show only the time limited units"
+                  (click)="onlyTimeLimited.set(!onlyTimeLimited())"
+                >
+                  <app-icon name="timer" />Time limited
+                </button>
+                <button
+                  app-button
+                  small
+                  type="button"
+                  class="chip"
+                  [active]="onlyTmrMoogles()"
+                  title="Show only the units you have TMR Moogles for"
+                  (click)="onlyTmrMoogles.set(!onlyTmrMoogles())"
+                >
+                  <app-icon name="tmr-moogle" height="16" title="" />TMR Moogles
+                </button>
+                @if (activeFilters() > 0) {
+                  <button app-button small type="button" class="chip clear" title="Turn off every filter" (click)="clearFilters()">
+                    <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
+                  </button>
+                }
+              </div>
+              <span class="filter-label">Rarity</span>
+              <app-choice-group pills iconType="crystal" [choices]="groupChoices()" [(selected)]="selectedGroups" />
+              <span class="filter-label">EX level</span>
+              <app-choice-group pills iconType="ex" [choices]="exChoices" [(selected)]="selectedEx" />
+              @if (tab() === 'alphabetical' || tab() === 'tmr') {
+                <span class="filter-label">Letter</span>
+                <app-choice-group pills [choices]="letterChoices()" [selected]="selectedLetters()" (selectedChange)="pickLetter($event)" />
               }
-              <app-checkbox [(checked)]="onlyTimeLimited">Only time limited units</app-checkbox>
-              <app-checkbox [(checked)]="onlyTmrMoogles">Only units with TMR Moogles</app-checkbox>
             </div>
-            <app-choice-group class="group-filter" iconType="crystal" [choices]="groupChoices()" [(selected)]="selectedGroups" />
           </div>
-
-          <div
-            #results
-            class="results"
-            [class.export-all]="exporting() && exporting()!.minRarity === 1"
-            [class.export-rare]="exporting() && exporting()!.minRarity !== 1"
-          >
+          <div #results class="results">
             @for (group of visibleGroups(); track group.id) {
               @if (group.title) {
                 <div class="separator" [id]="group.id">
@@ -58,12 +97,12 @@
                     [card]="card"
                     [tab]="tab()"
                     [readOnly]="readOnly()"
-                    [units]="allUnits()"
-                    [eager]="!!exporting()"
                     (add)="add(card.unit)"
+                    (remove)="remove(card.unit)"
                     (farmedTmr)="farmedTmr(card.unit)"
                     (farmedStmr)="askFarmedStmr(card.unit)"
                     (awaken)="askAwaken(card.unit)"
+                    (raiseEx)="raiseEx(card.unit)"
                     (edit)="editModal().show(card.unit)"
                   />
                 }
@@ -82,7 +121,7 @@
   <app-site-footer />
 </app-page-content>
 
-<app-unit-edit-modal [tmr]="trust().tmr" (saved)="changed()" />
+<app-unit-edit-modal [tmr]="trust().tmr" [stmr]="trust().stmr" (saved)="changed()" />
 
 <app-unit-stmr-modal [unit]="stmrUnit()" [sources]="stmrSources()" [(open)]="stmrOpen" (chosen)="farmedStmr($event)" />
 
@@ -108,14 +147,11 @@
   (confirmed)="runImport()"
 />
 
-@if (busy()) {
-  <app-busy-overlay />
-}
-
 <ng-template #groupLabel let-group="group">
   @if (group.rarity) {
     @if (group.rarity.icon) {
-      <app-icon [name]="group.rarity.icon" />
+      <!-- the crystals of the sheet are 22x13 (NV) and 28x13 (NVA): twice their size to match the heading -->
+      <app-icon [name]="group.rarity.icon" [width]="group.rarity.icon === 'crystal-NVA' ? 56 : 44" height="26" />
     }
     {{ group.rarity.text }}
   } @else {

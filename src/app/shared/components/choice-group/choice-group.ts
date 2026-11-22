@@ -1,4 +1,4 @@
-import { Component, computed, input, model } from '@angular/core';
+import { booleanAttribute, Component, computed, input, model } from '@angular/core';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Button } from '../button/button';
 
@@ -18,6 +18,7 @@ export interface Choice {
 @Component({
   imports: [Button, Icon],
   selector: 'app-choice-group',
+  host: { '[class.pills]': 'pills()' },
   templateUrl: './choice-group.html',
   styleUrl: './choice-group.css',
 })
@@ -25,6 +26,8 @@ export class ChoiceGroup {
   readonly choices = input.required<readonly Choice[]>();
   readonly iconType = input('');
   readonly single = input(false);
+  /** separate round buttons, with the pictures at their own size, instead of one joined bar */
+  readonly pills = input(false, { transform: booleanAttribute });
   /** the values selected (for `single`, zero or one value) */
   readonly selected = model<readonly string[]>([]);
 

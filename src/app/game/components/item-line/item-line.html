@@ -6,7 +6,7 @@
   <div class="td value sort">{{ value() }}</div>
 }
 <app-item-special [item]="item()" />
-<app-item-access [item]="item()" [units]="units()" [accessToRemove]="accessToRemove()" />
+<app-item-access [item]="item()" [units]="units()" [hideUnit]="hideUnit()" [accessToRemove]="accessToRemove()" />
 @if (owned() !== null) {
   <div class="td inventory" [class.notPossessed]="!owned()">
     <span class="number badge">{{ owned() || '' }}</span>

@@ -1,0 +1,17 @@
+<label class="box">
+  <app-icon name="search" />
+  <input
+    #field
+    class="search"
+    type="text"
+    [placeholder]="placeholder()"
+    [attr.aria-label]="placeholder()"
+    [value]="text()"
+    (input)="type($any($event.target).value)"
+  />
+  @if (text()) {
+    <button app-button variant="flat" type="button" class="clear" title="Clear the search" aria-label="Clear the search" (click)="clear()">
+      <app-icon name="remove" />
+    </button>
+  }
+</label>

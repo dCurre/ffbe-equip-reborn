@@ -1,7 +1,3 @@
-<app-modal [heading]="heading()" [(open)]="open">
+<app-modal [heading]="heading()" confirmLabel="Copy" closeLabel="Close" [(open)]="open" (confirmed)="copy.emit()">
   <textarea class="text-export" readonly [rows]="rows()" [value]="text()" (focus)="select($event)"></textarea>
-  <ng-container modalFooter>
-    <button app-button type="button" (click)="copy.emit()">Copy</button>
-    <button app-button type="button" (click)="open.set(false)">Close</button>
-  </ng-container>
 </app-modal>

@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core';
+import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { elementList } from '../../../../core/constants/base-lists';
 import { weaponList } from '../../../../core/constants/item-types';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
@@ -28,6 +28,8 @@ const readable = (text: string): string =>
 export class ItemAccess {
   readonly item = input.required<Item>();
   readonly units = input<ItemUnits>({});
+  /** do not name the unit a TMR / STMR belongs to (the page is already about that unit) */
+  readonly hideUnit = input(false, { transform: booleanAttribute });
   /** the access that the filters of the page remove: the matching accesses are crossed out */
   readonly accessToRemove = input<readonly string[]>([]);
 
@@ -37,8 +39,8 @@ export class ItemAccess {
       blocked: this.accessToRemove().length > 0 && !isAccessAllowed(this.accessToRemove(), access),
     })),
   );
-  protected readonly tmrUnit = computed(() => this.unit('tmrUnit'));
-  protected readonly stmrUnit = computed(() => this.unit('stmrUnit'));
+  protected readonly tmrUnit = computed(() => (this.hideUnit() ? undefined : this.unit('tmrUnit')));
+  protected readonly stmrUnit = computed(() => (this.hideUnit() ? undefined : this.unit('stmrUnit')));
   protected readonly sex = computed(() => readable(String(this.item()['exclusiveSex'])));
   protected readonly roles = computed(() => readable(((this.item()['exclusiveRoles'] as string[]) ?? []).join(', ')));
   protected readonly conditions = computed(() =>

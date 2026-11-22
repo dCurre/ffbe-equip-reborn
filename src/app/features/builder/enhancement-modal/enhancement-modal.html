@@ -1,6 +1,9 @@
 <app-modal
   [heading]="items().enhancingDefault() ? 'Default weapon enhancement' : 'Item enhancements'"
+  [confirmLabel]="items().enhancingDefault() ? 'Set as default' : 'Pin this item'"
+  closeLabel="Close"
   [(open)]="items().enhancingOpen"
+  (confirmed)="items().pinEnhanced()"
 >
   @if (items().enhancingItem(); as current) {
     <div class="enhancing-title">
@@ -13,10 +16,4 @@
     [selected]="items().enhancementValues()"
     (toggled)="items().toggleEnhancement($event)"
   />
-  <ng-container modalFooter>
-    <button app-button type="button" (click)="items().pinEnhanced()">
-      {{ items().enhancingDefault() ? 'Set as default' : 'Pin this item' }}
-    </button>
-    <button app-button type="button" (click)="items().enhancingOpen.set(false)">Close</button>
-  </ng-container>
 </app-modal>

@@ -2,8 +2,22 @@
   display: block;
   --unit-owned: #d2edf9;
   --unit-owned-seven: #f9d2da;
-  --unit-border: transparent;
+  --unit-not-owned: color-mix(in srgb, currentcolor 6%, transparent);
+  --unit-border: color-mix(in srgb, currentcolor 14%, transparent);
+  --unit-border-soft: #00000020;
   --unit-seven-border: transparent;
+  --unit-accent: var(--color-accent);
+  --unit-seven-accent: #e8788f;
+  --unit-complete: #3d9a5c;
+  --unit-complete-bg: #3d9a5c2e;
+  --unit-complete-text: #1d6b3a;
+  --unit-partial: #d9a21b;
+  --unit-partial-bg: #d9a21b2e;
+  --unit-partial-text: #8a6100;
+  --unit-pill: color-mix(in srgb, currentcolor 8%, transparent);
+  --unit-pill-border: color-mix(in srgb, currentcolor 18%, transparent);
+  --unit-pill-owned: #2a9fd6;
+  --unit-tag: #0f172ae6;
   --unit-action-background: aliceblue;
   --unit-action-text: #333;
   --unit-action-border: grey;
@@ -14,16 +28,18 @@
 :host-context([data-theme='dark']) {
   --unit-owned: #222;
   --unit-owned-seven: #222;
-  --unit-border: #222;
+  --unit-border-soft: #ffffff20;
   --unit-seven-border: indianred;
+  --unit-seven-accent: indianred;
+  --unit-complete: #2f7d4f;
+  --unit-complete-bg: #2f7d4f59;
+  --unit-complete-text: #86efac;
+  --unit-partial-text: #ffd36b;
+  --unit-pill-owned: #1f6f99;
   --unit-action-background: #424242;
   --unit-action-text: #ddd;
   --unit-action-border: #888;
   --badge-seven: indianred;
-}
-
-.search {
-  width: 100%;
 }
 
 /* --- Layout: the statistics on the left, the units on the right --- */
@@ -32,34 +48,64 @@
 
 .controls {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 12px;
   padding: 10px;
 }
 
-.search {
-  flex: 1 1 250px;
-  width: auto;
+/* the filters in a panel: a label, then its buttons */
+.filter-panel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px 14px;
+  align-items: center;
 }
 
-.group-filter {
-  flex: 1 0 100%;
-  justify-content: center;
+.filter-label {
+  font-size: 0.8em;
+  font-weight: bold;
+  color: var(--soft-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.filters {
+.chips {
   display: flex;
-  flex: 1 1 250px;
-  flex-direction: column;
   flex-wrap: wrap;
-  max-height: 64px;
-  padding-top: 0;
+  gap: 6px;
+  align-items: center;
 }
 
-.filters label {
-  font-weight: normal;
-  cursor: pointer;
+/* a filter is a button that is pressed or not */
+.chip {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 3px 11px;
+  border-radius: 999px;
+}
+
+/* turns every filter off: it shows how many are on */
+.chip.clear {
+  margin-left: auto;
+  color: var(--color-link);
+  background-color: transparent;
+  border-style: dashed;
+}
+
+.chip.clear:hover {
+  background-color: color-mix(in srgb, var(--color-link) 12%, transparent);
+}
+
+.clear-count {
+  min-width: 18px;
+  padding: 0 5px;
+  font-size: 0.85em;
+  line-height: 18px;
+  color: #fff;
+  text-align: center;
+  background-color: var(--color-accent);
+  border-radius: 999px;
 }
 
 .results {
@@ -67,14 +113,6 @@
   flex-direction: column;
   align-items: center;
   padding: 0 10px 10px;
-}
-
-.results.export-all {
-  padding-bottom: 150px;
-}
-
-.results.export-rare {
-  padding-bottom: 20px;
 }
 
 .separator {
@@ -85,9 +123,11 @@
 /* --- The unit cards --- */
 
 .unit-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+  align-self: stretch;
+  margin-top: 10px;
 }
 
 /* --- The words of the search --- */
@@ -99,4 +139,9 @@
 
 .end {
   height: 1px;
+}
+
+/* the active tab has the color of the panel under it */
+app-tab-bar {
+  --tab-active-background: var(--color-panel);
 }

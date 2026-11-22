@@ -1,11 +1,10 @@
 import { Component, input, model, output } from '@angular/core';
-import { Button } from '../button/button';
 import { Modal } from '../modal/modal';
 
 /** A dialog with a read-only text (it selects itself on focus), a Copy button (`copy`) and Close. */
 @Component({
   selector: 'app-text-export-modal',
-  imports: [Modal, Button],
+  imports: [Modal],
   templateUrl: './text-export-modal.html',
   styleUrl: './text-export-modal.css',
 })
