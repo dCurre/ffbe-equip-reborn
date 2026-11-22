@@ -1,10 +1,15 @@
 :host {
   display: flex;
-  flex-wrap: wrap;
   gap: 4px 10px;
   align-items: center;
+  justify-content: space-between;
 }
 
-.spacer {
-  flex: 1;
+/* the flags are one under the other, each on one line; the text of "Results" is what wraps */
+.flags {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 4px;
+  white-space: nowrap;
 }

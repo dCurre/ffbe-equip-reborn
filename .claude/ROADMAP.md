@@ -12,7 +12,7 @@ Open tasks only (delete done items). The `push` skill updates this file. Deploy:
 
 ## Code quality and optimizer
 - **Angular migration check:** compare each page with the old site (`git show 0e9eee65d:static/<file>`), fix differences. Intended differences: negative goal resists ignored; no Export for Battle; `noFallthroughCasesInSwitch` off (`tree-comparator.ts`). Mark what to fix, delete what is fine:
-  - Pages: Builder, Encyclopedia
+  - Pages: Builder
   - Unit Search performance (searching feels heavy, not measured yet): every `app-unit-result` recomputes `skillsToDisplay` on any change of `state()`, `matchesOneToken`/`containsText` build a `RegExp` per call, each change filters and sorts every unit; ideas: precompile the regexes per search, give each result only what it needs, keep the text search apart from the other filters
   - Check on screen: the header tabs (the active one taller, the animation, light and dark theme), the Clear button in the tab row of Units and Inventory (desktop and phone, the tab line continuous with and without it), Unit Search rarity (base and max disable and clear each other), the stats toggle on a phone (starts closed under 990 px; asked to start closed on mobile, open on desktop: check on a real phone)
   - Cross-page: dialogs, light theme, Drive loading

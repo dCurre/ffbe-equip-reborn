@@ -1,24 +1,15 @@
 <app-panel>
   <div panelHeading class="heading unit-heading">
     <span>Target unit</span>
-    <input
-      type="text"
-      class="unit-input"
-      list="unit-names"
-      placeholder="Select a unit..."
-      [value]="unitName()"
-      (change)="chooseUnit($any($event.target).value)"
-    />
-    <datalist id="unit-names">
-      @for (unit of unitList(); track unit.id) {
-        <option [value]="unit.name"></option>
-      }
-    </datalist>
-    <span class="stars">
-      @for (star of stars(); track $index) {
-        <i class="star">★</i>
-      }
-    </span>
+    <app-combobox class="unit-input" [options]="unitNames()" [value]="unitName()" (picked)="chooseUnit($event)" />
+    @if (crystal(); as crystal) {
+      <span class="rarity">
+        <app-icon [name]="crystal" />
+        @if (unit()?.max_rarity !== 'NV') {
+          {{ unit()?.max_rarity }}★
+        }
+      </span>
+    }
     @if (unit(); as unit) {
       <img class="unit-picture" [src]="'img/units/unit_ills_' + unit.id + '.png'" alt="" />
     }

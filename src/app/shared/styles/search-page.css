@@ -1,7 +1,3 @@
-.search ::ng-deep .body {
-  display: none;
-}
-
 .heading {
   display: flex;
   flex-wrap: wrap;
@@ -17,4 +13,86 @@
   font-size: 0.9em;
   white-space: nowrap;
   cursor: pointer;
+}
+
+app-choice-group {
+  margin: 4px;
+}
+
+.end {
+  height: 1px;
+}
+
+::ng-deep ::highlight(search) {
+  color: inherit;
+  background-color: #c5c5f5;
+}
+
+/* the right side is one box: the search, the filters on and the count of the results, then the results */
+.top {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.top app-active-filters:empty {
+  display: none;
+}
+
+.top app-results-heading {
+  padding-top: 10px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* the filters are sections of the one box of the tabs, not boxes inside a box */
+.tab-content ::ng-deep .panel-box {
+  margin-bottom: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.tab-content ::ng-deep .heading {
+  border-top: 1px solid var(--color-border);
+  border-radius: 0;
+}
+
+.tab-content > :first-child ::ng-deep .heading {
+  border-top: 0;
+}
+
+.page {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.filters-column,
+.results-column {
+  flex: 1 1 50%;
+  min-width: 0;
+}
+
+/* on a phone: the box of the search comes first and stays, the filters come under it or the results stay in it (the round button switches) */
+@media (max-width: 991px) {
+  .page {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .results-column {
+    order: -1;
+  }
+
+  .hidden-on-phone {
+    display: none;
+  }
+
+  .filters-view ::ng-deep .body {
+    display: none;
+  }
+}
+
+/* the filters start with a heading: the active tab has its color */
+app-tab-panel {
+  --tab-panel-top: var(--color-panel-heading);
 }

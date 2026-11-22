@@ -1,9 +1,0 @@
-<div class="columns">
-  <div class="filters-column" [class.hidden-on-phone]="showingResults()">
-    <ng-content select="[filters]" />
-  </div>
-  <div class="results-column" [class.hidden-on-phone]="!showingResults()">
-    <ng-content select="[results]" />
-    <app-site-footer />
-  </div>
-</div>

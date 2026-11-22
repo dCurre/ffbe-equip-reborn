@@ -1,0 +1,26 @@
+<div class="field">
+  <input
+    #field
+    type="text"
+    autocomplete="off"
+    [value]="open() ? query() : value()"
+    [placeholder]="value() || emptyLabel()"
+    (focus)="show(field)"
+    (input)="type(field.value)"
+    (keydown.enter)="shown().length && pick(shown()[0])"
+    (keydown.escape)="open.set(false); field.blur()"
+  />
+  <app-icon class="caret" name="caret-down" />
+</div>
+@if (open()) {
+  <ul class="menu">
+    <li>
+      <a (click)="pick('')">{{ emptyLabel() }}</a>
+    </li>
+    @for (option of shown(); track option) {
+      <li>
+        <a [class.selected]="option === value()" (click)="pick(option)">{{ option }}</a>
+      </li>
+    }
+  </ul>
+}

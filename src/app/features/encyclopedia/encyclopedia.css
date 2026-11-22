@@ -2,10 +2,6 @@
   display: block;
 }
 
-app-choice-group {
-  margin: 4px;
-}
-
 .toggle {
   padding: 3px 8px;
 }
@@ -17,10 +13,7 @@ app-choice-group {
 
 .items {
   width: 100%;
-}
-
-.end {
-  height: 1px;
+  table-layout: fixed;
 }
 
 /* the stats that are not asked for are dimmed in the rows */
@@ -33,7 +26,35 @@ app-choice-group {
   opacity: 0.5;
 }
 
-::ng-deep ::highlight(search) {
-  color: inherit;
-  background-color: #c5c5f5;
+/* a row is a small grid, as on the old site: picture, name, value (and owned) on top, the special and the access under the name */
+.tr {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto auto;
+}
+
+/* a cell never makes the page wider than the screen (the round button is fixed at the right edge) */
+.tr ::ng-deep .td {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.tr ::ng-deep .td.type {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.tr ::ng-deep .td.inventory {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+.tr ::ng-deep .td.special,
+.tr ::ng-deep .td.access {
+  grid-column: 2 / -1;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.tr ::ng-deep .td.special.empty {
+  display: none;
 }

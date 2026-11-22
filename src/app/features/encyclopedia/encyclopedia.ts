@@ -4,6 +4,7 @@ import {
   Component,
   computed,
   ElementRef,
+  HostListener,
   inject,
   linkedSignal,
   signal,
@@ -25,10 +26,13 @@ import { FullUnit, TargetUnitPanel } from './target-unit-panel/target-unit-panel
 import { ItemLine } from '../../game/components/item-line/item-line';
 import { cardsAsItems, VisionCard } from '../../game/helpers/vision-cards';
 import { PageContent } from '../../layout/page-content/page-content';
-import { SearchColumns } from '../../shared/components/search-columns/search-columns';
+import { SiteFooter } from '../../layout/site-footer/site-footer';
+import { SearchBox } from '../../shared/components/search-box/search-box';
+import { TabPanel } from '../../shared/components/tab-panel/tab-panel';
+import { TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { ActiveFilter, ActiveFilters } from '../unit-search/active-filters/active-filters';
 import { highlightText } from '../../shared/helpers/highlight';
 import { Inventory } from '../../shared/services/inventory';
-import { clearSearchBox, debouncer } from '../../shared/helpers/search-input';
 import { StaticData } from '../../shared/services/static-data';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
 import { Button } from '../../shared/components/button/button';
@@ -58,6 +62,13 @@ interface SavedState {
   ailmentsAnd?: boolean;
   killersAnd?: boolean;
 }
+
+type Group = 'item' | 'stats' | 'effects';
+const GROUPS: { key: Group; title: string }[] = [
+  { key: 'item', title: 'Item' },
+  { key: 'stats', title: 'Stats' },
+  { key: 'effects', title: 'Effects' },
+];
 
 const PAGE_SIZE = 50;
 const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
@@ -91,7 +102,10 @@ const connector = (what: string): Choice[] => [
   selector: 'app-encyclopedia',
   imports: [
     PageContent,
-    SearchColumns,
+    SiteFooter,
+    SearchBox,
+    TabPanel,
+    ActiveFilters,
     Checkbox,
     FilterHeading,
     ResultsHeading,
@@ -123,7 +137,8 @@ export class Encyclopedia {
 
   // --- Filters ---
   protected readonly search = signal('');
-  protected readonly searchBox = viewChild<ElementRef<HTMLInputElement>>('searchBox');
+  private readonly searchBox = viewChild(SearchBox);
+  protected readonly tab = signal<Group>('item');
   protected readonly stat = signal<readonly string[]>([]);
   protected readonly percentageStat = signal(false);
   protected readonly staticStats = signal(false);
@@ -246,12 +261,47 @@ export class Encyclopedia {
       .map((stat) => `dim-${stat}`)
       .join(' ');
   });
-  protected readonly summaryIcons = computed(() => [
-    ...this.types().map((type) => `equipment-${type}`),
-    ...this.elements().map((element) => `element-${element}`),
-    ...this.ailments().map((ailment) => `ailment-${ailment}`),
-  ]);
   protected readonly hasKillers = computed(() => this.physicalKillers().length + this.magicalKillers().length > 0);
+  /** The filters that are on, as chips under the search box; the tabs count them. */
+  protected readonly filters = computed<(ActiveFilter & { group: Group })[]>(() => {
+    const names = (choices: Choice[], values: readonly string[]): string =>
+      values.map((v) => choices.find((c) => c.value === v)?.tooltip ?? v).join(', ');
+    const upper = (values: readonly string[]): string => values.map((v) => v.toUpperCase()).join(', ');
+    const logic = (and: readonly string[]): string => (and[0] === 'and' ? ' (all)' : '');
+    const killers = [
+      ...this.physicalKillers().map((v) => `Physical ${v}`),
+      ...this.magicalKillers().map((v) => `Magical ${v}`),
+    ];
+    const list: (ActiveFilter & { group: Group })[] = [];
+    const add = (key: string, group: Group, label: string, present: boolean): void => {
+      if (present) list.push({ key, group, label });
+    };
+    add('types', 'item', `Types: ${names(this.typeChoices, this.types())}`, this.types().length > 0);
+    add('accessToRemove', 'item', `Without: ${this.accessToRemove().join(', ')}`, this.accessToRemove().length > 0);
+    add('unit', 'stats', `Unit: ${this.unitName()}`, !!this.unit());
+    add('stat', 'stats', `Sorted by ${upper(this.stat())}`, this.stat().length > 0);
+    add('additionalStat', 'stats', `Also: ${upper(this.additionalStat())}`, this.additionalStat().length > 0);
+    add(
+      'elements',
+      'effects',
+      `Elements${logic(this.elementsLogic())}: ${names(this.elementChoices, this.elements())}`,
+      this.elements().length > 0,
+    );
+    add(
+      'ailments',
+      'effects',
+      `Ailments${logic(this.ailmentsLogic())}: ${names(this.ailmentChoices, this.ailments())}`,
+      this.ailments().length > 0,
+    );
+    add('killers', 'effects', `Killers${logic(this.killersLogic())}: ${killers.join(', ')}`, killers.length > 0);
+    return list;
+  });
+  protected readonly tabs = computed<TabItem<Group>[]>(() =>
+    GROUPS.map(({ key, title }) => {
+      const count = this.filters().filter((f) => f.group === key).length;
+      return { key, title: count ? `${title} (${count})` : title };
+    }),
+  );
   protected readonly ownedCount = (item: Item): number | null =>
     this.loggedIn() ? this.inventory.count(item.id) : null;
 
@@ -353,16 +403,33 @@ export class Encyclopedia {
 
   // --- Actions ---
 
+  @HostListener('window:keyup.escape')
   protected clearSearch(): void {
     this.search.set('');
-    clearSearchBox(this.searchBox());
+    this.searchBox()?.clear();
   }
 
-  private readonly debounce = debouncer();
+  protected removeFilter(key: string): void {
+    const signals: Record<string, { set(value: never[]): void }> = {
+      types: this.types,
+      elements: this.elements,
+      ailments: this.ailments,
+      accessToRemove: this.accessToRemove,
+      additionalStat: this.additionalStat,
+      stat: this.stat,
+    };
+    if (key === 'killers') {
+      this.physicalKillers.set([]);
+      this.magicalKillers.set([]);
+    } else if (key === 'unit') {
+      this.unitName.set('');
+      this.baseStatText.set({});
+    } else signals[key].set([]);
+  }
 
-  protected onSearch(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.debounce(() => this.search.set(value));
+  protected clearFilters(): void {
+    for (const key of ['types', 'elements', 'ailments', 'accessToRemove', 'additionalStat', 'stat', 'killers', 'unit'])
+      this.removeFilter(key);
   }
 
   protected selectTypes(types: readonly string[], onlyUnit = false): void {
