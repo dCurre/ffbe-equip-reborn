@@ -4,10 +4,9 @@ if equiped with
     ,
   }
   @if ('type' in part) {
-    <i [class]="'img img-equipment-' + part.type"></i>
+    <app-icon [name]="'equipment-' + part.type" size="28" />
   } @else if ('element' in part) {
-    <i class="img img-equipment-sword miniIcon"></i
-    ><i [class]="'img img-element-' + part.element + ' withMiniIcon'"></i>
+    <app-icon name="equipment-sword" class="miniIcon" size="18" /><app-icon [name]="'element-' + part.element" class="withMiniIcon" size="28" />
   } @else {
     @for (item of part.items; track $index) {
       @if (!$first) {

@@ -14,22 +14,9 @@ header {
   --title-padding-small: 110px;
 }
 
-button,
 select {
   font: inherit;
   color: var(--color-button-text);
-}
-
-button {
-  cursor: pointer;
-  background-color: var(--color-button-background);
-  border: 1px solid var(--color-button-border);
-  border-radius: var(--radius);
-  padding: 6px 12px;
-}
-
-button:hover {
-  background-color: var(--color-button-hover-background);
 }
 
 /* ---- banner ---- */
@@ -158,20 +145,15 @@ select {
   min-width: 22px;
   height: 16px;
   margin: 0 2px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background-color: transparent;
   background-repeat: no-repeat;
   font-size: 0;
 }
 
 .flag:hover {
-  background-color: transparent;
   box-shadow: 0 0 5px 2px #d0d0d0;
 }
 
-.flag.selected {
+.flag.active {
   box-shadow: 0 0 5px 2px #3166ff;
 }
 
@@ -194,15 +176,8 @@ select {
   margin-left: -1px;
 }
 
-.servers button:not(.selected) {
+.servers button:not(.active) {
   color: grey;
-}
-
-.servers button.selected,
-.dialog-buttons .primary {
-  color: var(--color-button-selected-text);
-  background-color: var(--color-button-selected-background);
-  border-color: var(--color-button-selected-border);
 }
 
 /* ---- menu ---- */
@@ -252,12 +227,6 @@ select {
 
 .mobile {
   display: none;
-}
-
-.mobile .logo {
-  padding: 0;
-  border: 0;
-  background: transparent;
 }
 
 .mobile .logo svg {

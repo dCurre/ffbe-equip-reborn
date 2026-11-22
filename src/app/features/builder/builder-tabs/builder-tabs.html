@@ -2,6 +2,8 @@
   @for (name of names(); track $index; let i = $index) {
     <div class="tab" role="presentation" [class.active]="i === active()">
       <button
+        app-button
+        variant="flat"
         type="button"
         role="tab"
         [attr.aria-selected]="i === active()"
@@ -11,13 +13,31 @@
         {{ name }}
       </button>
       @if (names().length > 1) {
-        <button type="button" class="close" [disabled]="disabled()" aria-label="Close tab" (click)="close.emit(i)">
-          ×
+        <button
+          app-button
+          variant="flat"
+          type="button"
+          class="close"
+          [disabled]="disabled()"
+          aria-label="Close tab"
+          (click)="close.emit(i)"
+        >
+          <app-icon name="remove" />
         </button>
       }
     </div>
   }
   @if (names().length < max()) {
-    <button type="button" class="add" [disabled]="disabled()" aria-label="New tab" (click)="add.emit()">+</button>
+    <button
+      app-button
+      variant="flat"
+      type="button"
+      class="add"
+      [disabled]="disabled()"
+      aria-label="New tab"
+      (click)="add.emit()"
+    >
+      <app-icon name="add" />
+    </button>
   }
 </div>

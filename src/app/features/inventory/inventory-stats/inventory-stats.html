@@ -3,7 +3,7 @@
     <table [class.materia]="type === 'materia'">
       <tbody>
         <tr>
-          <td class="type"><i [class]="'img img-equipment-' + type"></i></td>
+          <td class="type"><app-icon [name]="'equipment-' + type" size="20" /></td>
           <td>{{ stat.different }}</td>
           <td>/</td>
           <td>{{ stat.total }}</td>

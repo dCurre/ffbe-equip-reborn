@@ -1,7 +1,10 @@
 import { Component, effect, ElementRef, input, model, viewChild } from '@angular/core';
+import { Icon } from '../../../shared/components/icon/icon';
+import { Button } from '../button/button';
 
 /** A dialog box (the old Bootstrap modal) on the native `<dialog>`: `[(open)]`, a title, the body and an optional footer (`modalFooter`). */
 @Component({
+  imports: [Button, Icon],
   selector: 'app-modal',
   templateUrl: './modal.html',
   styleUrl: './modal.css',

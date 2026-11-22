@@ -27,7 +27,7 @@
 
 .unit.notOwned .base-number,
 .unit.notOwned .second-column,
-.unit.notOwned .third-column {
+.unit.notOwned .trust-label {
   opacity: 0.3;
 }
 
@@ -98,18 +98,16 @@
   padding-left: 22px;
 }
 
-.moogles img {
+.moogles app-icon {
   position: absolute;
   top: -10px;
   left: -6px;
-  width: 32px;
 }
 
-.fragments img {
+.fragments app-icon {
   position: absolute;
   top: -7px;
   left: -7px;
-  width: 36px;
 }
 
 .moogles .badge {
@@ -166,19 +164,32 @@
 }
 
 .trust-counter {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  cursor: help;
 }
 
+.trust-label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+}
 .trust-counter .badge {
   margin-left: 3px;
 }
+.trust-help {
+  position: relative;
+  display: inline-flex;
+  margin-right: 3px;
+  color: var(--color-link);
+  cursor: help;
+}
 
-.trust-counter.stmr,
-.trust-counter.tmr {
+.trust-counter.stmr .trust-label,
+.trust-counter.tmr .trust-label {
   opacity: 0.4;
 }
 
@@ -186,8 +197,8 @@
   display: none;
 }
 
-.sevenStars .trust-counter.stmr,
-.owned .trust-counter.tmr {
+.sevenStars .trust-counter.stmr .trust-label,
+.owned .trust-counter.tmr .trust-label {
   opacity: 1;
 }
 
@@ -213,9 +224,8 @@
   line-height: 1;
   color: var(--unit-action-text);
   background-color: var(--unit-action-background);
-  border: 1px solid var(--unit-action-border);
+  border-color: var(--unit-action-border);
   border-radius: 5px;
-  cursor: pointer;
 }
 
 .action-button.edit {
@@ -224,7 +234,6 @@
 
 .farmed-button {
   display: none;
-  height: 44px;
   margin: -10px -5px;
   cursor: pointer;
 }
@@ -252,4 +261,30 @@
   .awakenable .awaken-button {
     display: block;
   }
+  /* a sheet at the bottom of the screen, as wide as the screen: the item line does not fit in the card */
+  .trust-tip {
+    position: fixed;
+    top: auto;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    box-sizing: border-box;
+    width: auto;
+    max-width: none;
+    max-height: 60vh;
+    overflow: auto;
+  }
+}
+/* the item line of a TMR / STMR, under the "?" while the pointer is on it */
+.trust-tip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  max-width: 600px;
+  color: var(--color-text);
+  cursor: default;
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px #00000040;
 }

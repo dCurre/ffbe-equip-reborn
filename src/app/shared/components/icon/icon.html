@@ -1,1 +1,11 @@
-<svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="path()" /></svg>
+@switch (info()?.kind) {
+  @case ('svg') {
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path [attr.d]="info()?.path" /></svg>
+  }
+  @case ('sprite') {
+    <i [class]="'img img-' + name()" [style.width]="cssWidth()" [style.height]="cssHeight()"></i>
+  }
+  @case ('image') {
+    <img [src]="info()?.src" [alt]="title() ?? info()?.title ?? ''" [style.width]="cssWidth()" [style.height]="cssHeight()" />
+  }
+}

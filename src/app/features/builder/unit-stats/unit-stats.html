@@ -4,7 +4,7 @@
       <th></th>
       <th>Base</th>
       <th>
-        <button type="button" class="link-button" title="Switch pots" (click)="switchPots()">Pots</button>
+        <button app-button variant="link" type="button" class="link-button" title="Switch pots" (click)="switchPots()">Pots</button>
       </th>
       <th>Buff %</th>
     </tr>
@@ -15,7 +15,7 @@
         <th>{{ stat.toUpperCase() }}</th>
         <td>{{ s.build().getStat(stat) }}</td>
         <td>
-          <button type="button" class="pot-button" title="Pot" (click)="cyclePot(stat)">&#9679;</button>
+          <button app-button variant="link" type="button" class="pot-button" title="Pot" (click)="cyclePot(stat)">&#9679;</button>
           <input
             type="number"
             min="0"

@@ -5,7 +5,7 @@
       <tbody>
         @for (row of rows(); track row.key) {
           <tr>
-            <td class="crystal"><i [class]="'img img-crystal-' + row.crystal"></i></td>
+            <td class="crystal"><app-icon [name]="row.crystal" [title]="row.title" /></td>
             <td>{{ counts()[group.key][row.key].different }}</td>
             <td>/</td>
             <td>{{ counts()[group.key][row.key].total }}</td>

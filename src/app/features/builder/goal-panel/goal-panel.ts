@@ -6,13 +6,14 @@ import { Panel } from '../../../shared/components/panel/panel';
 import { chooseGoal, int } from '../shared/build-inputs';
 import type { CustomGoal } from '../shared/custom-goal';
 import { StatePanel } from '../shared/state-panel';
+import { Icon } from '../../../shared/components/icon/icon';
 
 const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** What the build is for: damage, a stat, a skill... and the conditions of the goal. */
 @Component({
   selector: 'app-goal-panel',
-  imports: [Panel, ChoiceGroup, Button],
+  imports: [Panel, ChoiceGroup, Button, Icon],
   templateUrl: './goal-panel.html',
   styleUrls: ['../shared/form-common.css', './goal-panel.css'],
 })

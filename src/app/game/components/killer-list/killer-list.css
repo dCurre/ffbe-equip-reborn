@@ -1,7 +1,3 @@
-i.img {
-  width: var(--killer-size, 40px);
-  height: var(--killer-size, 40px);
-}
 .over {
   color: red;
 }

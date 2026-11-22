@@ -6,14 +6,14 @@
     <div class="elementalResistances">
       @for (resist of elementResists(); track resist.name) {
         <span [class]="'elementResistance ' + resist.name" [class.selected]="resist.selected"
-          ><i [class]="'img img-element-' + resist.name"></i>{{ resist.value }}%</span
+          ><app-icon [name]="'element-' + resist.name" size="30" />{{ resist.value }}%</span
         >
       }
     </div>
     <div class="ailmentResistances">
       @for (resist of ailmentResists(); track resist.name) {
         <span [class]="'ailmentResistance ' + resist.name" [class.selected]="resist.selected"
-          ><i [class]="'img img-ailment-' + resist.name"></i>{{ resist.value }}%</span
+          ><app-icon [name]="'ailment-' + resist.name" size="30" />{{ resist.value }}%</span
         >
       }
     </div>
@@ -24,7 +24,7 @@
       title="Show all the skills"
       (click)="toggleSkills.emit()"
       (keydown.enter)="toggleSkills.emit()"
-      >{{ open() ? '&#9650;' : '&#9660;' }}</span
+      ><app-icon [name]="open() ? 'caret-up' : 'caret-down'" /></span
     >
     <div class="lb">
       @if (showLb()) {

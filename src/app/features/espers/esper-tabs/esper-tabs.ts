@@ -1,8 +1,10 @@
 import { Component, input, output } from '@angular/core';
 import { esperSprite, EsperInfo, OwnedEsper } from '../esper-model';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /** One tab per Esper, with the picture of the Esper (dimmed when it is not owned), and the tab of the stats of all of them. */
 @Component({
+  imports: [Icon],
   selector: 'app-esper-tabs',
   templateUrl: './esper-tabs.html',
   styleUrl: './esper-tabs.css',

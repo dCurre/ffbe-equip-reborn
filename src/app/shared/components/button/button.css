@@ -4,11 +4,51 @@
   font: inherit;
   line-height: var(--line-height);
   color: var(--color-button-text);
+  text-decoration: none;
   background-color: var(--color-button-background);
   border: 1px solid var(--color-button-border);
   border-radius: var(--radius);
   cursor: pointer;
 }
-:host(:hover) {
+
+/*
+ * The states and variants below use :where() so that they weigh as much as the base rule above:
+ * a rule of the place that uses the button (a class of its own) always wins over them.
+ */
+:host(:where(:hover)) {
   background-color: var(--color-button-hover-background);
+}
+
+:host(:where(.small)) {
+  padding: 2px 6px;
+}
+
+/* the main action, or a toggle that is pressed */
+:host(:where([data-variant='primary'], .active)),
+:host(:where([data-variant='primary']:hover, .active:hover)) {
+  color: var(--color-button-selected-text);
+  background-color: var(--color-button-selected-background);
+  border-color: var(--color-button-selected-border);
+}
+
+/* no frame: an icon alone, a stepper */
+:host(:where([data-variant='flat'])),
+:host(:where([data-variant='flat']:hover)) {
+  padding: 0;
+  color: inherit;
+  background: none;
+  border: 0;
+}
+
+/* looks like a link */
+:host(:where([data-variant='link'])),
+:host(:where([data-variant='link']:hover)) {
+  padding: 0;
+  color: var(--color-link);
+  background: none;
+  border: 0;
+}
+
+:host(:where([data-variant='link']:hover)) {
+  color: var(--color-link-hover);
 }

@@ -28,41 +28,16 @@
               />
             }
             <div class="filters">
-              <label>
-                <input
-                  type="checkbox"
-                  [checked]="onlyOwned()"
-                  (change)="toggleOnlyOwned($any($event.target).checked)"
-                />
+              <app-checkbox [checked]="onlyOwned()" (checkedChange)="toggleOnlyOwned($event)">
                 Only show owned units
-              </label>
+              </app-checkbox>
               @if (onlyOwned()) {
-                <label>
-                  <input
-                    type="checkbox"
-                    [checked]="onlySevenStar()"
-                    (change)="onlySevenStar.set($any($event.target).checked)"
-                  />
-                  Only show 7★ units
-                </label>
+                <app-checkbox [(checked)]="onlySevenStar">Only show 7★ units</app-checkbox>
               }
-              <label>
-                <input
-                  type="checkbox"
-                  [checked]="onlyTimeLimited()"
-                  (change)="onlyTimeLimited.set($any($event.target).checked)"
-                />
-                Only time limited units
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  [checked]="onlyTmrMoogles()"
-                  (change)="onlyTmrMoogles.set($any($event.target).checked)"
-                />
-                Only units with TMR Moogles
-              </label>
+              <app-checkbox [(checked)]="onlyTimeLimited">Only time limited units</app-checkbox>
+              <app-checkbox [(checked)]="onlyTmrMoogles">Only units with TMR Moogles</app-checkbox>
             </div>
+            <app-choice-group class="group-filter" iconType="crystal" [choices]="groupChoices()" [(selected)]="selectedGroups" />
           </div>
 
           <div
@@ -71,17 +46,7 @@
             [class.export-all]="exporting() && exporting()!.minRarity === 1"
             [class.export-rare]="exporting() && exporting()!.minRarity !== 1"
           >
-            @if (jumps().length > 0) {
-              <div class="jump-list" data-html2canvas-ignore>
-                <span>Jump to</span>
-                @for (group of jumps(); track group.id) {
-                  <a [href]="'#' + group.id" (click)="jumpTo(group.id, $event)">
-                    <ng-container *ngTemplateOutlet="groupLabel; context: { group: group }" />
-                  </a>
-                }
-              </div>
-            }
-            @for (group of groups(); track group.id) {
+            @for (group of visibleGroups(); track group.id) {
               @if (group.title) {
                 <div class="separator" [id]="group.id">
                   <ng-container *ngTemplateOutlet="groupLabel; context: { group: group }" />
@@ -93,6 +58,7 @@
                     [card]="card"
                     [tab]="tab()"
                     [readOnly]="readOnly()"
+                    [units]="allUnits()"
                     [eager]="!!exporting()"
                     (add)="add(card.unit)"
                     (farmedTmr)="farmedTmr(card.unit)"
@@ -106,6 +72,7 @@
             @if (shown() === 0) {
               <p>No {{ tab() === 'tmr' ? 'TMR' : 'units' }} found...</p>
             }
+            <div #end class="end"></div>
           </div>
         </div>
       </div>
@@ -148,7 +115,7 @@
 <ng-template #groupLabel let-group="group">
   @if (group.rarity) {
     @if (group.rarity.icon) {
-      <i [class]="'img img-crystal-' + group.rarity.icon"></i>
+      <app-icon [name]="group.rarity.icon" />
     }
     {{ group.rarity.text }}
   } @else {

@@ -3,13 +3,15 @@ import { Component, input, output } from '@angular/core';
 import { weaponList } from '../../../../core/constants/item-types';
 import { ItemSummary } from '../../../game/components/item-summary/item-summary';
 import { ItemEntry, SELLABLE_ITEMS_ACCESS } from '../inventory-model';
+import { Button } from '../../../shared/components/button/button';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the enchantments of the game are open */
 
 /** One item of the inventory: how many are owned, the buttons to change them, and what the tab adds (STMR recipe, sell reason). */
 @Component({
   selector: 'app-inventory-card',
-  imports: [NgTemplateOutlet, ItemSummary],
+  imports: [NgTemplateOutlet, Button, ItemSummary, Icon],
   templateUrl: './inventory-card.html',
   styleUrls: ['../inventory-item.css', './inventory-card.css'],
 })

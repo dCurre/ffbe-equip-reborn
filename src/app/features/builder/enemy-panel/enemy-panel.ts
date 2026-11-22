@@ -11,6 +11,7 @@ import { MonsterAttack } from '../monster-attack/monster-attack';
 import { MonsterList } from '../monster-list/monster-list';
 import { StatePanel } from '../shared/state-panel';
 import { WeaponImperils } from '../weapon-imperils/weapon-imperils';
+import { Button } from '../../../shared/components/button/button';
 
 const RACES = [
   'aquatic',
@@ -31,7 +32,17 @@ const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.sl
 /** The stats, races, resistances and imperils of the enemy. */
 @Component({
   selector: 'app-enemy-panel',
-  imports: [Panel, ChoiceGroup, Icon, InputGroup, NumberField, MonsterList, WeaponImperils, MonsterAttack],
+  imports: [
+    Panel,
+    ChoiceGroup,
+    Icon,
+    InputGroup,
+    NumberField,
+    MonsterList,
+    WeaponImperils,
+    MonsterAttack,
+    Button,
+  ],
   templateUrl: './enemy-panel.html',
   styleUrls: ['../shared/form-common.css', './enemy-panel.css'],
 })

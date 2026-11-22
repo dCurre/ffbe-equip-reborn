@@ -2,9 +2,6 @@
   display: flex;
   flex-wrap: wrap;
 }
-.group {
-  margin-right: 5px;
-}
 .value {
   position: relative;
   display: inline-block;
@@ -13,15 +10,11 @@
 }
 .mini {
   position: absolute;
-  width: 22px;
-  height: 22px;
   margin-top: 19px;
   margin-left: 19px;
   border-radius: 5px;
 }
 .with-mini {
-  width: 38px;
-  height: 38px;
   margin-right: 2px;
 }
 .bonus {

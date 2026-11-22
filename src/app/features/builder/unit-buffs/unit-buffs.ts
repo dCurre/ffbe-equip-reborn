@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { elementList, killerList } from '../../../../core/constants/base-lists';
 import { StatePanel } from '../shared/state-panel';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /** The killer and element buffs given to the unit. */
 @Component({
+  imports: [Icon],
   selector: 'app-unit-buffs',
   templateUrl: './unit-buffs.html',
   styleUrl: './unit-buffs.css',

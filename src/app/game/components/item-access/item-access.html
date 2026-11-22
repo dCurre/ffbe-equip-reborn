@@ -34,7 +34,7 @@
   <div class="exclusive">
     If equiped with
     @for (condition of conditions(); track condition.name; let last = $last) {
-      <i [class]="'img img-' + condition.kind + '-' + condition.name"></i>
+      <app-icon [name]="condition.kind + '-' + condition.name" size="30" />
       @if (!last) {
         <ng-container>{{ conditionSeparator() }}</ng-container>
       }

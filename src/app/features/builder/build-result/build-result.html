@@ -52,7 +52,7 @@
   </div>
 
   <div class="view-switch">
-    <button type="button" (click)="concise.set(!concise())">
+    <button app-button variant="link" type="button" (click)="concise.set(!concise())">
       {{ concise() ? 'Detailed view' : 'Concise view' }}
     </button>
   </div>
@@ -63,24 +63,39 @@
         <div class="slot-line" [class.enhanced]="line.item.enhancements">
           <div class="actions">
             @if (line.pinned) {
-              <button type="button" title="Unpin this item" (click)="items().unpinItem(line.slot.index)">
-                &#128204;
+              <button app-button variant="flat" type="button" title="Unpin this item" (click)="items().unpinItem(line.slot.index)">
+                <app-icon name="pin" />
               </button>
             } @else {
-              <button type="button" class="dim" title="Pin this item" (click)="items().pinItem(line.slot.index)">
-                &#128204;
+              <button
+                app-button
+                variant="flat"
+                type="button"
+                class="dim"
+                title="Pin this item"
+                (click)="items().pinItem(line.slot.index)"
+              >
+                <app-icon name="pin" />
               </button>
             }
-            <button type="button" title="Remove this item" (click)="items().removeItem(line.slot.index)">
-              &#128465;
+            <button app-button variant="flat" type="button" title="Remove this item" (click)="items().removeItem(line.slot.index)">
+              <app-icon name="delete" />
             </button>
             @if (!line.pinned && !line.item['placeHolder']) {
-              <button type="button" title="Exclude this item from builds" (click)="items().toggleExclude(line.item.id)">
+              <button
+                app-button
+                variant="flat"
+                type="button"
+                title="Exclude this item from builds"
+                (click)="items().toggleExclude(line.item.id)"
+              >
                 <app-icon name="ban" />
               </button>
             }
             @if (line.weapon) {
               <button
+                app-button
+                variant="flat"
                 type="button"
                 title="Modify this weapon enchantment"
                 (click)="items().enhanceSlot(line.slot.index)"
@@ -104,7 +119,7 @@
         </div>
       } @else {
         <div class="slot-line empty" (click)="items().openSlot(line.slot.index)">
-          <i [class]="'img img-slot-' + line.slot.icon + ' icon'"></i> {{ line.slot.name }}
+          <app-icon [name]="'slot-' + line.slot.icon" size="40" /> {{ line.slot.name }}
         </div>
       }
     }

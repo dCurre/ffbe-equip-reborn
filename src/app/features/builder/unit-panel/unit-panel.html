@@ -27,7 +27,7 @@
         <strong>{{ unit.name }}</strong>
         <span class="rarity" [title]="'Rarity ' + unit.max_rarity">
           @if (unit.max_rarity === 'NV') {
-            <img src="img/icons/NV.png" alt="NV" />
+            <app-icon name="nv" height="1em" />
           } @else {
             {{ stars(unit.max_rarity) }}
           }
@@ -35,7 +35,7 @@
         <app-wiki-link [name]="unit.name" [page]="unit['wikiEntry']" [always]="true" />
         @if (s.hasBraveShift()) {
           <button app-button type="button" class="brave-shift" title="Brave Shift" (click)="loader().braveShift()">
-            <img src="img/icons/braveShift.png" alt="Brave Shift" />
+            <app-icon name="brave-shift" />
           </button>
         }
       </div>

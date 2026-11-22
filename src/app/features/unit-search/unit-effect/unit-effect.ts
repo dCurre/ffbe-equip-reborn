@@ -2,13 +2,14 @@ import { Component, computed, forwardRef, inject, input } from '@angular/core';
 import { UnitContext } from '../unit-context';
 import { UnitEffectDescription } from '../unit-effect-description/unit-effect-description';
 import { UnitSkill } from '../unit-skill/unit-skill';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
 /** One effect of a skill: its text, or the skills it uses, counters, casts or gives (shown as skills of their own). */
 @Component({
   selector: 'app-unit-effect',
-  imports: [UnitEffectDescription, forwardRef(() => UnitSkill)],
+  imports: [UnitEffectDescription, forwardRef(() => UnitSkill), Icon],
   templateUrl: './unit-effect.html',
   styleUrls: ['../unit-skill/unit-skill.css', './unit-effect.css'],
 })

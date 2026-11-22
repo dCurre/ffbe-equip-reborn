@@ -5,11 +5,12 @@ import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { Item } from '../../helpers/item';
 import { ItemEnchantments } from '../../models/item-context.model';
 import { itemStats } from '../../helpers/item-stats';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /** The name of an item with its wiki link, rarity, level, stats and enhancements. */
 @Component({
   selector: 'app-item-name',
-  imports: [WikiLink],
+  imports: [WikiLink, Icon],
   host: { class: 'td name' },
   templateUrl: './item-name.html',
   styleUrl: './item-name.css',

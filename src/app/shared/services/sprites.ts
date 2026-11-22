@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 
 /** The sprite sheets of `public/css-img/` (`i.img.img-<sheet>-<name>`), loaded as a stylesheet the first time a page needs them. */
 export type SpriteSheet =
-  'espers' | 'elements' | 'ailments' | 'killers' | 'equipments' | 'crystals' | 'tabs' | 'sorts' | 'access' | 'stats';
+  'espers' | 'elements' | 'ailments' | 'killers' | 'equipments' | 'crystals' | 'tabs' | 'sorts' | 'access' | 'stats' | 'slots';
 
 @Injectable({ providedIn: 'root' })
 export class Sprites {

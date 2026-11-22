@@ -9,7 +9,6 @@ import { PageContent } from '../../layout/page-content/page-content';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { Inventory } from '../../shared/services/inventory';
 import { ServerContext } from '../../shared/services/server-context';
-import { Sprites } from '../../shared/services/sprites';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
 import { UserData } from '../../shared/services/user-data';
@@ -224,7 +223,6 @@ export class Builder {
   }
 
   constructor() {
-    inject(Sprites).load('equipments', 'elements', 'ailments', 'killers', 'espers', 'stats');
     this.start();
   }
 

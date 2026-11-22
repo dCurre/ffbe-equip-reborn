@@ -15,7 +15,6 @@
     font-size: 32px;
     color: white;
     background-color: green;
-    border: 0;
     border-radius: 75px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   }
@@ -29,8 +28,7 @@
     flex-direction: column;
   }
 
-  .filter-summary i,
-  .filter-summary img {
-    display: block;
+    .filter-summary app-icon {
+    display: flex;
   }
 }

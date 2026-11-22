@@ -1,25 +1,25 @@
 <div [class]="'unit ' + card().classes">
   <div class="owned-numbers">
     <div class="nv-number">
-      <i class="img img-crystal-NV"></i><span class="badge">{{ card().nv }}</span>
+      <app-icon name="crystal-NV" title="NV copies owned" /><span class="badge">{{ card().nv }}</span>
     </div>
     <div class="seven-star-number">
-      <i class="img img-crystal-sevenStarCrystal"></i><span class="badge seven-star">{{ card().sevenStar }}</span>
+      <app-icon name="crystal-sevenStarCrystal" title="7★ copies owned" /><span class="badge seven-star">{{ card().sevenStar }}</span>
     </div>
     <div class="base-number">
       @if (card().crystal) {
-        <i [class]="'img img-crystal-' + card().crystal"></i>
+        <app-icon [name]="card().crystal!" title="Copies owned (not 7★)" />
       }
       <span class="badge">{{ card().base }}</span>
     </div>
     <div class="moogles">
-      <img src="img/units/unit_ills_904000103.png" alt="" />
+      <app-icon name="tmr-moogle" title="TMR Moogles owned" width="32" />
       <span class="badge" [title]="card().moogles.length ? card().moogles.join('%, ') + '%' : ''">{{
         card().moogles.length
       }}</span>
     </div>
     <div class="fragments">
-      <img src="img/icons/fragment.png" alt="" />
+      <app-icon name="fragment" width="36" />
       <span class="badge" [title]="card().fragments + ' fragments'">{{ card().fragments }}</span>
     </div>
   </div>
@@ -44,12 +44,12 @@
             <app-wiki-link [name]="card().unit.name" [always]="true" />
           }
           @if (card().timeLimited) {
-            <span class="time" title="Time limited unit">&#x23F1;</span>
+            <span class="time" title="Time limited unit"><app-icon name="timer" /></span>
           }
         </div>
         <div class="rarity">
           @if (card().rarity.icon) {
-            <i [class]="'img img-crystal-' + card().rarity.icon"></i>
+            <app-icon [name]="card().rarity.icon!" />
           }
           {{ card().rarity.text }}
         </div>
@@ -58,37 +58,34 @@
     @if (!readOnly()) {
       <div class="actions">
         <button
+          app-button
           type="button"
           class="action-button"
           [title]="'Add one ' + card().unit.name + ' to your collection'"
           (click)="add.emit()"
         >
-          +
+          <app-icon name="add" />
         </button>
-        <img
+        <app-icon
           class="farmed-button tmr"
-          src="img/units/unit_ills_904000105.png"
-          alt="TMR farmed"
+          name="tmr-farmed"
+          height="44"
           title="TMR Farmed ! Click here to indicate you farmed this TMR. It will add 1 of this TMR to your inventory"
           (click)="farmedTmr.emit()"
         />
-        <img
+        <app-icon
           class="farmed-button stmr"
-          src="img/units/unit_ills_906000105.png"
-          alt="STMR farmed"
+          name="stmr-farmed"
+          height="44"
           title="STMR Farmed ! Click here to indicate you farmed this STMR. It will add 1 of this STMR to your inventory"
           (click)="farmedStmr.emit()"
         />
         @if (card().unit.max_rarity === '7') {
-          <img
-            class="awaken-button"
-            src="img/icons/crystals/sevenStarCrystal.png"
-            alt="Awaken"
-            title="Awaken this unit !"
-            (click)="awaken.emit()"
-          />
+          <app-icon class="awaken-button" name="awaken" title="Awaken this unit !" (click)="awaken.emit()" />
         }
-        <button type="button" class="action-button edit" title="Edit unit values" (click)="edit.emit()">&#9998;</button>
+        <button app-button type="button" class="action-button edit" title="Edit unit values" (click)="edit.emit()">
+          <app-icon name="edit" />
+        </button>
       </div>
     }
   </div>
@@ -96,23 +93,69 @@
   <div class="third-column">
     @if (readOnly()) {
       @if (card().sevenStars && card().stmr; as stmr) {
-        <div class="stmr">
-          STMR <span class="badge seven-star">{{ stmr.farmed }}</span>
-        </div>
+        <ng-container
+          *ngTemplateOutlet="
+            counter;
+            context: { which: 'stmr', label: 'STMR', text: stmr.farmed, item: stmr.item, seven: true }
+          "
+        />
       }
       @if (card().tmr; as tmr) {
-        <div class="tmr">
-          TMR <span class="badge">{{ tmr.farmed }}</span>
-        </div>
+        <ng-container
+          *ngTemplateOutlet="
+            counter;
+            context: { which: 'tmr', label: 'TMR', text: tmr.farmed, item: tmr.item, seven: false }
+          "
+        />
       }
     } @else if (card().tmr; as tmr) {
-      <div class="stmr trust-counter" [title]="card().stmr?.name ?? ''">
-        STMR
-        <span class="badge seven-star">{{ card().stmr?.farmed ?? 0 }}/{{ card().stmr?.total ?? 0 }}</span>
-      </div>
-      <div class="tmr trust-counter" [title]="tmr.name">
-        TMR <span class="badge">{{ tmr.farmed }}/{{ tmr.total }}</span>
-      </div>
+      <ng-container
+        *ngTemplateOutlet="
+          counter;
+          context: {
+            which: 'stmr',
+            label: 'STMR',
+            text: (card().stmr?.farmed ?? 0) + '/' + (card().stmr?.total ?? 0),
+            item: card().stmr?.item,
+            seven: true,
+          }
+        "
+      />
+      <ng-container
+        *ngTemplateOutlet="
+          counter;
+          context: { which: 'tmr', label: 'TMR', text: tmr.farmed + '/' + tmr.total, item: tmr.item, seven: false }
+        "
+      />
     }
   </div>
 </div>
+<!-- A TMR / STMR counter; the item line is drawn only while the pointer is on its "?" -->
+<ng-template #counter let-which="which" let-label="label" let-text="text" let-item="item" let-seven="seven">
+  <div [class]="which + ' trust-counter'">
+    @if (item) {
+      <span
+        class="trust-help"
+        tabindex="0"
+        [attr.aria-label]="'Show the ' + label"
+        (mouseenter)="tip.set(which)"
+        (mouseleave)="tip.set(null)"
+        (click)="tip.set(which)"
+        (focus)="tip.set(which)"
+        (blur)="tip.set(null)"
+      >
+        <app-icon name="help" />
+        @if (tip() === which) {
+          <div class="items trust-tip">
+            <div class="tbody">
+              <app-item-line class="tr" [item]="item" [units]="units()" />
+            </div>
+          </div>
+        }
+      </span>
+    }
+    <span class="trust-label">
+      {{ label }} <span class="badge" [class.seven-star]="seven">{{ text }}</span>
+    </span>
+  </div>
+</ng-template>

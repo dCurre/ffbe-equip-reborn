@@ -26,6 +26,8 @@
             (valueChange)="setStatField('monsterBreaks', stat, $event)"
           >
             <button
+              app-button
+              variant="flat"
               leading
               type="button"
               [title]="
@@ -60,8 +62,7 @@
       @for (element of elements; track element) {
         <div class="element">
           <span class="element-icon"
-            ><i [class]="'img img-element-' + element"></i><i class="img img-equipment-heavyShield shield"></i
-          ></span>
+            ><app-icon [name]="'element-' + element" size="34" /><app-icon name="equipment-heavyShield" class="shield" size="20" /></span>
           <app-input-group>
             <app-number-field
               [width]="60"

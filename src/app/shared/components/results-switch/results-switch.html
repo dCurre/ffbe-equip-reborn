@@ -1,18 +1,20 @@
 <button
+  app-button
+  variant="flat"
   type="button"
   class="side-button"
   [attr.aria-label]="showingResults() ? 'Show the filters' : 'Show the results'"
   (click)="toggle()"
 >
-  {{ showingResults() ? '⚙' : '🔍' }}
+  <app-icon [name]="showingResults() ? 'settings' : 'search'" />
 </button>
 @if (icons().length || killers()) {
   <div class="filter-summary">
     @for (icon of icons(); track $index) {
-      <i [class]="icon"></i>
+      <app-icon [name]="icon" />
     }
     @if (killers()) {
-      <img src="img/icons/killer.png" alt="" />
+      <app-icon name="killer" />
     }
   </div>
 }

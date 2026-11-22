@@ -10,11 +10,10 @@
   margin-left: auto;
 }
 
-.brave-shift img {
-  display: block;
+.brave-shift app-icon {
+  display: flex;
 }
 
-.rarity img {
-  height: 1em;
+.rarity app-icon {
   vertical-align: middle;
 }

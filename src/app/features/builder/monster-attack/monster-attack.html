@@ -1,7 +1,7 @@
 <div class="line">
   <span>Monster attack:</span>
   <a href="#" (click)="$event.preventDefault(); show()">{{ formulaToString(s.monsterAttackFormula(), false) }}</a>
-  <button type="button" class="reset" title="Back to the default attack" (click)="reset()">
+  <button app-button variant="link" type="button" class="reset" title="Back to the default attack" (click)="reset()">
     <app-icon name="remove" />
   </button>
 </div>

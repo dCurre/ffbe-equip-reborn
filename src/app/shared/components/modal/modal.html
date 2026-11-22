@@ -1,7 +1,9 @@
 <dialog #dialog [class.wide]="wide()" (close)="open.set(false)" (click)="closeOnBackdrop($event)">
   <div class="header">
     <h4>{{ heading() }}</h4>
-    <button type="button" class="close" aria-label="Close" (click)="open.set(false)">×</button>
+    <button app-button variant="flat" type="button" class="close" aria-label="Close" (click)="open.set(false)">
+      <app-icon name="remove" />
+    </button>
   </div>
   <div class="body"><ng-content /></div>
   <div class="footer"><ng-content select="[modalFooter]" /></div>

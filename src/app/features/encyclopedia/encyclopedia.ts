@@ -29,7 +29,6 @@ import { SearchColumns } from '../../shared/components/search-columns/search-col
 import { highlightText } from '../../shared/helpers/highlight';
 import { Inventory } from '../../shared/services/inventory';
 import { clearSearchBox, debouncer } from '../../shared/helpers/search-input';
-import { Sprites } from '../../shared/services/sprites';
 import { StaticData } from '../../shared/services/static-data';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
 import { Button } from '../../shared/components/button/button';
@@ -248,9 +247,9 @@ export class Encyclopedia {
       .join(' ');
   });
   protected readonly summaryIcons = computed(() => [
-    ...this.types().map((type) => `img img-equipment-${type}`),
-    ...this.elements().map((element) => `img img-element-${element}`),
-    ...this.ailments().map((ailment) => `img img-ailment-${ailment}`),
+    ...this.types().map((type) => `equipment-${type}`),
+    ...this.elements().map((element) => `element-${element}`),
+    ...this.ailments().map((ailment) => `ailment-${ailment}`),
   ]);
   protected readonly hasKillers = computed(() => this.physicalKillers().length + this.magicalKillers().length > 0);
   protected readonly ownedCount = (item: Item): number | null =>
@@ -283,7 +282,6 @@ export class Encyclopedia {
   });
 
   constructor() {
-    inject(Sprites).load('equipments', 'elements', 'ailments', 'killers', 'sorts', 'access', 'stats', 'espers');
     // keep the filters in the URL, so a search can be shared
     afterRenderEffect(() => {
       const state = this.saved();

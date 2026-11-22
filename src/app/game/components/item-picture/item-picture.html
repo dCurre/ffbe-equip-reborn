@@ -1,13 +1,13 @@
 @if (notStackable()) {
-  <img class="miniIcon left" src="img/icons/notStackable.png" title="Not stackable" alt="" />
+  <app-icon class="miniIcon left" name="not-stackable" title="Not stackable" size="22" />
 }
 @if (twoHanded()) {
-  <img class="miniIcon left" src="img/icons/twoHanded.png" title="Two-handed" alt="" />
+  <app-icon class="miniIcon left" name="two-handed" title="Two-handed" size="22" />
 }
 @if (item().icon) {
   <img [src]="'img/items/' + item().icon" class="icon" loading="lazy" alt="" />
 } @else if (item().type === 'esper') {
-  <i [class]="'img icon img-esper-' + esperName()"></i>
+  <app-icon [name]="'esper-' + esperName()" class="icon" size="64" />
 } @else if (item().type !== 'unavailable') {
-  <i [class]="'img icon img-equipment-' + item().type"></i>
+  <app-icon [name]="'equipment-' + item().type" class="icon" size="64" />
 }

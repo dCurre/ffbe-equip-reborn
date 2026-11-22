@@ -377,10 +377,10 @@ export function newEsper(info: Pick<EsperInfo, 'name' | 'id'>, rarity: number, b
 /** The old `escapeName`: the name as used in the link and in the picture class. */
 export const escapeName = (name: string): string => name.replace(/[+%&': ().]/g, '_');
 
-/** The picture class of an Esper (the sprite named after the Black Dragon is `Kokuryu`). */
+/** The icon of an Esper (the sprite named after the Black Dragon is `Kokuryu`). */
 export function esperSprite(name: string): string {
   const escaped = escapeName(name);
-  return `img img-esper-${escaped === 'Black_Dragon' ? 'Kokuryu' : escaped}`;
+  return `esper-${escaped === 'Black_Dragon' ? 'Kokuryu' : escaped}`;
 }
 
 const bin2hex = (bin: string): string =>

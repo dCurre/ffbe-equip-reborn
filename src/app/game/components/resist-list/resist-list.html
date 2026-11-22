@@ -1,26 +1,26 @@
 @if (resist()) {
   <div class="groups">
     @for (group of elements(); track group.percent) {
-      <div class="group">
+      <app-value-group class="group">
         @for (name of group.names; track name) {
-          <span class="value">
-            <i [class]="'img mini img-equipment-' + icon()"></i><i [class]="'img with-mini img-element-' + name"></i>
+          <span class="value" [title]="name + (icon() === 'sword' ? ' infliction' : ' resist')">
+            <app-icon [name]="'equipment-' + icon()" class="mini" size="22" /><app-icon [name]="'element-' + name" class="with-mini" size="38" />
           </span>
         }
-        <span [class.bonus]="group.bonus > 0">{{ group.percent }}%</span>
-      </div>
+        <span value [class.bonus]="group.bonus > 0">{{ group.percent }}%</span>
+      </app-value-group>
     }
   </div>
   <div class="groups">
     @for (group of ailments(); track group.percent) {
-      <div class="group">
+      <app-value-group class="group">
         @for (name of group.names; track name) {
-          <span class="value">
-            <i [class]="'img mini img-equipment-' + icon()"></i><i [class]="'img with-mini img-ailment-' + name"></i>
+          <span class="value" [title]="name + (icon() === 'sword' ? ' infliction' : ' resist')">
+            <app-icon [name]="'equipment-' + icon()" class="mini" size="22" /><app-icon [name]="'ailment-' + name" class="with-mini" size="38" />
           </span>
         }
-        <span [class.bonus]="group.bonus > 0">{{ group.percent }}%</span>
-      </div>
+        <span value [class.bonus]="group.bonus > 0">{{ group.percent }}%</span>
+      </app-value-group>
     }
   </div>
 }

@@ -3,13 +3,11 @@
   flex-wrap: wrap;
 }
 
-.equipable i.img {
-  width: 36px;
-  height: 36px;
+.equipable app-icon {
   margin: 2px;
   cursor: pointer;
 }
 
-.equipable i.banned {
+.equipable app-icon.banned {
   opacity: 0.25;
 }

@@ -29,7 +29,7 @@
           }
           @if (tab() === 'farmableStmr') {
             <div class="stmr-moogle">
-              Available <img src="img/units/unit_ills_906000105.png" alt="" />
+              Available <app-icon name="stmr-farmed" size="40" />
               <input
                 type="number"
                 min="0"
@@ -50,7 +50,7 @@
           }
           @if (tab() === 'sellable') {
             <div class="work-in-progress">
-              <div>&#9888; This is a work in progress</div>
+              <div><app-icon name="alert" /> This is a work in progress</div>
               <div>
                 It displays the items you own, that either can be bought in a shop, or for which you own at least X
                 strictly better items
@@ -77,7 +77,7 @@
           }
           @if (tab() === 'candidates') {
             <div class="work-in-progress">
-              <div>&#9888; This is a work in progress</div>
+              <div><app-icon name="alert" /> This is a work in progress</div>
               <div>
                 It displays the items you own, not enhanced, that have at most X strictly better item you own, that is,
                 good candidates for Item World
@@ -127,7 +127,7 @@
                 <span>Jump to</span>
                 @for (group of groups(); track group.type) {
                   <a [href]="'#type-' + group.type" (click)="jumpTo(group.type, $event)">
-                    <i [class]="'img img-equipment-' + group.type"></i>
+                    <app-icon [name]="'equipment-' + group.type" size="24" />
                   </a>
                 }
               </div>
@@ -135,7 +135,7 @@
             @for (group of visibleGroups(); track group.type) {
               @if (byType()) {
                 <div class="separator" [id]="'type-' + group.type">
-                  <i [class]="'img img-equipment-' + group.type"></i>
+                  <app-icon [name]="'equipment-' + group.type" size="50" />
                 </div>
               }
               <ng-container *ngTemplateOutlet="cardList; context: { lines: group.lines }" />

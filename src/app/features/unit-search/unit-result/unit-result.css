@@ -22,14 +22,9 @@
   width: 100%;
 }
 
-i.img {
-  width: 30px;
-  height: 30px;
-}
 
-.killers ::ng-deep i.img {
-  width: 33px;
-  height: 33px;
+.killers {
+  --killer-size: 33px;
 }
 
 .killers ::ng-deep .group {

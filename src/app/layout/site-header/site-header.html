@@ -11,13 +11,14 @@
       <div class="languages" role="group" aria-label="Language">
         @for (language of languages; track language) {
           <button
+            app-button
+            variant="flat"
             type="button"
             class="flag"
-            [class.selected]="serverContext.language() === language"
+            [active]="serverContext.language() === language"
             style="background-image: url(img/icons/languages.png)"
             [style.background-position]="flagPosition(language)"
             [attr.aria-label]="language"
-            [attr.aria-pressed]="serverContext.language() === language"
             (click)="serverContext.setLanguage(language)"
           ></button>
         }
@@ -26,9 +27,9 @@
     <div class="servers" role="group" aria-label="Server">
       @for (server of servers; track server) {
         <button
+          app-button
           type="button"
-          [class.selected]="serverContext.server() === server"
-          [attr.aria-pressed]="serverContext.server() === server"
+          [active]="serverContext.server() === server"
           (click)="serverContext.setServer(server)"
         >
           {{ server }}
@@ -41,9 +42,11 @@
     <h1 class="title">{{ title() }}</h1>
     <div class="inventory" role="group" aria-label="Inventory">
       @if (loggedIn()) {
-        <button type="button" class="logout" title="logout" aria-label="logout" (click)="logout()">&#x23FB;</button>
+        <button app-button type="button" class="logout" title="logout" aria-label="logout" (click)="logout()">
+          <app-icon name="logout" />
+        </button>
       } @else {
-        <button type="button" class="login" (click)="openLoginDialog()">Log in</button>
+        <button app-button type="button" class="login" (click)="openLoginDialog()">Log in</button>
       }
       <div class="status">
         @switch (inventory.status()) {
@@ -86,6 +89,8 @@
 
   <nav class="mobile" aria-label="Main">
     <button
+      app-button
+      variant="flat"
       type="button"
       class="logo"
       aria-label="Menu"
@@ -140,7 +145,7 @@
     <p class="error" role="alert">Login failed: {{ loginError() }}</p>
   }
   <div class="dialog-buttons">
-    <button type="button" (click)="loginDialog.close()">Cancel</button>
-    <button type="button" class="primary" (click)="login()">Continue</button>
+    <button app-button type="button" (click)="loginDialog.close()">Cancel</button>
+    <button app-button variant="primary" type="button" (click)="login()">Continue</button>
   </div>
 </dialog>

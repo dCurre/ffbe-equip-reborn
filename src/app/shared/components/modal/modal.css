@@ -25,11 +25,7 @@ h4 {
 .close {
   font-size: 21px;
   line-height: 1;
-  color: inherit;
-  background: none;
-  border: 0;
   opacity: 0.5;
-  cursor: pointer;
 }
 .body {
   padding: 15px;

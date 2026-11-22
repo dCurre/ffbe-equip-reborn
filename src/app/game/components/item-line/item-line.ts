@@ -1,5 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core';
-import { Sprites } from '../../../shared/services/sprites';
+import { Component, computed, input } from '@angular/core';
 import { Item } from '../../helpers/item';
 import { ItemEnchantments, ItemUnits } from '../../models/item-context.model';
 import { ItemAccess } from '../item-access/item-access';
@@ -33,7 +32,4 @@ export class ItemLine {
     return `${Math.round(this.item().calculatedValue ?? 0)}${percent}`;
   });
 
-  constructor() {
-    inject(Sprites).load('equipments', 'elements', 'ailments', 'killers', 'espers');
-  }
 }

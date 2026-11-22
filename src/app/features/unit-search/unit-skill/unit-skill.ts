@@ -5,13 +5,20 @@ import { UnitEquipedCondition } from '../unit-equiped-condition/unit-equiped-con
 import { UnitSkillTags } from '../unit-skill-tags/unit-skill-tags';
 import { UnitStrangeStats } from '../unit-strange-stats/unit-strange-stats';
 import { ifUsedAfter, unlockLines } from '../unit-skill-model';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
 /** A skill of a unit: its name and costs, what unlocks it, and its effects (which can show other skills). */
 @Component({
   selector: 'app-unit-skill',
-  imports: [UnitEquipedCondition, UnitSkillTags, UnitStrangeStats, forwardRef(() => UnitEffect)],
+  imports: [
+    UnitEquipedCondition,
+    UnitSkillTags,
+    UnitStrangeStats,
+    forwardRef(() => UnitEffect),
+    Icon,
+  ],
   templateUrl: './unit-skill.html',
   styleUrl: './unit-skill.css',
 })

@@ -7,6 +7,7 @@ import { UnitLimitBurst } from '../unit-limit-burst/unit-limit-burst';
 import { UnitSkill } from '../unit-skill/unit-skill';
 import { ItemsById } from '../unit-skill-model';
 import { Result, skillsToDisplay, UnitSearchState } from '../unit-search-model';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
@@ -19,7 +20,7 @@ interface Killers {
 /** A unit of the results: its picture and name, its passive killers and resistances, and the skills that match the search (or all of them). */
 @Component({
   selector: 'app-unit-result',
-  imports: [WikiLink, KillerList, UnitLimitBurst, UnitSkill],
+  imports: [WikiLink, KillerList, UnitLimitBurst, UnitSkill, Icon],
   providers: [UnitContext],
   templateUrl: './unit-result.html',
   styleUrl: './unit-result.css',

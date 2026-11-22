@@ -8,8 +8,8 @@
               @for (element of effect.elements; track element) {
                 <div class="specialValueItem">
                   <div class="specialImg">
-                    <i class="img miniIcon img-equipment-sword"></i>
-                    <i [class]="'img withMiniIcon img-element-' + element"></i>
+                    <app-icon name="equipment-sword" class="miniIcon" size="22" />
+                    <app-icon [name]="'element-' + element" class="withMiniIcon" size="38" />
                   </div>
                 </div>
               }
@@ -27,7 +27,7 @@
           @case ('conditional') {
             <div>
               <img class="icon" [src]="'img/items/' + effect.icon" alt="" />{{ effect.stats }} if
-              <i [class]="'img img-equipment-' + effect.equipment"></i>
+              <app-icon [name]="'equipment-' + effect.equipment" />
             </div>
           }
           @case ('line') {
@@ -41,7 +41,7 @@
                     <span class="uppercase">{{ part.text }}</span>
                   }
                   @case ('equipment') {
-                    <i [class]="'img inline img-equipment-' + part.name"></i>
+                    <app-icon [name]="'equipment-' + part.name" class="inline" />
                   }
                   @case ('gameText') {
                     <app-game-text [text]="part.text" />

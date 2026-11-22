@@ -1,6 +1,7 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { killerList } from '../../../../core/constants/base-lists';
-import { Sprites } from '../../../shared/services/sprites';
+import { ValueGroup } from '../value-group/value-group';
+import { Icon } from '../../../shared/components/icon/icon';
 
 export interface KillerEntry {
   name: string;
@@ -16,6 +17,7 @@ interface Group {
 /** Killers grouped by value: one line for the physical ones and one for the magical ones (the old `getKillerHtml`). */
 @Component({
   selector: 'app-killer-list',
+  imports: [ValueGroup, Icon],
   templateUrl: './killer-list.html',
   styleUrl: './killer-list.css',
 })
@@ -30,9 +32,6 @@ export class KillerList {
     magical: this.group('magical'),
   }));
 
-  constructor() {
-    inject(Sprites).load('killers');
-  }
 
   protected isSelected(kind: 'physical' | 'magical', races: string[]): boolean {
     return !!this.selected()?.[kind].some((race) => races.includes(race));

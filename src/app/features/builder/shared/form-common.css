@@ -52,16 +52,8 @@ input.short {
   gap: 2px;
 }
 
-.resist i.img {
-  width: 28px;
-  height: 28px;
-}
 
 .resist input {
   width: 56px;
 }
 
-app-choice-group i.img {
-  width: 30px;
-  height: 30px;
-}

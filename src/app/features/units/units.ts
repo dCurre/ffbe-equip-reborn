@@ -1,4 +1,14 @@
-import { Component, computed, ElementRef, HostListener, inject, signal, viewChild } from '@angular/core';
+import {
+  afterRenderEffect,
+  Component,
+  computed,
+  ElementRef,
+  HostListener,
+  inject,
+  linkedSignal,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { ShareLinkState } from '../../shared/state/share-link-state';
 import { ImportState } from '../../shared/state/import-state';
@@ -10,10 +20,15 @@ import { Inventory, OwnedUnit, OwnedUnits } from '../../shared/services/inventor
 import { LinkStore } from '../../shared/services/link-store';
 import { PageChrome } from '../../shared/services/page-chrome';
 import { ServerContext } from '../../shared/services/server-context';
+import { highlightText } from '../../shared/helpers/highlight';
+import { searchTokens } from '../../game/helpers/item';
+import { showMoreOnScroll } from '../../shared/helpers/infinite-scroll';
 import { clearSearchBox, debouncer } from '../../shared/helpers/search-input';
-import { Sprites } from '../../shared/services/sprites';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
+import { Icon } from '../../shared/components/icon/icon';
+import { Checkbox } from '../../shared/components/checkbox/checkbox';
+import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
 import { BusyOverlay } from '../../shared/components/busy-overlay/busy-overlay';
 import { copyToClipboard } from '../../shared/helpers/clipboard';
 import { ImportModal } from '../../shared/components/import-modal/import-modal';
@@ -44,6 +59,8 @@ import {
   isSoonNVA,
   num,
   parseMoogles,
+  baseCrystal,
+  rarityLabel,
   rarityParts,
   RarityParts,
   shownMaxRarity,
@@ -57,10 +74,13 @@ import {
   useStmrSource,
 } from './unit-model';
 
+/** The cards drawn at first, and each time the end of the list comes into view: the whole collection is a lot of cards. */
+const PAGE_SIZE = 60;
+
 type Tab = 'rarity' | 'alphabetical' | 'tmr' | 'history';
 
 interface Group {
-  /** the id of the heading, a jump-list target */
+  /** the id of the group */
   id: string;
   title: string;
   rarity?: RarityParts;
@@ -89,6 +109,8 @@ interface ReleasedUnit {
     CollectionLayout,
     TabBar,
     BusyOverlay,
+    ChoiceGroup,
+    Checkbox,
     ImportModal,
     ShareLinkModal,
     TextExportModal,
@@ -97,6 +119,7 @@ interface ReleasedUnit {
     UnitCollectionStats,
     UnitStmrModal,
     UnitAwakenModal,
+    Icon,
   ],
   templateUrl: './units.html',
   styleUrl: './units.css',
@@ -113,7 +136,7 @@ export class Units {
   private readonly chrome = inject(PageChrome);
 
   // --- Game data ---
-  private readonly allUnits = signal<Record<string, GameUnit>>({});
+  protected readonly allUnits = signal<Record<string, GameUnit>>({});
   private readonly released = signal<GameUnit[]>([]);
   private readonly releasedIds = signal<ReadonlySet<string>>(new Set());
   private readonly items = signal<TrustItem[]>([]);
@@ -192,10 +215,10 @@ export class Units {
 
   protected readonly stats = computed(() => collectionStats(this.released(), this.owned()));
   protected readonly statRows = [
-    { key: '7', crystal: 'sevenStarCrystal' },
-    { key: '5', crystal: 'rainbowCrystal' },
-    { key: '4', crystal: 'goldCrystal' },
-    { key: '3', crystal: 'blueCrystal' },
+    { key: '7', crystal: 'crystal-sevenStarCrystal', title: 'Units awakened to 7★' },
+    { key: '5', crystal: 'crystal-rainbowCrystal', title: 'Units with base 5★' },
+    { key: '4', crystal: 'crystal-goldCrystal', title: 'Units with base 4★' },
+    { key: '3', crystal: 'crystal-blueCrystal', title: 'Units with base 3★' },
   ] as const;
   protected readonly statGroups = [
     { key: 'all', title: 'All units' },
@@ -214,11 +237,45 @@ export class Units {
     const search = this.search().trim();
     if (tab === 'tmr') units = filterByTrustName(units, this.trust().tmr, search);
     else if (search) units = filterByName(units, search);
-    if (this.onlyOwned() || exporting) units = units.filter((unit) => owned[unit.id]);
-    if (this.onlySevenStar() && this.onlyOwned()) units = units.filter((unit) => owned[unit.id]?.sevenStar);
-    if (this.onlyTimeLimited()) units = units.filter((unit) => unit.summon_type === 'event');
-    if (this.onlyTmrMoogles()) units = units.filter((unit) => owned[unit.id]?.tmrMoogles?.length);
-    return units;
+    if (exporting) units = units.filter((unit) => owned[unit.id]);
+    return units.filter((unit) => this.passesFilters(unit));
+  });
+
+  /** The four checkboxes; "owned" is what the card's `owned` class says: a unit with only TMR to farm is not owned. */
+  private passesFilters(unit: GameUnit): boolean {
+    const mine = this.owned()[unit.id];
+    if (this.onlyOwned() && !(mine && (mine.number || mine.sevenStar || mine.nv))) return false;
+    if (this.onlyOwned() && this.onlySevenStar() && !(unit.min_rarity !== 'NV' && mine?.sevenStar)) return false;
+    if (this.onlyTimeLimited() && unit.summon_type !== 'event') return false;
+    if (this.selectedGroups().length && !this.selectedGroups().includes(this.groupId(unit))) return false;
+    return !this.onlyTmrMoogles() || !!mine?.tmrMoogles?.length;
+  }
+
+  /** The id of the rarity group of a unit: "min of max" (a "soon" NVA is apart). It is the id of its heading too. */
+  private groupId(unit: GameUnit): string {
+    const soon = isSoonNVA(unit, this.releasedIds());
+    return `rarity-${unit.min_rarity}-of-${shownMaxRarity(unit)}${soon ? '_soon' : ''}`;
+  }
+
+  /** The rarity groups to choose from (a filter): every group of the released units, whatever the other filters say. */
+  protected readonly selectedGroups = signal<readonly string[]>([]);
+  protected readonly groupChoices = computed<Choice[]>(() => {
+    const released = this.releasedIds();
+    const choices = new Map<string, Choice>();
+    for (const unit of sortByRarity(this.released(), released)) {
+      const value = this.groupId(unit);
+      if (choices.has(value)) continue;
+      const max = shownMaxRarity(unit);
+      const soon = isSoonNVA(unit, released);
+      const { icon, text } = rarityParts(unit.min_rarity, max, soon);
+      choices.set(
+        value,
+        icon
+          ? { value, icon: icon.replace('crystal-', ''), label: text.trim() || undefined, tooltip: soon ? 'NVA units (soon)' : undefined }
+          : { value, label: rarityLabel(unit.min_rarity, max, soon), tooltip: `Base ${unit.min_rarity}★, up to ${max}★` },
+      );
+    }
+    return [...choices.values()];
   });
 
   protected readonly groups = computed<Group[]>(() => {
@@ -238,7 +295,7 @@ export class Units {
       }
       const soon = isSoonNVA(unit, released);
       const max = shownMaxRarity(unit);
-      const id = `rarity-${unit.min_rarity}-of-${max}${soon ? '_soon' : ''}`;
+      const id = this.groupId(unit);
       let group = groups[groups.length - 1];
       if (group?.id !== id) {
         group = { id, title: id, rarity: rarityParts(unit.min_rarity, max, soon), cards: [] };
@@ -249,10 +306,37 @@ export class Units {
     return groups;
   });
 
-  /** "Jump to" links to the rarity headings (not the first one: it is right below). */
-  protected readonly jumps = computed(() => (this.tab() === 'rarity' ? this.groups().slice(1) : []));
 
   protected readonly shown = computed(() => this.groups().reduce((sum, group) => sum + group.cards.length, 0));
+
+  /** The cards drawn so far: it starts again from the first page when the search or a filter changes (not when a unit is edited). */
+  private readonly limit = linkedSignal<unknown, number>({
+    source: () => [
+      this.tab(),
+      this.search(),
+      this.onlyOwned(),
+      this.onlySevenStar(),
+      this.onlyTimeLimited(),
+      this.onlyTmrMoogles(),
+      this.selectedGroups(),
+    ],
+    computation: () => PAGE_SIZE,
+  });
+  private readonly end = viewChild<ElementRef<HTMLElement>>('end');
+
+  /** The groups cut after `limit` cards (an image export needs them all). */
+  protected readonly visibleGroups = computed<Group[]>(() => {
+    const groups = this.groups();
+    if (this.exporting()) return groups;
+    let left = this.limit();
+    const visible: Group[] = [];
+    for (const group of groups) {
+      if (left <= 0) break;
+      visible.push(left >= group.cards.length ? group : { ...group, cards: group.cards.slice(0, left) });
+      left -= group.cards.length;
+    }
+    return visible;
+  });
 
   // --- Dialogs ---
   protected readonly editModal = viewChild.required(UnitEditModal);
@@ -274,7 +358,12 @@ export class Units {
   protected readonly busy = signal(false);
 
   constructor() {
-    inject(Sprites).load('crystals', 'tabs', 'sorts', 'equipments');
+    showMoreOnScroll(this.end, this.limit, () => this.shown(), PAGE_SIZE, '600px');
+    afterRenderEffect(() => {
+      this.visibleGroups();
+      const results = this.results()?.nativeElement;
+      if (results) highlightText(results, this.tab() === 'history' ? [] : searchTokens(this.search().trim()));
+    });
     this.start();
   }
 
@@ -320,6 +409,30 @@ export class Units {
 
   // --- Display ---
 
+  /**
+   * The card of every unit, built once and again only when the collection changes: a filter or a search then only adds or
+   * removes cards, the others are the same objects and are not drawn again.
+   */
+  private readonly cards = computed(() => {
+    const cards = new Map<string, Card>();
+    for (const unit of this.released()) cards.set(unit.id, this.buildCard(unit));
+    return cards;
+  });
+
+  /** The same cards for the Trust tab: named after their TMR. */
+  private readonly trustCards = computed(() => {
+    const cards = new Map<string, Card>();
+    for (const [id, card] of this.cards()) {
+      const tmr = this.trust().tmr[id];
+      if (tmr) cards.set(id, { ...card, name: tmr.name });
+    }
+    return cards;
+  });
+
+  private card(unit: GameUnit, trustName = false): Card {
+    return (trustName ? this.trustCards() : this.cards()).get(unit.id)!;
+  }
+
   private single(units: GameUnit[], byTrustName = false): Group {
     const cards = units.map((unit) => this.card(unit, byTrustName));
     return { id: 'all', title: '', cards };
@@ -332,8 +445,8 @@ export class Units {
       for (const source of sources) {
         if (source.type !== 'banner') continue;
         for (const id of source.units ?? []) {
-          const unit = this.released().find((u) => u.id === id);
-          if (unit && (!this.onlyOwned() || this.owned()[id])) cards.push(this.card(unit));
+          const card = this.cards().get(id);
+          if (card && this.passesFilters(card.unit)) cards.push(card);
         }
       }
       if (cards.length) groups.push({ id: date, title: date, cards });
@@ -341,7 +454,7 @@ export class Units {
     return groups;
   }
 
-  private card(unit: GameUnit, trustName = false): Card {
+  private buildCard(unit: GameUnit): Card {
     const owned = this.owned()[unit.id];
     const sevenStars = unit.min_rarity !== 'NV' && !!owned?.sevenStar;
     const classes = [
@@ -362,19 +475,18 @@ export class Units {
     const stmr = this.trust().stmr[unit.id];
     const farmed = this.farmed();
     const trust = (item: TrustItem | undefined, farmedCount: number, farmable: number) =>
-      item || this.readOnly() ? { name: item?.name ?? '', farmed: farmedCount, total: farmedCount + farmable } : null;
+      item || this.readOnly() ? { name: item?.name ?? '', item, farmed: farmedCount, total: farmedCount + farmable } : null;
     return {
       unit,
       classes,
       image: unitImage(unit, owned),
       rarity: rarityParts(unit.min_rarity, shownMaxRarity(unit)),
       timeLimited: unit.summon_type === 'event',
-      name: trustName ? tmr.name : unit.name,
+      name: unit.name,
       nv: owned?.nv ?? 0,
       sevenStar: owned?.sevenStar ?? 0,
       base: owned?.number ?? 0,
-      crystal:
-        { 3: 'blueCrystal', 4: 'goldCrystal', 5: 'rainbowCrystal' }[Number(unit.min_rarity) as 3 | 4 | 5] ?? null,
+      crystal: baseCrystal(unit),
       moogles: owned?.tmrMoogles ?? [],
       fragments: unit.fragmentId ? (this.inventory.consumables()[unit.fragmentId] ?? 0) : 0,
       tmr: trust(tmr, farmed.tmr[unit.id] ?? 0, owned?.farmable ?? 0),
@@ -396,27 +508,6 @@ export class Units {
   protected toggleOnlyOwned(checked: boolean): void {
     this.onlyOwned.set(checked);
     if (!checked) this.onlySevenStar.set(false);
-  }
-
-  protected jumpTo(id: string, event: Event): void {
-    event.preventDefault();
-    document.getElementById(id)?.scrollIntoView();
-  }
-
-  protected highlight(text: string): { text: string; match: boolean }[] {
-    const search = this.search().trim();
-    if (!search) return [{ text, match: false }];
-    const parts: { text: string; match: boolean }[] = [];
-    const lower = text.toLowerCase();
-    const needle = search.toLowerCase();
-    let from = 0;
-    for (let at = lower.indexOf(needle); at >= 0; at = lower.indexOf(needle, from)) {
-      if (at > from) parts.push({ text: text.slice(from, at), match: false });
-      parts.push({ text: text.slice(at, at + needle.length), match: true });
-      from = at + needle.length;
-    }
-    if (from < text.length) parts.push({ text: text.slice(from), match: false });
-    return parts;
   }
 
   // --- Changes of the collection ---

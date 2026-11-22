@@ -17,7 +17,7 @@
         <div class="spacer"></div>
         @if (shown().lbCost) {
           <div class="lbCost">
-            {{ shown().lbCost }}<img class="lbCostImg" src="img/icons/lbShard.png" title="LB cost" alt="" />
+            {{ shown().lbCost }}<app-icon class="lbCostImg" name="lb-shard" title="LB cost" />
           </div>
         }
         @if (shown().mpCost) {
@@ -48,10 +48,10 @@
       }
       <app-unit-strange-stats [effects]="shown().effects" />
       @for (line of unlocks(); track $index) {
-        <div class="unlockedBy"><span class="unlockIcon">&#128275;</span>{{ line }}</div>
+        <div class="unlockedBy"><span class="unlockIcon"><app-icon name="lock-open" /></span>{{ line }}</div>
       }
       @if (lastTurn()) {
-        <div class="unlockedBy"><span class="unlockIcon">&#128275;</span>{{ lastTurn() }}</div>
+        <div class="unlockedBy"><span class="unlockIcon"><app-icon name="lock-open" /></span>{{ lastTurn() }}</div>
       }
       @for (effect of shown().effects; track $index) {
         <app-unit-effect [entry]="effect" [already]="already()" [skillId]="shown().id" />

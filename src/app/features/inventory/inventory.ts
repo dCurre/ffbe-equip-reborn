@@ -13,7 +13,6 @@ import { downloadBlob } from '../../shared/helpers/export';
 import { Inventory as UserInventory } from '../../shared/services/inventory';
 import { ServerContext } from '../../shared/services/server-context';
 import { clearSearchBox, debouncer } from '../../shared/helpers/search-input';
-import { Sprites } from '../../shared/services/sprites';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
 import { Button } from '../../shared/components/button/button';
@@ -53,6 +52,7 @@ import {
   farmTmr,
   SELLABLE_ITEMS_ACCESS,
 } from './inventory-model';
+import { Icon } from '../../shared/components/icon/icon';
 
 type Tab = 'equipment' | 'materia' | 'farmableStmr' | 'sellable' | 'candidates' | 'history' | 'settings';
 
@@ -92,6 +92,7 @@ const HISTORY_FIRST = 4;
     InventoryEnhancementModal,
     ConfirmModal,
     ImportModal,
+    Icon,
   ],
   templateUrl: './inventory.html',
   styleUrl: './inventory.css',
@@ -288,7 +289,6 @@ export class InventoryPage {
   protected readonly busy = signal(false);
 
   constructor() {
-    inject(Sprites).load('equipments', 'crystals', 'tabs', 'sorts', 'elements', 'ailments', 'killers', 'espers');
     showMoreOnScroll(this.end, this.limit, () => this.lines().length, PAGE_SIZE, '600px');
     this.start();
   }

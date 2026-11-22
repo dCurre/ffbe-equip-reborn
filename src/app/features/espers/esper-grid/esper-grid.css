@@ -28,9 +28,7 @@
   width: 75px;
   height: 75px;
   font-size: 30px;
-  border: 0;
   border-radius: 75px;
-  cursor: pointer;
 }
 
 .sp-fixed {
@@ -134,6 +132,7 @@
 }
 
 .hexagon {
+  --value-group-min-width: 0;
   position: absolute;
   top: 0;
   left: 0;
@@ -211,10 +210,6 @@
   text-align: center;
 }
 
-.hexagon.ability i.img {
-  width: 20px;
-  height: 20px;
-}
 
 .hexagon.selected.hp {
   background-color: #ffffba;

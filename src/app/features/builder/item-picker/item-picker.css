@@ -37,10 +37,6 @@ label {
   background-color: var(--color-button-selected-background);
 }
 
-.types i.img {
-  width: 34px;
-  height: 34px;
-}
 
 .tr.excluded {
   opacity: 0.4;
@@ -62,15 +58,6 @@ label {
   opacity: 1;
 }
 
-.enchantment .dwarf {
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
-.enchantment img {
-  height: 28px;
-}
 
 .levels button {
   margin: 0 2px;

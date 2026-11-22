@@ -1,16 +1,16 @@
 @for (kind of kinds; track kind) {
   <div [class]="kind">
     @for (group of groups()[kind]; track group.percent) {
-      <span class="group" [class.selected]="isSelected(kind, group.races)">
+      <app-value-group class="group" [class.selected]="isSelected(kind, group.races)">
         @for (race of group.races; track race) {
-          <i [class]="'img img-killer-' + kind + '-' + race" [title]="race + ' ' + kind + ' killer'"></i>
+          <app-icon [name]="'killer-' + kind + '-' + race" size="var(--killer-size, 40px)" />
         }
         @if (group.percent > 300) {
-          <span class="over" title="Only 300% taken into account">{{ group.percent }}%</span>
+          <span value class="over" title="Only 300% taken into account">{{ group.percent }}%</span>
         } @else {
-          {{ group.percent }}%
+          <span value>{{ group.percent }}%</span>
         }
-      </span>
+      </app-value-group>
     }
   </div>
 }

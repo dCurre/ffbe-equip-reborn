@@ -1,0 +1,371 @@
+/**
+ * Every icon of the site by its id: what it is (`title`, its tooltip) and how it is drawn.
+ * - `svg`: a drawing of ours (24x24 path data, painted with the text color), used with `<app-icon name="…">`
+ * - `sprite`: a picture of a sheet of `public/css-img/` (`i.img.img-<id>`), used with `<i icon="…">`
+ * - `image`: a fixed picture of `public/img/`, used with `<img icon="…">`
+ * More properties of an icon (a category, a short label, …) go here too, in its entry.
+ */
+export interface IconInfo {
+  kind: 'svg' | 'sprite' | 'image';
+  /** the tooltip of the icon wherever it is shown (a place can say something more precise with its own `title`) */
+  title?: string;
+  /** `svg` only */
+  path?: string;
+  /** `image` only: the file under `public/` */
+  src?: string;
+}
+
+/** The sheet of `public/css-img/` of each sprite prefix. */
+export const SPRITE_SHEETS = {
+  crystal: 'crystals',
+  element: 'elements',
+  ailment: 'ailments',
+  equipment: 'equipments',
+  killer: 'killers',
+  esper: 'espers',
+  access: 'access',
+  slot: 'slots',
+  sort: 'sorts',
+  stat: 'stats',
+  tab: 'tabs',
+} as const;
+
+export const ICONS = {
+  // --- Drawings ---
+  info: {
+    kind: 'svg',
+    path:
+      'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z',
+  },
+  help: {
+    kind: 'svg',
+    path:
+      'M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z',
+  },
+  save: {
+    kind: 'svg',
+    path:
+      'M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z',
+  },
+  link: {
+    kind: 'svg',
+    path:
+      'M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z',
+  },
+  grid: {
+    kind: 'svg',
+    path:
+      'M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z',
+  },
+  list: {
+    kind: 'svg',
+    path:
+      'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z',
+  },
+  'new-window': {
+    kind: 'svg',
+    path:
+      'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z',
+  },
+  alert: {
+    kind: 'svg',
+    path:
+      'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z',
+  },
+  'thumbs-up': {
+    kind: 'svg',
+    path:
+      'M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z',
+  },
+  'arrow-down': {
+    kind: 'svg',
+    path:
+      'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM10.5 7h3v5h2.6L12 16.8 8.9 12h1.6z',
+  },
+  'arrow-up': {
+    kind: 'svg',
+    path:
+      'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM10.5 17h3v-5h2.6L12 7.2 8.9 12h1.6z',
+  },
+  ban: {
+    kind: 'svg',
+    path:
+      'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM6.6 5.4l12 12-1.2 1.2-12-12z',
+  },
+  edit: {
+    kind: 'svg',
+    path:
+      'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+  },
+  'add-box': {
+    kind: 'svg',
+    path:
+      'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z',
+  },
+  logout: {
+    kind: 'svg',
+    path: 'M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z',
+  },
+  remove: {
+    kind: 'svg',
+    path:
+      'M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z',
+  },
+  'chevron-left': {
+    kind: 'svg',
+    path:
+      'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z',
+  },
+  'caret-down': {
+    kind: 'svg',
+    path:
+      'M7 10l5 5 5-5z',
+  },
+  'caret-up': {
+    kind: 'svg',
+    path:
+      'M7 14l5-5 5 5z',
+  },
+  add: {
+    kind: 'svg',
+    path:
+      'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z',
+  },
+  minus: {
+    kind: 'svg',
+    path:
+      'M19 13H5v-2h14v2z',
+  },
+  timer: {
+    kind: 'svg',
+    path:
+      'M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z',
+  },
+  'lock-open': {
+    kind: 'svg',
+    path:
+      'M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm0 12H6V10h12v10z',
+  },
+  search: {
+    kind: 'svg',
+    path:
+      'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z',
+  },
+  settings: {
+    kind: 'svg',
+    path:
+      'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
+  },
+  cart: {
+    kind: 'svg',
+    path:
+      'M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z',
+  },
+  document: {
+    kind: 'svg',
+    path:
+      'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z',
+  },
+  'double-up': {
+    kind: 'svg',
+    path:
+      'M6 17.59 7.41 19 12 14.42 16.59 19 18 17.59l-6-6zM6 11l1.41 1.41L12 7.83l4.59 4.58L18 11l-6-6z',
+  },
+  pin: {
+    kind: 'svg',
+    path: 'M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z',
+  },
+  delete: {
+    kind: 'svg',
+    path: 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
+  },
+  // --- Sprites: crystal ---
+  'crystal-NV': { kind: 'sprite', title: 'NV unit' },
+  'crystal-NVA': { kind: 'sprite', title: 'NVA unit (can become NV)' },
+  'crystal-blueCrystal': { kind: 'sprite', title: 'Base 3★ unit' },
+  'crystal-goldCrystal': { kind: 'sprite', title: 'Base 4★ unit' },
+  'crystal-rainbowCrystal': { kind: 'sprite', title: 'Base 5★ unit' },
+  'crystal-redCrystal': { kind: 'sprite', title: 'Base 6★ unit' },
+  'crystal-sevenStarCrystal': { kind: 'sprite', title: '7★ unit' },
+  // --- Sprites: element ---
+  'element-dark': { kind: 'sprite', title: 'Dark' },
+  'element-earth': { kind: 'sprite', title: 'Earth' },
+  'element-fire': { kind: 'sprite', title: 'Fire' },
+  'element-ice': { kind: 'sprite', title: 'Ice' },
+  'element-light': { kind: 'sprite', title: 'Light' },
+  'element-lightning': { kind: 'sprite', title: 'Lightning' },
+  'element-noElement': { kind: 'sprite', title: 'No element' },
+  'element-water': { kind: 'sprite', title: 'Water' },
+  'element-wind': { kind: 'sprite', title: 'Wind' },
+  // --- Sprites: ailment ---
+  'ailment-berserk': { kind: 'sprite', title: 'Berserk' },
+  'ailment-blind': { kind: 'sprite', title: 'Blind' },
+  'ailment-break_atk': { kind: 'sprite', title: 'ATK break' },
+  'ailment-break_def': { kind: 'sprite', title: 'DEF break' },
+  'ailment-break_mag': { kind: 'sprite', title: 'MAG break' },
+  'ailment-break_spr': { kind: 'sprite', title: 'SPR break' },
+  'ailment-charm': { kind: 'sprite', title: 'Charm' },
+  'ailment-confuse': { kind: 'sprite', title: 'Confuse' },
+  'ailment-death': { kind: 'sprite', title: 'Death' },
+  'ailment-disease': { kind: 'sprite', title: 'Disease' },
+  'ailment-paralysis': { kind: 'sprite', title: 'Paralysis' },
+  'ailment-petrification': { kind: 'sprite', title: 'Petrification' },
+  'ailment-poison': { kind: 'sprite', title: 'Poison' },
+  'ailment-silence': { kind: 'sprite', title: 'Silence' },
+  'ailment-sleep': { kind: 'sprite', title: 'Sleep' },
+  'ailment-stop': { kind: 'sprite', title: 'Stop' },
+  // --- Sprites: equipment ---
+  'equipment-accessory': { kind: 'sprite', title: 'Accessory' },
+  'equipment-axe': { kind: 'sprite', title: 'Axe' },
+  'equipment-bow': { kind: 'sprite', title: 'Bow' },
+  'equipment-clothes': { kind: 'sprite', title: 'Clothes' },
+  'equipment-dagger': { kind: 'sprite', title: 'Dagger' },
+  'equipment-fist': { kind: 'sprite', title: 'Fist' },
+  'equipment-greatSword': { kind: 'sprite', title: 'Great sword' },
+  'equipment-gun': { kind: 'sprite', title: 'Gun' },
+  'equipment-hammer': { kind: 'sprite', title: 'Hammer' },
+  'equipment-harp': { kind: 'sprite', title: 'Harp' },
+  'equipment-hat': { kind: 'sprite', title: 'Hat' },
+  'equipment-heavyArmor': { kind: 'sprite', title: 'Heavy armor' },
+  'equipment-heavyShield': { kind: 'sprite', title: 'Heavy shield' },
+  'equipment-helm': { kind: 'sprite', title: 'Helm' },
+  'equipment-hybrid': { kind: 'sprite', title: 'Hybrid weapon' },
+  'equipment-katana': { kind: 'sprite', title: 'Katana' },
+  'equipment-lightArmor': { kind: 'sprite', title: 'Light armor' },
+  'equipment-lightShield': { kind: 'sprite', title: 'Light shield' },
+  'equipment-mace': { kind: 'sprite', title: 'Mace' },
+  'equipment-materia': { kind: 'sprite', title: 'Materia' },
+  'equipment-robe': { kind: 'sprite', title: 'Robe' },
+  'equipment-rod': { kind: 'sprite', title: 'Rod' },
+  'equipment-spear': { kind: 'sprite', title: 'Spear' },
+  'equipment-staff': { kind: 'sprite', title: 'Staff' },
+  'equipment-sword': { kind: 'sprite', title: 'Sword' },
+  'equipment-throwing': { kind: 'sprite', title: 'Throwing weapon' },
+  'equipment-visionCard': { kind: 'sprite', title: 'Vision card' },
+  'equipment-whip': { kind: 'sprite', title: 'Whip' },
+  // --- Sprites: killer ---
+  'killer-physical-aquatic': { kind: 'sprite', title: 'Aquatic physical killer' },
+  'killer-physical-beast': { kind: 'sprite', title: 'Beast physical killer' },
+  'killer-physical-bird': { kind: 'sprite', title: 'Bird physical killer' },
+  'killer-physical-bug': { kind: 'sprite', title: 'Bug physical killer' },
+  'killer-physical-demon': { kind: 'sprite', title: 'Demon physical killer' },
+  'killer-physical-dragon': { kind: 'sprite', title: 'Dragon physical killer' },
+  'killer-physical-human': { kind: 'sprite', title: 'Human physical killer' },
+  'killer-physical-machine': { kind: 'sprite', title: 'Machine physical killer' },
+  'killer-physical-plant': { kind: 'sprite', title: 'Plant physical killer' },
+  'killer-physical-spirit': { kind: 'sprite', title: 'Spirit physical killer' },
+  'killer-physical-stone': { kind: 'sprite', title: 'Stone physical killer' },
+  'killer-physical-undead': { kind: 'sprite', title: 'Undead physical killer' },
+  'killer-magical-aquatic': { kind: 'sprite', title: 'Aquatic magical killer' },
+  'killer-magical-beast': { kind: 'sprite', title: 'Beast magical killer' },
+  'killer-magical-bird': { kind: 'sprite', title: 'Bird magical killer' },
+  'killer-magical-bug': { kind: 'sprite', title: 'Bug magical killer' },
+  'killer-magical-demon': { kind: 'sprite', title: 'Demon magical killer' },
+  'killer-magical-dragon': { kind: 'sprite', title: 'Dragon magical killer' },
+  'killer-magical-human': { kind: 'sprite', title: 'Human magical killer' },
+  'killer-magical-machine': { kind: 'sprite', title: 'Machine magical killer' },
+  'killer-magical-plant': { kind: 'sprite', title: 'Plant magical killer' },
+  'killer-magical-spirit': { kind: 'sprite', title: 'Spirit magical killer' },
+  'killer-magical-stone': { kind: 'sprite', title: 'Stone magical killer' },
+  'killer-magical-undead': { kind: 'sprite', title: 'Undead magical killer' },
+  // --- Sprites: esper ---
+  'esper-ALL': { kind: 'sprite', title: 'All espers' },
+  'esper-Alexander': { kind: 'sprite', title: 'Alexander' },
+  'esper-Anima': { kind: 'sprite', title: 'Anima' },
+  'esper-Asura': { kind: 'sprite', title: 'Asura' },
+  'esper-Bahamut': { kind: 'sprite', title: 'Bahamut' },
+  'esper-Black_Dragon': { kind: 'sprite', title: 'Black Dragon' },
+  'esper-Carbuncle': { kind: 'sprite', title: 'Carbuncle' },
+  'esper-Diabolos': { kind: 'sprite', title: 'Diabolos' },
+  'esper-Fenrir': { kind: 'sprite', title: 'Fenrir' },
+  'esper-Garuda': { kind: 'sprite', title: 'Garuda' },
+  'esper-Golem': { kind: 'sprite', title: 'Golem' },
+  'esper-Ifrit': { kind: 'sprite', title: 'Ifrit' },
+  'esper-Kokuryu': { kind: 'sprite', title: 'Black Dragon' },
+  'esper-Lakshmi': { kind: 'sprite', title: 'Lakshmi' },
+  'esper-Leviathan': { kind: 'sprite', title: 'Leviathan' },
+  'esper-Odin': { kind: 'sprite', title: 'Odin' },
+  'esper-Phoenix': { kind: 'sprite', title: 'Phoenix' },
+  'esper-Ramuh': { kind: 'sprite', title: 'Ramuh' },
+  'esper-Shiva': { kind: 'sprite', title: 'Shiva' },
+  'esper-Siren': { kind: 'sprite', title: 'Siren' },
+  'esper-Tetra_Sylphid': { kind: 'sprite', title: 'Tetra Sylphid' },
+  'esper-Titan': { kind: 'sprite', title: 'Titan' },
+  // --- Sprites: access ---
+  'access-chocobo': { kind: 'sprite', title: 'Chocobo Forest' },
+  'access-colosseum': { kind: 'sprite', title: 'Colosseum' },
+  'access-darkVision': { kind: 'sprite', title: 'Dark Vision' },
+  'access-event': { kind: 'sprite', title: 'Event' },
+  'access-key': { kind: 'sprite', title: 'Vault key' },
+  'access-premium': { kind: 'sprite', title: 'Premium' },
+  'access-recipe': { kind: 'sprite', title: 'Recipe' },
+  'access-shop': { kind: 'sprite', title: 'Town shop' },
+  'access-stmr': { kind: 'sprite', title: 'STMR' },
+  'access-story': { kind: 'sprite', title: 'Story chest or quest' },
+  'access-tmr_1-2stars': { kind: 'sprite', title: 'TMR of a 1★ or 2★ base unit' },
+  'access-tmr_3-4stars': { kind: 'sprite', title: 'TMR of a 3★ or 4★ base unit' },
+  'access-tmr_5stars': { kind: 'sprite', title: 'TMR of a 5★ base unit' },
+  'access-trial': { kind: 'sprite', title: 'Trial' },
+  'access-trophy': { kind: 'sprite', title: 'Trophy' },
+  'access-unitExclusive': { kind: 'sprite', title: 'Unit exclusive' },
+  // --- Sprites: slot ---
+  'slot-accessory': { kind: 'sprite', title: 'Accessory' },
+  'slot-body': { kind: 'sprite', title: 'Body armor' },
+  'slot-esper': { kind: 'sprite', title: 'Esper' },
+  'slot-hand': { kind: 'sprite', title: 'Weapon or shield' },
+  'slot-head': { kind: 'sprite', title: 'Headgear' },
+  'slot-materia': { kind: 'sprite', title: 'Materia' },
+  'slot-visionCard': { kind: 'sprite', title: 'Vision card' },
+  // --- Sprites: sort ---
+  'sort-a-z': { kind: 'sprite', title: 'Alphabetical order' },
+  'sort-atk': { kind: 'sprite', title: 'ATK' },
+  'sort-def': { kind: 'sprite', title: 'DEF' },
+  'sort-evade': { kind: 'sprite', title: 'Evade' },
+  'sort-hp': { kind: 'sprite', title: 'HP' },
+  'sort-inflict': { kind: 'sprite', title: 'Inflict' },
+  'sort-mag': { kind: 'sprite', title: 'MAG' },
+  'sort-mp': { kind: 'sprite', title: 'MP' },
+  'sort-resist': { kind: 'sprite', title: 'Resist' },
+  'sort-spr': { kind: 'sprite', title: 'SPR' },
+  // --- Sprites: stat ---
+  'stat-atk': { kind: 'sprite', title: 'ATK' },
+  'stat-def': { kind: 'sprite', title: 'DEF' },
+  'stat-hp': { kind: 'sprite', title: 'HP' },
+  'stat-mag': { kind: 'sprite', title: 'MAG' },
+  'stat-mp': { kind: 'sprite', title: 'MP' },
+  'stat-spr': { kind: 'sprite', title: 'SPR' },
+  'stat-twoHanded': { kind: 'sprite', title: 'Two-handed' },
+  // --- Sprites: tab ---
+  'tab-equipments': { kind: 'sprite', title: 'Equipments' },
+  'tab-history': { kind: 'sprite', title: 'History' },
+  'tab-materia': { kind: 'sprite', title: 'Materia' },
+  'tab-settings': { kind: 'sprite', title: 'Settings' },
+  'tab-units': { kind: 'sprite', title: 'Units' },
+  'tab-units_stars': { kind: 'sprite', title: 'Units by rarity' },
+  'tab-units_tmr': { kind: 'sprite', title: 'Units by TMR' },
+  // --- Fixed pictures ---
+  'dwarf': { kind: 'image', src: 'img/icons/dwarf.png', title: 'Enhancements' },
+  'nv': { kind: 'image', src: 'img/icons/NV.png', title: 'NV' },
+  'brave-shift': { kind: 'image', src: 'img/icons/braveShift.png', title: 'Brave Shift' },
+  'killer': { kind: 'image', src: 'img/icons/killer.png', title: 'Killers' },
+  'limit-burst': { kind: 'image', src: 'img/icons/lb.png', title: 'Limit Burst' },
+  'lb-shard': { kind: 'image', src: 'img/icons/lbShard.png', title: 'LB cost' },
+  'gil': { kind: 'image', src: 'img/icons/gil.png', title: 'Gil' },
+  'not-stackable': { kind: 'image', src: 'img/icons/notStackable.png', title: 'Not stackable' },
+  'two-handed': { kind: 'image', src: 'img/icons/twoHanded.png', title: 'Two-handed' },
+  'fragment': { kind: 'image', src: 'img/icons/fragment.png', title: 'Fragment' },
+  'tmr-moogle': { kind: 'image', src: 'img/units/unit_ills_904000103.png', title: 'TMR Moogle' },
+  'tmr-farmed': { kind: 'image', src: 'img/units/unit_ills_904000105.png', title: 'TMR' },
+  'stmr-farmed': { kind: 'image', src: 'img/units/unit_ills_906000105.png', title: 'STMR' },
+  'awaken': { kind: 'image', src: 'img/icons/crystals/sevenStarCrystal.png', title: 'Awaken' },
+  'exclude': { kind: 'image', src: 'img/icons/excludeExpedition.png', title: 'Exclude from expeditions' },
+} as const satisfies Record<string, IconInfo>;
+
+export type IconId = keyof typeof ICONS;
+type IdsOf<K extends IconInfo['kind']> = { [I in IconId]: (typeof ICONS)[I]['kind'] extends K ? I : never }[IconId];
+export type SvgName = IdsOf<'svg'>;
+export type SpriteName = IdsOf<'sprite'>;
+export type ImageName = IdsOf<'image'>;
+
+/** The entry of an icon, or nothing for an id that is not in the table (ids built from data may not be). */
+export const iconInfo = (id: string): IconInfo | undefined => (ICONS as Record<string, IconInfo>)[id];

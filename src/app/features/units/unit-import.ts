@@ -65,7 +65,7 @@ export interface ImportContext {
   releasedUnits: readonly GameUnit[];
   /** every unit by id (to read the rarity of the one imported) */
   units: Readonly<Record<string, GameUnit>>;
-  items: readonly TrustItem[];
+  items: readonly Pick<TrustItem, 'id' | 'tmrUnit'>[];
 }
 
 export interface ImportResult {

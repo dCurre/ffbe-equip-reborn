@@ -1,0 +1,13 @@
+:host {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: space-between;
+  min-width: var(--value-group-min-width, 80px);
+  margin-right: 5px;
+}
+
+.icons {
+  display: flex;
+  align-items: center;
+}

@@ -1,10 +1,12 @@
 import { Component, computed, input, model } from '@angular/core';
+import { Icon } from '../../../shared/components/icon/icon';
+import { Button } from '../button/button';
 
 export interface Choice {
   value: string;
-  /** the picture `img-<iconType>-<icon>` (the value when not given) */
+  /** the icon `<iconType>-<icon>` of the sprite table (the value when not given) */
   icon?: string;
-  /** a text instead of a picture */
+  /** a text instead of a picture, or next to the picture when there is an `icon` too */
   label?: string;
   tooltip?: string;
 }
@@ -14,6 +16,7 @@ export interface Choice {
  * (`single`) or any number of them.
  */
 @Component({
+  imports: [Button, Icon],
   selector: 'app-choice-group',
   templateUrl: './choice-group.html',
   styleUrl: './choice-group.css',
@@ -31,8 +34,8 @@ export class ChoiceGroup {
     return this.set().has(value);
   }
 
-  protected iconClass(choice: Choice): string {
-    return `img img-${this.iconType()}-${choice.icon ?? choice.value}`;
+  protected iconId(choice: Choice): string {
+    return `${this.iconType()}-${choice.icon ?? choice.value}`;
   }
 
   protected toggle(value: string): void {

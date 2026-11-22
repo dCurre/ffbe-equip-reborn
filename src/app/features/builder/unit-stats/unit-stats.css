@@ -31,9 +31,4 @@
 .pot-button,
 .link-button {
   padding: 0 6px;
-  font: inherit;
-  color: var(--color-link);
-  background: none;
-  border: 0;
-  cursor: pointer;
 }

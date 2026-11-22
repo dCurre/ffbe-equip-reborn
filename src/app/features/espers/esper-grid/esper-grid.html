@@ -24,7 +24,7 @@
                 (mouseleave)="hoverNode(null)"
               >
                 @if (cell.isCenter) {
-                  <i [class]="sprite(info().name) + ' center-icon'"></i>
+                  <app-icon [name]="sprite(info().name)" class="center-icon" />
                 } @else if (cell.view; as view) {
                   <span class="icon-holder">
                     @if (view.icon) {
@@ -49,7 +49,7 @@
                     <span class="text">
                       @for (part of view.conditional; track part.equipment) {
                         <img class="icon" [src]="'img/items/' + part.icon" alt="" />
-                        {{ part.stats }} if <i [class]="'img img-equipment-' + part.equipment"></i>
+                        {{ part.stats }} if <app-icon [name]="'equipment-' + part.equipment" size="20" />
                       }
                     </span>
                   }
@@ -64,6 +64,6 @@
   }
 </div>
 
-<button type="button" class="toggle-grid" title="Toggle Esper training grid" (click)="toggleGrid()">
+<button app-button variant="flat" type="button" class="toggle-grid" title="Toggle Esper training grid" (click)="toggleGrid()">
   <app-icon [name]="gridView() ? 'list' : 'grid'" />
 </button>

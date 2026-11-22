@@ -2,9 +2,11 @@ import { Component } from '@angular/core';
 import { baseStats } from '../../../../core/constants/base-lists';
 import { MAX_POTS } from '../shared/unit-loader';
 import { StatePanel } from '../shared/state-panel';
+import { Button } from '../../../shared/components/button/button';
 
 /** The base stats of the unit, with the pots, the buffs and the limit break rates. */
 @Component({
+  imports: [Button],
   selector: 'app-unit-stats',
   templateUrl: './unit-stats.html',
   styleUrl: './unit-stats.css',

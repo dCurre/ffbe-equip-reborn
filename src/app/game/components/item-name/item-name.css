@@ -7,8 +7,6 @@
   text-transform: uppercase;
 }
 .miniIcon {
-  width: 22px;
-  height: 22px;
   margin: 0 5px 0 0;
   border-radius: 5px;
 }
@@ -22,12 +20,10 @@
 :root[data-theme='dark'] .enhancements {
   color: #e74c3c;
 }
-.enhancements img {
-  height: 24px;
+.enhancements app-icon {
   margin-right: 5px;
 }
 .outclassedByIcon {
-  width: 20px;
   margin-left: 2px;
 }
 .userPseudo {

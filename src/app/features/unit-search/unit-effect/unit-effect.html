@@ -13,7 +13,7 @@
       @if (!$first) {
         ,
       }
-      <i [class]="'img img-equipment-' + equipment"></i>
+      <app-icon [name]="'equipment-' + equipment" size="30" />
     }
   </span>
 } @else if (effect()?.counterSkill; as counter) {

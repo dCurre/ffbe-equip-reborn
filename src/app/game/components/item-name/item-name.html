@@ -13,14 +13,14 @@
     {{ ' ' }}<span class="rarity">level {{ item()['level'] }}</span>
   }
   @if (item()['buildLink']) {
-    <a [href]="item()['buildLink']" target="_blank" rel="noreferrer" class="buildLink">&#x2637;</a>
+    <a [href]="item()['buildLink']" target="_blank" rel="noreferrer" class="buildLink"><app-icon name="list" /></a>
   }
   @if (item()['outclassedBy']) {
-    <img
-      src="img/icons/gil.png"
+    <app-icon
       class="outclassedByIcon"
+      name="gil"
+      width="20"
       [title]="'Can be sold. Strictly outclassed by ' + item()['outclassedBy']"
-      alt=""
     />
   }
 </div>
@@ -29,7 +29,7 @@
 }
 <div class="detail">
   @if (showTypeIcon()) {
-    <i [class]="'img miniIcon img-equipment-' + item().type"></i>
+    <app-icon [name]="'equipment-' + item().type" class="miniIcon" size="22" />
   }
   @for (stat of stats(); track stat.stat) {
     <span [class]="stat.stat">{{ stat.text }}</span>
@@ -39,5 +39,5 @@
   <div class="userPseudo">item added by {{ item()['userPseudo'] }}</div>
 }
 @if (item()['enhancements']) {
-  <div class="enhancements"><img src="img/icons/dwarf.png" alt="" />{{ enhancements() }}</div>
+  <div class="enhancements"><app-icon name="dwarf" height="24" />{{ enhancements() }}</div>
 }

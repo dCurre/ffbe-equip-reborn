@@ -22,6 +22,7 @@ import { debouncer } from '../../../shared/helpers/search-input';
 import { Checkbox } from '../../../shared/components/checkbox/checkbox';
 import { Modal } from '../../../shared/components/modal/modal';
 import { showMoreOnScroll } from '../../../shared/helpers/infinite-scroll';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -48,7 +49,7 @@ export interface PickerContext {
  */
 @Component({
   selector: 'app-item-picker',
-  imports: [Modal, Button, Checkbox, ItemLine, FormsModule],
+  imports: [Modal, Button, Checkbox, ItemLine, FormsModule, Icon],
   templateUrl: './item-picker.html',
   styleUrl: './item-picker.css',
 })

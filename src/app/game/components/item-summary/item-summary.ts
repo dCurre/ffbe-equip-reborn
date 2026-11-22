@@ -1,5 +1,4 @@
-import { Component, inject, input } from '@angular/core';
-import { Sprites } from '../../../shared/services/sprites';
+import { Component, input } from '@angular/core';
 import { Item } from '../../helpers/item';
 import { ItemEnchantments } from '../../models/item-context.model';
 import { ItemName } from '../item-name/item-name';
@@ -16,7 +15,4 @@ export class ItemSummary {
   readonly item = input.required<Item>();
   readonly enchantments = input<ItemEnchantments>();
 
-  constructor() {
-    inject(Sprites).load('equipments', 'elements', 'ailments', 'killers', 'espers');
-  }
 }

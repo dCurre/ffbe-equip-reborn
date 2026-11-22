@@ -178,14 +178,6 @@ code {
   border-radius: var(--radius);
 }
 
-/* The sprite pictures of css-img/ (the sheets set the size and the image of each `img-<sheet>-<name>`) */
-i.img {
-  display: inline-block;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
-  vertical-align: middle;
-}
 
 /* the checkboxes of the old site: a dark square with a check */
 input[type='checkbox'] {

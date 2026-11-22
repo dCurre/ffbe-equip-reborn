@@ -1,15 +1,16 @@
 @for (choice of choices(); track choice.value) {
   <button
+    app-button
     type="button"
-    [class.active]="isSelected(choice.value)"
-    [title]="choice.tooltip ?? choice.value"
-    [attr.aria-pressed]="isSelected(choice.value)"
+    [active]="isSelected(choice.value)"
+    [title]="choice.tooltip ?? (choice.label === undefined ? null : choice.value)"
     (click)="toggle(choice.value)"
   >
+    @if (choice.icon !== undefined || choice.label === undefined) {
+      <app-icon [name]="iconId(choice)" size="38" />
+    }
     @if (choice.label !== undefined) {
       {{ choice.label }}
-    } @else {
-      <i [class]="iconClass(choice)"></i>
     }
   </button>
 }

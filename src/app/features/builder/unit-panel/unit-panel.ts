@@ -9,13 +9,23 @@ import { StatePanel } from '../shared/state-panel';
 import { UnitBuffs } from '../unit-buffs/unit-buffs';
 import { UnitEquipable } from '../unit-equipable/unit-equipable';
 import { UnitStats } from '../unit-stats/unit-stats';
+import { Icon } from '../../../shared/components/icon/icon';
 
 const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** The unit of the page: its level, enhancements, stats with pots and buffs, and the equipment it can use. */
 @Component({
   selector: 'app-unit-panel',
-  imports: [Button, Panel, WikiLink, ChoiceGroup, UnitStats, UnitBuffs, UnitEquipable],
+  imports: [
+    Button,
+    Panel,
+    WikiLink,
+    ChoiceGroup,
+    UnitStats,
+    UnitBuffs,
+    UnitEquipable,
+    Icon,
+  ],
   templateUrl: './unit-panel.html',
   styleUrls: ['../shared/form-common.css', './unit-panel.css'],
 })

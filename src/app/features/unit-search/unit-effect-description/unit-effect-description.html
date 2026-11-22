@@ -5,8 +5,7 @@
     }
     +{{ group.value }}%
     @for (resist of group.resists; track resist.name) {
-      <i class="img img-equipment-heavyShield miniIcon"></i
-      ><i [class]="'img withMiniIcon ' + (resist.element ? 'img-element-' : 'img-ailment-') + resist.name"></i>
+      <app-icon name="equipment-heavyShield" class="miniIcon" size="18" /><app-icon [name]="(resist.element ? 'element-' : 'ailment-') + resist.name" class="withMiniIcon" size="30" />
     }
   }
   {{ turns() }}

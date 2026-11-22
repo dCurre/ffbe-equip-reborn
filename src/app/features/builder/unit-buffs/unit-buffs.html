@@ -3,14 +3,14 @@
   <div class="killer-buffs">
     @for (name of killerNames; track name) {
       <div class="killer-buff">
-        <i [class]="'img img-killer-physical-' + name" [title]="name + ' physical killer'"></i>
+        <app-icon [name]="'killer-physical-' + name" size="28" />
         <input
           type="number"
           min="0"
           [value]="s.killerBuffs()[name]?.physical ?? ''"
           (input)="setKillerBuff(name, 'physical', $any($event.target).value)"
         />
-        <i [class]="'img img-killer-magical-' + name" [title]="name + ' magical killer'"></i>
+        <app-icon [name]="'killer-magical-' + name" size="28" />
         <input
           type="number"
           min="0"
@@ -23,7 +23,7 @@
   <div class="element-buffs">
     @for (element of elements; track element) {
       <label class="resist"
-        ><i [class]="'img img-element-' + element" [title]="element + ' damage buff'"></i>
+        ><app-icon [name]="'element-' + element" [title]="element + ' damage buff'" />
         <input
           type="number"
           min="0"

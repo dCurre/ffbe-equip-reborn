@@ -1,11 +1,5 @@
-i.img {
-  width: 30px;
-  height: 30px;
-}
 
-i.img.miniIcon {
-  width: 18px;
-  height: 18px;
+.miniIcon {
   margin-top: 14px;
   margin-left: 15px;
 }

@@ -4,6 +4,7 @@ import { weaponList } from '../../../../core/constants/item-types';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { Item } from '../../helpers/item';
 import { ItemUnits } from '../../models/item-context.model';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /** Is one access allowed by the "access to remove" of the filters (a prefix or a suffix of a forbidden one)? */
 export function isAccessAllowed(forbidden: readonly string[], access: string): boolean {
@@ -19,7 +20,7 @@ const readable = (text: string): string =>
 /** Where an item comes from (accesses, the unit it belongs to) and who can equip it. */
 @Component({
   selector: 'app-item-access',
-  imports: [WikiLink],
+  imports: [WikiLink, Icon],
   host: { class: 'td access' },
   templateUrl: './item-access.html',
   styleUrl: './item-access.css',

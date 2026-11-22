@@ -66,19 +66,18 @@ tbody tr {
 }
 
 .esper-desc {
+  --esper-icon-size: 60px;
   position: relative;
   padding-left: 70px;
   white-space: nowrap;
   cursor: pointer;
 }
 
-.esper-desc i.img {
+.esper-desc app-icon {
   position: absolute;
   top: 50%;
   left: 5px;
-  width: 60px;
-  height: 60px;
-  margin-top: -30px;
+  margin-top: calc(var(--esper-icon-size) / -2);
   filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
 }
 
@@ -123,14 +122,12 @@ td.stat {
   }
 
   .esper-desc {
+    --esper-icon-size: 30px;
     padding-left: 38px;
   }
 
-  .esper-desc i.img {
+  .esper-desc app-icon {
     left: 4px;
-    width: 30px;
-    height: 30px;
-    margin-top: -15px;
   }
 }
 
@@ -145,7 +142,7 @@ td.stat {
     padding-left: 2px;
   }
 
-  .esper-desc i.img {
+  .esper-desc app-icon {
     display: none;
   }
 

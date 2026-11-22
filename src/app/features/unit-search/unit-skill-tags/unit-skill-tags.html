@@ -1,12 +1,12 @@
 @for (icon of icons(); track icon) {
-  <i [class]="'img img-equipment-' + icon"></i>
+  <app-icon [name]="'equipment-' + icon" size="28" />
 }
 @for (element of elements(); track element) {
-  <i [class]="'img img-element-' + element"></i>
+  <app-icon [name]="'element-' + element" size="28" />
 }
 @for (family of families(); track family.label) {
   <span class="chainFamily"
-    ><span class="bullet" [title]="family.title"><span class="chainIcon">&#128279;</span></span
+    ><span class="bullet" [title]="family.title"><span class="chainIcon"><app-icon name="link" /></span></span
     >{{ family.label }}</span
   >
 }

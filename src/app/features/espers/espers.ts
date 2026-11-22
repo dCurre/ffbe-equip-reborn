@@ -8,7 +8,6 @@ import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { showLoadError, showSaveError } from '../../shared/helpers/drive-errors';
 import { PageChrome } from '../../shared/services/page-chrome';
 import { ServerContext } from '../../shared/services/server-context';
-import { Sprites } from '../../shared/services/sprites';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
 import { UserData } from '../../shared/services/user-data';
@@ -166,7 +165,6 @@ export class Espers {
   });
 
   constructor() {
-    inject(Sprites).load('espers', 'equipments', 'elements', 'ailments', 'killers');
     this.start();
   }
 

@@ -23,7 +23,6 @@ import { highlightText } from '../../shared/helpers/highlight';
 import { Inventory } from '../../shared/services/inventory';
 import { ServerContext } from '../../shared/services/server-context';
 import { clearSearchBox, debouncer } from '../../shared/helpers/search-input';
-import { Sprites } from '../../shared/services/sprites';
 import { StaticData } from '../../shared/services/static-data';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
 import { Icon } from '../../shared/components/icon/icon';
@@ -301,13 +300,12 @@ export class UnitSearch {
   protected readonly summaryIcons = computed(() => {
     const { criteria } = this.state();
     return [
-      ...criteria.elements.values.map((v) => `img img-element-${v}`),
-      ...criteria.ailments.values.map((v) => `img img-ailment-${v}`),
+      ...criteria.elements.values.map((v) => `element-${v}`),
+      ...criteria.ailments.values.map((v) => `ailment-${v}`),
     ];
   });
 
   constructor() {
-    inject(Sprites).load('equipments', 'elements', 'ailments', 'killers', 'stats', 'sorts');
     for (const sheet of ['tankAbilities', 'mitigationAbilities', 'racialMitigationAbilities']) this.addSheet(sheet);
     // the filters in the URL, so a search can be shared
     afterRenderEffect(() => {

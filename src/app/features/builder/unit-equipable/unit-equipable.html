@@ -1,9 +1,10 @@
 <div class="equipable" title="Click a type to ban it from the build">
   @for (entry of s.equipable(); track entry.type) {
-    <i
-      [class]="'img img-equipment-' + entry.type"
+    <app-icon
+      [name]="'equipment-' + entry.type"
+      size="36"
       [class.banned]="entry.banned"
       (click)="toggleEquipable(entry.type)"
-    ></i>
+    />
   }
 </div>

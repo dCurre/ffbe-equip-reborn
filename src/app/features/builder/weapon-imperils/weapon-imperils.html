@@ -2,7 +2,7 @@
   <button app-button type="button" (click)="open.set(!open())"><app-icon name="edit" /> Weapon imperils</button>
   @if (!open()) {
     @for (item of active(); track item.weapon) {
-      <span class="summary"><i [class]="'img img-equipment-' + item.weapon"></i>{{ item.value }}%</span>
+      <span class="summary"><app-icon [name]="'equipment-' + item.weapon" width="34" height="38" />{{ item.value }}%</span>
     }
   }
 </div>
@@ -10,7 +10,7 @@
   <div class="weapons">
     @for (weapon of weapons; track weapon) {
       <div class="weapon">
-        <i [class]="'img img-equipment-' + weapon" [title]="weapon + ' imperil'"></i>
+        <app-icon [name]="'equipment-' + weapon" width="34" height="38" [title]="weapon + ' imperil'" />
         <app-input-group>
           <app-number-field
             withIcon

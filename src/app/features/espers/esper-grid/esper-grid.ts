@@ -27,6 +27,7 @@ import {
   toggleNode,
 } from '../esper-model';
 import { NodeView, nodeView } from '../node-view';
+import { Button } from '../../../shared/components/button/button';
 
 interface Cell {
   x: number;
@@ -63,7 +64,7 @@ const ROW_PITCH = 87.225;
 /** The training board of an Esper: hexagons to pick the skills from, the lines between them, and the full screen view of phones. */
 @Component({
   selector: 'app-esper-grid',
-  imports: [KillerList, ResistList, Icon],
+  imports: [Button, KillerList, ResistList, Icon],
   templateUrl: './esper-grid.html',
   styleUrl: './esper-grid.css',
 })

@@ -63,8 +63,6 @@
   font-size: 18px;
   line-height: 1;
   color: var(--step-color);
-  background: none;
-  border: 0;
 }
 
 .item:hover .step {
@@ -88,13 +86,11 @@
   display: block;
   right: 30px;
   bottom: 0;
-  height: 45px;
 }
 
 .item-world-button {
   top: 2px;
   right: 5px;
-  height: 28px;
   opacity: 0.8;
   filter: grayscale(100%);
 }
@@ -106,7 +102,6 @@
 .exclude-button {
   top: 40px;
   right: 4px;
-  width: 28px;
 }
 
 .item:not(.notOwned).excludedFromExpeditions .exclude-button {
@@ -174,13 +169,11 @@
   align-items: center;
 }
 
-.stmr-recipe .img-crystal-sevenStarCrystal {
+.stmr-recipe app-icon[data-icon='crystal-sevenStarCrystal'] {
   margin: 0 4px;
 }
 
 .stmr-moogle-icon {
-  width: 40px;
-  height: 40px;
   margin: -10px 0 0 -4px;
 }
 

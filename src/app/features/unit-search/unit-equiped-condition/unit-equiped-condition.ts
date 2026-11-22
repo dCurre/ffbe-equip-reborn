@@ -1,9 +1,11 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { UnitContext } from '../unit-context';
 import { conditionParts } from '../unit-skill-model';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /** ` if equiped with ...`: a skill that needs a type of equipment, an element or an item. */
 @Component({
+  imports: [Icon],
   selector: 'app-unit-equiped-condition',
   templateUrl: './unit-equiped-condition.html',
   styleUrl: './unit-equiped-condition.css',

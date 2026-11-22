@@ -70,7 +70,7 @@
             (input)="s.chainMultiplier.set($any($event.target).value); s.refresh()"
           />
           <span class="hint"
-            >(<button type="button" class="switch" (click)="setChainMax()">MAX</button> for max chain multiplier,
+            >(<button app-button variant="link" type="button" class="switch" (click)="setChainMax()">MAX</button> for max chain multiplier,
             calculate it on <a href="https://ffbe-chain.com/" target="_blank" rel="noreferrer">FFBE-Chain</a>)</span
           >
         </label>
@@ -85,6 +85,8 @@
         </div>
         <div class="line">
           <button
+            app-button
+            variant="link"
             type="button"
             class="label switch"
             title='Switch between "All ailment", "Disabling ailments" and "No ailments"'
@@ -104,7 +106,7 @@
           <span class="resists">
             @for (element of elements; track element) {
               <label class="resist" [title]="'Base ' + element + ' resistance'"
-                ><i [class]="'img img-element-' + element"></i>
+                ><app-icon [name]="'element-' + element" size="28" />
                 <input
                   type="number"
                   min="0"

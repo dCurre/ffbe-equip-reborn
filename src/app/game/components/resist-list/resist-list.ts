@@ -1,6 +1,7 @@
-import { Component, computed, inject, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { ailmentList, elementList } from '../../../../core/constants/base-lists';
-import { Sprites } from '../../../shared/services/sprites';
+import { ValueGroup } from '../value-group/value-group';
+import { Icon } from '../../../shared/components/icon/icon';
 
 export interface ResistEntry {
   name: string;
@@ -16,6 +17,7 @@ interface Group {
 /** Resistances grouped by value, elements first and then ailments (the old `getResistHtml`). Draws nothing without resistances. */
 @Component({
   selector: 'app-resist-list',
+  imports: [ValueGroup, Icon],
   templateUrl: './resist-list.html',
   styleUrl: './resist-list.css',
 })
@@ -29,9 +31,6 @@ export class ResistList {
   protected readonly elements = computed(() => this.group(elementList));
   protected readonly ailments = computed(() => this.group(ailmentList));
 
-  constructor() {
-    inject(Sprites).load('equipments', 'elements', 'ailments');
-  }
 
   private group(allowed: readonly string[]): Group[] {
     const byValue = new Map<string, Group>();

@@ -1,7 +1,10 @@
 import { Component, input, model, output } from '@angular/core';
+import { Button } from '../../../shared/components/button/button';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /** The tab bar of the builder: one tab per unit being built. */
 @Component({
+  imports: [Button, Icon],
   selector: 'app-builder-tabs',
   templateUrl: './builder-tabs.html',
   styleUrl: './builder-tabs.css',

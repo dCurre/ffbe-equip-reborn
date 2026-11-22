@@ -1,4 +1,6 @@
 import { Component, computed, ElementRef, inject, input, signal, viewChild } from '@angular/core';
+import { Button } from '../../shared/components/button/button';
+import { Icon } from '../../shared/components/icon/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { GoogleDrive } from '../../shared/services/google-drive';
 import { Inventory } from '../../shared/services/inventory';
@@ -36,7 +38,7 @@ const MENU = [
 /** Page title, menu, login status, theme, language and server buttons: the old `layout.js` header. */
 @Component({
   selector: 'app-site-header',
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, Button, Icon],
   templateUrl: './site-header.html',
   styleUrl: './site-header.css',
 })

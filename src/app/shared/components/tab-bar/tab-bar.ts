@@ -1,4 +1,5 @@
 import { Component, input, output } from '@angular/core';
+import { Icon } from '../../../shared/components/icon/icon';
 
 /** A tab of the bar: the sprite `img-tab-<icon>` or a picture (the title alone when there is none), and a title. `kind` sizes a picture. */
 export interface TabItem<T extends string> {
@@ -11,6 +12,7 @@ export interface TabItem<T extends string> {
 
 /** Tabs with a picture each (the collection pages): the `active` key is highlighted, `selected` fires on a click. */
 @Component({
+  imports: [Icon],
   selector: 'app-tab-bar',
   templateUrl: './tab-bar.html',
   styleUrl: './tab-bar.css',

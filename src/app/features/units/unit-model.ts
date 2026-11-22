@@ -1,3 +1,5 @@
+import type { SpriteName } from '../../shared/components/icon/icon';
+import type { Item } from '../../game/helpers/item';
 import { OwnedUnit, OwnedUnits } from '../../shared/services/inventory';
 
 /** A unit of `units.json` (only the fields this page uses). `min_rarity` / `max_rarity` are strings in the data. */
@@ -17,9 +19,7 @@ export interface GameUnit {
 }
 
 /** The TMR / STMR item of a unit, a line of `data.json`. */
-export interface TrustItem {
-  id: string;
-  name: string;
+export interface TrustItem extends Item {
   tmrUnit?: string;
   stmrUnit?: string;
 }
@@ -36,15 +36,21 @@ export const isSoonNVA = (unit: GameUnit, released: ReleasedIds): boolean =>
 /** The max rarity shown: a 7* that is not released yet counts as a 6*. */
 export const shownMaxRarity = (unit: GameUnit): string | number => (unit.unreleased7Star ? 6 : unit.max_rarity);
 
+/** The crystal of a unit by its base rarity. */
+export const baseCrystal = (unit: GameUnit): SpriteName | null =>
+  ({ 3: 'crystal-blueCrystal', 4: 'crystal-goldCrystal', 5: 'crystal-rainbowCrystal' } as const)[
+    Number(unit.min_rarity) as 3 | 4 | 5
+  ] ?? null;
+
 /** A rarity to draw: an NV / NVA crystal picture, then text (the stars, or "(soon)"). */
 export interface RarityParts {
-  icon: 'NV' | 'NVA' | null;
+  icon: SpriteName | null;
   text: string;
 }
 
 export function rarityParts(min: string | number, max: string | number, soon = false): RarityParts {
-  if (min === 'NV') return { icon: 'NV', text: '' };
-  if (max === 'NV') return { icon: 'NVA', text: soon ? ' (soon)' : '' };
+  if (min === 'NV') return { icon: 'crystal-NV', text: '' };
+  if (max === 'NV') return { icon: 'crystal-NVA', text: soon ? ' (soon)' : '' };
   return { icon: null, text: rarityLabel(min, max, soon) };
 }
 
