@@ -270,7 +270,7 @@ export const STRINGS = {
     byLyrgardAnd: 'by Lyrgard and',
     ffbeEquipNext: 'FFBE Equip Next',
     byBenSailorsA:
-      'by Ben Sailors: a huge thank you to them and to all their contributors for years of outstanding work for the community. FFBE Equip Reborn is maintained by dCurre. Unofficial fan project, not affiliated with Square Enix.',
+      'by sailorsben: a huge thank you to them and to all their contributors for years of outstanding work for the community. FFBE Equip Reborn is maintained by dCurre. Unofficial fan project, not affiliated with Square Enix.',
   },
   customGoal: {
     thisFormulaCannotBe: COMMON.thisFormulaCannotBeRead,

@@ -1,53 +1,63 @@
 # FFBE Equip Reborn
 
-FFBE Equip Reborn is a community revival of [FFBE Equip](https://github.com/lyrgard/ffbeEquip), the online
-tool for [Final Fantasy Brave Exvius](http://www.finalfantasyexvius.com/). Build units and parties with the
-equipment optimizer, search units and gear, browse the item encyclopedia and manage your espers, units and
-inventory.
+A revival of [FFBE Equip](https://github.com/lyrgard/ffbeEquip), the web tool for
+[Final Fantasy Brave Exvius](http://www.finalfantasyexvius.com/). It has the equipment optimizer to build
+units and parties, unit search, the item encyclopedia, and pages to keep track of your own units, inventory
+and espers.
 
 **Live site: https://dcurre.github.io/ffbe-equip-reborn/**
 
-This is an unofficial fan project, not affiliated with or endorsed by Square Enix.
+Unofficial fan project, not affiliated with or endorsed by Square Enix.
 
-## Authors and credits
+## Where it comes from
 
-FFBE Equip Reborn exists thanks to the people who built and maintained the original tool:
+The tool was written by **Lyrgard**, who started FFBE Equip in 2017 and kept working on it for more than five
+years. In 2022 [sailorsben](https://github.com/sailorsben) took it over as
+[FFBE Equip Next](https://github.com/sailorsben/ffbeEquip) and updated it until the Global version of the game
+closed in October 2024. More than 30 people contributed to the two projects, and their commit history is kept in
+this repository. The optimizer, the encyclopedia and the data extraction are their work; this project only
+keeps the site online and rebuilds it in Angular.
 
-- **Lyrgard** — creator and main author of [FFBE Equip](https://github.com/lyrgard/ffbeEquip)
-- **Ben Sailors** ([sailorsben](https://github.com/sailorsben)) — maintainer of
-  [FFBE Equip Next](https://github.com/sailorsben/ffbeEquip), which kept the tool alive afterwards
-- all the contributors of both projects — their full commit history is preserved in this repository
+It is maintained by [dCurre](https://github.com/dCurre).
 
-### Thank you
+## What is here
 
-A heartfelt thank you to **Lyrgard**, who created FFBE Equip in 2017 and developed it for more than five
-years; to **Ben Sailors**, who took over in 2022 with FFBE Equip Next and kept it up to date until the very
-last days of the game in October 2024; and to the more than 30 people who contributed along the way.
+The game servers are closed, so the game data (`public/GL` for Global, `public/JP` for Japan) is frozen.
 
-For years this tool helped the Final Fantasy Brave Exvius community build their units and parties. The
-optimizer, the encyclopedia, the data extraction and countless hours of updates are their work.
-FFBE Equip Reborn exists only to keep that work alive and available to everyone.
+The menu has these sections:
 
-FFBE Equip Reborn is maintained by **[dCurre](https://github.com/dCurre)**.
+- **Home**: the landing page, with a link to each section.
+- **Unit builder**: the optimizer. You set a goal (including custom ones), the enemy and the build rules, and it
+  looks for the best equipment. You can get a link to the build or copy it as text. With a login it uses the
+  equipment you own, saves your teams and enables the Parameter challenges.
+- **Encyclopedia**: search and filter every item by name, stats, abilities or TMR unit, by equipment type,
+  element, status ailment and killer.
+- **Unit search**: filter units by rarity, equipment type, game series and skills (attack, defense, support, stat
+  buffs, breaks, tank abilities, draw attacks), optionally only the ones you own.
+- **My inventory**: the items you own, with filters, export and import.
+- **My units**: the units you own, filtered by owned, 7★ awakened, time limited or TMR Moogle, with a link to
+  share your collection and import of units and consumables.
+- **My Espers**: your espers and their builds, with a link to share an Esper build.
+- **Data import**: load your units, inventory, consumables and espers from an FFBE Offline save.
+- **Contribute**: report a bug or suggest an improvement; both open a GitHub issue.
 
-## Project status
+The privacy policy is linked from the footer.
 
-The game's servers are closed (the Global version ended in October 2024), so the game data in this
-repository is frozen. The site is hosted as a **static website on GitHub Pages**, without a backend,
-except for a small Cloudflare Worker ([`worker/`](worker)) that stores the shared build and unit collection links.
+You can use the site without an account. If you log in with Google, your units, inventory, espers and saved
+teams are stored in a hidden app folder of your own Google Drive, one set per game server. The site can only
+see that folder, and it writes to it directly from the browser. Theme and login tokens stay in the browser's
+`localStorage`.
 
-Most of the tool works: builder and optimizer, unit search, encyclopedia and espers. Log in with Google
-to save your units, inventory, espers and teams: they are stored in a hidden app folder of **your own**
-Google Drive, directly from the browser (`src/app/shared/services/google-drive.ts`); the site only has access to that
-folder. Bug reports and suggestions are sent as GitHub issues from the Contribute
-page. Shared build links and public unit collection links work through the Worker (the old links of
-FFBE Equip Next are lost). See [.claude/ROADMAP.md](.claude/ROADMAP.md) for the full list of open work.
+The site is a static Angular app on GitHub Pages. The only server part is a small Cloudflare Worker
+([`worker/`](worker)) that stores shared build and unit collection links, and keeps the Google renewal token so
+the login lasts. Links shared on FFBE Equip Next no longer work.
 
-## Run locally
+How to import your data, use the builder and what the Google login stores is explained in the
+[wiki](https://github.com/dCurre/ffbe-equip-reborn/wiki). Open work is in [.claude/ROADMAP.md](.claude/ROADMAP.md).
 
-Requirements: [Node.js](https://nodejs.org/) and npm. Node is only used locally and by the deploy (the
-website itself is static): both the deploy and local development use the version in [`.node-version`](.node-version)
-(24 LTS).
+## Run it locally
+
+You need Node.js 24 (see [`.node-version`](.node-version)) and npm.
 
 ```bash
 npm install
@@ -55,32 +65,36 @@ npm run build:units
 npm run dev
 ```
 
-Open http://localhost:4200.
+Then open http://localhost:4200.
 
-`npm run build:units` generates the per-unit data files (see below); run it again only if the data changes.
-`npm run dev` starts the Angular development server (`ng serve`).
+`npm run build:units` writes the per-unit files the builder loads (`public/<server>/unit/<id>.json`, built from
+`unitsWithSkill.json` by `tools/generateUnitFiles.js`). They are not committed, so run it once after cloning and
+again if the data changes.
 
-## How the site is built and deployed
+### Tests
 
-- **The website is an Angular app** (`src/`; the calculation core is in `src/core/`). The game data as JSON
-  (`public/GL` for the Global version, `public/JP` for the Japanese one) and the images (`public/img`,
-  `public/css-img`) are copied into the build as they are. Asset and data paths are relative, so the site
-  works under a sub-path such as `/ffbe-equip-reborn/`.
-- **Per-unit files**: the builder loads each unit's skills from `public/<server>/unit/<id>.json`. These
-  files are generated from `unitsWithSkill.json` by `tools/generateUnitFiles.js` (`npm run build:units`)
-  and are not committed.
-- **Deploy**: every push to `master` runs the GitHub Actions workflow
-  [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which generates the unit
-  files, assembles the site and publishes it to GitHub Pages in a few minutes.
-- **`tools/`** contains the scripts that extracted the game data from the game files.
+- `npm test` compiles the calculation core and runs the damage, stat and optimizer tests in `test/static`,
+  including the golden files. Regenerate those only on purpose, with `npm run test:golden:update`.
+- `npx ng test` runs the Angular component and service tests (Vitest).
+
+## How it is organized
+
+- `src/app/`: the Angular app, one folder per page in `features/`, shared components and services in `shared/`.
+- `src/core/`: the calculation core (formulas, stats, damage, optimizer), with no Angular in it.
+- `public/`: game data and images, copied into the build as they are. Paths are relative, so the site also
+  works under a sub-path like `/ffbe-equip-reborn/`.
+- `tools/`: scripts that extracted the game data from the game files. They are kept for reference; some of the
+  image sources they use are offline now.
+- `worker/`: the Cloudflare Worker.
+- Every push to `master` runs [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which
+  builds the unit files and the site and publishes it to GitHub Pages.
 
 ## Contributing
 
-Issues and pull requests are welcome on
-[dCurre/ffbe-equip-reborn](https://github.com/dCurre/ffbe-equip-reborn/issues). Note that this repository
-is a GitHub fork: when opening a pull request, make sure the base repository is `dCurre/ffbe-equip-reborn`.
+Issues and pull requests are welcome at
+[dCurre/ffbe-equip-reborn](https://github.com/dCurre/ffbe-equip-reborn/issues). The repository is a GitHub
+fork, so when you open a pull request check that the base repository is `dCurre/ffbe-equip-reborn`.
 
 ## License
 
-FFBE Equip Reborn is released under the [ISC License](https://opensource.org/licenses/ISC), like the
-original FFBE Equip project. See [LICENSE](LICENSE).
+[ISC](https://opensource.org/licenses/ISC), the same as the original FFBE Equip. See [LICENSE](LICENSE).

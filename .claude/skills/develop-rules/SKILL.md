@@ -13,4 +13,4 @@ description: >-
 - After code changes run `npx ng build` and `npx ng test --watch=false`; report failures.
 - Dependencies: give the owner the `npm install`/`npm uninstall` command; don't edit `package.json` by hand.
 - Files are CRLF (`core.autocrlf=true`); if an edit fails, reread the lines first.
-- Never remove or weaken credits to Lyrgard, Ben Sailors and contributors (README, LICENSE, footers, `package.json`).
+- Never remove or weaken credits to Lyrgard, sailorsben and contributors (README, LICENSE, footers, `package.json`).
