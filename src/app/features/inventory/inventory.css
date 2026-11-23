@@ -175,3 +175,10 @@
 .end {
   height: 1px;
 }
+
+.only-owned {
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+  font-weight: normal;
+}

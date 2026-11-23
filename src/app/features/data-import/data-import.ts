@@ -9,8 +9,9 @@ import { GAME_DATA_URL } from '../../shared/components/action-link/action-link';
 import { Alert } from '../../shared/components/alert/alert';
 import { BusyOverlay } from '../../shared/components/busy-overlay/busy-overlay';
 import { Button } from '../../shared/components/button/button';
+import { FileDrop } from '../../shared/components/file-drop/file-drop';
 import { Icon } from '../../shared/components/icon/icon';
-import { ImportModal } from '../../shared/components/import-modal/import-modal';
+import { ProgressBar } from '../../shared/components/progress-bar/progress-bar';
 import { Panel } from '../../shared/components/panel/panel';
 import { showSaveError } from '../../shared/helpers/drive-errors';
 import { Inventory } from '../../shared/services/inventory';
@@ -18,48 +19,57 @@ import { ServerContext } from '../../shared/services/server-context';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
 import { UserData } from '../../shared/services/user-data';
-import { ImportState } from '../../shared/state/import-state';
-import { EsperBoard, EsperInfo, OwnedEsper } from '../espers/esper-model';
-import { ImportedEsper, importEspers, isEsperFile, knownEspers } from '../espers/esper-import';
-import { Enchantments, ImportedItem, importInventory, isItemFile } from '../inventory/inventory-model';
-import { consumablesFromFile, importUnits, isConsumablesFile, isUnitFile } from '../units/unit-import';
+import { EsperBoard, EsperInfo } from '../espers/esper-model';
+import { ImportedEsper, importEspers, knownEspers } from '../espers/esper-import';
+import { Enchantments, ImportedItem, importInventory } from '../inventory/inventory-model';
+import { consumablesFromFile, ImportedUnit, importUnits } from '../units/unit-import';
 import { GameUnit, TrustItem } from '../units/unit-model';
+import { detectImportKind, ImportKind } from './import-kind';
+import { consumablesFromSaveFile, espersFromSave, GameSave, itemsFromSave, unitsFromSave } from './save-import';
 
-type Kind = 'units' | 'consumables' | 'inventory' | 'espers';
-
-interface Card {
-  kind: Kind;
+interface KindInfo {
   heading: string;
   text: string;
+  /** what the user is told before the file replaces the data */
   warning: string;
 }
 
-const CARDS: Card[] = [
-  {
-    kind: 'units',
+interface RecapLine {
+  label: string;
+  found: number;
+  /** not known by the site (yet): left out of the import */
+  ignored: number;
+  /** where of the file it comes from (a full save only) */
+  source?: string;
+}
+
+const KINDS: Record<ImportKind, KindInfo> = {
+  units: {
     heading: 'Unit collection',
-    text: 'The units you own, with their TMR and STMR, for the pages My units and Unit builder.',
+    text: 'The units you own, with their TMR and STMR: for My units and the Unit builder.',
     warning: 'It will override your unit collection on FFBE Equip Reborn',
   },
-  {
-    kind: 'consumables',
+  consumables: {
     heading: 'Consumables',
-    text: 'The consumables you own (the items used to awaken the units).',
-    warning: '',
+    text: 'The consumables you own: the items used to awaken the units.',
+    warning: 'It will override your consumables on FFBE Equip Reborn',
   },
-  {
-    kind: 'inventory',
+  inventory: {
     heading: 'Inventory',
-    text: 'The equipment, materia and vision cards you own, for the page My inventory and the "Only owned" builds.',
+    text: 'The equipment, materia and vision cards you own: for My inventory and the "Only owned" builds.',
     warning: 'This feature is a Work in Progress. It will override your inventory on FFBE Equip Reborn',
   },
-  {
-    kind: 'espers',
+  save: {
+    heading: 'Full save',
+    text: 'Save of FFBE Offline (the full export of the game): the unit collection, the consumables, the inventory and the Espers are read from it.',
+    warning: 'It will override your unit collection, consumables, inventory and Espers (if the save has any) on FFBE Equip Reborn',
+  },
+  espers: {
     heading: 'Espers',
     text: 'The Espers you own, with their rarity, level and board.',
     warning: 'It will override your Espers on FFBE Equip Reborn',
   },
-];
+};
 
 interface ReleasedUnit {
   type: string;
@@ -68,7 +78,7 @@ interface ReleasedUnit {
 /** Imports the data exported from the game (the files of the instructions) in the account of the user. */
 @Component({
   selector: 'app-data-import',
-  imports: [PageContent, PageColumn, SiteFooter, Panel, Button, Icon, Alert, ImportModal, BusyOverlay],
+  imports: [PageContent, PageColumn, SiteFooter, Panel, Button, Alert, FileDrop, BusyOverlay, Icon, ProgressBar],
   templateUrl: './data-import.html',
   styleUrl: './data-import.css',
 })
@@ -80,15 +90,22 @@ export class DataImport {
   private readonly serverContext = inject(ServerContext);
 
   protected readonly gameDataUrl = GAME_DATA_URL;
-  protected readonly cards = CARDS;
-  protected readonly importing = new ImportState();
-  protected readonly kind = signal<Kind>('units');
+  protected readonly offlineUrl = 'https://github.com/Elvlin/exvius-offline';
+  protected readonly kindNames = 'full save, unit collection, consumables, inventory and Espers';
+  /** what the file would import: how many of each section the site knows, and how many it ignores */
+  protected readonly recap = signal<RecapLine[]>([]);
+  /** while the import writes the account: how far it is, and what it is saving */
+  /** the import is finished: the recap stays on screen with a confirmation until the user closes it */
+  protected readonly done = signal(false);
+  protected readonly progress = signal<{ percent: number; text: string } | null>(null);
+  /** what the chosen file holds, once it is known */
+  protected readonly kind = signal<ImportKind | null>(null);
   protected readonly busy = signal(false);
   protected readonly loggedIn = computed(() => this.userData.loggedIn());
   /** the account is read: what is imported replaces what the user has */
   protected readonly canImport = computed(() => this.loggedIn() && this.inventory.status() !== 'loading');
-  protected readonly warning = computed(() => CARDS.find((card) => card.kind === this.kind())?.warning ?? '');
-  protected readonly heading = computed(() => `Import ${CARDS.find((card) => card.kind === this.kind())?.heading.toLowerCase()}`);
+  /** the description of the kind of file chosen */
+  protected readonly found = computed(() => (this.kind() ? KINDS[this.kind()!] : null));
 
   // the game data each import needs, read when it is first used
   private units: Record<string, GameUnit> | null = null;
@@ -105,23 +122,8 @@ export class DataImport {
   private pendingInventory: ReturnType<typeof importInventory>['inventory'] | null = null;
   private pendingEspers: ImportedEsper[] | null = null;
 
-  protected async open(kind: Kind): Promise<void> {
-    this.busy.set(true);
-    try {
-      await this.loadGameData(kind);
-    } catch {
-      this.toast.show('Error while loading the game data', 'error');
-      return;
-    } finally {
-      this.busy.set(false);
-    }
-    this.kind.set(kind);
-    this.pendingUnits = this.pendingConsumables = this.pendingInventory = this.pendingEspers = null;
-    this.importing.start();
-  }
-
-  private async loadGameData(kind: Kind): Promise<void> {
-    if (kind === 'units' && !this.units) {
+  private async loadGameData(kind: ImportKind): Promise<void> {
+    if ((kind === 'units' || kind === 'save') && !this.units) {
       const [units, released, items] = await Promise.all([
         this.staticData.get<Record<string, GameUnit>>('units', true),
         this.staticData.get<Record<string, ReleasedUnit>>('releasedUnits'),
@@ -132,7 +134,8 @@ export class DataImport {
         .map((unit) => ({ ...unit, summon_type: released[unit.id].type }));
       this.units = units;
       this.items = items;
-    } else if (kind === 'inventory' && !this.cardList.length) {
+    }
+    if ((kind === 'inventory' || kind === 'save') && !this.cardList.length) {
       const [data, cards, enchantments] = await Promise.all([
         this.staticData.get<Item[]>('data', true),
         this.staticData.get<Record<string, VisionCard>>('visionCards'),
@@ -141,7 +144,8 @@ export class DataImport {
       this.items = data as unknown as TrustItem[];
       this.cardList = Object.values(cards);
       this.enchantments = enchantments;
-    } else if (kind === 'espers' && !this.espers.length) {
+    }
+    if ((kind === 'espers' || kind === 'save') && !this.espers.length) {
       [this.espers, this.boards] = await Promise.all([
         this.staticData.get<EsperInfo[]>('espers'),
         this.staticData.get<Record<string, EsperBoard>>('esperBoards'),
@@ -149,89 +153,157 @@ export class DataImport {
     }
   }
 
-  protected loadFile(data: unknown): void {
-    const wrong = (): void => this.toast.show("The imported file doesn't have the correct form", 'error');
-    switch (this.kind()) {
-      case 'units': {
-        if (!isUnitFile(data)) return wrong();
-        const { owned, messages } = importUnits(data, {
-          server: this.serverContext.server(),
-          releasedUnits: this.released,
-          units: this.units ?? {},
-          items: this.items,
-        });
-        this.pendingUnits = owned;
-        this.importing.messages.set(messages);
-        this.importing.summary.set(`Units to import : ${Object.keys(owned).length}`);
-        break;
-      }
-      case 'consumables': {
-        if (!isConsumablesFile(data)) return wrong();
-        this.pendingConsumables = consumablesFromFile(data);
-        this.importing.summary.set(`Consumables to import : ${Object.keys(this.pendingConsumables).length}`);
-        break;
-      }
-      case 'inventory': {
-        if (!isItemFile(data)) return wrong();
-        const { inventory, messages } = importInventory(
-          data as ImportedItem[],
-          this.items as unknown as Item[],
-          this.cardList,
-          this.enchantments,
-          itemEnhancementBySkillId as unknown as Record<string, string>,
-          this.serverContext.server(),
-        );
-        this.pendingInventory = inventory;
-        this.importing.messages.set(messages);
-        this.importing.summary.set(`Items to import : ${Object.keys(inventory).length}`);
-        break;
-      }
-      case 'espers': {
-        if (!isEsperFile(data)) return wrong();
-        this.pendingEspers = data;
-        this.importing.summary.set(`Espers to import : ${data.length}`);
-        break;
-      }
+  /** The items the site does not know (new or custom) are ignored: a later save imports them once they are known. */
+  private readInventory(file: ImportedItem[]): RecapLine {
+    const { inventory, messages } = importInventory(
+      file,
+      this.items as unknown as Item[],
+      this.cardList,
+      this.enchantments,
+      itemEnhancementBySkillId as unknown as Record<string, string>,
+      this.serverContext.server(),
+    );
+    this.pendingInventory = inventory;
+    return { label: 'Inventory', found: file.length - messages.length, ignored: messages.length };
+  }
+
+  /** Forgets the file: nothing is imported. */
+  protected cancel(): void {
+    this.kind.set(null);
+    this.pendingUnits = this.pendingConsumables = this.pendingInventory = this.pendingEspers = null;
+    this.recap.set([]);
+    this.done.set(false);
+  }
+
+  /** The file chosen: its content says what it is, and the summary tells what it would import. */
+  protected async loadFile(data: unknown): Promise<void> {
+    this.cancel();
+    const kind = detectImportKind(data);
+    if (kind === 'empty') return this.toast.show('The file is empty: there is nothing to import', 'error');
+    if (!kind) {
+      return this.toast.show(
+        'This file is not an export of the game the site knows: full save, unit collection, consumables, inventory or Espers',
+        'error',
+      );
     }
+    this.busy.set(true);
+    try {
+      await this.loadGameData(kind);
+    } catch {
+      this.toast.show('Error while loading the game data', 'error');
+      return;
+    } finally {
+      this.busy.set(false);
+    }
+    const recap: RecapLine[] = [];
+    switch (kind) {
+      case 'units':
+        recap.push(this.readUnits(data as never));
+        break;
+      case 'save': {
+        const save = data as GameSave;
+        recap.push({ ...this.readUnits(unitsFromSave(save)), source: 'roster' });
+        // the save has no TMR / STMR progress: what the site already knows of it stays (never above the copies owned)
+        for (const [id, unit] of Object.entries(this.pendingUnits ?? {})) {
+          const old = this.inventory.units()[id];
+          const copies = unit.number + (unit.sevenStar ?? 0) + (unit.nv ?? 0);
+          unit.farmable = Math.min(old?.farmable ?? 0, copies);
+          if (unit.farmableStmr !== undefined) unit.farmableStmr = Math.min(old?.farmableStmr ?? 0, copies);
+          if (old?.tmrMoogles) unit.tmrMoogles = old.tmrMoogles;
+        }
+        this.pendingEspers = espersFromSave(save);
+        recap.push({ ...this.espersLine(this.pendingEspers), source: 'beasts' });
+        recap.push({ ...this.readInventory(itemsFromSave(save)), source: 'inventory, vision_cards' });
+        const consumables = consumablesFromSaveFile(save);
+        this.pendingConsumables = consumablesFromFile(consumables);
+        recap.push({ label: 'Consumables', found: consumables.length, ignored: 0, source: 'inventory' });
+        break;
+      }
+      case 'consumables':
+        this.pendingConsumables = consumablesFromFile(data as never);
+        recap.push({ label: 'Consumables', found: Object.keys(this.pendingConsumables).length, ignored: 0 });
+        break;
+      case 'inventory':
+        recap.push(this.readInventory(data as ImportedItem[]));
+        break;
+      case 'espers':
+        this.pendingEspers = data as ImportedEsper[];
+        recap.push(this.espersLine(this.pendingEspers));
+        break;
+    }
+    this.recap.set(recap);
+    this.kind.set(kind);
+  }
+
+  /** The units of the file as the collection of the site; what the site does not know is counted, not imported. */
+  private readUnits(file: ImportedUnit[]): RecapLine {
+    const { owned, messages } = importUnits(file, {
+      server: this.serverContext.server(),
+      releasedUnits: this.released,
+      units: this.units ?? {},
+      items: this.items,
+    });
+    this.pendingUnits = owned;
+    const found = Object.values(owned).reduce((sum, u) => sum + u.number + (u.sevenStar ?? 0) + (u.nv ?? 0), 0);
+    return { label: 'Units', found, ignored: messages.length };
+  }
+
+  private espersLine(file: ImportedEsper[]): RecapLine {
+    const found = knownEspers(file).length;
+    return { label: 'Espers', found, ignored: file.length - found };
+  }
+
+  /** What the chosen file writes in the account, one step each (the text is shown while it works). */
+  private importSteps(): { text: string; work: () => Promise<unknown> }[] {
+    const kind = this.kind();
+    const { pendingUnits, pendingConsumables, pendingInventory, pendingEspers } = this;
+    const all = kind === 'save';
+    const steps: { text: string; work: () => Promise<unknown> }[] = [];
+    if ((all || kind === 'units') && pendingUnits) {
+      steps.push({ text: 'Saving your unit collection', work: () => this.inventory.replace('units', pendingUnits) });
+    }
+    if ((all || kind === 'consumables') && pendingConsumables) {
+      steps.push({ text: 'Saving your consumables', work: () => this.inventory.replace('consumables', pendingConsumables) });
+    }
+    if ((all || kind === 'inventory') && pendingInventory) {
+      steps.push({ text: 'Saving your inventory', work: () => this.replaceItems(pendingInventory) });
+    }
+    if ((all || kind === 'espers') && pendingEspers && knownEspers(pendingEspers).length > 0) {
+      steps.push({
+        text: 'Saving your Espers',
+        work: () => this.userData.write('espers', importEspers(pendingEspers, this.espers, this.boards)),
+      });
+    }
+    return steps;
   }
 
   protected async run(): Promise<void> {
-    const kind = this.kind();
-    if (kind === 'units' && this.pendingUnits) {
-      this.importing.open.set(false);
-      await this.inventory.replace('units', this.pendingUnits);
-    } else if (kind === 'consumables' && this.pendingConsumables) {
-      this.importing.open.set(false);
-      await this.inventory.replace('consumables', this.pendingConsumables);
-    } else if (kind === 'inventory' && this.pendingInventory) {
-      const items = this.inventory.items();
-      for (const id of Object.keys(items)) delete items[id];
-      Object.assign(items, this.pendingInventory);
-      this.importing.open.set(false);
-      this.inventory.changed('itemInventory');
-      await this.inventory.save();
-    } else if (kind === 'espers' && this.pendingEspers) {
-      await this.importEspers(this.pendingEspers);
-      return;
-    } else {
-      this.toast.show('Please select a file to import', 'warn');
+    const steps = this.importSteps();
+    if (steps.length === 0) {
+      this.toast.show(this.kind() === 'espers' ? 'No known esper found in the file' : 'Please select a file to import', 'warn');
       return;
     }
-    this.toast.show('Data imported');
-  }
-
-  private async importEspers(file: ImportedEsper[]): Promise<void> {
-    if (knownEspers(file).length === 0) {
-      this.toast.show('No known esper found in the file', 'warn');
-      return;
-    }
-    this.importing.open.set(false);
-    const owned: Record<string, OwnedEsper> = importEspers(file, this.espers, this.boards);
+    this.busy.set(true);
     try {
-      await this.userData.write('espers', owned);
-      this.toast.show('Espers imported');
+      for (const [index, { text, work }] of steps.entries()) {
+        this.progress.set({ percent: Math.round((index / steps.length) * 100), text });
+        await work();
+      }
     } catch (error) {
       showSaveError(this.toast, error);
+      return;
+    } finally {
+      this.busy.set(false);
+      this.progress.set(null);
     }
+    this.done.set(true);
+  }
+
+  private async replaceItems(inventory: NonNullable<typeof this.pendingInventory>): Promise<void> {
+    const items = this.inventory.items();
+    for (const id of Object.keys(items)) delete items[id];
+    Object.assign(items, inventory);
+    this.inventory.changed('itemInventory');
+    await this.inventory.save();
   }
 }

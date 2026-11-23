@@ -62,7 +62,7 @@ function itemEntries(item: Item, inventory: ItemInventory, enchantments: Enchant
   return entries;
 }
 
-/** The lines of the vision cards: one for each card owned (with its level) or one not owned. */
+/** The lines of the vision cards: one for each level of the cards owned (with how many are at it) or one not owned. */
 function cardEntries(cards: readonly VisionCard[], inventory: ItemInventory): ItemEntry[] {
   const result: ItemEntry[] = [];
   for (const card of cards) {
@@ -78,11 +78,18 @@ function cardEntries(cards: readonly VisionCard[], inventory: ItemInventory): It
     } else {
       const levels = inventory.visionCardsLevels as Record<string, (number | null)[]>;
       if (!levels[card.id] || levels[card.id][0] === null) levels[card.id] = Array.from({ length: owned }, () => 1);
+      // the copies of the same level are one line with their number (`enhancementPos` is the first of them)
+      const groups = new Map<number, { count: number; first: number }>();
       levels[card.id].forEach((level, index) => {
-        const line = entry(cardInstance(card, level ?? 1), owned, `${card.id}#c${index}`, false, index);
+        const group = groups.get(level ?? 1) ?? { count: 0, first: index };
+        group.count++;
+        groups.set(level ?? 1, group);
+      });
+      for (const [level, { count, first }] of groups) {
+        const line = entry(cardInstance(card, level), count, `${card.id}#c${first}`, false, first);
         line.visionCard = card;
         result.push(line);
-      });
+      }
     }
   }
   return result;
@@ -152,13 +159,14 @@ export const SORT_STATS = ['atk', 'mag', 'def', 'spr', 'hp', 'mp'];
  * By type, then by the stats the type is chosen for (or by `stat` first, or `'name'`), then by name.
  * `reverse` turns the order inside each type around (the stats go from the highest, the names from A).
  */
-export function sortEntries(entries: readonly ItemEntry[], stat?: string, reverse = false): ItemEntry[] {
+/** `byType`: the types go one after the other (the default); off, a sort chosen runs over all the items. */
+export function sortEntries(entries: readonly ItemEntry[], stat?: string, reverse = false, byType = true): ItemEntry[] {
   const byName = stat === 'name';
   const chosen = stat && !byName ? [stat, ...SORT_STATS.filter((s) => s !== stat), 'sortId'] : undefined;
   return [...entries].sort((a, b) => {
     const type1 = statOf(a.item, 'type');
     const type2 = statOf(b.item, 'type');
-    if (type1 !== type2) return type2 - type1;
+    if (byType && type1 !== type2) return type2 - type1;
     // the materia have percent boosts (`atk%`) and no stats of their own: by name unless a stat is asked
     const materia = a.item.type === 'materia';
     const order = byName ? [] : materia ? (stat ? [stat] : []) : (chosen ?? SORT_ORDER_BY_TYPE[a.item.type] ?? SORT_ORDER_DEFAULT);
@@ -207,7 +215,7 @@ export function addItem(inventory: ItemInventory, line: ItemEntry, force = false
   inventory[id] = owned + 1;
   if (line.visionCard && line.visionCard.levels.length > 1) {
     const levels = inventory.visionCardsLevels as Record<string, number[]>;
-    (levels[id] ??= []).push(1);
+    (levels[id] ??= []).push((line.item['level'] as number | undefined) ?? 1); // a copy of the level of the line
   }
   return 'added';
 }

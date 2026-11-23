@@ -83,10 +83,41 @@ describe('inventory lines', () => {
     expect(equipments.map((l) => l.item['level'])).toEqual([1, 2]);
   });
 
+  it('adds a copy of the level of the line', () => {
+    const card = { id: '900', name: 'Card', type: 'visionCard', access: ['unknown'], levels: [{ atk: 1 }, { atk: 2 }] };
+    const inventory = empty();
+    inventory['900'] = 2;
+    inventory.visionCardsLevels['900'] = [1, 2];
+    const line = buildEntries([], [card as unknown as VisionCard], inventory, {}).equipments[1];
+    addItem(inventory, line);
+    expect(inventory['900']).toBe(3);
+    expect(inventory.visionCardsLevels['900']).toEqual([1, 2, 2]);
+  });
+
+  it('puts the cards of the same level in one line with their number', () => {
+    const card = { id: '900', name: 'Card', type: 'visionCard', access: ['unknown'], levels: [{ atk: 1 }, { atk: 2 }] };
+    const inventory = empty();
+    inventory['900'] = 4;
+    inventory.visionCardsLevels['900'] = [1, 1, 2, 1];
+    const { equipments } = buildEntries([], [card as unknown as VisionCard], inventory, {});
+    expect(equipments.map((l) => [l.item['level'], l.ownedNumber, l.enhancementPos])).toEqual([
+      [1, 3, 0],
+      [2, 1, 2],
+    ]);
+  });
+
   it('sorts by type, then by the stats of the type', () => {
     const sorted = sortEntries([line(dagger), line(rain), line(fina)]);
     // the daggers come before the swords (the order of the types), the stronger sword first
     expect(sorted.map((l) => l.item.id)).toEqual(['102', '101', '100']);
+  });
+
+  it('sorts over all the types when it is not by type', () => {
+    const strong = item('200', 'Strong', { atk: 100 });
+    const tough = item('201', 'Tough', { atk: 10 });
+    const other = item('202', 'Other', { type: 'dagger', atk: 50 });
+    const flat = sortEntries([line(tough), line(other), line(strong)], 'atk', false, false);
+    expect(flat.map((l) => l.item.id)).toEqual(['200', '202', '201']);
   });
 
   it('sorts by the chosen stat inside each type, the types keeping their order', () => {

@@ -1,10 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { ImportModal } from './import-modal';
+import { FileDrop } from './file-drop';
 
-describe('ImportModal', () => {
+describe('FileDrop', () => {
   it('reads a file dropped on the zone like a chosen one', async () => {
-    const fixture = TestBed.createComponent(ImportModal);
-    fixture.componentRef.setInput('heading', 'Import');
+    const fixture = TestBed.createComponent(FileDrop);
     const loaded: unknown[] = [];
     fixture.componentInstance.fileLoaded.subscribe((data) => loaded.push(data));
     fixture.detectChanges();

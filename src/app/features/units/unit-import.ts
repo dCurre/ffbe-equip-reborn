@@ -2,7 +2,7 @@ import { OwnedUnits } from '../../shared/services/inventory';
 import { GameUnit, TrustItem } from './unit-model';
 
 /** A unit of the file exported from the game (see the "FFBE sync" instructions). */
-interface ImportedUnit {
+export interface ImportedUnit {
   id: string;
   level: number;
   tmr: number;

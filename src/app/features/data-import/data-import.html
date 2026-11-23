@@ -2,34 +2,68 @@
   <app-page-column [half]="true">
     <app-panel heading="Import your game data">
       <p>
-        Import the data you exported from the game into your account: your units, consumables, equipment and Espers.
-        <a [href]="gameDataUrl" target="_blank" rel="noreferrer">Instructions to export your data from the game</a>
+        Choose the file you exported from the game: the site sees by itself what it contains.
+        <a [href]="gameDataUrl" target="_blank" rel="noreferrer">How to export your data from the game</a>
       </p>
-      @if (!loggedIn()) {
+      @if (canImport()) {
+        <app-file-drop (fileLoaded)="loadFile($event)" />
+      } @else if (!loggedIn()) {
         <app-alert kind="danger">Log in with Google to import: your data is saved in your Google Drive.</app-alert>
       }
+      <p class="kinds-hint">
+        You can import your {{ kindNames }}.
+      </p>
     </app-panel>
-    @for (card of cards; track card.kind) {
-      <app-panel [heading]="card.heading">
-        <p>{{ card.text }}</p>
-        <button app-button type="button" [disabled]="!canImport()" (click)="open(card.kind)">
-          <app-icon name="save" /> Import
-        </button>
+
+    @if (found(); as found) {
+      <app-panel [heading]="found.heading + ' found'">
+        <p>
+          {{ found.text }}
+          @if (kind() === 'save') {
+            <a [href]="offlineUrl" target="_blank" rel="noreferrer" title="Open the project of FFBE Offline"
+              ><app-icon name="new-window"
+            /></a>
+          }
+        </p>
+        <ul class="recap">
+          @for (line of recap(); track line.label) {
+            <li>
+              <app-icon name="check" />
+              <span class="label">{{ line.label }}</span>
+              <span>{{ line.found }} found</span>
+              @if (line.source) {
+                <span class="source">from {{ line.source }}</span>
+              }
+              @if (line.ignored) {
+                <span class="ignored" title="Not known by the site yet: left out. A later save imports them once the site knows them.">
+                  | {{ line.ignored }} not known, ignored
+                </span>
+              }
+            </li>
+          }
+        </ul>
+        @if (done()) {
+          <div>
+            <app-alert kind="info">Import complete: your data on FFBE Equip Reborn is now the one of the file.</app-alert>
+          </div>
+          <button app-button variant="primary" type="button" (click)="cancel()">Close</button>
+        } @else {
+          <div>
+            <app-alert kind="danger">{{ found.warning }}</app-alert>
+          </div>
+          @if (progress(); as progress) {
+            <p class="working">{{ progress.text }}…</p>
+            <app-progress-bar [value]="progress.percent" label="Import progress" />
+          } @else {
+            <button app-button variant="primary" type="button" (click)="run()">Import</button>
+            <button app-button type="button" (click)="cancel()">Cancel</button>
+          }
+        }
       </app-panel>
     }
     <app-site-footer />
   </app-page-column>
 </app-page-content>
-
-<app-import-modal
-  [heading]="heading()"
-  [warning]="warning()"
-  [summary]="importing.summary()"
-  [messages]="importing.messages()"
-  [(open)]="importing.open"
-  (fileLoaded)="loadFile($event)"
-  (confirmed)="run()"
-/>
 
 @if (busy()) {
   <app-busy-overlay />

@@ -20,7 +20,7 @@
             small
             type="button"
             class="chip clear"
-            title="Show every type, sorted by ATK"
+            title="Show every item, every type, grouped by type"
             (click)="clearFilters()"
           >
             <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
@@ -34,6 +34,9 @@
             placeholder="Enter item name or name of TMR's unit"
             (search)="search.set($event)"
           />
+          @if (tab() === 'equipment' || tab() === 'materia') {
+            <app-checkbox class="only-owned" [(checked)]="onlyOwned">Only owned</app-checkbox>
+          }
           @if (tab() === 'farmableStmr') {
             <div class="stmr-moogle">
               Available <app-icon name="stmr-farmed" size="40" />
@@ -83,7 +86,7 @@
                 iconType="stat"
                 [iconSize]="28"
                 [choices]="sortChoices()"
-                [selected]="[sort()?.stat ?? defaultSortStat()]"
+                [selected]="sortSelected()"
                 (selectedChange)="pickSort($event)"
               />
             }
@@ -113,7 +116,7 @@
             <div #end class="end"></div>
           } @else {
             @for (group of visibleGroups(); track group.type) {
-              @if (byType()) {
+              @if (byType() && !sort()) {
                 <div class="separator">
                   <app-icon [name]="'equipment-' + group.type" size="50" />
                 </div>

@@ -1,4 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common';
+import { Checkbox } from '../../shared/components/checkbox/checkbox';
 import { Component, computed, ElementRef, HostListener, inject, linkedSignal, signal, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { typeList, typeListLiterals, weaponList } from '../../../core/constants/item-types';
@@ -74,6 +75,7 @@ const HISTORY_PAGE = 3;
 @Component({
   selector: 'app-inventory',
   imports: [
+    Checkbox,
     InventoryStats,
     NgTemplateOutlet,
     PageContent,
@@ -119,6 +121,8 @@ export class InventoryPage {
   /** the search is the same on every tab (the box is only hidden on the others) */
   protected readonly search = signal('');
   protected readonly searchable = computed(() => ['equipment', 'materia', 'farmableStmr'].includes(this.tab()));
+  /** on the equipment and materia tabs: only what the user owns */
+  protected readonly onlyOwned = signal(false);
   protected readonly stmrMoogle = signal(0);
   protected readonly onlyTimeLimited = signal(false);
   protected readonly sidebarCollapsed = signal(window.innerWidth < 990);
@@ -152,7 +156,7 @@ export class InventoryPage {
     ].map((choice) => {
       const on = current?.stat === choice.value;
       const single = choice.value !== 'name';
-      const standard = this.defaultSortStat() === 'name' ? 'A-Z' : 'ATK, from the highest';
+      const standard = this.byType() ? 'grouped by type' : this.defaultSortStat() === 'name' ? 'A-Z' : 'ATK, from the highest';
       const next = single
         ? on
           ? `the default (${standard})`
@@ -227,13 +231,16 @@ export class InventoryPage {
     const tab = this.tab();
     if (tab === 'history' || tab === 'settings') return [];
     const text = this.search();
-    const lines = this.shownLines(this.tabLines()).filter((line) => !text || containsText(text, line.item));
+    const lines = this.shownLines(this.tabLines())
+      .filter((line) => !text || containsText(text, line.item))
+      .filter((line) => !this.ownedFilter() || line.ownedNumber);
     const types = this.shownTypes();
     return sortEntries(
       lines.filter((line) => !this.byType() || !types.length || types.includes(line.item.type)),
       this.sort()?.stat ?? this.defaultSortStat(),
       // the stats go from the highest and the names from A unless turned around
       this.sort() ? this.sort()!.ascending !== (this.sort()!.stat === 'name') : false,
+      !this.sort(),
     );
   });
 
@@ -253,13 +260,25 @@ export class InventoryPage {
     return this.selectedTypes().filter((type) => available.has(type));
   });
   /** how many of the filters are on: the types chosen, a sort */
-  protected readonly activeFilters = computed(() => this.shownTypes().length + (this.sort() ? 1 : 0));
+  protected readonly activeFilters = computed(
+    () => this.shownTypes().length + (this.sort() ? 1 : 0) + (this.ownedFilter() ? 1 : 0),
+  );
+  /** the "only owned" filter is on, on a tab it applies to */
+  protected readonly ownedFilter = computed(() => this.onlyOwned() && ['equipment', 'materia'].includes(this.tab()));
   protected readonly showSort = computed(() => !['history', 'settings'].includes(this.tab()));
   /** what is selected while nothing is chosen: the materia go by name, the equipment by ATK */
   private readonly defaultSortStat = computed(() => (this.tab() === 'materia' ? 'name' : 'atk'));
 
+  /** what is pressed: the sort chosen (the equipment list has none until one is chosen: it is grouped by type) */
+  protected readonly sortSelected = computed(() => {
+    const stat = this.sort()?.stat ?? (this.byType() ? undefined : this.defaultSortStat());
+    return stat ? [stat] : [];
+  });
+
   protected readonly byType = computed(() => this.tab() === 'equipment');
   protected readonly groups = computed<Group[]>(() => {
+    // a sort chosen is over all the items: the type of the weapon does not split it
+    if (this.sort()) return this.lines().length ? [{ type: 'all', lines: this.lines() }] : [];
     // one group for each type, even when the lines of a type are not next to each other (the groups are tracked by type)
     const groups = new Map<string, Group>();
     for (const line of this.lines()) {
@@ -391,8 +410,7 @@ export class InventoryPage {
     const current = this.sort();
     // the stats have one order only (the highest first): a press turns it on, the next off
     if (stat !== 'name') {
-      const selected = current?.stat ?? this.defaultSortStat();
-      this.setSort(stat && selected !== stat ? { stat, ascending: false } : null);
+      this.setSort(stat && current?.stat !== stat ? { stat, ascending: false } : null);
       return;
     }
     if (!stat || current?.stat !== stat) this.setSort(stat ? { stat, ascending: true } : null);
@@ -401,6 +419,7 @@ export class InventoryPage {
 
   protected clearFilters(): void {
     this.selectedTypes.set([]);
+    this.onlyOwned.set(false);
     this.setSort(null);
   }
 
