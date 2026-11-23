@@ -248,6 +248,8 @@ export class BuildSharing {
   private async loadState(data: any, index: number): Promise<void> {
     const version = data.version ?? 0;
     const selector = data.itemSelector;
+    // the source "owned, available for expeditions" does not exist anymore: it opens as "owned"
+    if (selector?.mainSelector === 'ownedAvailableForExpedition') selector.mainSelector = 'owned';
     if (selector?.mainSelector === 'owned' && this.inventory.status() !== 'loaded') {
       this.toast.show('This build uses your owned equipments: log in to open it', 'warn');
       return;

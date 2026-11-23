@@ -21,12 +21,15 @@ export interface DataStorageContext {
   currentBuild(): any;
   ownedUnits(): any;
   itemEnchantments(): any;
+  /** Every build of the page and the one being worked on: the items of the others are already used. */
+  allBuilds(): { builds: any[]; index: number } | null;
 }
 
 const defaultContext: DataStorageContext = {
   currentBuild: () => null,
   ownedUnits: () => null,
   itemEnchantments: () => null,
+  allBuilds: () => null,
 };
 
 export class DataStorage {
@@ -38,7 +41,6 @@ export class DataStorage {
   excludeTMR5: any;
   excludePremium: any;
   excludeSTMR: any;
-  onlyUseOwnedItemsAvailableForExpeditions: any;
   includeTrialRewards: any;
   includeTMROfOwnedUnits: any;
   includeTmrMoogles: any;
@@ -81,7 +83,6 @@ export class DataStorage {
     this.exludeEventEquipment = false;
     this.excludePremium = false;
     this.excludeSTMR = false;
-    this.onlyUseOwnedItemsAvailableForExpeditions = false;
     this.includeTrialRewards = false;
     this.includeTMROfOwnedUnits = false;
     this.includeTmrMoogles = false;
@@ -314,7 +315,9 @@ export class DataStorage {
     return getOwnedNumber(this, item);
   }
 
+  /** The items the other builds of the page use (`builds` and `currentUnitIndex` are only for a page with a single build). */
   calculateAlreadyUsedItems(builds, currentUnitIndex) {
-    return calculateAlreadyUsedItems(this, builds, currentUnitIndex);
+    const all = this.context.allBuilds();
+    return calculateAlreadyUsedItems(this, all ? all.builds : builds, all ? all.index : currentUnitIndex);
   }
 }

@@ -58,12 +58,44 @@
     }
   </div>
   <div class="resists-line">
-    <app-resist-list [resist]="resistEntries()" />
+    @for (resist of result().elementResists; track resist.name) {
+      <span class="resist" [class.involved]="resist.involved" [title]="resist.name + ' resist'">
+        <app-icon [name]="'element-' + resist.name" size="40" /><span class="value">{{ resist.percent }}%</span>
+      </span>
+    }
   </div>
-  <app-killer-list [killers]="result().killers" />
+  <div class="resists-line">
+    @for (resist of result().ailmentResists; track resist.name) {
+      <span class="resist" [class.involved]="resist.involved" [title]="resist.name + ' resist'">
+        <app-icon [name]="'ailment-' + resist.name" size="40" /><span class="value">{{ resist.percent }}%</span>
+      </span>
+    }
+  </div>
+  @for (row of killerRows(); track row.kind) {
+    @if (row.tiles.length) {
+      <div class="resists-line">
+        @for (tile of row.tiles; track tile.name) {
+          <span class="resist" [title]="tile.name + ' killer' + (tile.value > 300 ? ' (only 300% taken into account)' : '')">
+            <app-icon [name]="'killer-' + row.kind + '-' + tile.name" size="40" /><span
+              class="value"
+              [class.over-cap]="tile.value > 300"
+              >{{ tile.value }}%</span
+            >
+          </span>
+        }
+      </div>
+    }
+  }
   @for (line of result().damage; track line.kind) {
     <div class="result-line" [class.secondary]="line.secondary">
-      {{ line.label }}: <strong>{{ displayValue(line.value) }}</strong>
+      <span [class.goal-label]="!line.secondary">{{ line.label }}:</span>
+      @if (line.value && line.value.min !== line.value.max) {
+        <span [class.goal]="goal() === 'min'">{{ whole(line.value.min) }}</span> -
+        <span [class.goal]="goal() === 'avg'">{{ whole(line.value.avg) }}</span> -
+        <span [class.goal]="goal() === 'max'">{{ whole(line.value.max) }}</span>
+      } @else {
+        <strong>{{ displayValue(line.value) }}</strong>
+      }
     </div>
   }
   <div class="result-line">

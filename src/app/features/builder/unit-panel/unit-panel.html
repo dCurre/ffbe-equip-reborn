@@ -1,82 +1,87 @@
-<app-panel>
-  <div panelHeading class="heading unit-heading">
-    <span>Unit</span>
-    <input
-      class="unit-input"
-      type="text"
-      list="builder-units"
-      placeholder="Select a unit..."
-      [value]="unitName()"
-      (change)="chooseUnitByName($any($event.target).value)"
-    />
-    <datalist id="builder-units">
-      @for (option of s.unitOptions(); track option.id) {
-        <option [value]="option.label"></option>
-      }
-    </datalist>
+@if (part() === 'choose') {
+  <div class="line">
+    <span class="label">Unit</span>
+    <app-combobox class="unit-input" [options]="unitNames()" [value]="unitName()" (picked)="chooseUnitByName($event)" />
     <label class="nv-only">
       <input type="checkbox" [checked]="s.onlyNvUnits()" (change)="s.onlyNvUnits.set($any($event.target).checked)" />
       Only NV units
     </label>
+    @if (s.hasOwnedUnits()) {
+      <label class="nv-only">
+        <input type="checkbox" [checked]="s.onlyOwnedUnits()" (change)="s.onlyOwnedUnits.set($any($event.target).checked)" />
+        Only owned units
+      </label>
+    }
   </div>
-
-  @if (s.unit(); as unit) {
+} @else if (s.unit(); as unit) {
+  <app-panel>
+    <div panelHeading class="heading unit-heading">
+      <img class="unit-icon" [src]="'img/units/unit_icon_' + unit.id + '.png'" alt="" />
+      <span class="rarity" [title]="'Rarity ' + unit.max_rarity">
+        @if (unit.max_rarity === 'NV') {
+          <app-icon name="nv" height="1em" />
+        } @else {
+          {{ stars(unit.max_rarity) }}
+        }
+      </span>
+      <a [href]="wikiUrl()" target="_blank" rel="noreferrer" title="Open the wiki page of {{ unit.name }}">Unit info</a>
+      <button app-button small type="button" title="Switch pots: none, all, or the pots of the game" (click)="switchPots()">
+        pots
+      </button>
+      @if (s.hasBraveShift()) {
+        <button app-button variant="flat" type="button" class="brave-shift" title="Brave Shift" (click)="loader().braveShift()">
+          <app-icon name="brave-shift" />
+        </button>
+      }
+    </div>
     <div class="unit-body">
-      <div class="line">
-        <img class="unit-icon" [src]="'img/units/unit_icon_' + unit.id + '.png'" alt="" />
-        <strong>{{ unit.name }}</strong>
-        <span class="rarity" [title]="'Rarity ' + unit.max_rarity">
-          @if (unit.max_rarity === 'NV') {
-            <app-icon name="nv" height="1em" />
-          } @else {
-            {{ stars(unit.max_rarity) }}
-          }
-        </span>
-        <app-wiki-link [name]="unit.name" [page]="unit['wikiEntry']" [always]="true" />
-        @if (s.hasBraveShift()) {
-          <button app-button type="button" class="brave-shift" title="Brave Shift" (click)="loader().braveShift()">
-            <app-icon name="brave-shift" />
-          </button>
+      <app-unit-equipable [state]="state()" />
+      <div class="levels">
+        @if (s.showLevel()) {
+          <label class="line">
+            <span class="label">Unit level :</span>
+            <select [value]="s.level()" (change)="setLevel($any($event.target).value)">
+              @for (value of levels; track value) {
+                <option [value]="value" [selected]="value === s.level()">{{ value }}</option>
+              }
+            </select>
+          </label>
+        }
+        @if (s.showExLevel()) {
+          <label class="line">
+            <span class="label">Ex awakening :</span>
+            <select [value]="s.exLevel()" (change)="setExLevel($any($event.target).value)">
+              @for (value of exLevels(); track value) {
+                <option [value]="value" [selected]="value === s.exLevel()">EX+{{ value }}</option>
+              }
+            </select>
+          </label>
         }
       </div>
-      @if (s.showLevel()) {
-        <label class="line">
-          Level
-          <select [value]="s.level()" (change)="setLevel($any($event.target).value)">
-            @for (value of levels; track value) {
-              <option [value]="value" [selected]="value === s.level()">{{ value }}</option>
-            }
-          </select>
-        </label>
-      }
-      @if (s.showExLevel()) {
-        <label class="line">
-          EX
-          <select [value]="s.exLevel()" (change)="setExLevel($any($event.target).value)">
-            @for (value of ['0', '1', '2', '3']; track value) {
-              <option [value]="value">EX+{{ value }}</option>
-            }
-          </select>
-        </label>
-      }
-      @for (enhancement of unit.enhancements ?? []; track $index; let i = $index) {
-        <label class="line">
-          <select [value]="unit.enhancementLevels?.[i]" (change)="changeEnhancement(i, $event)">
-            @for (option of enhancementOptions(i); track option.value) {
-              <option [value]="option.value" [selected]="unit.enhancementLevels?.[i] === option.value">
-                {{ option.label }}
-              </option>
-            }
-          </select>
-        </label>
+
+      @if (unit.enhancements?.length) {
+        <div class="enhancements">
+          @for (enhancement of unit.enhancements; track $index; let i = $index) {
+            <select
+              [attr.aria-label]="enhancement.name"
+              [value]="unit.enhancementLevels?.[i]"
+              (change)="changeEnhancement(i, $event)"
+            >
+              @for (option of enhancementOptions(i); track option.value) {
+                <option [value]="option.value" [selected]="unit.enhancementLevels?.[i] === option.value">
+                  {{ option.label }}
+                </option>
+              }
+            </select>
+          }
+        </div>
       }
 
       <app-unit-stats [state]="state()" />
 
       <app-unit-buffs [state]="state()" />
-      <app-unit-equipable [state]="state()" />
       <div class="line">
-        <span class="label">Attack element</span>
+        <span class="label">Imbue(s)</span>
         <app-choice-group
           [choices]="elementChoices"
           iconType="element"
@@ -85,5 +90,5 @@
         />
       </div>
     </div>
-  }
-</app-panel>
+  </app-panel>
+}

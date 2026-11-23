@@ -1,34 +1,60 @@
-.unit-stats {
-  border-collapse: collapse;
+/* as the old page: two groups by line, each with the base stat, the pots and the buff */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 8px;
 }
 
-.unit-stats th,
-.unit-stats td {
-  padding: 2px 6px;
-  text-align: left;
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.unit-stats input {
-  width: 100px;
+.stats-grid app-input-group {
+  display: flex;
 }
 
-.unit-stats input.poted {
-  background-color: #4b6b2e;
+.stats-grid app-input-group.wide {
+  --addon-width: 75%; /* as the old page: the label takes three quarters of the line */
 }
 
-.unit-stats input.maxPot {
-  background-color: #2e6b4b;
+.base {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 50px;
+  padding: 0 12px;
 }
 
-.unit-stats input.door {
-  background-color: #6b4b2e;
+/*
+ * MP has no buff: its group ends where the pots of the other rows end. A full row is W = 79px + 3 pots (79 = the 2px frame, the
+ * 50px label, 3px of lines and the 24px of padding of the base value), MP drops one pots field and one line: (2W + 76px) / 3
+ */
+.stats-grid app-input-group.no-buff {
+  width: calc((200% + 76px) / 3);
 }
 
-.unit-stats input.maxDoor {
-  background-color: #6b2e4b;
+.stats-grid app-number-field {
+  flex: 1;
+  width: auto !important;
+  min-width: 0;
 }
 
-.pot-button,
-.link-button {
-  padding: 0 6px;
+/* the colors of the pots: some, the pots of the game, with the door, all of them */
+.stats-grid ::ng-deep app-number-field.poted input {
+  color: #5cb85c;
+}
+
+.stats-grid ::ng-deep app-number-field.maxPot input {
+  color: #5b9bd5;
+}
+
+.stats-grid ::ng-deep app-number-field.door input {
+  color: #e57373;
+}
+
+.stats-grid ::ng-deep app-number-field.maxDoor input {
+  color: #ba68c8;
 }

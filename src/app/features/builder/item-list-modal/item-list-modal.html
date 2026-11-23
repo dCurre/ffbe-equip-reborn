@@ -1,0 +1,27 @@
+<app-modal [heading]="kind() === 'exclude' ? 'Excluded items' : 'Included items'" [wide]="true" [(open)]="open">
+  @for (item of entries(); track item.id) {
+    <div class="entry">
+      <button
+        app-button
+        variant="flat"
+        type="button"
+        title="Remove from the list"
+        aria-label="Remove from the list"
+        (click)="remove('' + item.id)"
+      >
+        <app-icon name="remove" />
+      </button>
+      <app-item-line
+        [item]="item"
+        [units]="items().pickerContext().units"
+        [enchantments]="items().pickerContext().enchantments"
+      />
+    </div>
+  } @empty {
+    <p>No item in the list.</p>
+  }
+  <ng-container modalFooter>
+    <button app-button type="button" [disabled]="!entries().length" (click)="reset()">Reset the list</button>
+    <button app-button type="button" (click)="add.emit()">Add items</button>
+  </ng-container>
+</app-modal>

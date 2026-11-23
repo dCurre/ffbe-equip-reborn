@@ -9,7 +9,7 @@ import { Inventory } from '../../shared/services/inventory';
 import { Language, LANGUAGES, ServerContext, SERVERS } from '../../shared/services/server-context';
 import { Theme } from '../../shared/services/theme';
 
-export type BannerName = 'Sakura' | 'Lasswell' | 'Jake' | 'Rain' | 'Nichol' | 'Lid' | 'Fina' | 'MogChocobo';
+export type BannerName = 'Sakura' | 'Lasswell' | 'Jake' | 'Rain' | 'Nichol' | 'Lid' | 'Fina' | 'MogChocobo' | 'Charlotte';
 
 /** Left padding of the title (px) so it clears the character picture: wide screens, up to 991px, up to 768px. */
 const BANNER_PADDING: Record<BannerName, [number, number, number]> = {
@@ -21,6 +21,7 @@ const BANNER_PADDING: Record<BannerName, [number, number, number]> = {
   Lid: [325, 265, 235],
   Fina: [330, 270, 240],
   MogChocobo: [310, 270, 240],
+  Charlotte: [330, 270, 240],
 };
 
 /** Vertical position of each flag in the `img/icons/languages.png` sprite (16px tall flags). */
@@ -34,6 +35,7 @@ const MENU = [
   { path: '/inventory', label: 'My inventory' },
   { path: '/units', label: 'My units' },
   { path: '/espers', label: 'My Espers' },
+  { path: '/data-import', label: 'Data import' },
   { path: '/contribute', label: 'Contribute' },
 ];
 

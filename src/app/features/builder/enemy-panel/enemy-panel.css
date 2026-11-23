@@ -1,11 +1,21 @@
-.stats,
-.elements {
+/* as the old page: the groups keep their own width and wrap, 10px between the blocks */
+.enemy {
+  gap: 10px;
+}
+
+.monster-list {
+  align-self: flex-start;
+}
+
+.stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 10px;
+  gap: 2px 10px;
 }
 
 .elements {
+  display: flex;
+  flex-wrap: wrap;
   gap: 4px 5px;
 }
 

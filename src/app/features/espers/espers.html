@@ -21,7 +21,6 @@
           [ownedCount]="ownedCount()"
           (sorted)="sortBy($event)"
           (opened)="showTab($event)"
-          (importing)="openImport()"
         />
       } @else if (currentInfo(); as info) {
         <div class="esper" [class.viewing-grid]="gridView()">
@@ -58,15 +57,6 @@
 
   <app-site-footer />
 </app-page-content>
-
-<app-import-modal
-  heading="Import espers"
-  warning="This feature is a Work in Progress. It will override your inventory on FFBE Equip Reborn"
-  [summary]="importing.summary()"
-  [(open)]="importing.open"
-  (fileLoaded)="loadImportFile($event)"
-  (confirmed)="runImport()"
-/>
 
 <app-share-link-modal
   heading="Link to your Esper build"

@@ -38,22 +38,4 @@ input.short {
 
 .label {
   min-width: 90px;
-  font-weight: bold;
 }
-.resists {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 8px;
-}
-
-.resist {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-
-.resist input {
-  width: 56px;
-}
-

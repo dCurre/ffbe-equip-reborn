@@ -6,43 +6,91 @@
 }
 
 .build-button {
-  min-width: 120px;
-  font-size: 1.2em;
+  min-width: 90px;
   font-weight: bold;
 }
 
-.progress {
+/* the page is dimmed while a build runs (the overlay is at 100): the stop button stays above it, lit as the old page did */
+.build-button.running {
+  position: relative;
+  z-index: 110;
+  box-shadow: 0 0 5px 5px #fff;
+}
+
+/* as the old page: the percentage centered over the whole bar, green while it runs and sky blue when it is done */
+.progress-column {
   flex: 1;
-  height: 22px;
+  min-width: 0;
+}
+
+.builds-tried {
+  margin-top: 4px;
+  font-size: 0.9em;
+}
+
+.progress {
+  position: relative;
+  height: 34px;
   background-color: var(--color-panel-heading);
   border-radius: var(--radius);
   overflow: hidden;
 }
 
 .progress-bar {
-  min-width: 34px;
   height: 100%;
-  padding: 0 6px;
-  color: #fff;
-  background-color: #337ab7;
+  background-color: #4caf50;
   transition: width 0.3s;
 }
 
-.counter {
-  min-width: 100px;
-  text-align: right;
-  opacity: 0.7;
+.progress-bar.finished {
+  background-color: skyblue;
 }
 
+.progress-text {
+  position: absolute;
+  inset: 0;
+  line-height: 34px;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
+}
+
+.cores {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+.cores input {
+  width: 60px;
+  padding: 4px 8px;
+}
+
+
+/* the slots two by two (right and left hand, head and body...), one per line in the detailed view */
 .build-result {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 15px;
   margin-bottom: 15px;
+}
+
+.build-result.detailed-view {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 600px) {
+  .build-result {
+    grid-template-columns: 1fr;
+  }
 }
 
 .slot-line {
   display: flex;
   align-items: center;
   min-height: 70px;
-  border-top: 1px solid var(--color-border);
 }
 
 .slot-line.empty {
@@ -51,23 +99,56 @@
   opacity: 0.6;
 }
 
+.slot-line.empty app-icon {
+  filter: grayscale(1);
+}
+
 
 .slot-line.enhanced ::ng-deep .itemName {
   color: brown;
 }
 
+/* the buttons of an item as the old page: faint until the pointer is over them, the pin green when it is pinned */
 .slot-line .actions {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  justify-content: space-evenly;
   width: 50px;
 }
 
 .slot-line .actions button {
   font-size: 14px;
+  opacity: 0.2;
 }
 
-.slot-line .actions button.dim {
-  opacity: 0.35;
+.slot-line .actions button:hover {
+  opacity: 1;
+}
+
+.slot-line .actions .pinned {
+  color: limegreen;
+  opacity: 1;
+}
+
+.slot-line .actions .pinned:hover {
+  opacity: 0.2;
+}
+
+.slot-line .actions .exclude:hover {
+  color: red;
+}
+
+/* the dwarf of the enhancements: gray until the pointer is over it */
+.slot-line .actions .enchant {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
+
+.slot-line .actions .enchant:hover {
+  filter: none;
+  opacity: 1;
 }
 
 .item-cards {
@@ -81,8 +162,16 @@
   cursor: pointer;
 }
 
+/* the three links under the stats, spread on the line, with a line under them */
 .view-switch {
-  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  align-items: center;
+  justify-content: space-around;
+  padding: 10px 0;
+  margin-top: 10px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .detailed {

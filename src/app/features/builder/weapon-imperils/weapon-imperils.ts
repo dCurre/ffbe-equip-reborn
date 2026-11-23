@@ -5,7 +5,6 @@ import { Icon } from '../../../shared/components/icon/icon';
 import { InputGroup } from '../../../shared/components/input-group/input-group';
 import { NumberField } from '../../../shared/components/number-field/number-field';
 import { enemy } from '../shared/build-inputs';
-import { fieldTone } from '../shared/field-tone';
 import { StatePanel } from '../shared/state-panel';
 
 /** The imperils of the enemy for each weapon: a summary of the ones in use, and the inputs behind a button. */
@@ -18,7 +17,11 @@ import { StatePanel } from '../shared/state-panel';
 export class WeaponImperils extends StatePanel {
   protected readonly weapons = weaponList;
   protected readonly open = signal(false);
-  protected readonly tone = fieldTone;
+
+  /** `greatSword` -> `great sword`, as the old titles */
+  protected spaced(weapon: string): string {
+    return weapon.replace(/([A-Z])/g, ' $1').toLowerCase();
+  }
 
   protected readonly active = computed(() => {
     const imperils = enemy(this.s).imperils;

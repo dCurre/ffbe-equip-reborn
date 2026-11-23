@@ -1,5 +1,23 @@
+/* the old gray tag */
 .experimental {
-  font-size: 0.8em;
+  display: inline-block;
+  padding: 2px 6px;
+  margin-right: 6px;
+  font-size: 0.7em;
   font-weight: bold;
-  color: var(--color-warning, #e67e22);
+  color: #fff;
+  vertical-align: middle;
+  background-color: #474747;
+  border-radius: 3px;
+}
+
+/* the two hands rules side by side on a wide screen */
+.pair {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 40px;
+}
+
+.pair app-checkbox {
+  flex: 1 1 200px;
 }

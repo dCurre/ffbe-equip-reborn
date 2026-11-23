@@ -1,4 +1,4 @@
-import { Component, computed, input, model, output, signal } from '@angular/core';
+import { Component, computed, ElementRef, input, model, output, signal, viewChild } from '@angular/core';
 import { Icon } from '../icon/icon';
 
 /** A dropdown with a field: click to see every option, type to keep the ones that contain the text, click or Enter to choose. */
@@ -15,12 +15,18 @@ export class Combobox {
   readonly value = model('');
   readonly emptyLabel = input('Custom');
   readonly picked = output<string>();
+  private readonly field = viewChild<ElementRef<HTMLInputElement>>('field');
   protected readonly open = signal(false);
   protected readonly query = signal('');
   protected readonly shown = computed(() => {
     const text = this.query().trim().toLowerCase();
     return text ? this.options().filter((o) => o.toLowerCase().includes(text)) : this.options();
   });
+
+  /** Puts the cursor in the field: the options open, as when it is clicked. */
+  focus(): void {
+    this.field()?.nativeElement.focus();
+  }
 
   protected show(field: HTMLInputElement): void {
     this.query.set('');

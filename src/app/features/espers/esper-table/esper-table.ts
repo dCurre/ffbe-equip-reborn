@@ -1,9 +1,11 @@
-import { Component, input, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { baseStats } from '../../../../core/constants/base-lists';
 import { KillerList } from '../../../game/components/killer-list/killer-list';
 import { ResistList } from '../../../game/components/resist-list/resist-list';
 import { Alert } from '../../../shared/components/alert/alert';
 import { Icon } from '../../../shared/components/icon/icon';
+import { ServerContext } from '../../../shared/services/server-context';
 import { calculateSp, esperSprite, EsperInfo, OwnedEsper, Stat, statBonus, statValue } from '../esper-model';
 
 export type Column = 'index' | 'level' | Stat | 'resists' | 'killers';
@@ -19,7 +21,7 @@ export interface EsperRow {
 /** The stats of all the owned Espers, sortable by column. */
 @Component({
   selector: 'app-esper-table',
-  imports: [Alert, Icon, ResistList, KillerList],
+  imports: [Alert, Icon, ResistList, KillerList, RouterLink],
   templateUrl: './esper-table.html',
   styleUrl: './esper-table.css',
 })
@@ -31,7 +33,7 @@ export class EsperTable {
   readonly ownedCount = input.required<number>();
   readonly sorted = output<Column>();
   readonly opened = output<string>();
-  readonly importing = output<void>();
+  protected readonly serverContext = inject(ServerContext);
 
   protected readonly stats = baseStats as Stat[];
   protected readonly sprite = esperSprite;

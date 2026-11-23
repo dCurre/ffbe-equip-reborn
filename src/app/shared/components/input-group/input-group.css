@@ -1,9 +1,7 @@
 :host {
   display: inline-flex;
-  gap: 1px; /* the gap shows the border color between the fields */
-  overflow: hidden;
   vertical-align: middle;
-  background: var(--color-input-border);
+  background: var(--color-input-background);
   border: 1px solid var(--color-input-border);
   border-radius: var(--radius);
 }
@@ -11,6 +9,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
+  width: var(--addon-width, 50px);
   background: var(--color-panel-heading);
+  /* the group does not clip (the tooltips of the fields go out of it) */
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+/* one layer of the input color (the fields have none of their own), a 1px line between the fields */
+:host ::ng-deep > * + * {
+  border-left: 1px solid var(--color-input-border);
+}
+
+:host ::ng-deep app-number-field {
+  background: transparent;
 }

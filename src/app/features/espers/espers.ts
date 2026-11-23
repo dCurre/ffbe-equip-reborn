@@ -1,6 +1,5 @@
 import { Component, computed, HostListener, inject, signal, viewChild } from '@angular/core';
 import { ShareLinkState } from '../../shared/state/share-link-state';
-import { ImportState } from '../../shared/state/import-state';
 import { ActivatedRoute } from '@angular/router';
 import { baseStats } from '../../../core/constants/base-lists';
 import { PageContent } from '../../layout/page-content/page-content';
@@ -15,27 +14,22 @@ import { Button } from '../../shared/components/button/button';
 import { Icon } from '../../shared/components/icon/icon';
 import { BusyOverlay } from '../../shared/components/busy-overlay/busy-overlay';
 import { LoadStatus } from '../../shared/components/load-status/load-status';
-import { ImportModal } from '../../shared/components/import-modal/import-modal';
 import { ShareLinkModal } from '../../shared/components/share-link-modal/share-link-modal';
 import {
   applySelectedNodes,
   calculateSp,
   changeRarity,
-  decodeBoard,
   decodeEsperLink,
   encodeEsperLink,
   EsperBoard,
   EsperInfo,
   esperSprite,
-  IMPORT_ESPER_NAMES,
   LEVEL_RANGE,
   clampLevel,
   newEsper,
   OwnedEsper,
-  parsePosition,
   Stat,
   statBonus,
-  toggleNode,
   updateStats,
 } from './esper-model';
 import { EsperGrid } from './esper-grid/esper-grid';
@@ -43,28 +37,8 @@ import { EsperHeader } from './esper-header/esper-header';
 import { EsperTable, type Column } from './esper-table/esper-table';
 import { EsperTabs } from './esper-tabs/esper-tabs';
 
-interface ImportedEsper {
-  id: string;
-  rarity: number;
-  level: number;
-  board: string;
-}
-
 const SAVE_DELAY_MS = 3000;
 const STATS = baseStats as Stat[];
-
-const isImportFile = (data: unknown): data is ImportedEsper[] =>
-  Array.isArray(data) &&
-  data.length <= 20 &&
-  data.every(
-    (e) =>
-      typeof e?.id === 'string' &&
-      e.id.length <= 2 &&
-      typeof e.rarity === 'number' &&
-      typeof e.level === 'number' &&
-      typeof e.board === 'string' &&
-      e.board.length <= 40,
-  );
 
 /**
  * The Esper page: the table of the owned Espers and, for each Esper, its rarity, level and training board. Opened from a
@@ -83,7 +57,6 @@ const isImportFile = (data: unknown): data is ImportedEsper[] =>
     Icon,
     LoadStatus,
     BusyOverlay,
-    ImportModal,
     ShareLinkModal,
   ],
   templateUrl: './espers.html',
@@ -109,9 +82,7 @@ export class Espers {
   protected readonly gridView = signal(false);
   protected readonly spFixedVisible = signal(false);
   protected readonly busy = signal(false);
-  protected readonly importing = new ImportState();
   protected readonly share = new ShareLinkState();
-  private importedEspers: ImportedEsper[] | null = null;
 
   protected readonly columns: { column: Column; label: string }[] = [
     { column: 'index', label: 'Esper' },
@@ -335,62 +306,5 @@ export class Espers {
     } catch (error) {
       this.saveNeeded = showSaveError(this.toast, error);
     }
-  }
-
-  // --- Import ---
-
-  protected openImport(): void {
-    this.importedEspers = null;
-    this.importing.start();
-  }
-
-  protected loadImportFile(data: unknown): void {
-    if (!isImportFile(data)) {
-      this.toast.show("The imported file doesn't have the correct form", 'error');
-      return;
-    }
-    this.importedEspers = data;
-    this.importing.summary.set(`Espers to import : ${data.length}`);
-  }
-
-  /** Replaces the owned Espers with the ones of the file (the game ids are converted to Esper names). */
-  protected runImport(): void {
-    if (!this.importedEspers) {
-      this.toast.show('Please select a file to import', 'warn');
-      return;
-    }
-    const known = this.importedEspers.filter((e) => IMPORT_ESPER_NAMES[Number(e.id)]);
-    if (known.length === 0) {
-      this.toast.show('No known esper found in the file', 'warn');
-      return;
-    }
-    this.importing.open.set(false);
-    this.busy.set(true);
-    setTimeout(() => {
-      const owned: Record<string, OwnedEsper> = {};
-      for (const data of known) {
-        const info = this.espers().find((e) => e.name === IMPORT_ESPER_NAMES[Number(data.id)]);
-        const rarity = Math.round(data.rarity);
-        if (!info || rarity < 1 || rarity > info.maxLevel) continue;
-        const board = this.boards[info.name];
-        const esper = newEsper(info, rarity, board);
-        esper.level = clampLevel(Math.round(data.level), rarity);
-        for (const position of decodeBoard(data.board)) {
-          if (position === '0_0' || esper.selectedSkills.includes(position)) continue;
-          const { x, y } = parsePosition(position);
-          toggleNode(board, esper, x, y);
-        }
-        updateStats(board, esper);
-        owned[info.name] = esper;
-      }
-      this.ownedMap.set(owned);
-      this.tab.set('ALL');
-      this.busy.set(false);
-      // without an account (or on a shared link) the import stays on screen: there is nowhere to save it
-      if (this.logged() && !this.linkMode()) {
-        this.saveNeeded = true;
-        this.save();
-      }
-    }, 200);
   }
 }

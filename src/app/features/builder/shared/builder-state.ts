@@ -1,15 +1,21 @@
 import { computed, signal, type WritableSignal } from '@angular/core';
 import { areConditionOK } from '../../../../core/builder/item-conditions';
 import { UnitBuild } from '../../../../core/builder/unit-build';
+import { typeList } from '../../../../core/constants/item-types';
 import { hasStack } from '../../../../core/formula/formula-queries';
+import type { OwnedUnit } from '../../../shared/services/inventory';
 import { ServerContext } from '../../../shared/services/server-context';
+
+/** A unit of the inventory the user has (the entry can also be only a unit to farm). The Brave Shift form is owned with the other form. */
+const isOwned = (unit: OwnedUnit | undefined): boolean =>
+  !!unit && (unit.number > 0 || (unit.sevenStar ?? 0) > 0 || (unit.nv ?? 0) > 0);
 import { readGoal, syncBaseValues } from './build-inputs';
 import { defaultMonsterAttackFormula, GoalOption, goalOptions, multicastChoices, multicastEffect } from './goal';
 import { OptimizerRunner } from './optimizer-runner';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
-export type EquipmentSource = 'all' | 'owned' | 'ownedAvailableForExpedition' | 'shop';
+export type EquipmentSource = 'all' | 'owned' | 'shop';
 
 /** A unit of `unitsWithPassives.json` (the data the builder works on). */
 export interface BuilderUnit {
@@ -42,6 +48,7 @@ export class BuilderState {
   readonly tick = signal(0);
   readonly unitId = signal('');
   readonly onlyNvUnits = signal(true);
+  readonly onlyOwnedUnits = signal(false);
   readonly level = signal('120');
   readonly exLevel = signal('3');
   readonly pots = signal<Record<string, string>>({});
@@ -108,11 +115,17 @@ export class BuilderState {
 
   // --- What follows from them ---
   readonly unitOptions;
-  readonly current = computed(() => {
-    this.tick();
-    const build = this.build();
-    return build.unit ? build : null;
-  });
+  /** the filter of the owned units can be used: the inventory is there */
+  readonly hasOwnedUnits;
+  // the build changes in place (the Brave Shift swaps its unit): the same object must still wake what reads it
+  readonly current = computed(
+    () => {
+      this.tick();
+      const build = this.build();
+      return build.unit ? build : null;
+    },
+    { equal: () => false },
+  );
   readonly unit = computed<BuilderUnit | null>(() => this.current()?.unit ?? null);
   readonly hasBraveShift = computed(() => !!this.current()?.hasBraveShift());
   readonly unitWithSkills = computed(() => {
@@ -150,7 +163,19 @@ export class BuilderState {
     this.tick();
     const unit = this.unit();
     const banned = this.build().bannedEquipableTypes ?? [];
-    return unit ? unit.equip.map((type) => ({ type, banned: banned.includes(type) })) : [];
+    // all the slots of the old page; the ones the unit can't use stay dimmed
+    // the arrow of the old page: a skill of the unit that works when equipped with that type
+    const boosted: unknown[] = (this.build().unit?.skills ?? []).flatMap((skill: any) => skill.equipedConditions ?? []);
+    return unit
+      ? typeList
+          .filter((type) => type !== 'accessory' && type !== 'visionCard')
+          .map((type) => ({
+            type,
+            usable: unit.equip.includes(type),
+            banned: banned.includes(type),
+            boosted: boosted.includes(type),
+          }))
+      : [];
   });
   readonly showStack = computed(() => {
     this.tick();
@@ -158,14 +183,22 @@ export class BuilderState {
     return !!formula && hasStack(formula);
   });
 
-  constructor(serverContext: ServerContext, sharedWith?: BuilderState) {
+  /** `ownedUnits`: the units of the inventory of the user, null when there is none (not logged in). */
+  constructor(
+    serverContext: ServerContext,
+    sharedWith?: BuilderState,
+    private readonly ownedUnits: () => Record<string, OwnedUnit> | null = () => null,
+  ) {
     this.units = sharedWith?.units ?? signal({});
     this.unitsWithSkills = sharedWith?.unitsWithSkills ?? new Map();
+    this.hasOwnedUnits = computed(() => !!this.ownedUnits());
     this.unitOptions = computed(() => {
       const nvOnly = this.onlyNvUnits();
+      const owned = this.onlyOwnedUnits() ? this.ownedUnits() : null;
       const server = serverContext.server();
       return Object.entries(this.units())
         .filter(([, unit]) => !nvOnly || unit.max_rarity === 'NV')
+        .filter(([id, unit]) => !owned || isOwned(owned[id]) || isOwned(owned[unit.braveShift ?? unit.braveShifted ?? '']))
         .sort(([, a], [, b]) => a.name.localeCompare(b.name))
         .flatMap(([id, unit]) => {
           let label = unit.name;

@@ -4,6 +4,8 @@ import { Item } from '../../../game/helpers/item';
 import { ItemLine } from '../../../game/components/item-line/item-line';
 import { ServerContext } from '../../../shared/services/server-context';
 import { StaticData } from '../../../shared/services/static-data';
+import { Button } from '../../../shared/components/button/button';
+import { Icon } from '../../../shared/components/icon/icon';
 import { Modal } from '../../../shared/components/modal/modal';
 import { TabBar, TabItem } from '../../../shared/components/tab-bar/tab-bar';
 import { StatePanel } from '../shared/state-panel';
@@ -30,7 +32,7 @@ type Bestiary = Record<string, Monster[]>;
 /** The list of the known monsters (a link and a dialog): choosing one fills the stats, races and resistances of the enemy. */
 @Component({
   selector: 'app-monster-list',
-  imports: [Modal, ItemLine, TabBar],
+  imports: [Button, Icon, Modal, ItemLine, TabBar],
   templateUrl: './monster-list.html',
   styleUrl: './monster-list.css',
 })

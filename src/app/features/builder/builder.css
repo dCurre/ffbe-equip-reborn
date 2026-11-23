@@ -20,24 +20,64 @@
   flex-direction: column;
 }
 
-app-unit-panel {
+.mode {
   order: 1;
 }
 
-app-goal-panel {
+.details {
   order: 2;
 }
 
-app-rules-panel {
+/* the unit line and the goal under it, one below the other (no heading: the tabs are the heading of the card) */
+.choose-goal ::ng-deep .heading {
+  display: none;
+}
+
+.choose-goal {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings {
   order: 3;
 }
 
-app-enemy-panel {
-  order: 4;
+app-tab-panel {
+  margin-bottom: 20px;
 }
 
-app-equipments-panel {
-  order: 5;
+/* the settings are sections of the one box of the tabs, not boxes inside a box (as in Unit Search) */
+.tab-content ::ng-deep .panel-box {
+  margin-bottom: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+/* the unit tabs are the heading of the card of the build */
+.build-card {
+  margin-bottom: 20px;
+  overflow: hidden;
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+}
+
+.build-card .pane {
+  padding: 15px;
+}
+
+.login-hint {
+  display: block;
+  margin-bottom: 15px;
+}
+
+/* the heading repeats the tab name */
+app-challenge-panel ::ng-deep .heading,
+app-rules-panel ::ng-deep .heading,
+app-enemy-panel ::ng-deep .heading,
+app-equipments-panel ::ng-deep .heading {
+  display: none;
 }
 
 @media (max-width: 991px) {
@@ -50,4 +90,9 @@ app-equipments-panel {
     flex: none;
     width: 100%;
   }
+}
+
+/* while a build runs the page is dimmed (the layer of the other pages is almost invisible on the dark theme) */
+app-busy-overlay {
+  opacity: 0.5;
 }

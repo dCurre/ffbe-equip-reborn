@@ -1,3 +1,9 @@
-<a [attr.href]="href()" [attr.target]="href() ? '_blank' : null" [attr.rel]="href() ? 'noreferrer' : null">
-  <app-icon [name]="icon()" /> <span class="text">{{ label() }}</span>
-</a>
+@if (route(); as route) {
+  <a [routerLink]="route" [queryParams]="serverContext.linkParams()">
+    <app-icon [name]="icon()" /> <span class="text">{{ label() }}</span>
+  </a>
+} @else {
+  <a [attr.href]="href()" [attr.target]="href() ? '_blank' : null" [attr.rel]="href() ? 'noreferrer' : null">
+    <app-icon [name]="icon()" /> <span class="text">{{ label() }}</span>
+  </a>
+}

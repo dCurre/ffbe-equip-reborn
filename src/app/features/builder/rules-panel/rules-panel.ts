@@ -1,16 +1,16 @@
-import { Component, output } from '@angular/core';
+import { Component } from '@angular/core';
+import { Checkbox } from '../../../shared/components/checkbox/checkbox';
 import { Panel } from '../../../shared/components/panel/panel';
 import { StatePanel } from '../shared/state-panel';
 
-/** The rules the build must follow, and how many cores to use. */
+/** The rules the build must follow, and the damage variance. */
 @Component({
   selector: 'app-rules-panel',
-  imports: [Panel],
+  imports: [Panel, Checkbox],
   templateUrl: './rules-panel.html',
   styleUrls: ['../shared/form-common.css', './rules-panel.css'],
 })
 export class RulesPanel extends StatePanel {
-  readonly workers = output<string>();
   protected readonly overcapStats = [
     ['hp', 'HP'],
     ['mp', 'MP'],
@@ -19,5 +19,10 @@ export class RulesPanel extends StatePanel {
     ['mag', 'MAG'],
     ['spr', 'SPR'],
     ['lbPerTurn', 'LB/turn'],
+  ];
+  protected readonly variations = [
+    ['min', 'Minimum'],
+    ['avg', 'Average'],
+    ['max', 'Maximum'],
   ];
 }

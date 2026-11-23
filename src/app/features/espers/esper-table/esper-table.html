@@ -1,6 +1,6 @@
 <div class="all-espers">
   @if (logged()) {
-    <a class="import-link" (click)="importing.emit()">
+    <a class="import-link" routerLink="/data-import" [queryParams]="serverContext.linkParams()">
       <app-icon name="save" /> <span class="text">Import Espers</span>
     </a>
   }

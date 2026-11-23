@@ -1,0 +1,23 @@
+
+
+.help {
+  display: inline-flex;
+  opacity: 0.7;
+}
+
+/* the lists of the guide, as in the help of the page */
+.guide,
+.guide ul {
+  margin: 0 0 10px;
+  padding-left: 40px;
+  list-style: disc;
+}
+
+.guide li {
+  margin: 4px 0;
+}
+
+.guide li ul {
+  padding-left: 15px;
+  list-style: '- ';
+}

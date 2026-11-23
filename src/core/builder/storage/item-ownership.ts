@@ -107,12 +107,6 @@ export function getOwnedNumber(storage: DataStorage, item) {
   var totalNumber: any = 0;
   var totalOwnedNumber: any = 0;
   var availableNumber: any = 0;
-  if (
-    storage.onlyUseOwnedItemsAvailableForExpeditions &&
-    storage.itemInventory.excludeFromExpeditions.includes(item.id)
-  ) {
-    return { total: 0, available: 0, totalOwnedNumber: 0 };
-  }
   if (item.type == 'visionCard') {
     let indexOfDash = item.id.indexOf('-');
     let baseId = item.id.substr(0, indexOfDash);

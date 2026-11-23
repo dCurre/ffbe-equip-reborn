@@ -1,39 +1,23 @@
 <app-panel>
   <div panelHeading class="heading"><span>Build rules</span></div>
   <div class="options">
-    <label
-      ><input
-        type="checkbox"
+    <div class="pair">
+      <app-checkbox
         [checked]="s.forceDoubleHand()"
-        (change)="s.forceDoubleHand.set($any($event.target).checked); s.forceDualWield.set(false)"
-      />
-      Force two-handed weapon</label
-    >
-    <label
-      ><input
-        type="checkbox"
-        [checked]="s.forceDualWield()"
-        (change)="s.forceDualWield.set($any($event.target).checked); s.forceDoubleHand.set(false)"
-      />
-      Force dual wield</label
-    >
-    <label
-      ><input
-        type="checkbox"
-        [checked]="s.tryEquipSources()"
-        (change)="s.tryEquipSources.set($any($event.target).checked)"
-      />
-      Try equipment that gives access to more equipment</label
-    >
-    <div class="line">
-      <label
-        ><input
-          type="checkbox"
-          [checked]="s.tryReduceOvercap()"
-          (change)="s.tryReduceOvercap.set($any($event.target).checked)"
-        />
-        Try to reduce overcap in favor of</label
+        (checkedChange)="s.forceDoubleHand.set($event); s.forceDualWield.set(false)"
       >
+        Force Doublehand build
+      </app-checkbox>
+      <app-checkbox
+        [checked]="s.forceDualWield()"
+        (checkedChange)="s.forceDualWield.set($event); s.forceDoubleHand.set(false)"
+      >
+        Force Dual Wield build
+      </app-checkbox>
+    </div>
+    <app-checkbox [(checked)]="s.tryEquipSources">Try "Allow use of &lt;type&gt;" items</app-checkbox>
+    <div class="line">
+      <app-checkbox [(checked)]="s.tryReduceOvercap">Try to reduce overcap in favor of</app-checkbox>
       <select [value]="s.reduceOvercapStat()" (change)="s.reduceOvercapStat.set($any($event.target).value)">
         @for (stat of overcapStats; track stat[0]) {
           <option [value]="stat[0]" [selected]="stat[0] === s.reduceOvercapStat()">{{ stat[1] }}</option>
@@ -41,33 +25,20 @@
       </select>
     </div>
     @if (s.unit()?.max_rarity === 7 || s.unit()?.max_rarity === 'NV') {
-      <label
-        ><input
-          type="checkbox"
-          [checked]="s.forceTmrAbility()"
-          (change)="s.forceTmrAbility.set($any($event.target).checked)"
-        />
-        <span class="experimental">Experimental</span> Force use of TMR or STMR</label
-      >
+      <app-checkbox [(checked)]="s.forceTmrAbility">
+        <span class="experimental">Experimental</span> Force use of TMR or STMR
+      </app-checkbox>
     }
-    <label
-      ><input
-        type="checkbox"
-        [checked]="s.useElementConditionedMateria()"
-        (change)="s.useElementConditionedMateria.set($any($event.target).checked)"
-      />
-      Try element conditioned materia (like Electrifying Might)</label
-    >
+    <app-checkbox [(checked)]="s.useElementConditionedMateria">
+      Try element conditioned materia (like Electrifying Might)
+    </app-checkbox>
     <label class="line">
-      Cores used
-      <input
-        type="number"
-        min="1"
-        max="16"
-        class="short"
-        [value]="s.workerCount()"
-        (change)="workers.emit($any($event.target).value)"
-      />
+      <span class="label">Damage variance</span>
+      <select [value]="s.goalVariation()" (change)="s.goalVariation.set($any($event.target).value); s.refresh()">
+        @for (variation of variations; track variation[0]) {
+          <option [value]="variation[0]" [selected]="variation[0] === s.goalVariation()">{{ variation[1] }}</option>
+        }
+      </select>
     </label>
   </div>
 </app-panel>

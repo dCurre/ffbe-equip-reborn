@@ -3,11 +3,39 @@
   flex-wrap: wrap;
 }
 
-.equipable app-icon {
+.slot {
+  position: relative;
+  display: flex;
   margin: 2px;
   cursor: pointer;
 }
 
-.equipable app-icon.banned {
-  opacity: 0.25;
+.slot.unusable {
+  opacity: 0.2;
+  filter: grayscale(1);
+  cursor: default;
+}
+
+.banned,
+.boosted {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* a drawing follows the font size, so the sizes are here */
+.banned {
+  top: 3px;
+  left: 3px;
+  width: 30px;
+  height: 30px;
+  color: red;
+}
+
+.boosted {
+  top: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  color: chartreuse;
+  filter: drop-shadow(1px 0 0 black) drop-shadow(-1px 0 0 black) drop-shadow(0 1px 0 black) drop-shadow(0 -1px 0 black);
 }

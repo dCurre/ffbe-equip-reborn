@@ -27,7 +27,7 @@ export class ItemActions {
     this.s.tick();
     return {
       items: this.game.data,
-      espers: this.game.espersFor(this.s.source()),
+      espers: this.game.espers,
       build: this.s.build(),
       units: this.s.units(),
       enchantments: this.game.enchantments,

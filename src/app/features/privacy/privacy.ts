@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Credits } from '../../shared/components/credits/credits';
+import { ServerContext } from '../../shared/services/server-context';
 
 /** The privacy policy: what the site stores in the browser and what the Google login gives access to. */
 @Component({
@@ -9,4 +10,6 @@ import { Credits } from '../../shared/components/credits/credits';
   templateUrl: './privacy.html',
   styleUrl: './privacy.css',
 })
-export class Privacy {}
+export class Privacy {
+  protected readonly serverContext = inject(ServerContext);
+}

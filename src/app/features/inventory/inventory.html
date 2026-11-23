@@ -7,7 +7,7 @@
 
       <div actions>
         <app-dropdown-menu label="Export inventory" [items]="exportItems" />
-        <app-action-link icon="save" label="Import inventory" (click)="openImport()" />
+        <app-action-link icon="save" label="Import inventory" route="/data-import" />
         <app-action-link icon="new-window" label="Export your data from the game" [href]="gameDataUrl" />
       </div>
 
@@ -170,16 +170,6 @@
   <p><strong>This is not reversible</strong></p>
   <p><strong>Are you sure you want to continue?</strong></p>
 </app-modal>
-
-<app-import-modal
-  heading="Import inventory"
-  warning="This feature is a Work in Progress. It will override your inventory on FFBE Equip Reborn"
-  [summary]="importing.summary()"
-  [messages]="importing.messages()"
-  [(open)]="importing.open"
-  (fileLoaded)="loadImportFile($event)"
-  (confirmed)="runImport()"
-/>
 
 <ng-template #cardList let-lines="lines">
   <div class="cards">

@@ -1,36 +1,50 @@
-<details class="buffs">
-  <summary>Killer and element buffs</summary>
-  <div class="killer-buffs">
-    @for (name of killerNames; track name) {
-      <div class="killer-buff">
-        <app-icon [name]="'killer-physical-' + name" size="28" />
-        <input
-          type="number"
-          min="0"
-          [value]="s.killerBuffs()[name]?.physical ?? ''"
-          (input)="setKillerBuff(name, 'physical', $any($event.target).value)"
-        />
-        <app-icon [name]="'killer-magical-' + name" size="28" />
-        <input
-          type="number"
-          min="0"
-          [value]="s.killerBuffs()[name]?.magical ?? ''"
-          (input)="setKillerBuff(name, 'magical', $any($event.target).value)"
-        />
-      </div>
+<div class="line">
+  <button app-button type="button" (click)="open.set(!open())"><app-icon name="edit" /> Killer buffs</button>
+  @if (!open()) {
+    @for (tile of summary(); track tile.kind + tile.name) {
+      <span class="tile" [title]="tile.name + ' ' + tile.kind + ' killer'">
+        <app-icon [name]="'killer-' + tile.kind + '-' + tile.name" size="40" /><span class="value">{{ tile.value }}%</span>
+      </span>
     }
-  </div>
-  <div class="element-buffs">
-    @for (element of elements; track element) {
-      <label class="resist"
-        ><app-icon [name]="'element-' + element" [title]="element + ' damage buff'" />
-        <input
-          type="number"
-          min="0"
+  }
+</div>
+@if (open()) {
+  @for (kind of kinds; track kind) {
+    <div class="buffs">
+      @for (name of killerNames; track name) {
+        <div class="buff">
+          <app-icon [name]="'killer-' + kind + '-' + name" size="38" [title]="name + ' ' + kind + ' killer buff'" />
+          <app-input-group>
+            <app-number-field
+              withIcon
+              suffix="%"
+              [min]="0"
+              [value]="s.killerBuffs()[name]?.[kind] ?? ''"
+              (valueChange)="setKillerBuff(name, kind, $event)"
+            >
+              <app-icon leading name="arrow-up" title="buff" />
+            </app-number-field>
+          </app-input-group>
+        </div>
+      }
+    </div>
+  }
+}
+<div class="buffs">
+  @for (element of elements; track element) {
+    <div class="buff">
+      <app-icon [name]="'element-' + element" size="38" [title]="ucFirst(element) + ' element damage boost'" />
+      <app-input-group>
+        <app-number-field
+          withIcon
+          suffix="%"
+          [min]="0"
           [value]="s.elementBuffs()[element] ?? ''"
-          (input)="setElementBuff(element, $any($event.target).value)"
-        />
-      </label>
-    }
-  </div>
-</details>
+          (valueChange)="setElementBuff(element, $event)"
+        >
+          <app-icon leading name="arrow-up" title="buff" />
+        </app-number-field>
+      </app-input-group>
+    </div>
+  }
+</div>

@@ -1,13 +1,37 @@
 .unit-input {
-  flex: 1 1 200px;
+  flex: 0 1 300px;
 }
+
 
 .unit-icon {
   height: 38px;
 }
 
+/* as the old page: the level on the left, the EX awakening on the right of the same line */
+.levels {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 8px;
+}
+
+@media (max-width: 600px) {
+  .levels {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* as the old page: half faded, full under the pointer, faded again while pressed */
 .brave-shift {
   margin-left: auto;
+  opacity: 0.5;
+}
+
+.brave-shift:hover {
+  opacity: 1;
+}
+
+.brave-shift:active {
+  opacity: 0.5;
 }
 
 .brave-shift app-icon {
@@ -16,4 +40,21 @@
 
 .rarity app-icon {
   vertical-align: middle;
+}
+
+/* as the old page: the enhancements are selects side by side, without a label */
+.enhancements {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.enhancements select {
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .enhancements {
+    grid-template-columns: 1fr;
+  }
 }

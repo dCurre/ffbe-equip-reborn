@@ -10,6 +10,9 @@
         [disabled]="disabled()"
         (click)="active.set(i)"
       >
+        @if (icons()[i]) {
+          <img class="unit-icon" [src]="icons()[i]" alt="" />
+        }
         {{ name }}
       </button>
       @if (names().length > 1) {

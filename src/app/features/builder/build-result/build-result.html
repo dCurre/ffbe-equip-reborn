@@ -4,66 +4,60 @@
 @if (s.unit()) {
   <div class="build-bar">
     @if (!challenge()) {
-      <button app-button type="button" class="build-button" [disabled]="!ready()" (click)="build.emit()">
+      <button app-button variant="primary" type="button" class="build-button" [class.running]="runner().running()" [disabled]="!ready()" (click)="build.emit()">
         {{ runner().running() ? 'STOP' : 'Build !' }}
       </button>
     }
-    <div class="progress">
-      <div class="progress-bar" [style.width.%]="runner().progress()">{{ runner().progress() }}%</div>
+    <div class="progress-column">
+      <div
+        class="progress"
+        role="progressbar"
+        aria-label="Build progress"
+        [attr.aria-valuenow]="runner().progress()"
+      >
+        <div
+          class="progress-bar"
+          [class.finished]="!runner().running() && runner().progress() === 100"
+          [style.width.%]="runner().progress()"
+        ></div>
+        <span class="progress-text">{{ runner().progress() }}%</span>
+      </div>
+      @if (runner().running() || runner().builds()) {
+        <div class="builds-tried">Builds tried : {{ runner().builds().toLocaleString() }}</div>
+      }
     </div>
-    <span class="counter" title="Number of builds tried">{{ runner().builds().toLocaleString() }}</span>
-    <button app-button type="button" title="Get a link to this build" (click)="sharing().openShare()">
-      <app-icon name="link" /> Link
-    </button>
-    <button app-button type="button" title="The build as text" (click)="sharing().openText()">Text</button>
-    <button app-button type="button" title="The build as an image" (click)="sharing().openImage()">Image</button>
-    @if (allSharing().length > 1) {
-      <button
-        app-button
-        type="button"
-        title="The builds of all the tabs as an image"
-        (click)="sharing().openImage(allSharing())"
-      >
-        Image (all units)
-      </button>
-      <button
-        app-button
-        type="button"
-        title="A link to the units of all the tabs"
-        (click)="sharing().openShare(allSharing())"
-      >
-        <app-icon name="link" /> Link (all units)
-      </button>
-      <button
-        app-button
-        type="button"
-        title="The builds of all the tabs as text"
-        (click)="sharing().openText(allSharing())"
-      >
-        Text (all units)
-      </button>
-    }
-    <button app-button type="button" title="Remove the items that are not pinned" (click)="items().clearItems(true)">
-      Clear
-    </button>
-    <button app-button type="button" title="Remove all the items, pinned ones too" (click)="items().clearItems(false)">
-      Clear all
-    </button>
+    <label class="cores">
+      Use
+      <input
+        type="number"
+        min="1"
+        max="16"
+        [value]="s.workerCount()"
+        (change)="workers.emit($any($event.target).value)"
+      />
+      cores
+    </label>
   </div>
+
+  @if (result(); as result) {
+    <app-build-result-stats [result]="result" [goal]="s.goalVariation()" />
+  }
 
   <div class="view-switch">
     <button app-button variant="link" type="button" (click)="concise.set(!concise())">
-      {{ concise() ? 'Detailed view' : 'Concise view' }}
+      <app-icon name="search" /> {{ concise() ? 'Detailed view' : 'Concise view' }}
     </button>
+    <app-dropdown-menu plain label="Share this build" [items]="shareItems()" />
+    <app-dropdown-menu plain icon="delete" label="Clear items" [items]="clearItems()" />
   </div>
 
-  <div class="build-result">
+  <div class="build-result" [class.detailed-view]="!concise()">
     @for (line of lines(); track line.slot.index) {
       @if (line.item) {
         <div class="slot-line" [class.enhanced]="line.item.enhancements">
           <div class="actions">
             @if (line.pinned) {
-              <button app-button variant="flat" type="button" title="Unpin this item" (click)="items().unpinItem(line.slot.index)">
+              <button app-button variant="flat" type="button" class="pin pinned" title="Unpin this item" (click)="items().unpinItem(line.slot.index)">
                 <app-icon name="pin" />
               </button>
             } @else {
@@ -71,14 +65,14 @@
                 app-button
                 variant="flat"
                 type="button"
-                class="dim"
+                class="pin"
                 title="Pin this item"
                 (click)="items().pinItem(line.slot.index)"
               >
                 <app-icon name="pin" />
               </button>
             }
-            <button app-button variant="flat" type="button" title="Remove this item" (click)="items().removeItem(line.slot.index)">
+            <button app-button variant="flat" type="button" class="remove" title="Remove this item" (click)="items().removeItem(line.slot.index)">
               <app-icon name="delete" />
             </button>
             @if (!line.pinned && !line.item['placeHolder']) {
@@ -86,6 +80,7 @@
                 app-button
                 variant="flat"
                 type="button"
+                class="exclude"
                 title="Exclude this item from builds"
                 (click)="items().toggleExclude(line.item.id)"
               >
@@ -97,10 +92,11 @@
                 app-button
                 variant="flat"
                 type="button"
+                class="enchant"
                 title="Modify this weapon enchantment"
                 (click)="items().enhanceSlot(line.slot.index)"
               >
-                <app-icon name="edit" />
+                <app-icon name="dwarf" height="20" />
               </button>
             }
           </div>
@@ -119,13 +115,19 @@
         </div>
       } @else {
         <div class="slot-line empty" (click)="items().openSlot(line.slot.index)">
-          <app-icon [name]="'slot-' + line.slot.icon" size="40" /> {{ line.slot.name }}
+          <app-icon
+            [name]="'slot-' + line.slot.icon"
+            size="40"
+            [style.transform]="line.slot['mirror'] ? 'scaleX(-1)' : null"
+          />
+          {{ line.slot.name }}
         </div>
       }
     }
   </div>
-
-  @if (result(); as result) {
-    <app-build-result-stats [result]="result" [goal]="s.goalVariation()" />
-  }
+} @else if (!challenge()) {
+  <div>
+    Please select a unit.
+    <button app-button variant="link" type="button" (click)="help.emit()">New here? How to use this</button>
+  </div>
 }

@@ -1,75 +1,51 @@
-<table class="unit-stats">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Base</th>
-      <th>
-        <button app-button variant="link" type="button" class="link-button" title="Switch pots" (click)="switchPots()">Pots</button>
-      </th>
-      <th>Buff %</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for (stat of stats; track stat) {
-      <tr>
-        <th>{{ stat.toUpperCase() }}</th>
-        <td>{{ s.build().getStat(stat) }}</td>
-        <td>
-          <button app-button variant="link" type="button" class="pot-button" title="Pot" (click)="cyclePot(stat)">&#9679;</button>
-          <input
-            type="number"
-            min="0"
-            [class]="potClass(stat)"
-            [value]="s.pots()[stat]"
-            (input)="setPot(stat, $any($event.target).value)"
-          />
-        </td>
-        <td>
-          <input type="number" min="0" [value]="s.buffs()[stat]" (input)="setBuff(stat, $any($event.target).value)" />
-        </td>
-      </tr>
-    }
-    <tr>
-      <th>LB fill</th>
-      <td></td>
-      <td></td>
-      <td>
-        <input
-          type="number"
-          min="0"
-          [value]="s.lbFillRate()"
-          (input)="s.lbFillRate.set($any($event.target).value); s.refresh()"
-        />
-      </td>
-    </tr>
-    <tr>
-      <th>LB/turn</th>
-      <td></td>
-      <td></td>
-      <td>
-        <input
-          type="number"
-          min="0"
-          step="0.5"
-          [value]="s.lbShards()"
-          (input)="s.lbShards.set($any($event.target).value); s.refresh()"
-        />
-      </td>
-    </tr>
-    @for (extra of extras; track extra.key) {
-      <tr>
-        <th>{{ extra.label }}</th>
-        <td></td>
-        <td></td>
-        <td>
-          <input
-            type="number"
-            min="0"
-            [value]="extraValue(extra.key)"
-            (input)="setExtra(extra.key, $any($event.target).value)"
-          />
-        </td>
-      </tr>
-    }
-  </tbody>
-</table>
+<div class="stats-grid">
+  @for (stat of mainStats; track stat) {
+    <app-input-group [label]="stat.toUpperCase()" [class.no-buff]="stat === 'mp'">
+      <span class="base" [title]="stat.toUpperCase() + ' base stat'">{{ s.build().getStat(stat) }}</span>
+      <app-number-field
+        withIcon
+        [min]="0"
+        [tone]="potClass(stat)"
+        [title]="stat.toUpperCase() + ' pots'"
+        [value]="s.pots()[stat]"
+        (valueChange)="setPot(stat, $event)"
+      >
+        <button app-button variant="flat" leading type="button" title="pots" (click)="cyclePot(stat)">
+          <app-icon name="add" />
+        </button>
+      </app-number-field>
+      @if (stat !== 'mp') {
+        <app-number-field
+          withIcon
+          [min]="0"
+          [suffix]="stat === 'hp' ? '' : '%'"
+          [title]="stat === 'hp' ? 'HP barrier' : stat.toUpperCase() + ' buff'"
+          [value]="s.buffs()[stat]"
+          (valueChange)="setBuff(stat, $event)"
+        >
+          @if (stat === 'hp') {
+            <app-icon leading name="equipment-heavyShield" size="16" title="HP barrier" />
+          } @else {
+            <app-icon leading name="arrow-up" title="buff" />
+          }
+        </app-number-field>
+      }
+    </app-input-group>
+  }
+  @for (row of rows; track row.key) {
+    <app-input-group class="wide" [label]="row.label">
+      <app-number-field
+        withIcon
+        [min]="0"
+        [suffix]="row.suffix"
+        [title]="row.label"
+        [value]="rowValue(row.key)"
+        (valueChange)="setRow(row.key, $event)"
+      >
+        @if (row.suffix) {
+          <app-icon leading name="arrow-up" title="buff" />
+        }
+      </app-number-field>
+    </app-input-group>
+  }
+</div>

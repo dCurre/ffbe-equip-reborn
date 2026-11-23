@@ -1,32 +1,37 @@
+/* as the old page: no box, the stats in two columns (name, value, bonus), the goal stat in bold */
 .result-stats {
-  padding: 10px;
-  background-color: var(--color-panel);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
+  padding: 5px 10px 0;
 }
 
 .totals {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 25px;
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 2px 70px;
+  justify-content: center;
 }
 
 .total {
-  display: flex;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 110px 80px 80px;
   align-items: baseline;
 }
 
 .stat-name {
   font-weight: bold;
+  white-space: nowrap;
+  color: var(--color-link);
+}
+
+.goal-label {
+  font-weight: bold;
 }
 
 .stat-value {
-  font-size: 1.3em;
+  text-align: right;
 }
 
 .bonus {
-  font-size: 0.85em;
+  text-align: right;
   opacity: 0.7;
 }
 
@@ -34,14 +39,7 @@
   color: red;
 }
 
-.goal-value {
-  margin-top: 8px;
-  font-size: 1.1em;
-}
-
-.total.involved .stat-value,
-.total.involved .stat-name {
-  color: var(--color-link, #4a90e2);
+.total.involved .stat-value {
   font-weight: bold;
 }
 
@@ -50,7 +48,7 @@
 }
 
 .result-line {
-  margin: 5px 0;
+  margin: 8px 0 0;
 }
 
 .result-line.secondary {
@@ -58,5 +56,45 @@
 }
 
 .resists-line {
-  margin: 5px 0;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 8px 0 0;
+}
+
+/* as the old page: the percent over the bottom of the icon, white with a black outline */
+.resist {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+}
+
+.resist .value {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  text-shadow:
+    -2px 0 #000,
+    0 2px #000,
+    2px 0 #000,
+    0 -2px #000;
+}
+
+.resist .value.over-cap {
+  color: red;
+}
+
+.resist.involved .value {
+  color: chartreuse;
+}
+
+/* the value of the chosen variance (min, avg or max), as the old page */
+.goal {
+  font-weight: bold;
+  font-size: 1.2em;
 }

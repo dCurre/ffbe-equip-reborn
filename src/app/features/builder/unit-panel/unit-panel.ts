@@ -1,9 +1,12 @@
-import { Component, computed, input } from '@angular/core';
-import { elementList } from '../../../../core/constants/base-lists';
+import { Component, computed, inject, input, viewChild } from '@angular/core';
+import { baseStats, elementList } from '../../../../core/constants/base-lists';
+import { MAX_POTS } from '../shared/unit-loader';
 import { Choice, ChoiceGroup } from '../../../shared/components/choice-group/choice-group';
 import { Button } from '../../../shared/components/button/button';
+import { Combobox } from '../../../shared/components/combobox/combobox';
 import { Panel } from '../../../shared/components/panel/panel';
-import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
+import { wikiUrl } from '../../../shared/helpers/wiki';
+import { ServerContext } from '../../../shared/services/server-context';
 import type { UnitLoader } from '../shared/unit-loader';
 import { StatePanel } from '../shared/state-panel';
 import { UnitBuffs } from '../unit-buffs/unit-buffs';
@@ -18,8 +21,8 @@ const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.sl
   selector: 'app-unit-panel',
   imports: [
     Button,
+    Combobox,
     Panel,
-    WikiLink,
     ChoiceGroup,
     UnitStats,
     UnitBuffs,
@@ -31,9 +34,29 @@ const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.sl
 })
 export class UnitPanel extends StatePanel {
   readonly loader = input.required<UnitLoader>();
+  /** `choose`: the line to choose the unit (inside the card of the goal); `details`: its panel with the stats */
+  readonly part = input<'choose' | 'details'>('details');
+  private readonly unitList = viewChild(Combobox);
+
+  /** Opens the list to choose the unit. */
+  focusUnit(): void {
+    this.unitList()?.focus();
+  }
 
   /** The levels above 100 (the core scales the stats between 100 and 130). */
   protected readonly levels = Array.from({ length: 30 }, (_, i) => String(130 - i));
+
+  private readonly server = inject(ServerContext);
+
+  protected wikiUrl(): string {
+    const unit = this.s.unit();
+    return unit ? wikiUrl(unit['wikiEntry'] ?? unit.name, this.server.server()) : '';
+  }
+
+  /** From EX+0 to the highest level of the unit. */
+  protected readonly exLevels = computed(() =>
+    Array.from({ length: (this.s.unit()?.exAwakening?.length ?? 3) + 1 }, (_, i) => String(i)),
+  );
 
   protected stars(rarity: string | number): string {
     return '☆'.repeat(Number(rarity));
@@ -42,6 +65,8 @@ export class UnitPanel extends StatePanel {
   protected readonly elementChoices: Choice[] = elementList.map((value) => ({ value, tooltip: ucFirst(value) }));
 
   protected readonly unitName = computed(() => this.s.unitOptions().find((o) => o.id === this.s.unitId())?.label ?? '');
+
+  protected readonly unitNames = computed(() => this.s.unitOptions().map((o) => o.label));
 
   protected chooseUnitByName(name: string): void {
     const option = this.s.unitOptions().find((o) => o.label === name);
@@ -64,14 +89,22 @@ export class UnitPanel extends StatePanel {
   }
 
   protected async changeEnhancement(index: number, event: Event): Promise<void> {
+    if (!this.s.unit()?.enhancementLevels) return;
+    await this.loader().setEnhancement(index, parseInt((event.target as HTMLSelectElement).value, 10));
+  }
+
+  /** The pots button: none, all, or the pots of the game. */
+  protected switchPots(): void {
     const unit = this.s.unit();
-    if (!unit?.enhancementLevels) return;
-    const levels = [...unit.enhancementLevels];
-    levels[index] = parseInt((event.target as HTMLSelectElement).value, 10);
-    const id = this.s.unitId();
-    const data = this.s.units()[id.split('-')[0]];
-    if (data) data.enhancementLevels = levels;
-    await this.loader().choose(id);
+    if (!unit) return;
+    const values = baseStats.map((stat) => parseInt(this.s.pots()[stat], 10) || 0);
+    const max = baseStats.map((stat) => Math.floor(unit.stats.pots[stat] * MAX_POTS));
+    let next: number[];
+    if (values.every((v) => v === 0)) next = max;
+    else if (values.some((v, i) => v < max[i])) next = baseStats.map(() => 0);
+    else next = baseStats.map((stat) => unit.stats.pots[stat]);
+    this.s.pots.set(Object.fromEntries(baseStats.map((stat, i) => [stat, String(next[i])])));
+    this.s.refresh();
   }
 
   protected setLevel(value: string): void {

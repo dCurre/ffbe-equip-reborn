@@ -1,10 +1,18 @@
-<div class="equipable" title="Click a type to ban it from the build">
+<div class="equipable">
   @for (entry of s.equipable(); track entry.type) {
-    <app-icon
-      [name]="'equipment-' + entry.type"
-      size="36"
-      [class.banned]="entry.banned"
-      (click)="toggleEquipable(entry.type)"
-    />
+    <span
+      class="slot"
+      [class.unusable]="!entry.usable"
+      [title]="tooltip(entry)"
+      (click)="entry.usable && toggleEquipable(entry.type)"
+    >
+      <app-icon [name]="'equipment-' + entry.type" size="36" />
+      @if (entry.banned) {
+        <app-icon class="banned" name="ban-bold" />
+      }
+      @if (entry.usable && entry.boosted) {
+        <app-icon class="boosted" name="double-up" />
+      }
+    </span>
   }
 </div>

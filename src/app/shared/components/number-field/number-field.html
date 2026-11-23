@@ -4,12 +4,15 @@
   [class.with-icon]="withIcon()"
   [class.with-suffix]="!!suffix()"
   [placeholder]="placeholder()"
-  [title]="title()"
+  [attr.aria-label]="title() || null"
   [disabled]="disabled()"
   [min]="min()"
   [value]="value()"
   (input)="value.set($any($event.target).value)"
 />
+@if (title()) {
+  <span class="tip" role="tooltip">{{ title() }}</span>
+}
 @if (suffix()) {
   <span class="suffix">{{ suffix() }}</span>
 }

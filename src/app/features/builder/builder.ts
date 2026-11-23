@@ -1,4 +1,4 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, inject, Injector, signal, viewChild } from '@angular/core';
 import { DataStorage } from '../../../core/builder/data-storage';
 import { getEsperItem } from '../../../core/builder/item-conditions';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { LinkStore } from '../../shared/services/link-store';
 import { Item } from '../../game/helpers/item';
 import { cardsAsItems, VisionCard } from '../../game/helpers/vision-cards';
 import { PageContent } from '../../layout/page-content/page-content';
+import { BusyOverlay } from '../../shared/components/busy-overlay/busy-overlay';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { Inventory } from '../../shared/services/inventory';
 import { ServerContext } from '../../shared/services/server-context';
@@ -13,7 +14,12 @@ import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
 import { UserData } from '../../shared/services/user-data';
 import { LoadStatus } from '../../shared/components/load-status/load-status';
-import { TabBar, TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { Alert } from '../../shared/components/alert/alert';
+import { Button } from '../../shared/components/button/button';
+import { Panel } from '../../shared/components/panel/panel';
+import { Modal } from '../../shared/components/modal/modal';
+import { TabPanel } from '../../shared/components/tab-panel/tab-panel';
 import { ShareLinkModal } from '../../shared/components/share-link-modal/share-link-modal';
 import { TextExportModal } from '../../shared/components/text-export-modal/text-export-modal';
 import { ImageExportModal } from './image-export-modal/image-export-modal';
@@ -43,6 +49,21 @@ import { UnitPanel } from './unit-panel/unit-panel';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
+/** The picture of the unit chosen (`id`, with `-6` or `-7` for the forms): the one of its rarity (the old `onUnitChange`). */
+function unitIconId(id: string, unit: BuilderUnit): string {
+  if (id.endsWith('-6')) return id.slice(0, -3) + '6';
+  if (id.endsWith('-7')) return id.slice(0, -3) + '7';
+  if (/0[345]$/.test(id)) {
+    if (unit['sevenStarForm']) return id.slice(0, -2) + '07';
+    if (unit['sixStarForm']) return id.slice(0, -2) + '06';
+    if (unit['braveShift']) return id.slice(0, -2) + '17';
+    return id;
+  }
+  return id.slice(0, -1) + (unit.max_rarity === 'NV' ? '7' : unit.max_rarity);
+}
+
+type SettingsTab ='rules' | 'monster' | 'equipments';
+
 /** One tab of the page: a unit being built. */
 interface BuilderTab {
   s: BuilderState;
@@ -58,11 +79,16 @@ interface BuilderTab {
   selector: 'app-builder',
   imports: [
     PageContent,
+    BusyOverlay,
     SiteFooter,
     ItemPicker,
     LoadStatus,
     BuilderTabs,
-    TabBar,
+    TabPanel,
+    Panel,
+    Modal,
+    Alert,
+    Button,
     ChallengePanel,
     EnhancementModal,
     CustomGoalModal,
@@ -100,9 +126,12 @@ export class Builder {
     currentBuild: () => this.s.build(),
     ownedUnits: () => (this.inventory.status() === 'loaded' ? this.inventory.units() : null),
     itemEnchantments: () => this.game.enchantments,
+    allBuilds: () => ({ builds: this.tabs().map((tab) => tab.s.build()), index: this.active() }),
   });
   protected readonly runner = new OptimizerRunner(this.dataStorage);
   private readonly picker = viewChild(ItemPicker);
+  private readonly chooser = viewChild<UnitPanel>('chooser');
+  private readonly injector = inject(Injector);
 
   // --- The tabs: each one is a unit being built, with its own state and helpers ---
   protected readonly tabs = signal<BuilderTab[]>([this.makeTab()]);
@@ -137,13 +166,41 @@ export class Builder {
     { key: 'challenge', title: 'Parameter challenges' },
   ];
 
+  protected readonly helpOpen = signal(false);
+  protected readonly loggedIn = computed(() => this.userData.loggedIn());
+
+  /** The settings of the build, in tabs (the challenge only has the equipments). */
+  protected readonly settingsTab = signal<SettingsTab>('rules');
+  protected readonly settingsTabs = computed<TabItem<SettingsTab>[]>(() =>
+    this.mode() === 'build'
+      ? [
+          { key: 'rules', title: 'Build rules' },
+          { key: 'monster', title: 'Monster' },
+          { key: 'equipments', title: 'Equipments' },
+        ]
+      : [{ key: 'equipments', title: 'Equipments' }],
+  );
+  protected readonly shownSettings = computed<SettingsTab>(() =>
+    this.mode() === 'build' ? this.settingsTab() : 'equipments',
+  );
+
+  protected tabIcons(): string[] {
+    return this.tabs().map((tab) => {
+      const unit = tab.s.unit();
+      return unit ? `img/units/unit_icon_${unitIconId(tab.s.unitId(), unit)}.png` : '';
+    });
+  }
+
   protected tabNames(): string[] {
     return this.tabs().map((tab) => tab.s.unit()?.name ?? 'New unit');
   }
 
   private makeTab(from?: BuilderState): BuilderTab {
-    const s = new BuilderState(this.serverContext, from);
+    const s = new BuilderState(this.serverContext, from, () =>
+      this.inventory.status() === 'loaded' ? this.inventory.units() : null,
+    );
     if (from) s.workerCount.set(from.workerCount());
+    if (this.inventory.status() === 'loaded') s.source.set('owned');
     const loader = new UnitLoader(s, this.staticData, this.toast, this.dataStorage);
     const items = new ItemActions(s, this.game, this.dataStorage, this.toast, this.inventory, () => this.picker());
     const customGoal = new CustomGoal(s, this.toast);
@@ -170,6 +227,11 @@ export class Builder {
       (callbacks) => this.startRun(callbacks),
     );
     return { s, loader, items, customGoal, sharing, challenge };
+  }
+
+  /** The + of the tabs: a new tab with the list of the units open, as the old page did. */
+  protected addTabAndChoose(): void {
+    if (this.addTab()) afterNextRender(() => this.chooser()?.focusUnit(), { injector: this.injector });
   }
 
   protected addTab(): BuilderTab | null {
@@ -241,7 +303,11 @@ export class Builder {
     this.dataStorage.setData(this.game.data);
     this.runner.init(this.s.workerCount(), enchantments);
     if (this.inventory.status() === 'loading') await this.inventory.load();
-    if (this.inventory.status() === 'loaded') await this.useOwnedEspers();
+    if (this.inventory.status() === 'loaded') {
+      // logged in: the equipment the user owns, unless a link says otherwise (it comes after)
+      this.s.source.set('owned');
+      await this.useOwnedEspers();
+    }
     this.ready.set(true);
     await this.sharing.loadFromFragment(() => this.addTab()?.sharing ?? null);
     this.active.set(0);
@@ -262,6 +328,7 @@ export class Builder {
   }
 
   protected onBuildClick(): void {
+    this.applyWorkers();
     const build = this.s.build();
     if (!build.unit) return;
     if (this.runner.running()) {
@@ -284,7 +351,7 @@ export class Builder {
     readItemOptions(this.s, this.dataStorage, this.inventory);
     this.dataStorage.useElementConditionedMateria = this.s.useElementConditionedMateria();
     const espers: Record<string, any> = {};
-    for (const esper of this.game.espersFor(this.s.source())) espers[esper.id] = esper;
+    for (const esper of this.game.espers) espers[esper.id] = esper;
     try {
       this.runner.run(
         build,
@@ -321,6 +388,18 @@ export class Builder {
     const count = parseInt(value, 10);
     const number = !count || count < 1 || count > 16 ? 2 : count;
     this.s.workerCount.set(number);
-    this.runner.init(number, this.game.enchantments);
+    // creating the workers sends them all the items: wait until the user stops clicking the arrows
+    clearTimeout(this.workersTimer);
+    this.workersTimer = setTimeout(() => this.applyWorkers(), 500);
+  }
+
+  private workersTimer: ReturnType<typeof setTimeout> | undefined;
+
+  /** Creates the workers now if a change of their number is waiting. */
+  private applyWorkers(): void {
+    if (this.workersTimer === undefined) return;
+    clearTimeout(this.workersTimer);
+    this.workersTimer = undefined;
+    this.runner.init(this.s.workerCount(), this.game.enchantments);
   }
 }

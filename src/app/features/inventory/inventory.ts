@@ -1,8 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { ImportState } from '../../shared/state/import-state';
 import { Component, computed, ElementRef, HostListener, inject, linkedSignal, signal, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { itemEnhancementBySkillId } from '../../../core/constants/item-enhancement-skills';
 import { typeList, typeListLiterals, weaponList } from '../../../core/constants/item-types';
 import { computeFarmableStmr } from '../../../core/builder/item-entry';
 import { Item, containsText, buildSearchString } from '../../game/helpers/item';
@@ -11,7 +9,6 @@ import { PageContent } from '../../layout/page-content/page-content';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { downloadBlob } from '../../shared/helpers/export';
 import { Inventory as UserInventory } from '../../shared/services/inventory';
-import { ServerContext } from '../../shared/services/server-context';
 import { SearchBox } from '../../shared/components/search-box/search-box';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
@@ -20,7 +17,6 @@ import { Modal } from '../../shared/components/modal/modal';
 import { InventoryCard } from './inventory-card/inventory-card';
 import { InventoryStats } from './inventory-stats/inventory-stats';
 import { InventoryEnhancementModal } from './inventory-enhancement-modal/inventory-enhancement-modal';
-import { ImportModal } from '../../shared/components/import-modal/import-modal';
 import { DropdownMenu, MenuItem } from '../../shared/components/dropdown-menu/dropdown-menu';
 import { LoadStatus } from '../../shared/components/load-status/load-status';
 import { ActionLink, GAME_DATA_URL } from '../../shared/components/action-link/action-link';
@@ -38,12 +34,9 @@ import {
   clearEnhancements,
   dropEmptyCopy,
   Enchantments,
-  ImportedItem,
   exportCsv,
   exportJson,
-  importInventory,
   inventoryStats,
-  isItemFile,
   ItemEntry,
   removeItem,
   sortEntries,
@@ -94,7 +87,6 @@ const HISTORY_PAGE = 3;
     InventoryCard,
     InventoryEnhancementModal,
     Modal,
-    ImportModal,
     Icon,
     ChoiceGroup,
     SearchBox,
@@ -108,7 +100,6 @@ export class InventoryPage {
   private readonly route = inject(ActivatedRoute);
   private readonly staticData = inject(StaticData);
   protected readonly user = inject(UserInventory);
-  private readonly serverContext = inject(ServerContext);
   private readonly toast = inject(Toast);
 
   // --- Game data ---
@@ -341,8 +332,6 @@ export class InventoryPage {
   protected readonly limitNumber = signal(0);
   protected readonly addAllOpen = signal(false);
   protected readonly removeAllOpen = signal(false);
-  protected readonly importing = new ImportState();
-  private imported: ReturnType<typeof importInventory>['inventory'] | null = null;
   private addedWithAddAll: ItemEntry[] = [];
   protected readonly undoAvailable = signal(false);
   protected readonly busy = signal(false);
@@ -561,42 +550,5 @@ export class InventoryPage {
   protected exportJson(): void {
     const json = exportJson(this.user.items(), this.data(), this.enchantments());
     downloadBlob(new Blob([json], { type: 'application/json;charset=utf-8' }), 'FFBE_Equip - Equipment.json');
-  }
-
-  protected openImport(): void {
-    this.imported = null;
-    this.importing.start();
-  }
-
-  protected loadImportFile(data: unknown): void {
-    if (!isItemFile(data)) {
-      this.toast.show("The imported file doesn't have the correct form", 'error');
-      return;
-    }
-    const { inventory, messages } = importInventory(
-      data as ImportedItem[],
-      this.data(),
-      this.cards(),
-      this.enchantments(),
-      itemEnhancementBySkillId as unknown as Record<string, string>,
-      this.serverContext.server(),
-    );
-    this.imported = inventory;
-    this.importing.messages.set(messages);
-    this.importing.summary.set(`Items to import : ${Object.keys(inventory).length}`);
-  }
-
-  protected runImport(): void {
-    if (!this.imported) {
-      this.toast.show('Please select a file to import', 'warn');
-      return;
-    }
-    const items = this.user.items();
-    for (const id of Object.keys(items)) delete items[id];
-    Object.assign(items, this.imported);
-    this.importing.open.set(false);
-    this.user.changed('itemInventory');
-    this.user.save();
-    this.tab.set('equipment');
   }
 }

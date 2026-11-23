@@ -3,34 +3,44 @@ import { baseStats } from '../../../../core/constants/base-lists';
 import { MAX_POTS } from '../shared/unit-loader';
 import { StatePanel } from '../shared/state-panel';
 import { Button } from '../../../shared/components/button/button';
+import { Icon } from '../../../shared/components/icon/icon';
+import { InputGroup } from '../../../shared/components/input-group/input-group';
+import { NumberField } from '../../../shared/components/number-field/number-field';
 
 /** The base stats of the unit, with the pots, the buffs and the limit break rates. */
 @Component({
-  imports: [Button],
+  imports: [Button, Icon, InputGroup, NumberField],
   selector: 'app-unit-stats',
   templateUrl: './unit-stats.html',
   styleUrl: './unit-stats.css',
 })
 export class UnitStats extends StatePanel {
-  protected readonly stats = baseStats;
+  /** The order of the old page: two by line. */
+  protected readonly mainStats = ['hp', 'mp', 'atk', 'mag', 'def', 'spr'].filter((stat) => baseStats.includes(stat));
 
-  /** The buffs of the unit that are not a stat: the percents of mitigation, draw attacks and LB damage. */
-  protected readonly extras = [
-    { key: 'physical', label: 'Phys. mitigation' },
-    { key: 'magical', label: 'Mag. mitigation' },
-    { key: 'global', label: 'Global mitigation' },
-    { key: 'drawAttacks', label: 'Draw attacks' },
-    { key: 'lbDamage', label: 'LB damage' },
+  /** The values of the unit that are not a stat: the LB rates, the mitigations, draw attacks and LB damage. */
+  protected readonly rows = [
+    { key: 'lbFill', label: 'LB gauge fill rate', suffix: '%' },
+    { key: 'lbShards', label: 'Expected LB shards per turn', suffix: '' },
+    { key: 'physical', label: 'Physical mitigation', suffix: '%' },
+    { key: 'magical', label: 'Magical mitigation', suffix: '%' },
+    { key: 'global', label: 'Global mitigation', suffix: '%' },
+    { key: 'drawAttacks', label: 'Draw attacks', suffix: '%' },
+    { key: 'lbDamage', label: '+LB damage', suffix: '%' },
   ];
 
-  protected extraValue(key: string): string {
+  protected rowValue(key: string): string {
+    if (key === 'lbFill') return this.s.lbFillRate();
+    if (key === 'lbShards') return this.s.lbShards();
     if (key === 'drawAttacks') return this.s.drawAttacks();
     if (key === 'lbDamage') return this.s.lbDamage();
     return (this.s.mitigations() as Record<string, string>)[key];
   }
 
-  protected setExtra(key: string, value: string): void {
-    if (key === 'drawAttacks') this.s.drawAttacks.set(value);
+  protected setRow(key: string, value: string): void {
+    if (key === 'lbFill') this.s.lbFillRate.set(value);
+    else if (key === 'lbShards') this.s.lbShards.set(value);
+    else if (key === 'drawAttacks') this.s.drawAttacks.set(value);
     else if (key === 'lbDamage') this.s.lbDamage.set(value);
     else this.s.mitigations.update((mitigations) => ({ ...mitigations, [key]: value }));
     this.s.refresh();
@@ -56,18 +66,6 @@ export class UnitStats extends StatePanel {
     const value = parseInt(this.s.pots()[stat], 10) || 0;
     const max = Math.floor(base * MAX_POTS);
     this.setPot(stat, String(value < base ? max : value < max ? 0 : base));
-  }
-  protected switchPots(): void {
-    const unit = this.s.unit();
-    if (!unit) return;
-    const values = baseStats.map((stat) => parseInt(this.s.pots()[stat], 10) || 0);
-    const max = baseStats.map((stat) => Math.floor(unit.stats.pots[stat] * MAX_POTS));
-    let next: number[];
-    if (values.every((v) => v === 0)) next = max;
-    else if (values.some((v, i) => v < max[i])) next = baseStats.map(() => 0);
-    else next = baseStats.map((stat) => unit.stats.pots[stat]);
-    this.s.pots.set(Object.fromEntries(baseStats.map((stat, i) => [stat, String(next[i])])));
-    this.s.refresh();
   }
   protected setBuff(stat: string, value: string): void {
     const max = stat === 'hp' ? 30000 : 99999;

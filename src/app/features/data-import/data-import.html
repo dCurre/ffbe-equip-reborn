@@ -1,0 +1,36 @@
+<app-page-content>
+  <app-page-column [half]="true">
+    <app-panel heading="Import your game data">
+      <p>
+        Import the data you exported from the game into your account: your units, consumables, equipment and Espers.
+        <a [href]="gameDataUrl" target="_blank" rel="noreferrer">Instructions to export your data from the game</a>
+      </p>
+      @if (!loggedIn()) {
+        <app-alert kind="danger">Log in with Google to import: your data is saved in your Google Drive.</app-alert>
+      }
+    </app-panel>
+    @for (card of cards; track card.kind) {
+      <app-panel [heading]="card.heading">
+        <p>{{ card.text }}</p>
+        <button app-button type="button" [disabled]="!canImport()" (click)="open(card.kind)">
+          <app-icon name="save" /> Import
+        </button>
+      </app-panel>
+    }
+    <app-site-footer />
+  </app-page-column>
+</app-page-content>
+
+<app-import-modal
+  [heading]="heading()"
+  [warning]="warning()"
+  [summary]="importing.summary()"
+  [messages]="importing.messages()"
+  [(open)]="importing.open"
+  (fileLoaded)="loadFile($event)"
+  (confirmed)="run()"
+/>
+
+@if (busy()) {
+  <app-busy-overlay />
+}

@@ -11,6 +11,8 @@ import { Icon } from '../../../shared/components/icon/icon';
 })
 export class BuilderTabs {
   readonly names = input.required<string[]>();
+  /** the picture of the unit of each tab ('' for none) */
+  readonly icons = input<string[]>([]);
   readonly max = input.required<number>();
   readonly disabled = input(false);
   readonly active = model.required<number>();

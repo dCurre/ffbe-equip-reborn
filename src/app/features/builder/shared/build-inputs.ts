@@ -114,8 +114,7 @@ export function updateGoal(s: BuilderState): void {
 /** The item filters of the page, read into the storage the optimizer and the picker use. */
 export function readItemOptions(s: BuilderState, storage: DataStorage, inventory: Inventory): void {
   const source = s.source();
-  storage.onlyUseOwnedItems = source === 'owned' || source === 'ownedAvailableForExpedition';
-  storage.onlyUseOwnedItemsAvailableForExpeditions = source === 'ownedAvailableForExpedition';
+  storage.onlyUseOwnedItems = source === 'owned';
   storage.onlyUseShopRecipeItems = source === 'shop';
   storage.itemInventory = inventory.status() === 'loaded' ? inventory.items() : null;
   storage.exludeEventEquipment = s.excludeEvent();

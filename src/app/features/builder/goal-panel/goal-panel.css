@@ -1,9 +1,47 @@
 .switch {
-  font-weight: bold;
   text-align: left;
+}
+
+/* the additional conditions: indented, with a wide column for the labels (as the old page) */
+.more {
+  padding-left: 10px;
+}
+
+.more .label {
+  min-width: 120px;
+}
+
+/* the resistances fill the rest of the line and wrap inside it */
+.resists {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+.resist {
+  display: flex;
+  align-items: center;
+}
+
+/* the element with the little shield of the resistances */
+.element {
+  position: relative;
+  display: flex;
+}
+
+.shield {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
 }
 
 .hint {
   font-size: 0.85em;
   opacity: 0.75;
+}
+
+.goal-select {
+  flex: 0 1 300px;
+  min-width: 240px;
 }

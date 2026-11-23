@@ -7,8 +7,8 @@
 
       <div actions>
         <app-dropdown-menu label="Share unit collection" [items]="exportItems" />
-        <app-action-link icon="save" label="Import unit collection" (click)="openImport('units')" />
-        <app-action-link icon="save" label="Import consumables" (click)="openImport('consumables')" />
+        <app-action-link icon="save" label="Import unit collection" route="/data-import" />
+        <app-action-link icon="save" label="Import consumables" route="/data-import" />
         <app-action-link icon="new-window" label="Export your data from the game" [href]="gameDataUrl" />
       </div>
 
@@ -151,16 +151,6 @@
   [link]="share.link()"
   [copied]="share.copied()"
   [(open)]="share.open"
-/>
-
-<app-import-modal
-  [heading]="importKind() === 'units' ? 'Import unit collection' : 'Import consumables'"
-  [warning]="importKind() === 'units' ? 'It will override your unit collection on FFBE Equip Reborn' : ''"
-  [summary]="importing.summary()"
-  [messages]="importing.messages()"
-  [(open)]="importing.open"
-  (fileLoaded)="loadImportFile($event)"
-  (confirmed)="runImport()"
 />
 
 <ng-template #groupLabel let-group="group">

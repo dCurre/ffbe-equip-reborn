@@ -1,32 +1,38 @@
 @if (s.unit()) {
-  <app-panel>
-    <div panelHeading class="heading"><span>Goal</span></div>
-    <div class="goal">
-      <div class="line">
-        <select [value]="s.goalChoice()" (change)="chooseGoal($any($event.target).value)">
-          @for (option of s.goalOptions(); track option.value) {
-            <option [value]="option.value" [disabled]="option.disabled" [selected]="option.value === s.goalChoice()">
-              {{ option.label }}
-            </option>
-          }
-          @if (s.customFormula()) {
-            <option value="custom" [selected]="s.goalChoice() === 'custom'">Custom formula</option>
-          }
-        </select>
-        <button app-button type="button" title="Write the goal as a formula" (click)="customGoal().show()">
-          Formula
+  <div class="goal">
+    <div class="line">
+      <span class="label">Maximize</span>
+      @if (s.customFormula()) {
+        <span class="custom">Custom Goal:</span>
+        <button app-button variant="link" type="button" title="Change the formula" (click)="customGoal().show()">
+          {{ customText() }}
         </button>
-        <label>
-          Variance
-          <select [value]="s.goalVariation()" (change)="s.goalVariation.set($any($event.target).value); s.refresh()">
-            @for (variation of variations; track variation[0]) {
-              <option [value]="variation[0]">{{ variation[1] }}</option>
-            }
-          </select>
-        </label>
-      </div>
+        <button
+          app-button
+          variant="link"
+          type="button"
+          title="Remove the custom goal"
+          aria-label="Remove the custom goal"
+          (click)="customGoal().remove()"
+        >
+          <app-icon name="remove" />
+        </button>
+      } @else {
+        <app-rich-select
+          class="goal-select"
+          [options]="goalChoices()"
+          [value]="s.goalChoice()"
+          (picked)="chooseGoal($event)"
+        />
+        <span>
+          or
+          <button app-button variant="link" type="button" (click)="customGoal().show()">Custom Goal</button>
+        </span>
+      }
+    </div>
       @for (time of s.multicastTimes(); track time) {
         <div class="line">
+          <span class="label">Skill {{ time + 1 }}</span>
           <select [value]="s.multicastSelection()[time]" (change)="chooseMulticast(time, $any($event.target).value)">
             @for (option of s.multicastOptions(); track option.id) {
               <option [value]="option.id" [selected]="option.id === s.multicastSelection()[time]">
@@ -38,7 +44,7 @@
       }
       @if (s.showStack()) {
         <label class="line">
-          Stack
+          <span class="label">Skill stack</span>
           <input
             type="number"
             min="0"
@@ -60,22 +66,21 @@
         </button>
       </div>
       @if (optionsOpen()) {
+      <div class="options more">
         <label class="line">
-          Chain multiplier
+          <span class="label">Chain Mult.</span>
           <input
             type="text"
             class="short"
-            placeholder="1 or MAX"
             [value]="s.chainMultiplier()"
             (input)="s.chainMultiplier.set($any($event.target).value); s.refresh()"
           />
           <span class="hint"
-            >(<button app-button variant="link" type="button" class="switch" (click)="setChainMax()">MAX</button> for max chain multiplier,
-            calculate it on <a href="https://ffbe-chain.com/" target="_blank" rel="noreferrer">FFBE-Chain</a>)</span
+            >(<button app-button variant="link" type="button" class="switch" (click)="setChainMax()">MAX</button> for max chain multiplier)</span
           >
         </label>
         <div class="line">
-          <span class="label">Force elements</span>
+          <span class="label">Force element</span>
           <app-choice-group
             [choices]="forcedElementChoices"
             iconType="element"
@@ -92,7 +97,7 @@
             title='Switch between "All ailment", "Disabling ailments" and "No ailments"'
             (click)="switchAilments()"
           >
-            Immune to
+            Ailment Immunity
           </button>
           <app-choice-group
             [choices]="ailmentChoices"
@@ -102,30 +107,33 @@
           />
         </div>
         <div class="line">
-          <span class="label">Resist</span>
+          <span class="label">Elemental resist</span>
           <span class="resists">
             @for (element of elements; track element) {
-              <label class="resist" [title]="'Base ' + element + ' resistance'"
-                ><app-icon [name]="'element-' + element" size="28" />
-                <input
-                  type="number"
-                  min="0"
-                  max="300"
+              <span class="resist">
+                <span class="element">
+                  <app-icon [name]="'element-' + element" size="28" />
+                  <app-icon class="shield" name="equipment-heavyShield" size="14" />
+                </span>
+                <app-number-field
+                  [width]="60"
+                  [title]="'Base ' + element + ' resistance'"
                   [value]="s.goalResists()[element]"
-                  (input)="setGoalResist(element, $event)"
+                  (valueChange)="setGoalResist(element, $event)"
                 />
-              </label>
+              </span>
             }
           </span>
         </div>
         <div class="line">
+          <span class="label">Various</span>
           <app-choice-group
             [choices]="variousChoices"
             [selected]="s.various()"
             (selectedChange)="s.various.set($event); s.refresh()"
           />
         </div>
+      </div>
       }
     </div>
-  </app-panel>
 }

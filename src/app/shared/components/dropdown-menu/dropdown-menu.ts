@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { booleanAttribute, Component, input, signal } from '@angular/core';
 import { Icon } from '../icon/icon';
 
 export interface MenuItem {
@@ -17,6 +17,10 @@ export interface MenuItem {
 export class DropdownMenu {
   readonly label = input.required<string>();
   readonly items = input.required<readonly MenuItem[]>();
+  /** the icon before the label */
+  readonly icon = input('link');
+  /** only the link, without the frame of a button */
+  readonly plain = input(false, { transform: booleanAttribute });
   protected readonly open = signal(false);
 
   protected run(item: MenuItem): void {

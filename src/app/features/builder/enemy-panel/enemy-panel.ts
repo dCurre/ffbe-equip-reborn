@@ -51,6 +51,7 @@ export class EnemyPanel extends StatePanel {
   protected readonly elements = elementList;
   protected readonly raceChoices: Choice[] = RACES.map((value) => ({ value, label: ucFirst(value) }));
   protected readonly tone = fieldTone;
+  protected readonly ucFirst = ucFirst;
 
   /** A break or imperil below 0 buffs the enemy: usually a mistake. */
   protected readonly negativeValues = computed(() => {

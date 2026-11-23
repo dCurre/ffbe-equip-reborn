@@ -47,6 +47,13 @@ export interface DamageLine {
   secondary: boolean;
 }
 
+/** The resistance of the build to an element or an ailment; `involved`: the goal is made of it. */
+export interface ResistTotal {
+  name: string;
+  percent: number;
+  involved: boolean;
+}
+
 export interface ResultStats {
   totals: StatTotal[];
   physicalEhp: number;
@@ -54,8 +61,8 @@ export interface ResultStats {
   /** the goal maximizes the eHP */
   ehpGoal: 'physical' | 'magical' | null;
   extras: ExtraStat[];
-  elementResists: { name: string; percent: number }[];
-  ailmentResists: { name: string; percent: number }[];
+  elementResists: ResistTotal[];
+  ailmentResists: ResistTotal[];
   killers: { name: string; physical: number; magical: number }[];
   damage: DamageLine[];
   damageTaken: number;
@@ -165,13 +172,33 @@ export function resultStats(
     addExtra(extra.key, extra.label, extra.title, overcap, extra.suffix, overcap > cap, cap, isInvolved);
   }
 
-  const resists = (names: readonly string[], max?: number): { name: string; percent: number }[] =>
-    names
-      .map((name) => {
-        const total = calculateStatValue(items, `resist|${name}.percent`, build).total;
-        return { name, percent: max === undefined ? total : Math.min(max, total) };
-      })
-      .filter((entry) => entry.percent !== 0);
+  // the order of the old page
+  const order = [
+    'evadePhysical',
+    'evadeMagical',
+    'mpRefresh',
+    'lbPerTurn',
+    'lbFillRate',
+    'evoMag',
+    'evokeDamageBoost',
+    'accuracy',
+    'drawAttacks',
+    'jumpDamage',
+    'lbDamage',
+    'chainMastery',
+  ];
+  extras.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+
+  // all of them, also the ones at 0 (the old page showed every element and ailment)
+  const resists = (names: readonly string[], max?: number): ResistTotal[] =>
+    names.map((name) => {
+      const total = calculateStatValue(items, `resist|${name}.percent`, build).total;
+      return {
+        name,
+        percent: max === undefined ? total : Math.min(max, total),
+        involved: involved.includes(`resist|${name}.percent`),
+      };
+    });
 
   const damage: DamageLine[] = [];
   const skillName = singleSkillName(build.formula);

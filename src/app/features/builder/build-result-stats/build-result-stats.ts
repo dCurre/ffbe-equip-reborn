@@ -1,6 +1,6 @@
-import { Component, input } from '@angular/core';
-import { KillerList } from '../../../game/components/killer-list/killer-list';
-import { ResistList } from '../../../game/components/resist-list/resist-list';
+import { Component, computed, input } from '@angular/core';
+import { killerList } from '../../../../core/constants/base-lists';
+import { Icon } from '../../../shared/components/icon/icon';
 import type { ResultStats } from '../shared/result-stats';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
@@ -8,7 +8,7 @@ import type { ResultStats } from '../shared/result-stats';
 /** The totals, resists, killers and damage of the best build found. */
 @Component({
   selector: 'app-build-result-stats',
-  imports: [KillerList, ResistList],
+  imports: [Icon],
   templateUrl: './build-result-stats.html',
   styleUrl: './build-result-stats.css',
 })
@@ -25,7 +25,19 @@ export class BuildResultStats {
       : `${Math.floor(value.min).toLocaleString()} - ${Math.floor(value.avg).toLocaleString()} - ${Math.floor(value.max).toLocaleString()}`;
   }
 
-  protected resistEntries(): { name: string; percent: number }[] {
-    return [...this.result().elementResists, ...this.result().ailmentResists];
+  /** The killers of the build, one tile for each race that has some: the physical ones, then the magical ones. */
+  protected readonly killerRows = computed(() =>
+    (['physical', 'magical'] as const).map((kind) => ({
+      kind,
+      tiles: killerList.flatMap((name) => {
+        const value = this.result().killers.find((killer) => killer.name === name)?.[kind];
+        return value ? [{ name, value }] : [];
+      }),
+    })),
+  );
+
+  protected whole(n: number): string {
+    return Math.floor(n).toLocaleString();
   }
+
 }

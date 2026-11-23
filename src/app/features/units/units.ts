@@ -11,7 +11,6 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { ShareLinkState } from '../../shared/state/share-link-state';
-import { ImportState } from '../../shared/state/import-state';
 import { ActivatedRoute } from '@angular/router';
 import { PageContent } from '../../layout/page-content/page-content';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
@@ -30,7 +29,6 @@ import { Icon } from '../../shared/components/icon/icon';
 import { Button } from '../../shared/components/button/button';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
 import { copyToClipboard } from '../../shared/helpers/clipboard';
-import { ImportModal } from '../../shared/components/import-modal/import-modal';
 import { DropdownMenu, MenuItem } from '../../shared/components/dropdown-menu/dropdown-menu';
 import { LoadStatus } from '../../shared/components/load-status/load-status';
 import { ActionLink, GAME_DATA_URL } from '../../shared/components/action-link/action-link';
@@ -44,7 +42,6 @@ import { UnitCollectionStats } from './unit-collection-stats/unit-collection-sta
 import { UnitAwakenModal } from './unit-awaken-modal/unit-awaken-modal';
 import { UnitEditModal } from './unit-edit-modal/unit-edit-modal';
 import { UnitStmrModal } from './unit-stmr-modal/unit-stmr-modal';
-import { consumablesFromFile, importUnits, isConsumablesFile, isUnitFile } from './unit-import';
 import {
   addOne,
   initialOf,
@@ -115,7 +112,6 @@ interface ReleasedUnit {
     ChoiceGroup,
     SearchBox,
     Button,
-    ImportModal,
     ShareLinkModal,
     TextExportModal,
     UnitEditModal,
@@ -354,10 +350,6 @@ export class Units {
   protected readonly textOpen = signal(false);
   protected readonly textExport = signal('');
   protected readonly share = new ShareLinkState();
-  protected readonly importing = new ImportState();
-  protected readonly importKind = signal<'units' | 'consumables'>('units');
-  private importedUnits: OwnedUnits | null = null;
-  private importedConsumables: Record<string, number> | null = null;
 
   constructor() {
     showMoreOnScroll(this.end, this.limit, () => this.shown(), PAGE_SIZE, '600px');
@@ -702,46 +694,6 @@ export class Units {
       this.share.show(`${url.href}#${id}`);
     } catch {
       this.toast.show('Error while creating the public link', 'error');
-    }
-  }
-
-  // --- Imports ---
-
-  protected openImport(kind: 'units' | 'consumables'): void {
-    this.importKind.set(kind);
-    this.importedUnits = null;
-    this.importedConsumables = null;
-    this.importing.start();
-  }
-
-  protected loadImportFile(data: unknown): void {
-    if (this.importKind() === 'units') {
-      if (!isUnitFile(data)) return this.toast.show("The imported file doesn't have the correct form", 'error');
-      const { owned, messages } = importUnits(data, {
-        server: this.server(),
-        releasedUnits: this.released(),
-        units: this.allUnits(),
-        items: this.items(),
-      });
-      this.importedUnits = owned;
-      this.importing.messages.set(messages);
-      this.importing.summary.set(`Units to import : ${Object.keys(owned).length}`);
-    } else {
-      if (!isConsumablesFile(data)) return this.toast.show("The imported file doesn't have the correct form", 'error');
-      this.importedConsumables = consumablesFromFile(data);
-      this.importing.summary.set(`Consumables to import : ${Object.keys(this.importedConsumables).length}`);
-    }
-  }
-
-  protected async runImport(): Promise<void> {
-    if (this.importKind() === 'units' && this.importedUnits) {
-      this.importing.open.set(false);
-      await this.inventory.replace('units', this.importedUnits);
-    } else if (this.importKind() === 'consumables' && this.importedConsumables) {
-      this.importing.open.set(false);
-      await this.inventory.replace('consumables', this.importedConsumables);
-    } else {
-      this.toast.show('Please select a file to import', 'warn');
     }
   }
 }

@@ -1,27 +1,39 @@
+/* the heading of the card: the tabs on its color, the active one has the color of the body under it */
 .tabs {
-  padding: 0 15px;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid var(--color-tab-border);
+  padding: 10px 15px 0;
+  background-color: var(--color-panel-heading);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .tab {
   display: flex;
-  border: 1px solid var(--color-tab-border);
+  margin-bottom: -1px;
+  border: 1px solid transparent;
   border-bottom: 0;
   border-radius: 4px 4px 0 0;
-  background: var(--color-tab-background);
 }
 
 .tab.active {
-  border-color: var(--color-tab-active-border);
+  background: var(--color-panel);
+  border-color: var(--color-border);
 }
 
 .tabs button {
-  padding: 6px 12px;
+  padding: 8px 14px;
   color: var(--color-tab-text);
+}
+
+.tabs button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.unit-icon {
+  height: 28px;
 }
 
 .tab.active button {
@@ -40,4 +52,8 @@
 
 .tab .close {
   padding-left: 0;
+}
+
+.tabs .add {
+  color: var(--color-accent);
 }

@@ -12,6 +12,9 @@ import { choiceFromFormula } from './goal';
 
 export const MAX_POTS = 1.5;
 
+/** The EX awakening a unit starts from: its highest level (the old page always started from the top). */
+export const highestEx = (build: UnitBuild): number => build.unit?.exAwakening?.length ?? 3;
+
 /** Loads a unit into the state: its skills, a new build, the inputs of the stats and the goal. */
 export class UnitLoader {
   /** The enhancement levels of a link being opened, used by the next `choose`. */
@@ -66,11 +69,13 @@ export class UnitLoader {
       build.baseValues = oldValues;
       build.level = oldLevel;
     }
-    const shifted = unitData.braveShift
+    let shifted = unitData.braveShift
       ? units[unitData.braveShift]
       : unitData.braveShifted
         ? units[unitData.braveShifted]
         : null;
+    // a copy: the enhancements add their skills to it, and the unit of the list must not grow at each choice
+    if (shifted?.enhancements) shifted = JSON.parse(JSON.stringify(shifted)) as BuilderUnit;
     if (shifted) {
       const shift = new UnitShift();
       shift.setUnit(shifted);
@@ -92,9 +97,9 @@ export class UnitLoader {
     if (data.max_rarity !== 7 && data.max_rarity !== 'NV') this.s.tryReduceOvercap.set(false);
     this.dataStorage.setUnitBuild(build);
     this.s.level.set(String(build.level || 120));
-    this.s.exLevel.set(String(build._exAwakeningLevel > -1 ? build._exAwakeningLevel : 3));
+    this.s.exLevel.set(String(build._exAwakeningLevel > -1 ? build._exAwakeningLevel : highestEx(build)));
     if (this.s.showLevel() && !build.level) build.level = 120;
-    if (this.s.showExLevel() && !(build._exAwakeningLevel > -1)) build.setExAwakeningLevel(3);
+    if (this.s.showExLevel() && !(build._exAwakeningLevel > -1)) build.setExAwakeningLevel(highestEx(build));
     this.resetStats(build, !!same);
     const goal = choiceFromFormula(null, null, this.s.unitWithSkills(), {
       atk: unitData.stats.pots.atk,
@@ -107,13 +112,29 @@ export class UnitLoader {
     this.s.refresh();
   }
 
+  /** Changes the level of one enhancement of the unit: the unit is loaded again with it. */
+  async setEnhancement(index: number, level: number): Promise<void> {
+    const levels = [...(this.s.unit()?.enhancementLevels ?? [])];
+    levels[index] = level;
+    this.pendingEnhancementLevels = levels;
+    await this.choose(this.s.unitId());
+  }
+
   /** Switches the unit to its Brave Shift form, or back: the inputs take the values of the other form. */
   braveShift(): void {
     const build = this.s.build();
     if (!build.hasBraveShift()) return;
     build.braveShift();
+    // the old page selected the other form in the unit list too (`loadBuild`)
+    const unit = build.unit;
+    this.s.unitId.set(`${unit.id}${unit.sixStarForm ? '-6' : ''}${unit.sevenStarForm ? '-7' : ''}`);
+    this.s.tick.update((n) => n + 1); // the form is another unit: what depends on it must see it from here on
+    // the other form starts without a level: the stats need the default of the page (as `updateUnitLevelDisplay`)
+    if (this.s.showLevel() && !build.level) build.level = 120;
+    if (this.s.showExLevel() && !(build._exAwakeningLevel > -1)) build.setExAwakeningLevel(highestEx(build));
+    build.updateStats(); // the EX awakening may have changed while the other form was shown
     this.s.level.set(String(build.level || 120));
-    this.s.exLevel.set(String(build._exAwakeningLevel > -1 ? build._exAwakeningLevel : 3));
+    this.s.exLevel.set(String(build._exAwakeningLevel > -1 ? build._exAwakeningLevel : highestEx(build)));
     this.resetStats(build, true);
     this.s.customFormula.set(null);
     this.s.recalculateApplicableSkills();

@@ -1,5 +1,5 @@
 @if (bestiary.hasValue()) {
-  <a href="#" (click)="$event.preventDefault(); open.set(true)">Monster list</a>
+  <button app-button small type="button" (click)="open.set(true)"><app-icon name="monster" /> Monster list</button>
 }
 
 <app-modal heading="Monster List" [wide]="true" [(open)]="open">

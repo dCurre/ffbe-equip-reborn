@@ -59,6 +59,12 @@ export const ICONS = {
     kind: 'svg',
     path: 'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z',
   },
+  monster: {
+    kind: 'svg',
+    title: 'Monster',
+    // a horned ghost: the eyes are drawn the other way round, so they are holes
+    path: 'M12 5C7.6 5 4 8.4 4 12.6V19l2.5-1.5L9 19l3-1.5L15 19l2.5-1.5L20 19v-6.4C20 8.4 16.4 5 12 5zM9 10.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM15 10.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3zM4 3.5l4 2.3-3.2 2.4zM20 3.5l-4 2.3 3.2 2.4z',
+  },
   'new-window': {
     kind: 'svg',
     path: 'M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z',
@@ -82,6 +88,15 @@ export const ICONS = {
   ban: {
     kind: 'svg',
     path: 'M12 2a10 10 0 100 20 10 10 0 000-20zm0 1.7a8.3 8.3 0 110 16.6 8.3 8.3 0 010-16.6zM6.6 5.4l12 12-1.2 1.2-12-12z',
+  },
+  'ban-bold': {
+    kind: 'svg',
+    path: 'M12 1a11 11 0 100 22 11 11 0 000-22zm0 2.6a8.4 8.4 0 110 16.8 8.4 8.4 0 010-16.8zM3.6 6.6l3-3 13.8 13.8-3 3z',
+  },
+  warning: {
+    kind: 'svg',
+    path: 'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z',
+    title: 'Warning',
   },
   edit: {
     kind: 'svg',

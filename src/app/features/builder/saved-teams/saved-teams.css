@@ -35,3 +35,8 @@
 .unit {
   height: 38px;
 }
+
+/* bare icons, as the old bar */
+.buttons button {
+  padding: 6px 10px;
+}

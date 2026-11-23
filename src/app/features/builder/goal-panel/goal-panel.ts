@@ -2,18 +2,29 @@ import { Component, computed, effect, input, signal } from '@angular/core';
 import { ailmentList, disablingAilmentList, elementList } from '../../../../core/constants/base-lists';
 import { Choice, ChoiceGroup } from '../../../shared/components/choice-group/choice-group';
 import { Button } from '../../../shared/components/button/button';
-import { Panel } from '../../../shared/components/panel/panel';
+import { RichOption, RichSelect } from '../../../shared/components/rich-select/rich-select';
+import { formulaToString } from '../../../../core/formula/formula-text';
 import { chooseGoal, int } from '../shared/build-inputs';
 import type { CustomGoal } from '../shared/custom-goal';
 import { StatePanel } from '../shared/state-panel';
+import { NumberField } from '../../../shared/components/number-field/number-field';
 import { Icon } from '../../../shared/components/icon/icon';
 
-const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+const UNSUPPORTED = ' - Not supported yet';
+const TAGS: Record<string, string | undefined> = {
+  damage: 'damage',
+  stat: 'stat',
+  lb: 'Limit burst',
+  skill: 'skill',
+  magic: 'magic',
+  multicast: 'multicast',
+};
+const ucFirst =(text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** What the build is for: damage, a stat, a skill... and the conditions of the goal. */
 @Component({
   selector: 'app-goal-panel',
-  imports: [Panel, ChoiceGroup, Button, Icon],
+  imports: [ChoiceGroup, Button, Icon, NumberField, RichSelect],
   templateUrl: './goal-panel.html',
   styleUrls: ['../shared/form-common.css', './goal-panel.css'],
 })
@@ -21,6 +32,28 @@ export class GoalPanel extends StatePanel {
   readonly customGoal = input.required<CustomGoal>();
 
   protected readonly elements = elementList;
+  /** The goals for the select: the picture, and a tag for what each one is (damage, stat, limit burst, skill...). */
+  protected readonly goalChoices = computed<RichOption[]>(() =>
+    this.s.goalOptions().map((option) => {
+      const unsupported = option.label.includes(UNSUPPORTED);
+      const label = option.label.replace(UNSUPPORTED, '').replace(' (Limit Burst)', '');
+      return {
+        value: option.value,
+        label,
+        disabled: option.disabled,
+        icon: option.icon,
+        tag: unsupported ? 'Not yet' : TAGS[option.kind],
+        tagKind: unsupported ? 'unsupported' : option.kind,
+        mark: option.upgraded ? '☆' : undefined,
+        markTitle: option.upgraded,
+      };
+    }),
+  );
+
+  protected readonly customText = computed(() => {
+    const formula = this.s.customFormula();
+    return formula ? formulaToString(formula) : '';
+  });
   protected readonly forcedElementChoices: Choice[] = [...elementList, 'noElement'].map((value) => ({
     value,
     tooltip: value === 'noElement' ? 'Prevent use of elemental weapons' : `Force use of ${ucFirst(value)}`,
@@ -32,11 +65,6 @@ export class GoalPanel extends StatePanel {
     { value: 'evade.physical', label: '100% physical evasion' },
     { value: 'accuracy', label: '100% accuracy' },
     { value: 'drawAttacks', label: '100% draw attacks' },
-  ];
-  protected readonly variations = [
-    ['min', 'Minimum'],
-    ['avg', 'Average'],
-    ['max', 'Maximum'],
   ];
 
   /** Cycles the ailment immunities: all of them, only the disabling ones, none (death stays as it is). */
@@ -83,8 +111,8 @@ export class GoalPanel extends StatePanel {
     this.s.refresh();
   }
 
-  protected setGoalResist(element: string, event: Event): void {
-    this.s.goalResists.update((r) => ({ ...r, [element]: (event.target as HTMLInputElement).value }));
+  protected setGoalResist(element: string, value: string): void {
+    this.s.goalResists.update((r) => ({ ...r, [element]: value }));
     this.s.refresh();
   }
 }

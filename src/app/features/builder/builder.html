@@ -1,62 +1,99 @@
 <app-page-content>
   <app-load-status [ready]="ready()" subject="the data" />
 
-  <app-tab-bar [tabs]="modes" [active]="mode()" (selected)="!runner.running() && mode.set($event)" />
-
-  @if (mode() === 'build') {
-    <app-builder-tabs
-      [names]="tabNames()"
-      [max]="maxTabs"
-      [disabled]="runner.running()"
-      [(active)]="active"
-      (add)="addTab()"
-      (close)="closeTab($event)"
-    />
-
-    @if (inventory.status() === 'loaded') {
-      <app-saved-teams
-        [teams]="savedTeams"
-        [hasUnits]="tabs().length > 1 || !!s.unit()"
-        (save)="saveTeam()"
-        (saveAs)="saveTeam($event)"
-        (loadTeam)="loadTeam($event)"
-        (importTeam)="importTeam($event)"
-      />
-    }
-  }
-
   <div class="columns">
     <div class="left">
+      <app-tab-panel class="mode" [tabs]="modes" [active]="mode()" (selected)="!runner.running() && mode.set($event)">
+        <div class="tab-content">
+          @if (mode() === 'build') {
+            <app-panel class="choose-goal">
+              <app-unit-panel #chooser part="choose" [state]="s" [loader]="loader" />
+              <app-goal-panel [state]="s" [customGoal]="customGoal" />
+            </app-panel>
+          } @else {
+            <app-challenge-panel [challenge]="challenge" [available]="inventory.status() === 'loaded'" />
+          }
+        </div>
+      </app-tab-panel>
       @if (mode() === 'build') {
-        <app-unit-panel [state]="s" [loader]="loader" />
-        <app-goal-panel [state]="s" [customGoal]="customGoal" />
-        <app-enemy-panel [state]="s" />
-        <app-rules-panel [state]="s" (workers)="setWorkers($event)" />
-      } @else {
-        <app-challenge-panel [challenge]="challenge" [available]="inventory.status() === 'loaded'" />
+        <app-unit-panel class="details" [state]="s" [loader]="loader" />
       }
-      <app-equipments-panel [state]="s" [items]="items" />
+      <app-tab-panel class="settings" [tabs]="settingsTabs()" [active]="shownSettings()" (selected)="settingsTab.set($event)">
+        <div class="tab-content">
+          @switch (shownSettings()) {
+            @case ('rules') {
+              <app-rules-panel [state]="s" />
+            }
+            @case ('monster') {
+              <app-enemy-panel [state]="s" />
+            }
+            @default {
+              <app-equipments-panel [state]="s" [items]="items" />
+            }
+          }
+        </div>
+      </app-tab-panel>
     </div>
 
     <div class="right">
-      <app-build-result
-        [state]="s"
-        [items]="items"
-        [sharing]="sharing"
-        [allSharing]="allSharing()"
-        [runner]="runner"
-        [game]="game"
-        [ready]="ready()"
-        [challenge]="mode() === 'challenge'"
-        (build)="onBuildClick()"
-      />
-      @if (!s.unit() && mode() === 'build') {
-        <app-build-help />
+      @if (mode() === 'build') {
+        @if (inventory.status() === 'loaded') {
+          <app-saved-teams
+            [teams]="savedTeams"
+            [hasUnits]="tabs().length > 1 || !!s.unit()"
+            (save)="saveTeam()"
+            (saveAs)="saveTeam($event)"
+            (loadTeam)="loadTeam($event)"
+            (importTeam)="importTeam($event)"
+          />
+        }
       }
+      <div [class.build-card]="mode() === 'build'">
+        @if (mode() === 'build') {
+          <app-builder-tabs
+            [names]="tabNames()"
+            [icons]="tabIcons()"
+            [max]="maxTabs"
+            [disabled]="runner.running()"
+            [(active)]="active"
+            (add)="addTabAndChoose()"
+            (close)="closeTab($event)"
+          />
+        }
+        <div [class.pane]="mode() === 'build'">
+          @if (mode() === 'build' && !loggedIn()) {
+            <app-alert class="login-hint">
+              Log in to build with the equipment you own, save your teams and use the Parameter challenges.
+              <button app-button variant="link" type="button" (click)="helpOpen.set(true)">Why log in?</button>
+            </app-alert>
+          }
+          <app-build-result
+            [state]="s"
+            [items]="items"
+            [sharing]="sharing"
+            [allSharing]="allSharing()"
+            [runner]="runner"
+            [game]="game"
+            [ready]="ready()"
+            [challenge]="mode() === 'challenge'"
+            (build)="onBuildClick()"
+            (workers)="setWorkers($event)"
+            (help)="helpOpen.set(true)"
+          />
+        </div>
+      </div>
       <app-site-footer />
     </div>
   </div>
 </app-page-content>
+
+@if (runner.running() && mode() === 'build') {
+  <app-busy-overlay />
+}
+
+<app-modal heading="How to use this" [wide]="true" [(open)]="helpOpen">
+  <app-build-help />
+</app-modal>
 
 <app-item-picker
   [context]="items.pickerContext()"
@@ -64,7 +101,7 @@
   [behavior]="items.pickerBehavior()"
   [itemsToExclude]="s.excluded()"
   [itemsToInclude]="s.included()"
-  [ownedDefault]="s.source() === 'owned' || s.source() === 'ownedAvailableForExpedition'"
+  [ownedDefault]="s.source() === 'owned'"
   [excludeNotReleasedDefault]="s.excludeNotReleased()"
   (picked)="items.onPicked($event)"
   (toggledExclude)="items.toggleExclude($event)"

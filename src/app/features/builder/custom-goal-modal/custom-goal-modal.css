@@ -1,11 +1,63 @@
-.custom-field textarea {
-  font-family: monospace;
-  color: var(--color-text);
-  background-color: var(--color-input, transparent);
-  border: 1px solid var(--color-border);
+.fields {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 10px;
+  align-items: center;
+  margin-bottom: 15px;
 }
 
-.custom-field {
-  display: block;
-  margin-bottom: 10px;
+.fields label {
+  justify-self: end;
+}
+
+.formula-line {
+  display: flex;
+  gap: 5px;
+}
+
+.formula-line input {
+  flex: 1;
+}
+
+.fields input {
+  min-width: 0;
+}
+
+.help ul {
+  padding-left: 18px;
+}
+
+.help li {
+  margin-top: 6px;
+}
+
+.help h4,
+.help h5 {
+  margin: 0 0 6px;
+}
+
+.help .code {
+  padding: 0 5px;
+  font-family: monospace;
+  font-weight: bold;
+  background-color: var(--color-panel-heading);
+  border-radius: 3px;
+}
+
+.tokenList {
+  margin-left: 20px;
+}
+
+.help table {
+  border-collapse: collapse;
+}
+
+.help td {
+  padding: 4px 8px;
+  vertical-align: top;
+  border-top: 1px solid var(--color-border);
+}
+
+.help .token {
+  font-weight: bold;
 }

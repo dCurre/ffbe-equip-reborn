@@ -80,7 +80,7 @@ describe('SiteHeader', () => {
   it('opens and closes the mobile menu', async () => {
     expect(page.querySelector('.dropdown')).toBeNull();
     await click('.mobile .logo');
-    expect(page.querySelectorAll('.dropdown li').length).toBe(8);
+    expect(page.querySelectorAll('.dropdown li').length).toBe(9);
     await click('.mobile .logo');
     expect(page.querySelector('.dropdown')).toBeNull();
   });

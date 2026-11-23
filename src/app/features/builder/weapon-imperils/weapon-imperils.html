@@ -10,17 +10,15 @@
   <div class="weapons">
     @for (weapon of weapons; track weapon) {
       <div class="weapon">
-        <app-icon [name]="'equipment-' + weapon" width="34" height="38" [title]="weapon + ' imperil'" />
+        <app-icon [name]="'equipment-' + weapon" width="34" height="38" [title]="spaced(weapon) + ' imperil'" />
         <app-input-group>
           <app-number-field [min]="0"
             withIcon
             suffix="%"
-            [tone]="tone(s.monsterImperils()[weapon], false)"
-            [title]="weapon + ' imperil (positive)'"
             [value]="s.monsterImperils()[weapon] ?? ''"
             (valueChange)="set(weapon, $event)"
           >
-            <app-icon leading name="arrow-down" />
+            <app-icon leading name="arrow-down" title="debuff" />
           </app-number-field>
         </app-input-group>
       </div>

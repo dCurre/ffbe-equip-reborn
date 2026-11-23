@@ -65,6 +65,12 @@ export const routes: Routes = [
     data: { header: 'Espers', banner: 'Nichol' },
   },
   {
+    path: 'data-import',
+    loadComponent: () => import('./features/data-import/data-import').then((m) => m.DataImport),
+    title: 'FFBE Equip Reborn : Data import',
+    data: { header: 'Data import', banner: 'Charlotte' },
+  },
+  {
     path: 'contribute',
     loadComponent: () => import('./features/contribute/contribute').then((m) => m.Contribute),
     title: 'FFBE Equip Reborn - Contribution',
@@ -96,6 +102,7 @@ export const routes: Routes = [
     'inventory',
     'units',
     'espers',
+    'data-import',
     'contribute',
     'algorithm',
     'builderHelp',
