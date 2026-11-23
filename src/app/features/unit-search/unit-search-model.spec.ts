@@ -79,6 +79,17 @@ describe('unit search', () => {
     expect(ids(state)).toEqual(['3']);
   });
 
+  it('picks the NV+ units with NV+, and all the NV units with NV', () => {
+    const nv = searchUnit('4', { maxRarity: 'NV' });
+    const nvPlus = searchUnit('5', { maxRarity: 'NV', nvPlus: true });
+    const ctx = { ...context(), searchUnits: [rain, nv, nvPlus], units: { ...units, '4': skillUnit('4', 'Nv'), '5': skillUnit('5', 'NvPlus') }, released: { '1': {}, '4': {}, '5': {} } };
+    const state = defaultState();
+    state.maxRarity = ['NV+'];
+    expect(ids(state, ctx)).toEqual(['5']);
+    state.maxRarity = ['NV'];
+    expect(ids(state, ctx).sort()).toEqual(['4', '5']);
+  });
+
   it('filters by killer and sorts the best first', () => {
     const state = defaultState();
     state.criteria.physicalKillers.values = ['beast'];

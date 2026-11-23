@@ -1,4 +1,4 @@
-// Golden master of the optimizer: the full search (all type combinations) on the real GL data, with the item pool
+// Golden master of the optimizer: the full search (all type combinations) on the real game data, with the item pool
 // reduced to the best ITEMS_PER_TYPE per type so it takes about a second per unit. Pins what the code does today.
 import { runOptimizer } from '../helpers/optimizerRun.js';
 

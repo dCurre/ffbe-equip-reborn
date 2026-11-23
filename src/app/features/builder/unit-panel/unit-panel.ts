@@ -5,8 +5,8 @@ import { Choice, ChoiceGroup } from '../../../shared/components/choice-group/cho
 import { Button } from '../../../shared/components/button/button';
 import { Combobox } from '../../../shared/components/combobox/combobox';
 import { Panel } from '../../../shared/components/panel/panel';
+import { pictureId } from '../../../shared/helpers/unit-picture';
 import { wikiUrl } from '../../../shared/helpers/wiki';
-import { ServerContext } from '../../../shared/services/server-context';
 import type { UnitLoader } from '../shared/unit-loader';
 import { StatePanel } from '../shared/state-panel';
 import { UnitBuffs } from '../unit-buffs/unit-buffs';
@@ -25,6 +25,7 @@ const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.sl
   styleUrls: ['../shared/form-common.css', './unit-panel.css'],
 })
 export class UnitPanel extends StatePanel {
+  protected readonly pictureId = pictureId;
   protected readonly t = STRINGS.unitPanel;
   readonly loader = input.required<UnitLoader>();
   /** `choose`: the line to choose the unit (inside the card of the goal); `details`: its panel with the stats */
@@ -36,14 +37,15 @@ export class UnitPanel extends StatePanel {
     this.unitList()?.focus();
   }
 
-  /** The levels above 100 (the core scales the stats between 100 and 130). */
-  protected readonly levels = Array.from({ length: 30 }, (_, i) => String(130 - i));
-
-  private readonly server = inject(ServerContext);
+  /** The levels above 100 (the core scales the stats between 100 and 130): an NV+ unit goes to 130, the others to 120. */
+  protected levels(): string[] {
+    const top = this.s.unit()?.['nvPlus'] ? 130 : 120;
+    return Array.from({ length: top - 100 }, (_, i) => String(top - i));
+  }
 
   protected wikiUrl(): string {
     const unit = this.s.unit();
-    return unit ? wikiUrl(unit['wikiEntry'] ?? unit.name, this.server.server()) : '';
+    return unit ? wikiUrl(unit['wikiEntry'] ?? unit.name) : '';
   }
 
   /** From EX+0 to the highest level of the unit. */

@@ -96,10 +96,10 @@ const GROUPS: { key: Group; title: string }[] = [
 ];
 
 /** NV is above the stars */
-const rarityRank = (rarity: string): number => (rarity === 'NV' ? 8 : parseInt(rarity, 10));
-const rarityChoice = (value: string): Choice => ({ value, label: value === 'NV' ? 'NV' : `${value}★` });
+const rarityRank = (rarity: string): number => (rarity === 'NV+' ? 9 : rarity === 'NV' ? 8 : parseInt(rarity, 10));
+const rarityChoice = (value: string): Choice => ({ value, label: value.startsWith('NV') ? value : `${value}★` });
 const BASE_RARITIES = ['1', '2', '3', '4', '5', 'NV'];
-const MAX_RARITIES = ['2', '3', '4', '5', '6', '7', 'NV'];
+const MAX_RARITIES = ['2', '3', '4', '5', '6', '7', 'NV', 'NV+'];
 
 const BREAKS = ['atk', 'def', 'mag', 'spr'];
 

@@ -1,12 +1,12 @@
-// Golden master of the build calculations on the real GL game data: for every unit, every damage/skill
+// Golden master of the build calculations on the real game data (public/ALL): for every unit, every damage/skill
 // formula built from its real actives, magics and limit burst, a few fixed builds and enemies.
 // It pins what the code does today (not that it is right): see test.golden.js.
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import { loadBuilderEnv, makeUnitBuild, makeEnemy } from '../helpers/builderEnv.js';
 
-const GL = new URL('../../../public/GL/', import.meta.url);
-const readJson = (name) => JSON.parse(fs.readFileSync(new URL(name, GL), 'utf8'));
+const DATA = new URL('../../../public/ALL/', import.meta.url);
+const readJson = (name) => JSON.parse(fs.readFileSync(new URL(name, DATA), 'utf8'));
 
 const WEAPONS = ['dagger', 'sword', 'greatSword', 'katana', 'axe', 'hammer', 'mace', 'spear', 'fist', 'rod', 'staff', 'bow', 'gun', 'whip', 'throwing', 'harp'];
 const SHIELDS = ['lightShield', 'heavyShield'];

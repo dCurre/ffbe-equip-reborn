@@ -195,16 +195,21 @@ export class BuilderState {
     this.unitOptions = computed(() => {
       const nvOnly = this.onlyNvUnits();
       const owned = this.onlyOwnedUnits() ? this.ownedUnits() : null;
-      const server = serverContext.server();
       return Object.entries(this.units())
         .filter(([, unit]) => !nvOnly || unit.max_rarity === 'NV')
-        .filter(([id, unit]) => !owned || isOwned(owned[id]) || isOwned(owned[unit.braveShift ?? unit.braveShifted ?? '']))
+        // a [JP] version (`variantOf`) is owned when the unit it is a version of is
+        .filter(
+          ([id, unit]) =>
+            !owned ||
+            isOwned(owned[unit['variantOf'] ?? id]) ||
+            isOwned(owned[unit.braveShift ?? unit.braveShifted ?? '']),
+        )
         .sort(([, a], [, b]) => a.name.localeCompare(b.name))
         .flatMap(([id, unit]) => {
           let label = unit.name;
           if (!nvOnly && unit['6_form'] && unit.max_rarity === 7) label += ` ${unit.max_rarity}★ `;
           if (unit.max_rarity === 'NV' && unit['7_form']) label += ' NV ';
-          if (server !== 'JP' && (unit['unreleased7Star'] || unit['jpname'])) label += ' - JP data';
+          if (unit['nvPlus']) label += ' NV+'; // the list has text only: no icon
           const options = [{ id, label }];
           if (!nvOnly && unit['7_form']) options.push({ id: `${id}-7`, label: `${unit['7_form'].name} 7★` });
           if (!nvOnly && unit['6_form']) options.push({ id: `${id}-6`, label: `${unit['6_form'].name} 6★` });

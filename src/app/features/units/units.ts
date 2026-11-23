@@ -395,7 +395,8 @@ export class Units {
         this.staticData.get<Record<string, ReleasedUnit>>('releasedUnits'),
         this.staticData.get<TrustItem[]>('data', true),
       ]);
-      const list = Object.values(units).filter((unit) => !unit.braveShifted);
+      // a [JP] version of a unit (`variantOf`) is not another unit to own: it only shows in the builder and the search
+      const list = Object.values(units).filter((unit) => !unit.braveShifted && !unit.variantOf);
       this.allUnits.set(units);
       this.releasedIds.set(new Set(Object.keys(released)));
       this.released.set(

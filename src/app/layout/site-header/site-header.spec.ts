@@ -36,14 +36,13 @@ describe('SiteHeader', () => {
     expect(page.querySelector('.status')?.textContent).toContain('Inventory not loaded');
   });
 
-  it('reloads the page with the new language or server, and hides the languages on JP', async () => {
+  it('reloads the page with the new language, and has no server buttons', async () => {
     const navigate = vi
       .spyOn(ServerContext.prototype as unknown as { navigate(url: URL): void }, 'navigate')
       .mockImplementation(() => undefined);
     await click('.languages button', 3); // fr
     expect(navigate.mock.calls[0][0].search).toBe('?l=fr');
-    await click('.servers button', 1); // JP
-    expect(navigate.mock.calls[1][0].search).toBe('?server=JP');
+    expect(page.querySelector('.servers')).toBeNull();
     navigate.mockRestore();
   });
 
@@ -53,7 +52,7 @@ describe('SiteHeader', () => {
     expect(page.querySelector('.status')?.textContent).toContain('0 units');
   });
 
-  it('keeps server and language in the menu links', async () => {
+  it('keeps the language in the menu links', async () => {
     await router.navigateByUrl('/units?l=de');
     fixture.detectChanges();
     const links = [...page.querySelectorAll('.desktop a:not(.logo)')].map((a) => a.getAttribute('href'));

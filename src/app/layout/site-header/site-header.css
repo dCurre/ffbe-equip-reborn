@@ -157,29 +157,6 @@ select {
   box-shadow: 0 0 5px 2px #3166ff;
 }
 
-.servers {
-  display: flex;
-  padding: 0 12px 0 16px;
-}
-
-.servers button {
-  padding: 1px 8px;
-  border-radius: 0;
-}
-
-.servers button:first-child {
-  border-radius: var(--radius) 0 0 var(--radius);
-}
-
-.servers button:last-child {
-  border-radius: 0 var(--radius) var(--radius) 0;
-  margin-left: -1px;
-}
-
-.servers button:not(.active) {
-  color: grey;
-}
-
 /* ---- menu ---- */
 
 .desktop {

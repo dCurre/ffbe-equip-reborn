@@ -10,6 +10,10 @@ export interface GameUnit {
   min_rarity: string | number;
   max_rarity: string | number;
   unreleased7Star?: boolean;
+  /** An NV unit that can be enhanced to NV+ with Azure Pearls (level 130, LB level 50): from the raw `awakening` of the unit. */
+  nvPlus?: boolean;
+  /** The Japan version of a unit with other abilities (`jp-<id>`): the id of the unit it is a version of. */
+  variantOf?: string;
   braveShift?: string;
   braveShifted?: boolean;
   fragmentId?: string;

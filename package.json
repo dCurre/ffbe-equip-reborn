@@ -10,9 +10,11 @@
     "test": "node --test \"test/static/*.js\"",
     "test:coverage": "tsc -p tsconfig.core.json && node test/coverage.mjs",
     "test:golden:update": "node test/static/golden/update.mjs",
+    "build:merged": "node tools/mergeServers.js",
     "build:units": "node tools/generateUnitFiles.js",
     "ng": "ng",
     "build": "ng build",
+    "predev": "node tools/generateUnitFiles.js",
     "dev": "ng serve"
       },
   "type": "module",

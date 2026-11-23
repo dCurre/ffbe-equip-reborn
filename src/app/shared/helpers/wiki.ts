@@ -1,10 +1,9 @@
-import { GameServer } from '../services/server-context';
-
 const WIKI = 'https://exvius.fandom.com/wiki/';
+const JP_TAG = ' [JP]';
 
-/** The wiki page of a unit, item or skill (`page` defaults to `name`); the JP data has `/JP` pages. */
-export function wikiUrl(name: string, server: GameServer): string {
-  let link = WIKI + encodeURIComponent(name.replace(/ /g, '_'));
-  if (link.includes('_BS')) link = link.replace('_BS', '#Brave_Shift');
-  return server === 'JP' ? `${link}/JP` : link;
+/** The wiki page of a unit, item or skill; a name ending with " [JP]" is a unit of the Japan version (the `/JP` page). */
+export function wikiUrl(name: string): string {
+  const jp = name.endsWith(JP_TAG);
+  const link = WIKI + encodeURIComponent((jp ? name.slice(0, -JP_TAG.length) : name).replace(/ /g, '_')).replace('_BS', '#Brave_Shift');
+  return jp ? link.replace(/(#|$)/, '/JP$1') : link;
 }

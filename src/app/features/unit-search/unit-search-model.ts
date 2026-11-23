@@ -160,6 +160,8 @@ export interface SearchUnit {
   game_id?: number | string;
   minRarity: string;
   maxRarity: string;
+  /** An NV unit that can be enhanced to NV+ (`unitSearch.json`). */
+  nvPlus?: boolean;
   NVA?: { baseRarity: string };
   equip: string[];
   passives: any;
@@ -382,7 +384,8 @@ export function filterUnits(state: UnitSearchState, context: SearchContext): Res
       !state.baseRarity.includes(unit.NVA?.baseRarity as string)
     )
       continue;
-    if (state.maxRarity.length && !state.maxRarity.includes(unit.maxRarity)) continue;
+    // "NV+" picks the NV units that can be enhanced; "NV" still picks all of them
+    if (state.maxRarity.length && !state.maxRarity.some((r) => (r === 'NV+' ? unit.nvPlus : r === unit.maxRarity))) continue;
     const full = context.units[unit.id];
     if (state.skillFilter.chainFamily !== 'none' && !matchesSkill(unit, full, state.skillFilter)) continue;
     if (state.types.length && !includeAll(unit.equip, state.types)) continue;

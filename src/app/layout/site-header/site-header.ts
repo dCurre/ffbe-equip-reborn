@@ -6,7 +6,7 @@ import { Icon } from '../../shared/components/icon/icon';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { GoogleDrive } from '../../shared/services/google-drive';
 import { Inventory } from '../../shared/services/inventory';
-import { Language, LANGUAGES, ServerContext, SERVERS } from '../../shared/services/server-context';
+import { Language, LANGUAGES, ServerContext } from '../../shared/services/server-context';
 import { Theme } from '../../shared/services/theme';
 import { STRINGS } from '../../strings/en';
 
@@ -41,7 +41,7 @@ const MENU = [
   { path: '/contribute', label: STRINGS.siteHeader.contribute },
 ];
 
-/** Page title, menu, login status, theme, language and server buttons: the old `layout.js` header. */
+/** Page title, menu, login status, theme, language buttons: the old `layout.js` header. */
 @Component({
   selector: 'app-site-header',
   imports: [Alert, RouterLink, RouterLinkActive, Button, Icon, Modal],
@@ -54,7 +54,6 @@ export class SiteHeader {
   readonly banner = input.required<BannerName>();
 
   protected readonly menu = MENU;
-  protected readonly servers = SERVERS;
   protected readonly languages = LANGUAGES;
   protected readonly serverContext = inject(ServerContext);
   protected readonly theme = inject(Theme);

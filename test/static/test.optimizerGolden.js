@@ -8,7 +8,7 @@ import { computeOptimizerGolden } from './golden/optimizer.mjs';
 const expected = JSON.parse(fs.readFileSync(new URL('./golden/optimizer.json', import.meta.url), 'utf8'));
 const actual = computeOptimizerGolden();
 
-describe('golden master of the build optimizer (real GL data, reduced item pool)', () => {
+describe('golden master of the build optimizer (real game data, reduced item pool)', () => {
     for (const [key, value] of Object.entries(expected)) {
         it(`gives the same build for ${key}`, () => {
             assert.deepEqual(actual[key], value);

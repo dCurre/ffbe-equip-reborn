@@ -11,9 +11,9 @@ import { UnitLoader } from './unit-loader';
 const BASE = '401013807';
 const SHIFTED = '401013817';
 
-/** 2B -Neo Vision- as the game data has it: the base form and its Brave Shift form (`public/GL/unitsWithPassives.json`). */
+/** 2B -Neo Vision- as the game data has it: the base form and its Brave Shift form (`public/ALL/unitsWithPassives.json`). */
 function setup(ids: string[] = [BASE, SHIFTED]) {
-  const all = JSON.parse(readFileSync(join(process.cwd(), 'public/GL/unitsWithPassives.json'), 'utf8'));
+  const all = JSON.parse(readFileSync(join(process.cwd(), 'public/ALL/unitsWithPassives.json'), 'utf8'));
   const s = new BuilderState({ server: () => 'GL' } as unknown as ServerContext);
   s.units.set(Object.fromEntries(ids.map((id) => [id, all[id]])));
   // the skills are not part of this test: a unit without any

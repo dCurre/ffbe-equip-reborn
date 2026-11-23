@@ -7,33 +7,19 @@
         <option value="dark">{{ t.dark }}</option>
       </select>
     </label>
-    @if (serverContext.server() === 'GL') {
-      <div class="languages" role="group" [attr.aria-label]="t.language">
-        @for (language of languages; track language) {
-          <button
-            app-button
-            variant="flat"
-            type="button"
-            class="flag"
-            [active]="serverContext.language() === language"
-            style="background-image: url(img/icons/languages.png)"
-            [style.background-position]="flagPosition(language)"
-            [attr.aria-label]="language"
-            (click)="serverContext.setLanguage(language)"
-          ></button>
-        }
-      </div>
-    }
-    <div class="servers" role="group" [attr.aria-label]="t.server">
-      @for (server of servers; track server) {
+    <div class="languages" role="group" [attr.aria-label]="t.language">
+      @for (language of languages; track language) {
         <button
           app-button
+          variant="flat"
           type="button"
-          [active]="serverContext.server() === server"
-          (click)="serverContext.setServer(server)"
-        >
-          {{ server }}
-        </button>
+          class="flag"
+          [active]="serverContext.language() === language"
+          style="background-image: url(img/icons/languages.png)"
+          [style.background-position]="flagPosition(language)"
+          [attr.aria-label]="language"
+          (click)="serverContext.setLanguage(language)"
+        ></button>
       }
     </div>
   </div>

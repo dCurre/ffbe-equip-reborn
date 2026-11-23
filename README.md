@@ -22,7 +22,9 @@ It is maintained by [dCurre](https://github.com/dCurre).
 
 ## What is here
 
-The game servers are closed, so the game data (`public/GL` for Global, `public/JP` for Japan) is frozen.
+The game servers are closed, so the game data (Global and Japan, merged in `public/ALL`) is frozen. The data
+comes from the dumps of [aEnigmatic](https://github.com/aEnigmatic/ffbe-jp), and the last Japan icons come from the
+[ffbe_asset_dump](https://github.com/DaddyRaegen/ffbe_asset_dump) of DaddyRaegen.
 
 The menu has these sections:
 
@@ -61,15 +63,14 @@ You need Node.js 24 (see [`.node-version`](.node-version)) and npm.
 
 ```bash
 npm install
-npm run build:units
 npm run dev
 ```
 
 Then open http://localhost:4200.
 
-`npm run build:units` writes the per-unit files the builder loads (`public/<server>/unit/<id>.json`, built from
-`unitsWithSkill.json` by `tools/generateUnitFiles.js`). They are not committed, so run it once after cloning and
-again if the data changes.
+`npm run dev` first writes the per-unit files the builder loads (`public/ALL/unit/<id>.json`, built from
+`unitsWithSkill.json` by `tools/generateUnitFiles.js`, also `npm run build:units`). They are not committed, and the command skips them when they
+are up to date.
 
 ### Tests
 
@@ -83,8 +84,9 @@ again if the data changes.
 - `src/core/`: the calculation core (formulas, stats, damage, optimizer), with no Angular in it.
 - `public/`: game data and images, copied into the build as they are. Paths are relative, so the site also
   works under a sub-path like `/ffbe-equip-reborn/`.
-- `tools/`: scripts that extracted the game data from the game files. They are kept for reference; some of the
-  image sources they use are offline now.
+- `tools/`: `generateUnitFiles.js` (the per-unit files), `mergeServers.js` (how the Global and Japan data became
+  `public/ALL`). The extraction scripts and the raw game data were removed
+  (they are in the history).
 - `worker/`: the Cloudflare Worker.
 - Every push to `master` runs [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml), which
   builds the unit files and the site and publishes it to GitHub Pages.

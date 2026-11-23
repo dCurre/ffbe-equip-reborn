@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- the unit data of a link is open */
+import { pictureId } from '../../../shared/helpers/unit-picture';
 
 /** The picture of a team (the old `exportBuildAsImage.js`): one card per unit, a second one for its Brave Shifted form. */
 
@@ -152,7 +153,7 @@ function drawBar(ctx: CanvasRenderingContext2D, x: number, y: number, share: num
 
 /** The icon of the unit: the picture of its rarity, or the one of its base form. */
 function unitIconId(unit: any): string {
-  const id: string = unit.id;
+  const id: string = pictureId(unit.id);
   if (id.endsWith('03') || id.endsWith('04') || id.endsWith('05')) {
     if (unit.rarity === 'NV') return `${id.substring(0, id.length - 2)}17`;
     if (unit.rarity === 7) return `${id.substring(0, id.length - 2)}07`;

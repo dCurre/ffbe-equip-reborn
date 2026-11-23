@@ -265,7 +265,7 @@ export class OptimizerRunner {
     const result: string[] = [];
     for (let i = baseStats.length; i--;) {
       const stat = baseStats[i];
-      if (calculateStatValue(items, stat, build).bonusPercent > getStatBonusCap(stat)) {
+      if (calculateStatValue(items, stat, build).bonusPercent > getStatBonusCap(stat, build)) {
         result.push((percentValues as Record<string, string>)[stat]);
       }
       const equipmentFlatStatBonus = Math.round((getEquipmentStatBonus(items, stat, false) - 1) * 100);

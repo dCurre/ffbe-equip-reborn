@@ -34,8 +34,8 @@ jobs:
 
       - run: npm ci
 
-      # Data (GL, JP), images and the generated unit files live in public/ and are copied into the build as they are;
-      # the extraction scripts and tools/custom are not, so they never reach the site.
+      # Data (ALL), images and the generated unit files live in public/ and are copied into the build as they are;
+      # tools/ is not, so it never reaches the site.
       - name: Build the site
         run: npx ng build
 

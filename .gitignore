@@ -3,8 +3,7 @@ node_modules
 firebase_config.json
 googleOAuth
 # Generated per-unit files (npm run build:units)
-public/GL/unit/
-public/JP/unit/
+public/ALL/unit/
 # Personal Claude Code settings
 .claude/settings.local.json
 .wrangler

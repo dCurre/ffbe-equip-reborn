@@ -136,6 +136,7 @@ export function calculateStatValue(itemAndPassives, stat, unitBuild, berserk = 0
             currentPercentIncrease,
             equipmentStatBonusToApply,
             stat,
+            unitBuild,
           ),
         );
       } else if (equipedIndex < 2 && 'atk' == stat) {
@@ -144,6 +145,7 @@ export function calculateStatValue(itemAndPassives, stat, unitBuild, berserk = 0
           baseValue,
           currentPercentIncrease,
           stat,
+          unitBuild,
         );
         calculatedValue += calculateFlatStateValueForIndex(itemAndPassives, equipedIndex, equipmentStatBonus - 1, stat);
       } else {
@@ -154,6 +156,7 @@ export function calculateStatValue(itemAndPassives, stat, unitBuild, berserk = 0
           currentPercentIncrease,
           equipmentStatBonusToApply,
           stat,
+          unitBuild,
         );
       }
     }
@@ -294,7 +297,15 @@ export function checkForNotStackableSkills(itemsAndPassives, stat, unitBuild, ca
   return calculatedValue;
 }
 
-export function calculateStateValueForIndex(items, index, baseValue, currentPercentIncrease, equipmentStatBonus, stat) {
+export function calculateStateValueForIndex(
+  items,
+  index,
+  baseValue,
+  currentPercentIncrease,
+  equipmentStatBonus,
+  stat,
+  unitBuild?,
+) {
   let item = items[index];
   if (item) {
     if (stat == 'lbPerTurn') {
@@ -338,7 +349,7 @@ export function calculateStateValueForIndex(items, index, baseValue, currentPerc
         var itemPercentValue: any = getValue(item, percentValues[stat]);
         var percentTakenIntoAccount: any = Math.min(
           itemPercentValue,
-          Math.max(getStatBonusCap(stat) - currentPercentIncrease.value, 0),
+          Math.max(getStatBonusCap(stat, unitBuild) - currentPercentIncrease.value, 0),
         );
         currentPercentIncrease.value += itemPercentValue;
         return value * equipmentStatBonus + (percentTakenIntoAccount * baseValue) / 100 + staticValue;
@@ -384,7 +395,8 @@ export function getStatBonusCap(stat, unitBuild?) {
     case 'evade.physical':
       return 100;
     default:
-      return 400;
+      // an NV unit enhanced to NV+ (level above 120) can take 600% of the base stats from its equipment
+      return unitBuild?.unit?.nvPlus && unitBuild.level > 120 && baseStats.includes(stat) ? 600 : 400;
   }
 }
 
@@ -398,13 +410,13 @@ export function calculateFlatStateValueForIndex(items, index, equipmentStatBonus
   return 0;
 }
 
-export function calculatePercentStateValueForIndex(item, baseValue, currentPercentIncrease, stat) {
+export function calculatePercentStateValueForIndex(item, baseValue, currentPercentIncrease, stat, unitBuild?) {
   let result = 0;
   if (item && item[percentValues[stat]]) {
     var itemPercentValue: any = item[percentValues[stat]];
     var percentTakenIntoAccount: any = Math.min(
       itemPercentValue,
-      Math.max(getStatBonusCap(stat) - currentPercentIncrease.value, 0),
+      Math.max(getStatBonusCap(stat, unitBuild) - currentPercentIncrease.value, 0),
     );
     currentPercentIncrease.value += itemPercentValue;
     result = (percentTakenIntoAccount * baseValue) / 100;

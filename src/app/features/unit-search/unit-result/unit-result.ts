@@ -8,6 +8,7 @@ import { UnitSkill } from '../unit-skill/unit-skill';
 import { ItemsById } from '../unit-skill-model';
 import { Result, skillsToDisplay, UnitSearchState } from '../unit-search-model';
 import { Icon } from '../../../shared/components/icon/icon';
+import { pictureId } from '../../../shared/helpers/unit-picture';
 import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
@@ -38,7 +39,7 @@ export class UnitResult {
   protected readonly image = computed(() => {
     const unit = this.unit();
     const max = unit.max_rarity === 'NV' ? '7' : unit.max_rarity;
-    return `img/units/unit_icon_${unit.id.substring(0, unit.id.length - 1)}${max}.png`;
+    return `img/units/unit_icon_${pictureId(unit.id).slice(0, -1)}${max}.png`;
   });
   protected readonly open = computed(() => this.state().fullyDisplayedUnits.includes(this.unit().id));
   protected readonly killers = computed(() => passiveKillers(this.result().searchData));

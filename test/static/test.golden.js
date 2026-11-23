@@ -3,12 +3,12 @@ import fs from 'node:fs';
 import { describe, it } from 'node:test';
 import { computeGolden, SAMPLE_EVERY } from './golden/golden.mjs';
 
-// Golden master: the calculations on the real GL data must give the same results as when the file was
+// Golden master: the calculations on the real game data must give the same results as when the file was
 // generated. A failure means the behaviour changed: if it is intended, run `npm run test:golden:update`.
 const expected = JSON.parse(fs.readFileSync(new URL('./golden/calc.json', import.meta.url), 'utf8'));
 const { result } = computeGolden();
 
-describe('golden master of the build calculations (real GL data)', () => {
+describe('golden master of the build calculations (real game data)', () => {
     it('covers the same units', () => {
         assert.deepEqual(Object.keys(result), Object.keys(expected.units));
     });

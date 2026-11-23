@@ -10,7 +10,10 @@
       @if (tab() === 'tmr') {
         <app-wiki-link [name]="card().name" />
       } @else {
-        <app-wiki-link [name]="card().unit.name" [always]="true" />
+        <app-wiki-link [name]="card().unit.name" />
+      }
+      @if (card().unit.nvPlus) {
+        <app-icon name="nv-plus" height="1em" />
       }
       @if (card().timeLimited) {
         <span class="time" [title]="t.timeLimitedUnit"><app-icon name="timer" /></span>

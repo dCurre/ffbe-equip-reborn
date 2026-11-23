@@ -9,6 +9,7 @@ import { PageContent } from '../../layout/page-content/page-content';
 import { BusyOverlay } from '../../shared/components/busy-overlay/busy-overlay';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { Inventory } from '../../shared/services/inventory';
+import { pictureId } from '../../shared/helpers/unit-picture';
 import { ServerContext } from '../../shared/services/server-context';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
@@ -189,7 +190,7 @@ export class Builder {
   protected tabIcons(): string[] {
     return this.tabs().map((tab) => {
       const unit = tab.s.unit();
-      return unit ? `img/units/unit_icon_${unitIconId(tab.s.unitId(), unit)}.png` : '';
+      return unit ? `img/units/unit_icon_${unitIconId(pictureId(tab.s.unitId()), unit)}.png` : '';
     });
   }
 

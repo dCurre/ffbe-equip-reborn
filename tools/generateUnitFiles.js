@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const STATIC_DIR = path.join(__dirname, '..', 'public');
-const SERVERS = ['GL', 'JP'];
+const SERVERS = ['ALL']; // the Global and Japan data are merged in public/ALL (tools/mergeServers.js)
 const STAMP_FILE = '.generated';
 const force = process.argv.includes('--force');
 

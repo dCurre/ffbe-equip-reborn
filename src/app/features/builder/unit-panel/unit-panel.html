@@ -20,10 +20,10 @@
 } @else if (s.unit(); as unit) {
   <app-panel>
     <div panelHeading class="heading unit-heading">
-      <img class="unit-icon" [src]="'img/units/unit_icon_' + unit.id + '.png'" alt="" />
+      <img class="unit-icon" [src]="'img/units/unit_icon_' + pictureId(unit.id) + '.png'" alt="" />
       <span class="rarity" [title]="'Rarity ' + unit.max_rarity">
         @if (unit.max_rarity === 'NV') {
-          <app-icon name="nv" height="1em" />
+          <app-icon [name]="unit['nvPlus'] ? 'nv-plus' : 'nv'" height="1em" />
         } @else {
           {{ stars(unit.max_rarity) }}
         }
@@ -54,7 +54,7 @@
           <label class="line">
             <span class="label">{{ t.unitLevel }}</span>
             <select [value]="s.level()" (change)="setLevel($any($event.target).value)">
-              @for (value of levels; track value) {
+              @for (value of levels(); track value) {
                 <option [value]="value" [selected]="value === s.level()">{{ value }}</option>
               }
             </select>

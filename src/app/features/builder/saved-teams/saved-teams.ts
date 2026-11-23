@@ -6,6 +6,7 @@ import { Modal } from '../../../shared/components/modal/modal';
 import { Panel } from '../../../shared/components/panel/panel';
 import { Toast } from '../../../shared/services/toast';
 import type { SavedTeams } from '../shared/saved-teams';
+import { pictureId } from '../../../shared/helpers/unit-picture';
 import { STRINGS } from '../../../strings/en';
 
 /** The teams saved in the Drive: the one being edited with its save buttons, and the list to load, import or delete. */
@@ -16,6 +17,7 @@ import { STRINGS } from '../../../strings/en';
   styleUrl: './saved-teams.css',
 })
 export class SavedTeamsPanel {
+  protected readonly pictureId = pictureId;
   protected readonly t = STRINGS.savedTeams;
   private readonly toast = inject(Toast);
 

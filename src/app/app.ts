@@ -7,9 +7,7 @@ import { PageChrome } from './shared/services/page-chrome';
 import { ScrollTop } from './shared/components/scroll-top/scroll-top';
 import { Toasts } from './shared/components/toasts/toasts';
 import { Inventory } from './shared/services/inventory';
-import { StaticData } from './shared/services/static-data';
 import { Theme, ThemeName } from './shared/services/theme';
-import { STRINGS } from './strings/en';
 
 @Component({
   imports: [RouterOutlet, ScrollTop, SiteHeader, Toasts],
@@ -18,11 +16,9 @@ import { STRINGS } from './strings/en';
   styleUrl: './app.css',
 })
 export class App {
-  protected readonly t = STRINGS.app;
   private readonly router = inject(Router);
   private readonly theme = inject(Theme); // also applies the saved theme as soon as the app starts
   protected readonly chrome = inject(PageChrome);
-  protected readonly slowDownloads = inject(StaticData).slowDownloads;
 
   constructor() {
     // as on the old site every page reads the user's data, unless it is a link opened without the account (`?o`)

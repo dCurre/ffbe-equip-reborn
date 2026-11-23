@@ -47,7 +47,7 @@
         <div class="name">{{ entry.saved.name }}</div>
         <div class="units">
           @for (unit of entry.saved.team.units; track $index) {
-            <img class="unit" [src]="'img/units/unit_icon_' + unit.id + '.png'" alt="" />
+            <img class="unit" [src]="'img/units/unit_icon_' + pictureId(unit.id) + '.png'" alt="" />
           }
         </div>
       </div>

@@ -80,6 +80,22 @@ describe('getStatBonusCap', () => {
     });
 });
 
+describe('getStatBonusCap of an NV+ unit', () => {
+    const build = (nvPlus, level) => ({ unit: { nvPlus }, level });
+
+    it('is 600 for the base stats once the NV+ unit is above level 120, 400 otherwise', () => {
+        assert.equal(ctx.getStatBonusCap('atk', build(true, 130)), 600);
+        assert.equal(ctx.getStatBonusCap('hp', build(true, 121)), 600);
+        assert.equal(ctx.getStatBonusCap('atk', build(true, 120)), 400);
+        assert.equal(ctx.getStatBonusCap('atk', build(false, 130)), 400);
+    });
+
+    it('does not change the cap of the other stats', () => {
+        assert.equal(ctx.getStatBonusCap('lbDamage', build(true, 130)), 300);
+        assert.equal(ctx.getStatBonusCap('accuracy', build(true, 130)), 100);
+    });
+});
+
 describe('getElementCoef', () => {
     it('is 0 without elements', () => {
         assert.equal(ctx.getElementCoef([], makeEnemy(ctx)), 0);
