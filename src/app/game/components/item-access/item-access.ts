@@ -5,6 +5,7 @@ import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { Item } from '../../helpers/item';
 import { ItemUnits } from '../../models/item-context.model';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /** Is one access allowed by the "access to remove" of the filters (a prefix or a suffix of a forbidden one)? */
 export function isAccessAllowed(forbidden: readonly string[], access: string): boolean {
@@ -26,6 +27,7 @@ const readable = (text: string): string =>
   styleUrl: './item-access.css',
 })
 export class ItemAccess {
+  protected readonly t = STRINGS.itemAccess;
   readonly item = input.required<Item>();
   readonly units = input<ItemUnits>({});
   /** do not name the unit a TMR / STMR belongs to (the page is already about that unit) */

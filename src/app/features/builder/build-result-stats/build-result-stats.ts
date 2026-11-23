@@ -1,18 +1,20 @@
 import { Component, computed, input } from '@angular/core';
 import { killerList } from '../../../../core/constants/base-lists';
-import { Icon } from '../../../shared/components/icon/icon';
+import { IconTile } from '../../../shared/components/icon-tile/icon-tile';
 import type { ResultStats } from '../shared/result-stats';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
 /** The totals, resists, killers and damage of the best build found. */
 @Component({
   selector: 'app-build-result-stats',
-  imports: [Icon],
+  imports: [IconTile],
   templateUrl: './build-result-stats.html',
   styleUrl: './build-result-stats.css',
 })
 export class BuildResultStats {
+  protected readonly t = STRINGS.buildResultStats;
   readonly result = input.required<ResultStats>();
   readonly goal = input.required<string>();
 
@@ -39,5 +41,4 @@ export class BuildResultStats {
   protected whole(n: number): string {
     return Math.floor(n).toLocaleString();
   }
-
 }

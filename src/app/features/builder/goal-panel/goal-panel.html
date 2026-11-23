@@ -1,18 +1,18 @@
 @if (s.unit()) {
   <div class="goal">
     <div class="line">
-      <span class="label">Maximize</span>
+      <span class="label">{{ t.maximize }}</span>
       @if (s.customFormula()) {
-        <span class="custom">Custom Goal:</span>
-        <button app-button variant="link" type="button" title="Change the formula" (click)="customGoal().show()">
+        <span class="custom">{{ t.customGoal }}</span>
+        <button app-button variant="link" type="button" [title]="t.changeTheFormula" (click)="customGoal().show()">
           {{ customText() }}
         </button>
         <button
           app-button
           variant="link"
           type="button"
-          title="Remove the custom goal"
-          aria-label="Remove the custom goal"
+          [title]="t.removeTheCustomGoal"
+          [attr.aria-label]="t.removeTheCustomGoal"
           (click)="customGoal().remove()"
         >
           <app-icon name="remove" />
@@ -25,50 +25,50 @@
           (picked)="chooseGoal($event)"
         />
         <span>
-          or
-          <button app-button variant="link" type="button" (click)="customGoal().show()">Custom Goal</button>
+          {{ t.or }}
+          <button app-button variant="link" type="button" (click)="customGoal().show()">{{ t.customGoal2 }}</button>
         </span>
       }
     </div>
-      @for (time of s.multicastTimes(); track time) {
-        <div class="line">
-          <span class="label">Skill {{ time + 1 }}</span>
-          <select [value]="s.multicastSelection()[time]" (change)="chooseMulticast(time, $any($event.target).value)">
-            @for (option of s.multicastOptions(); track option.id) {
-              <option [value]="option.id" [selected]="option.id === s.multicastSelection()[time]">
-                {{ option.name }}
-              </option>
-            }
-          </select>
-        </div>
-      }
-      @if (s.showStack()) {
-        <label class="line">
-          <span class="label">Skill stack</span>
-          <input
-            type="number"
-            min="0"
-            class="short"
-            [value]="s.stack()"
-            (input)="s.stack.set($any($event.target).value); s.refresh()"
-          />
-        </label>
-      }
+    @for (time of s.multicastTimes(); track time) {
       <div class="line">
-        <button
-          app-button
-          type="button"
-          title="Display/Hide additional build conditions"
-          [attr.aria-expanded]="optionsOpen()"
-          (click)="optionsOpen.set(!optionsOpen())"
-        >
-          {{ optionsOpen() ? '−' : '+' }} options
-        </button>
+        <span class="label">{{ t.skill }} {{ time + 1 }}</span>
+        <select [value]="s.multicastSelection()[time]" (change)="chooseMulticast(time, $any($event.target).value)">
+          @for (option of s.multicastOptions(); track option.id) {
+            <option [value]="option.id" [selected]="option.id === s.multicastSelection()[time]">
+              {{ option.name }}
+            </option>
+          }
+        </select>
       </div>
-      @if (optionsOpen()) {
+    }
+    @if (s.showStack()) {
+      <label class="line">
+        <span class="label">{{ t.skillStack }}</span>
+        <input
+          type="number"
+          min="0"
+          class="short"
+          [value]="s.stack()"
+          (input)="s.stack.set($any($event.target).value); s.refresh()"
+        />
+      </label>
+    }
+    <div class="line">
+      <button
+        app-button
+        type="button"
+        [title]="t.displayHideAdditionalBuild"
+        [attr.aria-expanded]="optionsOpen()"
+        (click)="optionsOpen.set(!optionsOpen())"
+      >
+        {{ optionsOpen() ? '−' : '+' }} {{ t.options }}
+      </button>
+    </div>
+    @if (optionsOpen()) {
       <div class="options more">
         <label class="line">
-          <span class="label">Chain Mult.</span>
+          <span class="label">{{ t.chainMult }}</span>
           <input
             type="text"
             class="short"
@@ -76,11 +76,14 @@
             (input)="s.chainMultiplier.set($any($event.target).value); s.refresh()"
           />
           <span class="hint"
-            >(<button app-button variant="link" type="button" class="switch" (click)="setChainMax()">MAX</button> for max chain multiplier)</span
+            >(<button app-button variant="link" type="button" class="switch" (click)="setChainMax()">
+              {{ t.max }}
+            </button>
+            {{ t.forMaxChainMultiplier }}</span
           >
         </label>
         <div class="line">
-          <span class="label">Force element</span>
+          <span class="label">{{ t.forceElement }}</span>
           <app-choice-group
             [choices]="forcedElementChoices"
             iconType="element"
@@ -97,7 +100,7 @@
             title='Switch between "All ailment", "Disabling ailments" and "No ailments"'
             (click)="switchAilments()"
           >
-            Ailment Immunity
+            {{ t.ailmentImmunity }}
           </button>
           <app-choice-group
             [choices]="ailmentChoices"
@@ -107,7 +110,7 @@
           />
         </div>
         <div class="line">
-          <span class="label">Elemental resist</span>
+          <span class="label">{{ t.elementalResist }}</span>
           <span class="resists">
             @for (element of elements; track element) {
               <span class="resist">
@@ -126,7 +129,7 @@
           </span>
         </div>
         <div class="line">
-          <span class="label">Various</span>
+          <span class="label">{{ t.various }}</span>
           <app-choice-group
             [choices]="variousChoices"
             [selected]="s.various()"
@@ -134,6 +137,6 @@
           />
         </div>
       </div>
-      }
-    </div>
+    }
+  </div>
 }

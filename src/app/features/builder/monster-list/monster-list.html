@@ -1,8 +1,10 @@
 @if (bestiary.hasValue()) {
-  <button app-button small type="button" (click)="open.set(true)"><app-icon name="monster" /> Monster list</button>
+  <button app-button small type="button" (click)="open.set(true)">
+    <app-icon name="monster" /> {{ t.monsterList2 }}
+  </button>
 }
 
-<app-modal heading="Monster List" [wide]="true" [(open)]="open">
+<app-modal [heading]="t.monsterList" [wide]="true" [(open)]="open">
   <app-tab-bar [tabs]="categories()" [active]="category()" (selected)="category.set($event)" />
   <div class="items results">
     <div class="tbody">

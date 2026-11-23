@@ -1,8 +1,8 @@
 @if (notStackable()) {
-  <app-icon class="miniIcon left" name="not-stackable" title="Not stackable" size="22" />
+  <app-icon class="miniIcon left" name="not-stackable" [title]="t.notStackable" size="22" />
 }
 @if (twoHanded()) {
-  <app-icon class="miniIcon left" name="two-handed" title="Two-handed" size="22" />
+  <app-icon class="miniIcon left" name="two-handed" [title]="t.twoHanded" size="22" />
 }
 @if (item().icon) {
   <img [src]="'img/items/' + item().icon" class="icon" loading="lazy" alt="" />

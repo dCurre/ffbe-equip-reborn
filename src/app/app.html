@@ -4,7 +4,7 @@
   }
 }
 @for (url of slowDownloads(); track url) {
-  <p role="status">Downloading {{ url }}</p>
+  <p role="status">{{ t.downloading }} {{ url }}</p>
 }
 
 <router-outlet />

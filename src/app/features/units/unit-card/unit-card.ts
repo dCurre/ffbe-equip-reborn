@@ -6,6 +6,7 @@ import { ItemLine } from '../../../game/components/item-line/item-line';
 import type { TrustItem } from '../unit-model';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import type { GameUnit, RarityParts } from '../unit-model';
+import { STRINGS } from '../../../strings/en';
 
 /** A TMR / STMR counter: the item is shown in a tooltip (a shared collection may not know it). */
 export interface TrustCounter {
@@ -55,6 +56,7 @@ export interface Card {
   styleUrl: './unit-card.css',
 })
 export class UnitCard {
+  protected readonly t = STRINGS.unitCard;
   readonly card = input.required<Card>();
   readonly tab = input.required<string>();
   readonly readOnly = input(false);

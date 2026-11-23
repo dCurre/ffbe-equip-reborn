@@ -1,6 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { strangeStats } from '../unit-skill-model';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
@@ -12,6 +13,7 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrl: './unit-strange-stats.css',
 })
 export class UnitStrangeStats {
+  protected readonly t = STRINGS.unitStrangeStats;
   readonly effects = input.required<any[]>();
   protected readonly strange = computed(() => strangeStats(this.effects()));
 }

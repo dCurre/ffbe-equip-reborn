@@ -12,6 +12,7 @@ import type { BuilderState } from './builder-state';
 import type { GameData } from './game-data';
 import { readItemOptions } from './build-inputs';
 import type { ItemPicker, PickerBehavior, PickerContext } from '../item-picker/item-picker';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -56,7 +57,7 @@ export class ItemActions {
     build.prepareEquipable(slot);
     const types = build.equipable[slot];
     if (!types.length) {
-      this.toast.show('Nothing can be added at this slot', 'warn');
+      this.toast.show(STRINGS.itemActions.nothingCanBeAdded, 'warn');
       return;
     }
     this.openPicker('equip', types, slot);
@@ -93,7 +94,7 @@ export class ItemActions {
   openList(kind: 'exclude' | 'include'): void {
     const build = this.s.build();
     if (!build.unit) {
-      this.toast.show('Please select a unit', 'warn');
+      this.toast.show(STRINGS.itemActions.pleaseSelectAUnit, 'warn');
       return;
     }
     build.prepareEquipable();
@@ -169,7 +170,7 @@ export class ItemActions {
         slot = 1;
       } else {
         this.toast.show(
-          'No more slot available for this item. Select another item or remove a pinned item of the same type.',
+          STRINGS.itemActions.noMoreSlotAvailable,
           'warn',
         );
         return;
@@ -177,13 +178,13 @@ export class ItemActions {
     }
     if (isTwoHanded(item) && build.build[1 - slot]) {
       this.toast.show(
-        'Trying to equip a two-handed weapon when another weapon is already equiped is not possible',
+        STRINGS.itemActions.tryingToEquipA,
         'error',
       );
       return;
     }
     if (!isStackable(item) && [6, 7, 8, 9].some((i) => i !== slot && build.build[i]?.id === item.id)) {
-      this.toast.show('This materia is not stackable. You cannot add another one', 'error');
+      this.toast.show(STRINGS.itemActions.thisMateriaIsNot, 'error');
       return;
     }
     if (build.build[slot] && build.build[slot].id !== item.id) this.removeItemAt(slot);
@@ -326,7 +327,7 @@ export class ItemActions {
     if (values.includes(value)) {
       this.enhancementValues.set(values.filter((v) => v !== value));
     } else if (values.length >= 3) {
-      this.toast.show('No more than 3 item enhancements can be selected', 'warn');
+      this.toast.show(STRINGS.itemActions.noMoreThan3, 'warn');
     } else {
       this.enhancementValues.set([...values, value]);
     }

@@ -28,33 +28,6 @@
   font-size: 0.9em;
 }
 
-.progress {
-  position: relative;
-  height: 34px;
-  background-color: var(--color-panel-heading);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  background-color: #4caf50;
-  transition: width 0.3s;
-}
-
-.progress-bar.finished {
-  background-color: skyblue;
-}
-
-.progress-text {
-  position: absolute;
-  inset: 0;
-  line-height: 34px;
-  color: #fff;
-  text-align: center;
-  text-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
-}
-
 .cores {
   display: flex;
   gap: 5px;
@@ -67,7 +40,6 @@
   width: 60px;
   padding: 4px 8px;
 }
-
 
 /* the slots two by two (right and left hand, head and body...), one per line in the detailed view */
 .build-result {
@@ -102,7 +74,6 @@
 .slot-line.empty app-icon {
   filter: grayscale(1);
 }
-
 
 .slot-line.enhanced ::ng-deep .itemName {
   color: brown;

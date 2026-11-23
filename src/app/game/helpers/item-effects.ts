@@ -3,6 +3,7 @@ import { typeList } from '../../../core/constants/item-types';
 import { KillerEntry } from '../components/killer-list/killer-list';
 import { ResistEntry } from '../components/resist-list/resist-list';
 import { Item } from './item';
+import { STRINGS } from '../../strings/en';
 
 /** A piece of one effect line: plain text, an equipment picture, a skill, a text of the data with `[name|icon]` links... */
 export type EffectPart =
@@ -71,13 +72,13 @@ export function itemEffects(item: Item): ItemEffect[] {
   if (item['resist']) effects.push({ kind: 'resist', entries: item['resist'] });
   if (item['killers']) effects.push({ kind: 'killers', killers: item['killers'] });
   if (item['special']?.includes('dualWield')) {
-    effects.push({ kind: 'line', parts: [{ type: 'gameText', text: '[Dual Wield|ability_72.png]' }], skill: true });
+    effects.push({ kind: 'line', parts: [{ type: 'gameText', text: STRINGS.itemEffects.dualWieldAbility72 }], skill: true });
   }
   if (item['partialDualWield']) {
     effects.push({
       kind: 'line',
       parts: [
-        { type: 'gameText', text: '[Dual Wield|ability_72.png] of ' },
+        { type: 'gameText', text: STRINGS.itemEffects.dualWieldAbility722 },
         ...item['partialDualWield'].map((name: string): EffectPart => ({ type: 'equipment', name })),
       ],
       skill: true,

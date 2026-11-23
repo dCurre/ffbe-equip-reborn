@@ -1,10 +1,12 @@
 <div class="line">
-  <button app-button type="button" (click)="open.set(!open())"><app-icon name="edit" /> Killer buffs</button>
+  <button app-button type="button" (click)="open.set(!open())"><app-icon name="edit" /> {{ t.killerBuffs }}</button>
   @if (!open()) {
     @for (tile of summary(); track tile.kind + tile.name) {
-      <span class="tile" [title]="tile.name + ' ' + tile.kind + ' killer'">
-        <app-icon [name]="'killer-' + tile.kind + '-' + tile.name" size="40" /><span class="value">{{ tile.value }}%</span>
-      </span>
+      <app-icon-tile
+        [icon]="'killer-' + tile.kind + '-' + tile.name"
+        [value]="tile.value"
+        [tooltip]="tile.name + ' ' + tile.kind + ' killer'"
+      />
     }
   }
 </div>
@@ -22,7 +24,7 @@
               [value]="s.killerBuffs()[name]?.[kind] ?? ''"
               (valueChange)="setKillerBuff(name, kind, $event)"
             >
-              <app-icon leading name="arrow-up" title="buff" />
+              <app-icon leading name="arrow-up" [title]="t.buff" />
             </app-number-field>
           </app-input-group>
         </div>
@@ -42,7 +44,7 @@
           [value]="s.elementBuffs()[element] ?? ''"
           (valueChange)="setElementBuff(element, $event)"
         >
-          <app-icon leading name="arrow-up" title="buff" />
+          <app-icon leading name="arrow-up" [title]="t.buff" />
         </app-number-field>
       </app-input-group>
     </div>

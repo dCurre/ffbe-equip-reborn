@@ -1,15 +1,19 @@
 @if (part() === 'choose') {
   <div class="line">
-    <span class="label">Unit</span>
+    <span class="label">{{ t.unit }}</span>
     <app-combobox class="unit-input" [options]="unitNames()" [value]="unitName()" (picked)="chooseUnitByName($event)" />
     <label class="nv-only">
       <input type="checkbox" [checked]="s.onlyNvUnits()" (change)="s.onlyNvUnits.set($any($event.target).checked)" />
-      Only NV units
+      {{ t.onlyNvUnits }}
     </label>
     @if (s.hasOwnedUnits()) {
       <label class="nv-only">
-        <input type="checkbox" [checked]="s.onlyOwnedUnits()" (change)="s.onlyOwnedUnits.set($any($event.target).checked)" />
-        Only owned units
+        <input
+          type="checkbox"
+          [checked]="s.onlyOwnedUnits()"
+          (change)="s.onlyOwnedUnits.set($any($event.target).checked)"
+        />
+        {{ t.onlyOwnedUnits }}
       </label>
     }
   </div>
@@ -24,12 +28,21 @@
           {{ stars(unit.max_rarity) }}
         }
       </span>
-      <a [href]="wikiUrl()" target="_blank" rel="noreferrer" title="Open the wiki page of {{ unit.name }}">Unit info</a>
-      <button app-button small type="button" title="Switch pots: none, all, or the pots of the game" (click)="switchPots()">
-        pots
+      <a [href]="wikiUrl()" target="_blank" rel="noreferrer" title="Open the wiki page of {{ unit.name }}">{{
+        t.unitInfo
+      }}</a>
+      <button app-button small type="button" [title]="t.switchPotsNoneAll" (click)="switchPots()">
+        {{ t.pots }}
       </button>
       @if (s.hasBraveShift()) {
-        <button app-button variant="flat" type="button" class="brave-shift" title="Brave Shift" (click)="loader().braveShift()">
+        <button
+          app-button
+          variant="flat"
+          type="button"
+          class="brave-shift"
+          [title]="t.braveShift"
+          (click)="loader().braveShift()"
+        >
           <app-icon name="brave-shift" />
         </button>
       }
@@ -39,7 +52,7 @@
       <div class="levels">
         @if (s.showLevel()) {
           <label class="line">
-            <span class="label">Unit level :</span>
+            <span class="label">{{ t.unitLevel }}</span>
             <select [value]="s.level()" (change)="setLevel($any($event.target).value)">
               @for (value of levels; track value) {
                 <option [value]="value" [selected]="value === s.level()">{{ value }}</option>
@@ -49,10 +62,10 @@
         }
         @if (s.showExLevel()) {
           <label class="line">
-            <span class="label">Ex awakening :</span>
+            <span class="label">{{ t.exAwakening }}</span>
             <select [value]="s.exLevel()" (change)="setExLevel($any($event.target).value)">
               @for (value of exLevels(); track value) {
-                <option [value]="value" [selected]="value === s.exLevel()">EX+{{ value }}</option>
+                <option [value]="value" [selected]="value === s.exLevel()">{{ t.ex }}{{ value }}</option>
               }
             </select>
           </label>
@@ -81,7 +94,7 @@
 
       <app-unit-buffs [state]="state()" />
       <div class="line">
-        <span class="label">Imbue(s)</span>
+        <span class="label">{{ t.imbueS }}</span>
         <app-choice-group
           [choices]="elementChoices"
           iconType="element"

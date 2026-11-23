@@ -8,6 +8,7 @@ import { UnitSkill } from '../unit-skill/unit-skill';
 import { ItemsById } from '../unit-skill-model';
 import { Result, skillsToDisplay, UnitSearchState } from '../unit-search-model';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
@@ -26,6 +27,7 @@ interface Killers {
   styleUrl: './unit-result.css',
 })
 export class UnitResult {
+  protected readonly t = STRINGS.unitResult;
   private readonly context = inject(UnitContext);
   readonly result = input.required<Result>();
   readonly state = input.required<UnitSearchState>();

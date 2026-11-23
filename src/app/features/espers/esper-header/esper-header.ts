@@ -11,6 +11,7 @@ import {
   statBonus,
   statValue,
 } from '../esper-model';
+import { STRINGS } from '../../../strings/en';
 
 /** The name, rarity, level, SP and stats of the Esper being viewed. */
 @Component({
@@ -20,6 +21,7 @@ import {
   styleUrl: './esper-header.css',
 })
 export class EsperHeader {
+  protected readonly t = STRINGS.esperHeader;
   readonly info = input.required<EsperInfo>();
   readonly current = input.required<OwnedEsper | undefined>();
   readonly board = input.required<EsperBoard>();

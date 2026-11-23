@@ -1,15 +1,15 @@
 <div class="line">
-  <span>Monster attack:</span>
+  <span>{{ t.monsterAttack }}</span>
   <a href="#" (click)="$event.preventDefault(); show()">{{ formulaToString(s.monsterAttackFormula(), false) }}</a>
-  <button app-button variant="link" type="button" class="reset" title="Back to the default attack" (click)="reset()">
+  <button app-button variant="link" type="button" class="reset" [title]="t.backToTheDefault" (click)="reset()">
     <app-icon name="remove" />
   </button>
 </div>
 
-<app-modal heading="Monster Attack Formula" confirmLabel="OK" [(open)]="open" (confirmed)="apply()">
+<app-modal [heading]="t.monsterAttackFormula" confirmLabel="OK" [(open)]="open" (confirmed)="apply()">
   <input
     type="text"
-    placeholder="Enter monster damage formula"
+    [placeholder]="t.enterMonsterDamageFormula"
     [value]="text()"
     (input)="text.set($any($event.target).value)"
     (keydown.enter)="apply()"

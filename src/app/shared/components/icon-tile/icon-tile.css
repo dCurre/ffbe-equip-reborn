@@ -1,0 +1,30 @@
+.tile {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+}
+
+.value {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  width: 100%;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  text-shadow:
+    -2px 0 #000,
+    0 2px #000,
+    2px 0 #000,
+    0 -2px #000;
+}
+
+.value.over-cap {
+  color: red;
+}
+
+.tile.involved .value {
+  color: chartreuse;
+}

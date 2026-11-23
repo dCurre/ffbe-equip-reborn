@@ -1,7 +1,7 @@
 <dialog #dialog [class.wide]="wide()" (close)="open.set(false)" (click)="closeOnBackdrop($event)">
   <div class="header">
     <h4>{{ heading() }}</h4>
-    <button app-button variant="flat" type="button" class="close" aria-label="Close" (click)="open.set(false)">
+    <button app-button variant="flat" type="button" class="close" [attr.aria-label]="t.close" (click)="open.set(false)">
       <app-icon name="remove" />
     </button>
   </div>

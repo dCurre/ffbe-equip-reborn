@@ -1,6 +1,7 @@
 import { Component, effect, ElementRef, input, model, output, viewChild } from '@angular/core';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Button } from '../button/button';
+import { STRINGS } from '../../../strings/en';
 
 /**
  * The only dialog box of the site (the old Bootstrap modal) on the native `<dialog>`: `[(open)]`, a title and the body.
@@ -14,6 +15,7 @@ import { Button } from '../button/button';
   styleUrl: './modal.css',
 })
 export class Modal {
+  protected readonly t = STRINGS.modal;
   readonly heading = input.required<string>();
   readonly open = model(false);
   /** a large dialog (lists, tables) */

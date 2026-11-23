@@ -7,6 +7,7 @@ import { Alert } from '../../../shared/components/alert/alert';
 import { Icon } from '../../../shared/components/icon/icon';
 import { ServerContext } from '../../../shared/services/server-context';
 import { calculateSp, esperSprite, EsperInfo, OwnedEsper, Stat, statBonus, statValue } from '../esper-model';
+import { STRINGS } from '../../../strings/en';
 
 export type Column = 'index' | 'level' | Stat | 'resists' | 'killers';
 
@@ -26,6 +27,7 @@ export interface EsperRow {
   styleUrl: './esper-table.css',
 })
 export class EsperTable {
+  protected readonly t = STRINGS.esperTable;
   readonly rows = input.required<EsperRow[]>();
   readonly columns = input.required<{ column: Column; label: string }[]>();
   readonly sort = input.required<{ column: Column; descending: boolean }>();

@@ -1,7 +1,7 @@
 <app-panel>
   <app-filter-heading
     panelHeading
-    title="Chaining family"
+    [title]="t.chainingFamily"
     [clearable]="skillFilter().chainFamily !== 'none'"
     (cleared)="chooseFamily('none')"
   >
@@ -29,7 +29,7 @@
   </div>
   @if (skillFilter().chainFamily !== 'none') {
     <div class="line">
-      <span class="title">Multicast count:</span>
+      <span class="title">{{ t.multicastCount }}</span>
       <select [value]="skillFilter().multicastCount" (change)="chooseMulticast($any($event.target).value)">
         @for (count of multicastCounts; track count.value) {
           <option [value]="count.value">{{ count.label }}</option>
@@ -43,7 +43,7 @@
           [checked]="skillFilter().excludeUnlockedMulticast"
           (change)="change({ excludeUnlockedMulticast: $any($event.target).checked })"
         />
-        Exclude not available T1
+        {{ t.excludeNotAvailableT1 }}
       </label>
     }
   }

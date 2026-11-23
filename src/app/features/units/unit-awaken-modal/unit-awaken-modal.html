@@ -1,7 +1,7 @@
 <app-modal [heading]="'Awaken ' + (unit()?.name ?? '')" [(open)]="open">
-  <p>How to awaken ?</p>
+  <p>{{ t.howToAwaken }}</p>
   <div class="modal-choices">
-    <button app-button type="button" (click)="chosen.emit(2)">Awaken using 2 units</button>
-    <button app-button type="button" (click)="chosen.emit(1)">Awaken using 1 unit and a prism</button>
+    <button app-button type="button" (click)="chosen.emit(2)">{{ t.awakenUsing2Units }}</button>
+    <button app-button type="button" (click)="chosen.emit(1)">{{ t.awakenUsing1Unit }}</button>
   </div>
 </app-modal>

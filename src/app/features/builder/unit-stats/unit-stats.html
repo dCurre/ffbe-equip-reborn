@@ -10,7 +10,7 @@
         [value]="s.pots()[stat]"
         (valueChange)="setPot(stat, $event)"
       >
-        <button app-button variant="flat" leading type="button" title="pots" (click)="cyclePot(stat)">
+        <button app-button variant="flat" leading type="button" [title]="t.pots" (click)="cyclePot(stat)">
           <app-icon name="add" />
         </button>
       </app-number-field>
@@ -24,9 +24,9 @@
           (valueChange)="setBuff(stat, $event)"
         >
           @if (stat === 'hp') {
-            <app-icon leading name="equipment-heavyShield" size="16" title="HP barrier" />
+            <app-icon leading name="equipment-heavyShield" size="16" [title]="t.hpBarrier" />
           } @else {
-            <app-icon leading name="arrow-up" title="buff" />
+            <app-icon leading name="arrow-up" [title]="t.buff" />
           }
         </app-number-field>
       }
@@ -43,7 +43,7 @@
         (valueChange)="setRow(row.key, $event)"
       >
         @if (row.suffix) {
-          <app-icon leading name="arrow-up" title="buff" />
+          <app-icon leading name="arrow-up" [title]="t.buff" />
         }
       </app-number-field>
     </app-input-group>

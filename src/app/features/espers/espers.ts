@@ -36,6 +36,7 @@ import { EsperGrid } from './esper-grid/esper-grid';
 import { EsperHeader } from './esper-header/esper-header';
 import { EsperTable, type Column } from './esper-table/esper-table';
 import { EsperTabs } from './esper-tabs/esper-tabs';
+import { STRINGS } from '../../strings/en';
 
 const SAVE_DELAY_MS = 3000;
 const STATS = baseStats as Stat[];
@@ -63,6 +64,7 @@ const STATS = baseStats as Stat[];
   styleUrl: './espers.css',
 })
 export class Espers {
+  protected readonly t = STRINGS.espers;
   private readonly route = inject(ActivatedRoute);
   private readonly staticData = inject(StaticData);
   private readonly userData = inject(UserData);
@@ -85,11 +87,11 @@ export class Espers {
   protected readonly share = new ShareLinkState();
 
   protected readonly columns: { column: Column; label: string }[] = [
-    { column: 'index', label: 'Esper' },
-    { column: 'level', label: 'Level' },
+    { column: 'index', label: STRINGS.espers.esper },
+    { column: 'level', label: STRINGS.espers.level },
     ...STATS.map((stat) => ({ column: stat, label: stat.toUpperCase() })),
-    { column: 'resists', label: 'Resists' },
-    { column: 'killers', label: 'Killers' },
+    { column: 'resists', label: STRINGS.espers.resists },
+    { column: 'killers', label: STRINGS.espers.killers },
   ];
 
   private saveNeeded = false;
@@ -302,7 +304,7 @@ export class Espers {
     this.saveNeeded = false;
     try {
       await this.userData.write('espers', this.owned());
-      this.toast.show('Data saved');
+      this.toast.show(STRINGS.espers.dataSaved);
     } catch (error) {
       this.saveNeeded = showSaveError(this.toast, error);
     }

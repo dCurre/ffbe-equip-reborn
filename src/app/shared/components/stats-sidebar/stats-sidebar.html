@@ -1,7 +1,7 @@
 <div class="internal">
-  <button app-button type="button" title="Toggle sidebar" (click)="collapsed.set(!collapsed())">
+  <button app-button type="button" [title]="t.toggleSidebar" (click)="collapsed.set(!collapsed())">
     <span class="chevron"><app-icon name="chevron-left" /></span>
-    <span class="collapsed-hidden">Toggle stats</span>
+    <span class="collapsed-hidden">{{ t.toggleStats }}</span>
   </button>
   <div class="collapsed-hidden"><ng-content /></div>
 </div>

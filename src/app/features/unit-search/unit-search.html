@@ -7,21 +7,19 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
-                title="Rarity"
+                [title]="t.rarity"
                 [clearable]="state().baseRarity.length + state().maxRarity.length > 0"
                 (cleared)="patch({ baseRarity: [], maxRarity: [] })"
               />
               <div class="line">
-                <span class="sub-title">Base :</span
-                ><app-choice-group
+                <span class="sub-title">{{ t.base }}</span><app-choice-group
                   [choices]="baseRarityChoices()"
                   [selected]="state().baseRarity"
                   (selectedChange)="setRarity('baseRarity', $event)"
                 />
               </div>
               <div class="line">
-                <span class="sub-title">Max :</span
-                ><app-choice-group
+                <span class="sub-title">{{ t.max }}</span><app-choice-group
                   [choices]="maxRarityChoices()"
                   [selected]="state().maxRarity"
                   (selectedChange)="setRarity('maxRarity', $event)"
@@ -32,7 +30,7 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
-                title="Equipment types"
+                [title]="t.equipmentTypes"
                 [clearable]="state().types.length > 0"
                 (cleared)="patch({ types: [] })"
               />
@@ -47,7 +45,7 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
-                title="Game Series"
+                [title]="t.gameSeries"
                 [clearable]="state().series.length > 0"
                 (cleared)="patch({ series: [] })"
               />
@@ -127,7 +125,7 @@
           @if (ready()) {
             <app-search-box
               [initial]="state().searchText"
-              placeholder='Enter search text. eg : "Increase LB Gauge by * to all allies"'
+              [placeholder]="t.enterSearchTextEg"
               (search)="patch({ searchText: $event.toLocaleLowerCase() })"
             />
           }
@@ -135,7 +133,7 @@
           <app-results-heading [count]="results().length" [filtered]="searched()">
             @if (loggedIn()) {
               <app-checkbox [checked]="state().onlyOwned" (checkedChange)="patch({ onlyOwned: $event })">
-                Only show owned units
+                {{ t.onlyShowOwnedUnits }}
               </app-checkbox>
             }
           </app-results-heading>

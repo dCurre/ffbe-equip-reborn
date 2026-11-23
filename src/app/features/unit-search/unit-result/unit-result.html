@@ -23,7 +23,7 @@
       class="showAllSkills"
       role="button"
       tabindex="0"
-      title="Show all the skills"
+      [title]="t.showAllTheSkills"
       (click)="toggleSkills.emit()"
       (keydown.enter)="toggleSkills.emit()"
       ><app-icon [name]="open() ? 'chevron-up' : 'chevron-down'"

@@ -33,7 +33,7 @@ import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { ResultsSwitch } from '../../shared/components/results-switch/results-switch';
 import { showMoreOnScroll } from '../../shared/helpers/infinite-scroll';
 import { TabPanel } from '../../shared/components/tab-panel/tab-panel';
-import { TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { tabsWithCounts } from '../../shared/components/tab-bar/tab-bar';
 import { ActiveFilter, ActiveFilters } from './active-filters/active-filters';
 import { ChainingPanel } from './chaining-panel/chaining-panel';
 import { UnitResult } from './unit-result/unit-result';
@@ -57,6 +57,7 @@ import {
   stateToHash,
   UnitSearchState,
 } from './unit-search-model';
+import { STRINGS } from '../../strings/en';
 
 const PAGE_SIZE = 20;
 const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
@@ -88,10 +89,10 @@ interface PanelConfig {
 type Group = 'unit' | 'attack' | 'defense' | 'support';
 
 const GROUPS: { key: Group; title: string }[] = [
-  { key: 'unit', title: 'Unit' },
-  { key: 'attack', title: 'Attack' },
-  { key: 'defense', title: 'Defense' },
-  { key: 'support', title: 'Support' },
+  { key: 'unit', title: STRINGS.unitSearch.unit },
+  { key: 'attack', title: STRINGS.unitSearch.attack },
+  { key: 'defense', title: STRINGS.unitSearch.defense },
+  { key: 'support', title: STRINGS.unitSearch.support },
 ];
 
 /** NV is above the stars */
@@ -106,7 +107,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'buffs',
     group: 'support',
-    title: 'Stat buffs',
+    title: STRINGS.unitSearch.statBuffs,
     chip: (v) => v.toUpperCase(),
     iconType: 'stat',
     choices: ['atk', 'def', 'mag', 'spr'].map((value) => ({ value, tooltip: `${ucFirst(value)} buff` })),
@@ -117,7 +118,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'breaks',
     group: 'attack',
-    title: 'Breaks',
+    title: STRINGS.unitSearch.breaks,
     chip: (v) => v.toUpperCase(),
     iconType: 'ailment',
     // the value is the stat; the picture is the break of that stat
@@ -129,13 +130,13 @@ const PANELS: PanelConfig[] = [
   {
     key: 'tankAbilities',
     group: 'defense',
-    title: 'Tank abilities',
+    title: STRINGS.unitSearch.tankAbilities,
     iconType: 'tankAbilities',
     choices: [
-      { value: 'drawAttacks', tooltip: 'Draw Attacks' },
-      { value: 'stCover', tooltip: 'ST Cover' },
-      { value: 'physicalAoeCover', tooltip: 'Physical AOE Cover' },
-      { value: 'magicalAoeCover', tooltip: 'Magical AOE Cover' },
+      { value: 'drawAttacks', tooltip: STRINGS.unitSearch.drawAttacks },
+      { value: 'stCover', tooltip: STRINGS.unitSearch.stCover },
+      { value: 'physicalAoeCover', tooltip: STRINGS.unitSearch.physicalAoeCover },
+      { value: 'magicalAoeCover', tooltip: STRINGS.unitSearch.magicalAoeCover },
     ],
     skillTypes: text(['Passive', 'passives'], ['Active', 'actives'], ['LB', 'lb']),
     areas: false,
@@ -143,13 +144,13 @@ const PANELS: PanelConfig[] = [
   {
     key: 'mitigation',
     group: 'defense',
-    title: 'Mitigation',
+    title: STRINGS.unitSearch.mitigation,
     iconType: 'mitigation',
     choices: [
-      { value: 'globalMitigation', tooltip: 'Mitigation' },
-      { value: 'magicalMitigation', tooltip: 'Magic Mitigation' },
-      { value: 'physicalMitigation', tooltip: 'Physical Mitigation' },
-      { value: 'mirage', tooltip: 'Mirage' },
+      { value: 'globalMitigation', tooltip: STRINGS.unitSearch.mitigation },
+      { value: 'magicalMitigation', tooltip: STRINGS.unitSearch.magicMitigation },
+      { value: 'physicalMitigation', tooltip: STRINGS.unitSearch.physicalMitigation },
+      { value: 'mirage', tooltip: STRINGS.unitSearch.mirage },
     ],
     skillTypes: text(['Passive', 'passives'], ['Active', 'actives'], ['LB', 'lb']),
     areas: true,
@@ -158,7 +159,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'elements',
     group: 'defense',
-    title: 'Elemental resistance',
+    title: STRINGS.unitSearch.elementalResistance,
     chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `${ucFirst(e)} resistance`),
@@ -169,7 +170,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'physicalElementDamageBoosts',
     group: 'attack',
-    title: 'Physical damage boosts',
+    title: STRINGS.unitSearch.physicalDamageBoosts,
     chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `Physical ${e} damage boost`),
@@ -180,7 +181,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'magicalElementDamageBoosts',
     group: 'attack',
-    title: 'Magic damage boosts',
+    title: STRINGS.unitSearch.magicDamageBoosts,
     chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `Magical ${e} damage boost`),
@@ -191,7 +192,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'imbues',
     group: 'attack',
-    title: 'Imbues',
+    title: STRINGS.unitSearch.imbues,
     chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `Imbue ${e}`),
@@ -201,7 +202,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'imperils',
     group: 'attack',
-    title: 'Imperils',
+    title: STRINGS.unitSearch.imperils,
     chip: ucFirst,
     iconType: 'element',
     choices: ELEMENT_CHOICES((e) => `${ucFirst(e)} imperil`),
@@ -212,7 +213,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'physicalKillers',
     group: 'attack',
-    title: 'Killers',
+    title: STRINGS.unitSearch.killers,
     chip: (v) => `Physical ${ucFirst(v)}`,
     iconType: 'killer-physical',
     choices: killerList.map((value) => ({ value, tooltip: `Physical ${value} killer` })),
@@ -229,7 +230,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'racialMitigations',
     group: 'defense',
-    title: 'Racial Mitigations',
+    title: STRINGS.unitSearch.racialMitigations,
     chip: ucFirst,
     iconType: 'racialMitigations',
     choices: racialMitigationList.map((value) => ({ value, tooltip: `Racial ${value} mitigations` })),
@@ -240,7 +241,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'ailments',
     group: 'defense',
-    title: 'Ailment resistance',
+    title: STRINGS.unitSearch.ailmentResistance,
     chip: (v) => (v.startsWith('break_') ? `Break ${v.slice(6).toUpperCase()}` : ucFirst(v)),
     iconType: 'ailment',
     choices: [...ailmentList, ...BREAKS.map((b) => `break_${b}`)].map((value) => ({
@@ -253,7 +254,7 @@ const PANELS: PanelConfig[] = [
   {
     key: 'weaponImperils',
     group: 'attack',
-    title: 'Weapon imperils',
+    title: STRINGS.unitSearch.weaponImperils,
     chip: (v) => (typeListLiterals as Record<string, string>)[v] ?? ucFirst(v),
     iconType: 'equipment',
     choices: weaponList.map((value) => ({ value, tooltip: `${ucFirst(value)} imperil` })),
@@ -286,6 +287,7 @@ const PANELS: PanelConfig[] = [
   styleUrls: ['../../shared/styles/search-page.css', './unit-search.css'],
 })
 export class UnitSearch {
+  protected readonly t = STRINGS.unitSearch;
   private readonly staticData = inject(StaticData);
   private readonly inventory = inject(Inventory);
   private readonly route = inject(ActivatedRoute);
@@ -363,12 +365,7 @@ export class UnitSearch {
     }
     return list;
   });
-  protected readonly tabs = computed<TabItem<Group>[]>(() =>
-    GROUPS.map(({ key, title }) => {
-      const count = this.filters().filter((f) => f.group === key).length;
-      return { key, title: count ? `${title} (${count})` : title };
-    }),
-  );
+  protected readonly tabs = computed(() => tabsWithCounts(GROUPS, this.filters()));
   protected panelsOf(group: Group): PanelConfig[] {
     return PANELS.filter((panel) => panel.group === group);
   }

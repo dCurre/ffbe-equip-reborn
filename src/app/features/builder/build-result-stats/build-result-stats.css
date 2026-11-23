@@ -61,38 +61,6 @@
   margin: 8px 0 0;
 }
 
-/* as the old page: the percent over the bottom of the icon, white with a black outline */
-.resist {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-}
-
-.resist .value {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
-  width: 100%;
-  font-weight: bold;
-  color: #fff;
-  text-align: center;
-  text-shadow:
-    -2px 0 #000,
-    0 2px #000,
-    2px 0 #000,
-    0 -2px #000;
-}
-
-.resist .value.over-cap {
-  color: red;
-}
-
-.resist.involved .value {
-  color: chartreuse;
-}
-
 /* the value of the chosen variance (min, avg or max), as the old page */
 .goal {
   font-weight: bold;

@@ -1,18 +1,16 @@
 <app-page-content>
   <app-page-column [half]="true">
-    <app-panel heading="Import your game data">
+    <app-panel [heading]="t.importYourGameData">
       <p>
-        Choose the file you exported from the game: the site sees by itself what it contains.
-        <a [href]="gameDataUrl" target="_blank" rel="noreferrer">How to export your data from the game</a>
+        {{ t.chooseTheFileYou }}
+        <a [href]="gameDataUrl" target="_blank" rel="noreferrer">{{ t.howToExportYour }}</a>
       </p>
       @if (canImport()) {
         <app-file-drop (fileLoaded)="loadFile($event)" />
       } @else if (!loggedIn()) {
-        <app-alert kind="danger">Log in with Google to import: your data is saved in your Google Drive.</app-alert>
+        <app-alert kind="danger">{{ t.logInWithGoogle }}</app-alert>
       }
-      <p class="kinds-hint">
-        You can import your {{ kindNames }}.
-      </p>
+      <p class="kinds-hint">{{ t.youCanImportYour }} {{ kindNames }}.</p>
     </app-panel>
 
     @if (found(); as found) {
@@ -20,7 +18,7 @@
         <p>
           {{ found.text }}
           @if (kind() === 'save') {
-            <a [href]="offlineUrl" target="_blank" rel="noreferrer" title="Open the project of FFBE Offline"
+            <a [href]="offlineUrl" target="_blank" rel="noreferrer" [title]="t.openTheProjectOf"
               ><app-icon name="new-window"
             /></a>
           }
@@ -30,33 +28,31 @@
             <li>
               <app-icon name="check" />
               <span class="label">{{ line.label }}</span>
-              <span>{{ line.found }} found</span>
+              <span>{{ line.found }} {{ t.found }}</span>
               @if (line.source) {
-                <span class="source">from {{ line.source }}</span>
+                <span class="source">{{ t.from }} {{ line.source }}</span>
               }
               @if (line.ignored) {
-                <span class="ignored" title="Not known by the site yet: left out. A later save imports them once the site knows them.">
-                  | {{ line.ignored }} not known, ignored
-                </span>
+                <span class="ignored" [title]="t.notKnownByThe"> | {{ line.ignored }} {{ t.notKnownIgnored }} </span>
               }
             </li>
           }
         </ul>
         @if (done()) {
           <div>
-            <app-alert kind="info">Import complete: your data on FFBE Equip Reborn is now the one of the file.</app-alert>
+            <app-alert kind="info">{{ t.importCompleteYourData }}</app-alert>
           </div>
-          <button app-button variant="primary" type="button" (click)="cancel()">Close</button>
+          <button app-button variant="primary" type="button" (click)="cancel()">{{ t.close }}</button>
         } @else {
           <div>
             <app-alert kind="danger">{{ found.warning }}</app-alert>
           </div>
           @if (progress(); as progress) {
             <p class="working">{{ progress.text }}…</p>
-            <app-progress-bar [value]="progress.percent" label="Import progress" />
+            <app-progress-bar [value]="progress.percent" [label]="t.importProgress" />
           } @else {
-            <button app-button variant="primary" type="button" (click)="run()">Import</button>
-            <button app-button type="button" (click)="cancel()">Cancel</button>
+            <button app-button variant="primary" type="button" (click)="run()">{{ t.import }}</button>
+            <button app-button type="button" (click)="cancel()">{{ t.cancel }}</button>
           }
         }
       </app-panel>

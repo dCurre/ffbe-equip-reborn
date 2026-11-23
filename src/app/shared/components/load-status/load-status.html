@@ -1,8 +1,8 @@
 @if (!ready()) {
-  <app-alert><app-icon name="info" /> Please wait for {{ subject() }} to load</app-alert>
+  <app-alert><app-icon name="info" /> {{ t.pleaseWaitFor }} {{ subject() }} {{ t.toLoad }}</app-alert>
 } @else if (loginNeeded()) {
   <app-alert kind="danger">
-    <app-icon name="alert" /> You need to be logged-in to manage {{ subject() }}
+    <app-icon name="alert" /> {{ t.youNeedToBe }} {{ subject() }}
     @if (note()) {
       . <strong>{{ note() }}</strong>
     }

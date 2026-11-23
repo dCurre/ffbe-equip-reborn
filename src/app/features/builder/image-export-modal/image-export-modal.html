@@ -1,3 +1,10 @@
-<app-modal heading="Export as image" [wide]="true" confirmLabel="Download" closeLabel="Close" [(open)]="open" (confirmed)="download()">
+<app-modal
+  [heading]="t.exportAsImage"
+  [wide]="true"
+  confirmLabel="Download"
+  closeLabel="Close"
+  [(open)]="open"
+  (confirmed)="download()"
+>
   <canvas #canvas class="team-image"></canvas>
 </app-modal>

@@ -1,6 +1,7 @@
 import { computed, signal } from '@angular/core';
 import type { Toast } from '../../../shared/services/toast';
 import type { UserData } from '../../../shared/services/user-data';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- a team is the data of a build link */
 
@@ -36,7 +37,7 @@ export class SavedTeams {
       this.loaded = true;
       return true;
     } catch {
-      this.toast.show('An error occured while trying to load your saved teams from Google Drive.', 'error');
+      this.toast.show(STRINGS.savedTeams.anErrorOccuredWhile, 'error');
       return false;
     }
   }
@@ -64,10 +65,10 @@ export class SavedTeams {
     try {
       await this.userData.write('savedTeams', { ...this.file, teams });
       this.teams.set(teams);
-      this.toast.show('Team saved', 'success');
+      this.toast.show(STRINGS.savedTeams.teamSaved, 'success');
       return true;
     } catch {
-      this.toast.show('An error occured while trying to save the team.', 'error');
+      this.toast.show(STRINGS.savedTeams.anErrorOccuredWhile2, 'error');
       return false;
     }
   }

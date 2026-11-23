@@ -9,6 +9,7 @@ import type { CustomGoal } from '../shared/custom-goal';
 import { StatePanel } from '../shared/state-panel';
 import { NumberField } from '../../../shared/components/number-field/number-field';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 const UNSUPPORTED = ' - Not supported yet';
 const TAGS: Record<string, string | undefined> = {
@@ -19,7 +20,7 @@ const TAGS: Record<string, string | undefined> = {
   magic: 'magic',
   multicast: 'multicast',
 };
-const ucFirst =(text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
+const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** What the build is for: damage, a stat, a skill... and the conditions of the goal. */
 @Component({
@@ -29,6 +30,7 @@ const ucFirst =(text: string): string => text.charAt(0).toUpperCase() + text.sli
   styleUrls: ['../shared/form-common.css', './goal-panel.css'],
 })
 export class GoalPanel extends StatePanel {
+  protected readonly t = STRINGS.goalPanel;
   readonly customGoal = input.required<CustomGoal>();
 
   protected readonly elements = elementList;
@@ -62,9 +64,9 @@ export class GoalPanel extends StatePanel {
     .slice(0, 9)
     .map((value) => ({ value, tooltip: ucFirst(value) }));
   protected readonly variousChoices: Choice[] = [
-    { value: 'evade.physical', label: '100% physical evasion' },
-    { value: 'accuracy', label: '100% accuracy' },
-    { value: 'drawAttacks', label: '100% draw attacks' },
+    { value: 'evade.physical', label: STRINGS.goalPanel.n100PhysicalEvasion },
+    { value: 'accuracy', label: STRINGS.goalPanel.n100Accuracy },
+    { value: 'drawAttacks', label: STRINGS.goalPanel.n100DrawAttacks },
   ];
 
   /** Cycles the ailment immunities: all of them, only the disabling ones, none (death stays as it is). */

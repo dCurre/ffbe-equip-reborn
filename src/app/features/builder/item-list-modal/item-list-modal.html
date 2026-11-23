@@ -5,8 +5,8 @@
         app-button
         variant="flat"
         type="button"
-        title="Remove from the list"
-        aria-label="Remove from the list"
+        [title]="t.removeFromTheList"
+        [attr.aria-label]="t.removeFromTheList"
         (click)="remove('' + item.id)"
       >
         <app-icon name="remove" />
@@ -18,10 +18,10 @@
       />
     </div>
   } @empty {
-    <p>No item in the list.</p>
+    <p>{{ t.noItemInThe }}</p>
   }
   <ng-container modalFooter>
-    <button app-button type="button" [disabled]="!entries().length" (click)="reset()">Reset the list</button>
-    <button app-button type="button" (click)="add.emit()">Add items</button>
+    <button app-button type="button" [disabled]="!entries().length" (click)="reset()">{{ t.resetTheList }}</button>
+    <button app-button type="button" (click)="add.emit()">{{ t.addItems }}</button>
   </ng-container>
 </app-modal>

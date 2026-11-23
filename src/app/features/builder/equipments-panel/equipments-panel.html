@@ -1,92 +1,94 @@
 <app-panel>
-  <div panelHeading class="heading"><span>Equipments</span></div>
+  <div panelHeading class="heading">
+    <span>{{ t.equipments }}</span>
+  </div>
   <div class="options">
     <label class="line">
       <select [value]="s.source()" (change)="s.source.set($any($event.target).value)">
-        <option value="all" [selected]="s.source() === 'all'">All equipments</option>
+        <option value="all" [selected]="s.source() === 'all'">{{ t.allEquipments }}</option>
         @if (inventory.status() === 'loaded') {
-          <option value="owned" [selected]="s.source() === 'owned'">Only owned equipments</option>
+          <option value="owned" [selected]="s.source() === 'owned'">{{ t.onlyOwnedEquipments }}</option>
         }
-        <option value="shop" [selected]="s.source() === 'shop'">Only unlimited equipments (not event shop/recipe)</option>
+        <option value="shop" [selected]="s.source() === 'shop'">{{ t.onlyUnlimitedEquipmentsNot }}</option>
       </select>
       <button
         app-button
         variant="flat"
         type="button"
         class="help"
-        title="How the equipment is selected"
-        aria-label="How the equipment is selected"
+        [title]="t.howTheEquipmentIs"
+        [attr.aria-label]="t.howTheEquipmentIs"
         (click)="hintOpen.set(true)"
       >
         <app-icon name="help" />
       </button>
     </label>
     @if (s.source() === 'all') {
-      <app-checkbox [(checked)]="s.excludeEvent">Exclude event equipment</app-checkbox>
-      <app-checkbox [(checked)]="s.excludePremium">Exclude premium equipment</app-checkbox>
-      <app-checkbox [(checked)]="s.excludeTmr5">Exclude 5★ TMR</app-checkbox>
-      <app-checkbox [(checked)]="s.excludeStmr">Exclude STMR</app-checkbox>
-      <app-checkbox [(checked)]="s.excludeNotReleased">Exclude not released yet</app-checkbox>
+      <app-checkbox [(checked)]="s.excludeEvent">{{ t.excludeEventEquipment }}</app-checkbox>
+      <app-checkbox [(checked)]="s.excludePremium">{{ t.excludePremiumEquipment }}</app-checkbox>
+      <app-checkbox [(checked)]="s.excludeTmr5">{{ t.exclude5Tmr }}</app-checkbox>
+      <app-checkbox [(checked)]="s.excludeStmr">{{ t.excludeStmr }}</app-checkbox>
+      <app-checkbox [(checked)]="s.excludeNotReleased">{{ t.excludeNotReleasedYet }}</app-checkbox>
     } @else if (s.source() !== 'shop') {
       @if (hasOwnedUnits()) {
-        <app-checkbox [(checked)]="s.includeTmrOfOwnedUnits">Include TMR of owned units</app-checkbox>
-        <app-checkbox [(checked)]="s.includeTmrMoogles">Include TMR obtainable with moogles</app-checkbox>
-        <app-checkbox [(checked)]="s.includeFarmableStmr">Include obtainable STMR</app-checkbox>
+        <app-checkbox [(checked)]="s.includeTmrOfOwnedUnits">{{ t.includeTmrOfOwned }}</app-checkbox>
+        <app-checkbox [(checked)]="s.includeTmrMoogles">{{ t.includeTmrObtainableWith }}</app-checkbox>
+        <app-checkbox [(checked)]="s.includeFarmableStmr">{{ t.includeObtainableStmr }}</app-checkbox>
       }
-      <app-checkbox [(checked)]="s.includeTrialRewards">Include trial rewards</app-checkbox>
-      <app-checkbox [(checked)]="s.includeChocoboItems">Include chocobo items</app-checkbox>
-      <app-checkbox [(checked)]="s.includeEasyItems">Include easily obtainable items</app-checkbox>
+      <app-checkbox [(checked)]="s.includeTrialRewards">{{ t.includeTrialRewards }}</app-checkbox>
+      <app-checkbox [(checked)]="s.includeChocoboItems">{{ t.includeChocoboItems }}</app-checkbox>
+      <app-checkbox [(checked)]="s.includeEasyItems">{{ t.includeEasilyObtainableItems }}</app-checkbox>
     }
     <label class="line">
-      <span class="label">Vision Card level</span>
+      <span class="label">{{ t.visionCardLevel }}</span>
       <select [value]="s.defaultVisionCardLevel()" (change)="s.defaultVisionCardLevel.set($any($event.target).value)">
         @for (level of visionCardLevels; track level) {
-          <option [value]="level" [selected]="level === s.defaultVisionCardLevel()">Lvl {{ level }}</option>
+          <option [value]="level" [selected]="level === s.defaultVisionCardLevel()">{{ t.lvl }} {{ level }}</option>
         }
       </select>
     </label>
     <div class="line">
-      <span class="label">Weapon enhancement</span>
+      <span class="label">{{ t.weaponEnhancement }}</span>
       <button app-button type="button" (click)="items().openDefaultEnhancements()">
-        Set default ({{ items().defaultEnhancements().length }})
+        {{ t.setDefault }}{{ items().defaultEnhancements().length }})
       </button>
     </div>
     <div class="line">
-      <span class="label">Item lists</span>
+      <span class="label">{{ t.itemLists }}</span>
       <button app-button type="button" (click)="listKind.set('exclude'); listOpen.set(true)">
-        Excluded items ({{ s.excluded().length }})
+        {{ t.excludedItems }}{{ s.excluded().length }})
       </button>
       <button app-button type="button" (click)="listKind.set('include'); listOpen.set(true)">
-        Included items ({{ s.included().length }})
+        {{ t.includedItems }}{{ s.included().length }})
       </button>
     </div>
   </div>
 </app-panel>
 
-<app-modal heading="Equipment selection" [wide]="true" [(open)]="hintOpen">
+<app-modal [heading]="t.equipmentSelection" [wide]="true" [(open)]="hintOpen">
   <ul class="guide">
     <li>
-      All Equipments :
+      {{ t.allEquipments2 }}
       <ul>
-        <li>All available Equipment, unless limited by available options.</li>
-        <li>Espers at Maximum rarity and level, with only Killers unlocked.</li>
+        <li>{{ t.allAvailableEquipmentUnless }}</li>
+        <li>{{ t.espersAtMaximumRarity }}</li>
       </ul>
     </li>
     <li>
-      Only owned equipments :
+      {{ t.onlyOwnedEquipments2 }}
       <ul>
-        <li>Only available when logged in.</li>
-        <li>All equipments inputed in the inventory page.</li>
+        <li>{{ t.onlyAvailableWhenLogged }}</li>
+        <li>{{ t.allEquipmentsInputedIn }}</li>
         <li>
-          If espers are inputed in the Espers page, will use that, else default to the same espers as All Equipments.
+          {{ t.ifEspersAreInputed }}
         </li>
       </ul>
     </li>
     <li>
-      Only unlimited equipments (not event shop/recipe) :
+      {{ t.onlyUnlimitedEquipmentsNot2 }}
       <ul>
-        <li>Only items available at will from shop/recipe and not from event will be used.</li>
-        <li>No esper will be automatically selected.</li>
+        <li>{{ t.onlyItemsAvailableAt }}</li>
+        <li>{{ t.noEsperWillBe }}</li>
       </ul>
     </li>
   </ul>

@@ -1,13 +1,13 @@
 <div class="esper-header">
   <div class="form-group esper-choice">
     <div class="form-line">
-      <span class="form-label">Name</span><span class="form-value">{{ info().name }}</span>
+      <span class="form-label">{{ t.name }}</span><span class="form-value">{{ info().name }}</span>
     </div>
     <div class="form-line">
-      <label class="form-label" for="esperStar">Rarity</label>
+      <label class="form-label" for="esperStar">{{ t.rarity }}</label>
       <select id="esperStar" (change)="rarityChange.emit($any($event.target).value)">
         @if (logged()) {
-          <option value="notOwned" [selected]="!current()">Not owned</option>
+          <option value="notOwned" [selected]="!current()">{{ t.notOwned }}</option>
         }
         @for (rarity of rarities(); track rarity) {
           <option [value]="rarity" [selected]="current()?.rarity === rarity">{{ rarity }} ★</option>
@@ -16,7 +16,7 @@
     </div>
     @if (current(); as esper) {
       <div class="form-line">
-        <label class="form-label" for="level">Level</label>
+        <label class="form-label" for="level">{{ t.level }}</label>
         <input
           id="level"
           type="number"
@@ -28,7 +28,7 @@
         />
       </div>
       <div class="form-line">
-        <span class="form-label">SP</span>
+        <span class="form-label">{{ t.sp }}</span>
         <span #spLabel class="form-value" [class.error]="sp()!.used > sp()!.available">
           {{ sp()!.used }} / {{ sp()!.available }}
         </span>

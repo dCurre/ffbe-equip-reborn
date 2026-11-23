@@ -1,5 +1,6 @@
 import { Component, input, model } from '@angular/core';
 import { Modal } from '../modal/modal';
+import { STRINGS } from '../../../strings/en';
 
 /** The "Link to…" dialog: a read-only link that selects itself on focus, and a note once it was copied. */
 @Component({
@@ -8,6 +9,7 @@ import { Modal } from '../modal/modal';
   templateUrl: './share-link-modal.html',
 })
 export class ShareLinkModal {
+  protected readonly t = STRINGS.shareLinkModal;
   readonly heading = input.required<string>();
   readonly open = model(false);
   readonly intro = input('');

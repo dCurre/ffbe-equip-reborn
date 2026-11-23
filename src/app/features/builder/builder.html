@@ -18,7 +18,12 @@
       @if (mode() === 'build') {
         <app-unit-panel class="details" [state]="s" [loader]="loader" />
       }
-      <app-tab-panel class="settings" [tabs]="settingsTabs()" [active]="shownSettings()" (selected)="settingsTab.set($event)">
+      <app-tab-panel
+        class="settings"
+        [tabs]="settingsTabs()"
+        [active]="shownSettings()"
+        (selected)="settingsTab.set($event)"
+      >
         <div class="tab-content">
           @switch (shownSettings()) {
             @case ('rules') {
@@ -63,8 +68,8 @@
         <div [class.pane]="mode() === 'build'">
           @if (mode() === 'build' && !loggedIn()) {
             <app-alert class="login-hint">
-              Log in to build with the equipment you own, save your teams and use the Parameter challenges.
-              <button app-button variant="link" type="button" (click)="helpOpen.set(true)">Why log in?</button>
+              {{ t.logInToBuild }}
+              <button app-button variant="link" type="button" (click)="helpOpen.set(true)">{{ t.whyLogIn }}</button>
             </app-alert>
           }
           <app-build-result
@@ -91,7 +96,7 @@
   <app-busy-overlay />
 }
 
-<app-modal heading="How to use this" [wide]="true" [(open)]="helpOpen">
+<app-modal [heading]="t.howToUseThis" [wide]="true" [(open)]="helpOpen">
   <app-build-help />
 </app-modal>
 
@@ -112,14 +117,14 @@
 <app-enhancement-modal [items]="items" [game]="game" />
 
 <app-share-link-modal
-  heading="Link to this build"
+  [heading]="t.linkToThisBuild"
   [link]="sharing.share.link()"
   [copied]="sharing.share.copied()"
   [(open)]="sharing.share.open"
 />
 
 <app-text-export-modal
-  heading="Build as text"
+  [heading]="t.buildAsText"
   [rows]="14"
   [text]="sharing.textValue()"
   [(open)]="sharing.textOpen"

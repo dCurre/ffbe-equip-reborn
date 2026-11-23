@@ -1,5 +1,6 @@
 import { DriveError } from '../services/google-drive';
 import { Toast } from '../services/toast';
+import { STRINGS } from '../../strings/en';
 
 const isSessionExpired = (error: unknown): boolean => error instanceof DriveError && error.status === 401;
 
@@ -17,12 +18,12 @@ export function showLoadError(toast: Toast, error: unknown): void {
 export function showSaveError(toast: Toast, error: unknown): boolean {
   if (isSessionExpired(error)) {
     toast.show(
-      'Your Google session has expired. The data was not saved: log in again, then redo your last change.',
+      STRINGS.driveErrors.yourGoogleSessionHas,
       'error',
     );
     setTimeout(() => window.location.reload(), 4000);
     return false;
   }
-  toast.show('Error while saving the user data.', 'error');
+  toast.show(STRINGS.driveErrors.errorWhileSavingThe, 'error');
   return true;
 }

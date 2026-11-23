@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Icon } from '../../shared/components/icon/icon';
 import { Panel } from '../../shared/components/panel/panel';
+import { STRINGS } from '../../strings/en';
 
 /** How the builder finds the best build, with the diagrams in `img/algo`. */
 @Component({
@@ -9,4 +10,6 @@ import { Panel } from '../../shared/components/panel/panel';
   templateUrl: './algorithm.html',
   styleUrl: './algorithm.css',
 })
-export class Algorithm {}
+export class Algorithm {
+  protected readonly t = STRINGS.algorithm;
+}

@@ -6,40 +6,35 @@
       <app-inventory-stats stats [counts]="stats()" />
 
       <div actions>
-        <app-dropdown-menu label="Export inventory" [items]="exportItems" />
-        <app-action-link icon="save" label="Import inventory" route="/data-import" />
-        <app-action-link icon="new-window" label="Export your data from the game" [href]="gameDataUrl" />
+        <app-dropdown-menu [label]="t.exportInventory" [items]="exportItems" />
+        <app-action-link icon="save" [label]="t.importInventory" route="/data-import" />
+        <app-action-link icon="new-window" [label]="t.exportYourDataFrom" [href]="gameDataUrl" />
       </div>
 
       <app-tab-panel [tabs]="tabs" [active]="tab()" (selected)="showTab($event)">
         <div corner class="sort-label">{{ sortLabel() }}</div>
         @if (activeFilters() > 0 && (showSort() || (byType() && typeChoices().length > 1))) {
-          <button
+          <app-clear-filters
             corner
-            app-button
-            small
-            type="button"
-            class="chip clear"
-            title="Show every item, every type, grouped by type"
-            (click)="clearFilters()"
-          >
-            <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
-          </button>
+            [count]="activeFilters()"
+            [title]="t.showEveryItemEvery"
+            (cleared)="clearFilters()"
+          />
         }
         <div class="search-header">
           <app-search-box
             #searchBox
             class="search-box"
             [hidden]="!searchable()"
-            placeholder="Enter item name or name of TMR's unit"
+            [placeholder]="t.enterItemNameOr"
             (search)="search.set($event)"
           />
           @if (tab() === 'equipment' || tab() === 'materia') {
-            <app-checkbox class="only-owned" [(checked)]="onlyOwned">Only owned</app-checkbox>
+            <app-checkbox class="only-owned" [(checked)]="onlyOwned">{{ t.onlyOwned }}</app-checkbox>
           }
           @if (tab() === 'farmableStmr') {
             <div class="stmr-moogle">
-              Available <app-icon name="stmr-farmed" size="40" />
+              {{ t.available }} <app-icon name="stmr-farmed" size="40" />
               <input
                 type="number"
                 min="0"
@@ -54,7 +49,7 @@
                   [checked]="onlyTimeLimited()"
                   (change)="onlyTimeLimited.set($any($event.target).checked)"
                 />
-                Only time limited units
+                {{ t.onlyTimeLimitedUnits }}
               </label>
             </div>
           }
@@ -63,7 +58,7 @@
         @if (showSort() || (byType() && typeChoices().length > 1)) {
           <div class="filter-panel">
             @if (byType() && typeChoices().length > 1) {
-              <span class="filter-label">Type</span>
+              <span class="filter-label">{{ t.type }}</span>
               <div class="type-rows">
                 @for (row of [weaponChoices(), defenseChoices()]; track $index) {
                   @if (row.length) {
@@ -79,7 +74,7 @@
               </div>
             }
             @if (showSort()) {
-              <span class="filter-label">Sort by</span>
+              <span class="filter-label">{{ t.sortBy }}</span>
               <app-choice-group
                 pills
                 [single]="true"
@@ -96,13 +91,13 @@
         <div class="results item-cards">
           @if (tab() === 'settings') {
             <div class="tools">
-              <div class="source">Inventory Tools</div>
-              <button app-button type="button" (click)="addAllOpen.set(true)">Add All Equipment and Materia</button>
+              <div class="source">{{ t.inventoryTools }}</div>
+              <button app-button type="button" (click)="addAllOpen.set(true)">{{ t.addAllEquipmentAnd2 }}</button>
               @if (undoAvailable()) {
-                <button app-button type="button" (click)="undoAddAll()">Undo Add All</button>
+                <button app-button type="button" (click)="undoAddAll()">{{ t.undoAddAll }}</button>
               }
               <button app-button type="button" class="danger" (click)="removeAllOpen.set(true)">
-                Remove All Equipment and Materia
+                {{ t.removeAllEquipmentAnd2 }}
               </button>
             </div>
           } @else if (tab() === 'history') {
@@ -124,7 +119,7 @@
               <ng-container *ngTemplateOutlet="cardList; context: { lines: group.lines }" />
             }
             @if (lines().length === 0) {
-              <p>No items found...</p>
+              <p>{{ t.noItemsFound }}</p>
             }
             <div #end class="end"></div>
           }
@@ -145,33 +140,36 @@
   (cleared)="clearEnhancementValues()"
 />
 
-<app-modal heading="Limited item" confirmLabel="Add anyway" [(open)]="limitOpen" (confirmed)="addAnyway()">
-  <p>
-    You can only have up to {{ limitNumber() }} of these. If you own more, please report it to correct that value. Do
-    you want to add the item nonetheless?
-  </p>
+<app-modal [heading]="t.limitedItem" confirmLabel="Add anyway" [(open)]="limitOpen" (confirmed)="addAnyway()">
+  <p>{{ t.youCanOnlyHave }} {{ limitNumber() }} {{ t.ofTheseIfYou }}</p>
 </app-modal>
 
 <app-modal
-  heading="Add all equipment and materia to inventory?"
+  [heading]="t.addAllEquipmentAnd"
   confirmLabel="Add all items"
   [(open)]="addAllOpen"
   (confirmed)="addAllItems()"
 >
-  <p>This will add up to 2 of each equipment and 4 of each materia to your inventory.</p>
-  <p><strong>Are you sure you want to continue?</strong></p>
+  <p>{{ t.thisWillAddUp }}</p>
+  <p>
+    <strong>{{ t.areYouSureYou }}</strong>
+  </p>
 </app-modal>
 
 <app-modal
-  heading="Remove all equipment and materia from inventory?"
+  [heading]="t.removeAllEquipmentAnd"
   confirmLabel="Empty inventory"
   [danger]="true"
   [(open)]="removeAllOpen"
   (confirmed)="removeAllItems()"
 >
-  <p>This will empty your equipment and materia inventory (on this site).</p>
-  <p><strong>This is not reversible</strong></p>
-  <p><strong>Are you sure you want to continue?</strong></p>
+  <p>{{ t.thisWillEmptyYour }}</p>
+  <p>
+    <strong>{{ t.thisIsNotReversible }}</strong>
+  </p>
+  <p>
+    <strong>{{ t.areYouSureYou }}</strong>
+  </p>
 </app-modal>
 
 <ng-template #cardList let-lines="lines">

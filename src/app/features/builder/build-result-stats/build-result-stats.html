@@ -31,19 +31,15 @@
         </span>
       </div>
     }
-    <div
-      class="total"
-      [class.involved]="result().ehpGoal === 'physical'"
-      title="Physical eHP : HP x DEF / (1 - Mitigation)"
-    >
-      <span class="stat-name">P. eHP</span><span class="stat-value">{{ result().physicalEhp.toLocaleString() }}</span>
+    <div class="total" [class.involved]="result().ehpGoal === 'physical'" [title]="t.physicalEhpHpX">
+      <span class="stat-name">{{ t.pEhp }}</span><span class="stat-value">{{
+        result().physicalEhp.toLocaleString()
+      }}</span>
     </div>
-    <div
-      class="total"
-      [class.involved]="result().ehpGoal === 'magical'"
-      title="Magical eHP : HP x SPR / (1 - Mitigation)"
-    >
-      <span class="stat-name">M. eHP</span><span class="stat-value">{{ result().magicalEhp.toLocaleString() }}</span>
+    <div class="total" [class.involved]="result().ehpGoal === 'magical'" [title]="t.magicalEhpHpX">
+      <span class="stat-name">{{ t.mEhp }}</span><span class="stat-value">{{
+        result().magicalEhp.toLocaleString()
+      }}</span>
     </div>
     @for (extra of result().extras; track extra.key) {
       <div class="total" [class.involved]="extra.involved" [title]="extra.title ?? ''">
@@ -59,29 +55,34 @@
   </div>
   <div class="resists-line">
     @for (resist of result().elementResists; track resist.name) {
-      <span class="resist" [class.involved]="resist.involved" [title]="resist.name + ' resist'">
-        <app-icon [name]="'element-' + resist.name" size="40" /><span class="value">{{ resist.percent }}%</span>
-      </span>
+      <app-icon-tile
+        [icon]="'element-' + resist.name"
+        [value]="resist.percent"
+        [involved]="resist.involved"
+        [tooltip]="resist.name + ' resist'"
+      />
     }
   </div>
   <div class="resists-line">
     @for (resist of result().ailmentResists; track resist.name) {
-      <span class="resist" [class.involved]="resist.involved" [title]="resist.name + ' resist'">
-        <app-icon [name]="'ailment-' + resist.name" size="40" /><span class="value">{{ resist.percent }}%</span>
-      </span>
+      <app-icon-tile
+        [icon]="'ailment-' + resist.name"
+        [value]="resist.percent"
+        [involved]="resist.involved"
+        [tooltip]="resist.name + ' resist'"
+      />
     }
   </div>
   @for (row of killerRows(); track row.kind) {
     @if (row.tiles.length) {
       <div class="resists-line">
         @for (tile of row.tiles; track tile.name) {
-          <span class="resist" [title]="tile.name + ' killer' + (tile.value > 300 ? ' (only 300% taken into account)' : '')">
-            <app-icon [name]="'killer-' + row.kind + '-' + tile.name" size="40" /><span
-              class="value"
-              [class.over-cap]="tile.value > 300"
-              >{{ tile.value }}%</span
-            >
-          </span>
+          <app-icon-tile
+            [icon]="'killer-' + row.kind + '-' + tile.name"
+            [value]="tile.value"
+            [overCap]="tile.value > 300"
+            [tooltip]="tile.name + ' killer' + (tile.value > 300 ? ' (only 300% taken into account)' : '')"
+          />
         }
       </div>
     }
@@ -99,6 +100,6 @@
     </div>
   }
   <div class="result-line">
-    Damage taken: <strong>{{ result().damageTaken.toLocaleString() }}</strong>
+    {{ t.damageTaken }} <strong>{{ result().damageTaken.toLocaleString() }}</strong>
   </div>
 </div>

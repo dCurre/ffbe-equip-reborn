@@ -8,6 +8,7 @@ import { Panel } from '../../../shared/components/panel/panel';
 import { ItemListModal } from '../item-list-modal/item-list-modal';
 import { StatePanel } from '../shared/state-panel';
 import type { ItemActions } from '../shared/item-actions';
+import { STRINGS } from '../../../strings/en';
 
 /** Where the items come from, and which are allowed. */
 @Component({
@@ -17,6 +18,7 @@ import type { ItemActions } from '../shared/item-actions';
   styleUrls: ['../shared/form-common.css', './equipments-panel.css'],
 })
 export class EquipmentsPanel extends StatePanel {
+  protected readonly t = STRINGS.equipmentsPanel;
   protected readonly inventory = inject(Inventory);
   readonly items = input.required<ItemActions>();
 

@@ -22,31 +22,13 @@ input {
 }
 
 .menu {
-  position: absolute;
   top: 100%;
   right: 0;
   left: 0;
-  z-index: 1000;
   max-height: 260px;
-  margin: 2px 0 0;
-  padding: 5px 0;
   overflow-y: auto;
-  list-style: none;
-  background-color: var(--color-menu-background);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
 }
 
 .menu a {
-  display: block;
   padding: 3px 12px;
-  color: var(--color-menu-text);
-  cursor: pointer;
-}
-
-.menu a:hover,
-.menu a.selected {
-  color: var(--color-menu-hover-text);
-  background-color: var(--color-menu-hover-background);
-  text-decoration: none;
 }

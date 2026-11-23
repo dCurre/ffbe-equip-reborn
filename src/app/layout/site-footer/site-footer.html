@@ -1,8 +1,9 @@
 <footer>
   <div>
-    <a href="https://github.com/dCurre/ffbe-equip-reborn" target="_blank" rel="noreferrer">See code on GitHub</a>
-    <a routerLink="/contribute" [queryParams]="serverContext.linkParams()">Report an issue</a>
-    <a routerLink="/privacy" [queryParams]="serverContext.linkParams()">Privacy</a>
+    <a href="https://github.com/dCurre/ffbe-equip-reborn" target="_blank" rel="noreferrer">{{ t.code }}</a>
+    <a routerLink="/contribute" [queryParams]="serverContext.linkParams()">{{ t.issue }}</a>
+    <a href="https://ko-fi.com/dcapps" target="_blank" rel="noreferrer">{{ t.support }}</a>
+    <a routerLink="/privacy" [queryParams]="serverContext.linkParams()">{{ t.privacy }}</a>
   </div>
   <app-credits />
 </footer>

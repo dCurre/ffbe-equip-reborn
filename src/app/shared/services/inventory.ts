@@ -3,6 +3,7 @@ import { showLoadError, showSaveError } from '../helpers/drive-errors';
 import { StaticData } from './static-data';
 import { Toast } from './toast';
 import { UserData, UserTable } from './user-data';
+import { STRINGS } from '../../strings/en';
 
 /** What the user owns of one unit (`number` = 6* or under, `farmable` = TMR still to farm; the others only for 7* / NV units). */
 export interface OwnedUnit {
@@ -126,7 +127,7 @@ export class Inventory {
           await this.userData.write(table, this.consumables());
         }
       }
-      if (tables.length) this.toast.show('Data saved');
+      if (tables.length) this.toast.show(STRINGS.inventory.dataSaved);
     } catch (error) {
       if (showSaveError(this.toast, error)) tables.forEach((table) => this.dirty.add(table));
     }
@@ -163,7 +164,7 @@ export class Inventory {
       if (migrated) {
         this.dirty.add('units');
         await this.save();
-        this.toast.show('Owned units data successfully migrated', 'success');
+        this.toast.show(STRINGS.inventory.ownedUnitsDataSuccessfully, 'success');
       }
     } catch (error) {
       this.status.set('notLoaded');

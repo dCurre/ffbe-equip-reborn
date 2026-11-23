@@ -6,6 +6,7 @@ import { InputGroup } from '../../../shared/components/input-group/input-group';
 import { NumberField } from '../../../shared/components/number-field/number-field';
 import { enemy } from '../shared/build-inputs';
 import { StatePanel } from '../shared/state-panel';
+import { STRINGS } from '../../../strings/en';
 
 /** The imperils of the enemy for each weapon: a summary of the ones in use, and the inputs behind a button. */
 @Component({
@@ -15,6 +16,7 @@ import { StatePanel } from '../shared/state-panel';
   styleUrl: './weapon-imperils.css',
 })
 export class WeaponImperils extends StatePanel {
+  protected readonly t = STRINGS.weaponImperils;
   protected readonly weapons = weaponList;
   protected readonly open = signal(false);
 

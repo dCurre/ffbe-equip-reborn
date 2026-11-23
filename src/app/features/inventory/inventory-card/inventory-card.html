@@ -9,9 +9,9 @@
         <div class="unit-name">{{ stmrUnitName() }}</div>
         <div class="recipe">
           @if (stmr.base === 'sixStar') {
-            <app-icon name="crystal-rainbowCrystal" /><app-icon name="crystal-rainbowCrystal" /> &rArr;
+            <app-icon name="crystal-rainbowCrystal" /><app-icon name="crystal-rainbowCrystal" /> {{ t.n }}
             <app-icon name="crystal-sevenStarCrystal" />
-            <div class="then">then</div>
+            <div class="then">{{ t.then }}</div>
           }
           <app-icon name="crystal-sevenStarCrystal" />
           @if (stmr.sevenStar) {
@@ -37,11 +37,25 @@
 
 <ng-template #cardBody>
   <div class="td inventory">
-    <button app-button variant="flat" type="button" class="step plus" title="Add one" (click)="$event.stopPropagation(); add.emit()">
+    <button
+      app-button
+      variant="flat"
+      type="button"
+      class="step plus"
+      [title]="t.addOne"
+      (click)="$event.stopPropagation(); add.emit()"
+    >
       <app-icon name="add" />
     </button>
     <span class="number badge">{{ line().ownedNumber }}</span>
-    <button app-button variant="flat" type="button" class="step minus" title="Remove one" (click)="$event.stopPropagation(); remove.emit()">
+    <button
+      app-button
+      variant="flat"
+      type="button"
+      class="step minus"
+      [title]="t.removeOne"
+      (click)="$event.stopPropagation(); remove.emit()"
+    >
       <app-icon name="minus" />
     </button>
     @if (line().item.tmrUnit) {
@@ -49,7 +63,7 @@
         class="farmed-button"
         name="tmr-farmed"
         height="45"
-        title="TMR Farmed ! Click here to indicate you farmed this TMR. It will decrease the number you can farm and increase the number you own this TMR by 1"
+        [title]="t.tmrFarmedClickHere"
         (click)="$event.stopPropagation(); farmedTmr.emit()"
       />
     }
@@ -58,7 +72,7 @@
         class="item-world-button"
         name="dwarf"
         height="28"
-        title="Open item management popup"
+        [title]="t.openItemManagementPopup"
         (click)="$event.stopPropagation(); enhance.emit()"
       />
     }
@@ -66,14 +80,30 @@
       class="exclude-button"
       name="exclude"
       width="28"
-      title="Exclude this item from builds made for expeditions"
+      [title]="t.excludeThisItemFrom"
       (click)="$event.stopPropagation(); excluded.emit()"
     />
   </div>
   @if (line().visionCard?.levels?.length && line().visionCard!.levels.length > 1) {
     <span class="card-level">
-      <button app-button small type="button" title="Level up" (click)="$event.stopPropagation(); levelChange.emit(1)">&#8593;</button>
-      <button app-button small type="button" title="Level down" (click)="$event.stopPropagation(); levelChange.emit(-1)">&#8595;</button>
+      <button
+        app-button
+        small
+        type="button"
+        [title]="t.levelUp"
+        (click)="$event.stopPropagation(); levelChange.emit(1)"
+      >
+        &#8593;
+      </button>
+      <button
+        app-button
+        small
+        type="button"
+        [title]="t.levelDown"
+        (click)="$event.stopPropagation(); levelChange.emit(-1)"
+      >
+        &#8595;
+      </button>
     </span>
   }
   <app-item-summary [item]="line().item" [enchantments]="enchantments()" />

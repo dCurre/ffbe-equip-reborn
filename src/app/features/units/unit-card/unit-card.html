@@ -1,13 +1,6 @@
 <div [class]="'unit ' + card().classes">
   <div class="avatar">
-    <img
-      class="unit-image"
-      [src]="card().image"
-      loading="lazy"
-      width="56"
-      height="56"
-      alt=""
-    />
+    <img class="unit-image" [src]="card().image" loading="lazy" width="56" height="56" alt="" />
     @if (card().rarity.icon) {
       <app-icon class="avatar-tag" [name]="card().rarity.icon!" />
     }
@@ -20,7 +13,7 @@
         <app-wiki-link [name]="card().unit.name" [always]="true" />
       }
       @if (card().timeLimited) {
-        <span class="time" title="Time limited unit"><app-icon name="timer" /></span>
+        <span class="time" [title]="t.timeLimitedUnit"><app-icon name="timer" /></span>
       }
     </div>
     @if (card().rarity.text) {
@@ -28,22 +21,19 @@
     }
     <div class="counts">
       <span class="pill count nv" [class.has]="card().nv > 0">
-        <app-icon name="crystal-NV" title="NV copies owned" />{{ card().nv }}
+        <app-icon name="crystal-NV" [title]="t.nvCopiesOwned" />{{ card().nv }}
       </span>
       <span class="pill count seven-star-count" [class.has]="card().sevenStar > 0">
-        <app-icon name="crystal-sevenStarCrystal" title="7★ copies owned" />{{ card().sevenStar }}
+        <app-icon name="crystal-sevenStarCrystal" [title]="t.n7CopiesOwned" />{{ card().sevenStar }}
       </span>
       <span class="pill count base" [class.has]="card().base > 0">
         @if (card().crystal) {
-          <app-icon [name]="card().crystal!" title="Copies owned (not 7★)" />
+          <app-icon [name]="card().crystal!" [title]="t.copiesOwnedNot7" />
         }
         {{ card().base }}
       </span>
-      <span
-        class="pill count moogles has"
-        [title]="card().moogles.length ? card().moogles.join('%, ') + '%' : ''"
-      >
-        <app-icon name="tmr-moogle" title="TMR Moogles owned" height="20" />{{ card().moogles.length }}
+      <span class="pill count moogles has" [title]="card().moogles.length ? card().moogles.join('%, ') + '%' : ''">
+        <app-icon name="tmr-moogle" [title]="t.tmrMooglesOwned" height="20" />{{ card().moogles.length }}
       </span>
       <span class="pill count fragments" [class.has]="card().fragments! > 0" [title]="card().fragments + ' fragments'">
         <app-icon name="fragment" height="20" />{{ card().fragments }}
@@ -81,10 +71,10 @@
             class="farm-button"
             [class.ready]="card().farmableStmr"
             [disabled]="!card().farmableStmr"
-            title="STMR Farmed ! Click here to indicate you farmed this STMR. It will add 1 of this STMR to your inventory"
+            [title]="t.stmrFarmedClickHere"
             (click)="farmedStmr.emit()"
           >
-            <app-icon name="stmr-farmed" height="18" />STMR
+            <app-icon name="stmr-farmed" height="18" />{{ t.stmr }}
           </button>
         }
         <button
@@ -93,10 +83,10 @@
           class="farm-button"
           [class.ready]="card().farmable"
           [disabled]="!card().farmable"
-          title="TMR Farmed ! Click here to indicate you farmed this TMR. It will add 1 of this TMR to your inventory"
+          [title]="t.tmrFarmedClickHere"
           (click)="farmedTmr.emit()"
         >
-          <app-icon name="tmr-farmed" height="18" />TMR
+          <app-icon name="tmr-farmed" height="18" />{{ t.tmr }}
         </button>
         @if (card().hasEx) {
           <button
@@ -104,18 +94,18 @@
             type="button"
             class="action-button"
             [disabled]="!card().canRaiseEx"
-            title="Raise the EX level by one (up to 3)"
+            [title]="t.raiseTheExLevel"
             (click)="raiseEx.emit()"
           >
             <app-icon name="ex-level" height="18" />
           </button>
         }
         @if (card().canAwaken) {
-          <button app-button type="button" class="action-button" title="Awaken this unit !" (click)="awaken.emit()">
+          <button app-button type="button" class="action-button" [title]="t.awakenThisUnit" (click)="awaken.emit()">
             <app-icon name="awaken" height="18" />
           </button>
         }
-        <button app-button type="button" class="action-button edit" title="Edit unit values" (click)="edit.emit()">
+        <button app-button type="button" class="action-button edit" [title]="t.editUnitValues" (click)="edit.emit()">
           <app-icon name="edit" />
         </button>
       </div>

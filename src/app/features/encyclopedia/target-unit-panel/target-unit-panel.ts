@@ -4,6 +4,7 @@ import { Combobox } from '../../../shared/components/combobox/combobox';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Panel } from '../../../shared/components/panel/panel';
 import { debouncer } from '../../../shared/helpers/search-input';
+import { STRINGS } from '../../../strings/en';
 
 export interface FullUnit {
   id: string;
@@ -32,6 +33,7 @@ const CRYSTALS: Record<string, string> = {
   styleUrls: ['../../../shared/styles/search-page.css', './target-unit-panel.css'],
 })
 export class TargetUnitPanel {
+  protected readonly t = STRINGS.targetUnitPanel;
   readonly unitList = input.required<FullUnit[]>();
   readonly unitName = model('');
   readonly baseStatText = model<Record<string, string>>({});

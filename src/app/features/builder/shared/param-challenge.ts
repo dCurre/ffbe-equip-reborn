@@ -6,6 +6,7 @@ import { chooseGoal } from './build-inputs';
 import type { BuilderState, BuilderUnit } from './builder-state';
 import type { OptimizerRunner, RunCallbacks } from './optimizer-runner';
 import type { UnitLoader } from './unit-loader';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -104,7 +105,7 @@ export class ParamChallenge {
     if (this.running()) {
       this.runner.stop();
       this.running.set(false);
-      this.toast.show('The calculation has been stopped.');
+      this.toast.show(STRINGS.paramChallenge.theCalculationHasBeen);
       return;
     }
     const [stat, goal] = this.challenge().split('_');
@@ -150,7 +151,7 @@ export class ParamChallenge {
     this.running.set(false);
     this.found.set(false);
     if (!build) {
-      this.toast.show('No unit to try for this challenge', 'warn');
+      this.toast.show(STRINGS.paramChallenge.noUnitToTry, 'warn');
       return;
     }
     this.toast.show(

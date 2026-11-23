@@ -2,6 +2,7 @@ import { baseStats } from '../../../core/constants/base-lists';
 import { percentValues } from '../../../core/constants/stat-values';
 import { typeList } from '../../../core/constants/item-types';
 import { BoardNode, Killer, Resist, Stat } from './esper-model';
+import { STRINGS } from '../../strings/en';
 
 const WIKI = 'https://exvius.fandom.com/wiki/';
 
@@ -60,7 +61,7 @@ export function nodeView(node: BoardNode): NodeView {
   if (node.resist) show('resist', { resist: node.resist });
   if (node.killers) show('killer', { killers: node.killers });
   if (node.esperStatsBonus) {
-    show('ability', { icon: 'ability_77.png', text: 'ST Reflection Boost', wiki: 'ST_Reflection_Boost' });
+    show('ability', { icon: 'ability_77.png', text: STRINGS.nodeView.stReflectionBoost, wiki: 'ST_Reflection_Boost' });
   }
   if (node.lbPerTurn)
     show('ability', { icon: 'ability_91.png', text: `+${node.lbPerTurn.min} LS/turn`, wiki: 'Auto-Limit' });

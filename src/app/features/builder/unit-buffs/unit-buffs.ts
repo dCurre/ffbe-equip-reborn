@@ -2,20 +2,23 @@ import { Component, computed, signal } from '@angular/core';
 import { elementList, killerList } from '../../../../core/constants/base-lists';
 import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';
+import { IconTile } from '../../../shared/components/icon-tile/icon-tile';
 import { InputGroup } from '../../../shared/components/input-group/input-group';
 import { NumberField } from '../../../shared/components/number-field/number-field';
 import { StatePanel } from '../shared/state-panel';
+import { STRINGS } from '../../../strings/en';
 
 const MAX_KILLER = 300;
 
 /** The killer and element buffs given to the unit: the killers behind a button (a summary while it is closed), the elements always. */
 @Component({
-  imports: [Button, Icon, InputGroup, NumberField],
+  imports: [Button, Icon, IconTile, InputGroup, NumberField],
   selector: 'app-unit-buffs',
   templateUrl: './unit-buffs.html',
   styleUrl: './unit-buffs.css',
 })
 export class UnitBuffs extends StatePanel {
+  protected readonly t = STRINGS.unitBuffs;
   protected readonly elements = elementList;
   protected readonly killerNames = killerList;
   protected readonly kinds = ['physical', 'magical'] as const;

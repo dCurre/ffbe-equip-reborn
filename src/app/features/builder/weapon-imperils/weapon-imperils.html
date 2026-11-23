@@ -1,8 +1,10 @@
 <div class="line">
-  <button app-button type="button" (click)="open.set(!open())"><app-icon name="edit" /> Weapon imperils</button>
+  <button app-button type="button" (click)="open.set(!open())"><app-icon name="edit" /> {{ t.weaponImperils }}</button>
   @if (!open()) {
     @for (item of active(); track item.weapon) {
-      <span class="summary"><app-icon [name]="'equipment-' + item.weapon" width="34" height="38" />{{ item.value }}%</span>
+      <span class="summary"
+        ><app-icon [name]="'equipment-' + item.weapon" width="34" height="38" />{{ item.value }}%</span
+      >
     }
   }
 </div>
@@ -12,13 +14,14 @@
       <div class="weapon">
         <app-icon [name]="'equipment-' + weapon" width="34" height="38" [title]="spaced(weapon) + ' imperil'" />
         <app-input-group>
-          <app-number-field [min]="0"
+          <app-number-field
+            [min]="0"
             withIcon
             suffix="%"
             [value]="s.monsterImperils()[weapon] ?? ''"
             (valueChange)="set(weapon, $event)"
           >
-            <app-icon leading name="arrow-down" title="debuff" />
+            <app-icon leading name="arrow-down" [title]="t.debuff" />
           </app-number-field>
         </app-input-group>
       </div>

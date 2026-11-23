@@ -1,6 +1,6 @@
 <app-panel>
   <div panelHeading class="heading unit-heading">
-    <span>Target unit</span>
+    <span>{{ t.targetUnit }}</span>
     <app-combobox class="unit-input" [options]="unitNames()" [value]="unitName()" (picked)="chooseUnit($event)" />
     @if (crystal(); as crystal) {
       <span class="rarity">

@@ -1,6 +1,7 @@
 import { Component, computed, input } from '@angular/core';
 import { Item, escapeName } from '../../helpers/item';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /** The picture of an item (its icon, or the sprite of its type) with the "not stackable" / "two handed" marks. */
 @Component({
@@ -11,6 +12,7 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrl: './item-picture.css',
 })
 export class ItemPicture {
+  protected readonly t = STRINGS.itemPicture;
   readonly item = input.required<Item>();
 
   protected readonly notStackable = computed(() => !!this.item().special?.includes('notStackable'));

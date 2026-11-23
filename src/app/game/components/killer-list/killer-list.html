@@ -6,7 +6,7 @@
           <app-icon [name]="'killer-' + kind + '-' + race" size="var(--killer-size, 40px)" />
         }
         @if (group.percent > 300) {
-          <span value class="over" title="Only 300% taken into account">{{ group.percent }}%</span>
+          <span value class="over" [title]="t.only300TakenInto">{{ group.percent }}%</span>
         } @else {
           <span value>{{ group.percent }}%</span>
         }

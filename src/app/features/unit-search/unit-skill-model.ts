@@ -2,6 +2,7 @@ import { chainFamilySkillName } from '../../../core/constants/game-ids';
 import { elementList } from '../../../core/constants/base-lists';
 import { typeList } from '../../../core/constants/item-types';
 import type { SkillUnit } from './unit-search-model';
+import { STRINGS } from '../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
@@ -36,7 +37,7 @@ export function chainFamilies(skill: any): { title: string; label: string }[] {
       label: skill.chainFamily,
     });
   }
-  if (skill.chainTag) families.push({ title: 'Chain Tag', label: 'Chain Tag' });
+  if (skill.chainTag) families.push({ title: STRINGS.unitSkillModel.chainTag, label: STRINGS.unitSkillModel.chainTag });
   return families;
 }
 

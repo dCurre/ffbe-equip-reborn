@@ -85,28 +85,6 @@
   border-radius: 999px;
 }
 
-/* turns every filter off: it shows how many are on */
-.chip.clear {
-  color: var(--color-link);
-  background-color: transparent;
-  border-style: dashed;
-}
-
-.chip.clear:hover {
-  background-color: color-mix(in srgb, var(--color-link) 12%, transparent);
-}
-
-.clear-count {
-  min-width: 18px;
-  padding: 0 5px;
-  font-size: 0.85em;
-  line-height: 18px;
-  color: #fff;
-  text-align: center;
-  background-color: var(--color-accent);
-  border-radius: 999px;
-}
-
 .results {
   display: flex;
   flex-direction: column;

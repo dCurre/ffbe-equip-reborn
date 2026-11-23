@@ -6,11 +6,15 @@ if equiped with
   @if ('type' in part) {
     <app-icon [name]="'equipment-' + part.type" size="28" />
   } @else if ('element' in part) {
-    <app-icon name="equipment-sword" class="miniIcon" size="18" /><app-icon [name]="'element-' + part.element" class="withMiniIcon" size="28" />
+    <app-icon name="equipment-sword" class="miniIcon" size="18" /><app-icon
+      [name]="'element-' + part.element"
+      class="withMiniIcon"
+      size="28"
+    />
   } @else {
     @for (item of part.items; track $index) {
       @if (!$first) {
-        or
+        {{ t.or }}
       }
       <img class="icon" [src]="'img/items/' + item.icon" alt="" />{{ item.name }}
     }

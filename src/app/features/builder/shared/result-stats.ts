@@ -5,6 +5,7 @@ import { calculateMonsterDamage } from '../../../../core/builder/damage/damage-m
 import { EnemyStats } from '../../../../core/builder/enemy-stats';
 import { calculateStatValue, getEquipmentStatBonus, getStatBonusCap } from '../../../../core/builder/stat-calculation';
 import { formulaByGoal } from './goal';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -70,16 +71,16 @@ export interface ResultStats {
 
 /** The stats that show only when the build has some, with the unit they are written in. */
 const EXTRAS: { key: string; stat: string; label: string; title?: string; suffix: string }[] = [
-  { key: 'evadePhysical', stat: 'evade.physical', label: 'P. Evade', title: 'Physical Evade', suffix: '%' },
-  { key: 'lbPerTurn', stat: 'lbPerTurn', label: 'LB/turn', suffix: '' },
-  { key: 'accuracy', stat: 'accuracy', label: 'Accuracy', suffix: '%' },
-  { key: 'drawAttacks', stat: 'drawAttacks', label: 'D. Attacks', suffix: '%' },
-  { key: 'evokeDamageBoost', stat: 'evokeDamageBoost.all', label: 'Evoke Dmg', suffix: '%' },
-  { key: 'evoMag', stat: 'evoMag', label: 'EVO Mag', suffix: '%' },
-  { key: 'lbFillRate', stat: 'lbFillRate', label: 'Lb fill rate', suffix: '%' },
-  { key: 'jumpDamage', stat: 'jumpDamage', label: 'Jump D.', suffix: '%' },
-  { key: 'lbDamage', stat: 'lbDamage', label: 'LB Damage', suffix: '%' },
-  { key: 'chainMastery', stat: 'chainMastery', label: 'Chain Mastery', suffix: 'x' },
+  { key: 'evadePhysical', stat: 'evade.physical', label: STRINGS.resultStats.pEvade, title: STRINGS.resultStats.physicalEvade, suffix: '%' },
+  { key: 'lbPerTurn', stat: 'lbPerTurn', label: STRINGS.resultStats.lbTurn, suffix: '' },
+  { key: 'accuracy', stat: 'accuracy', label: STRINGS.resultStats.accuracy, suffix: '%' },
+  { key: 'drawAttacks', stat: 'drawAttacks', label: STRINGS.resultStats.dAttacks, suffix: '%' },
+  { key: 'evokeDamageBoost', stat: 'evokeDamageBoost.all', label: STRINGS.resultStats.evokeDmg, suffix: '%' },
+  { key: 'evoMag', stat: 'evoMag', label: STRINGS.resultStats.evoMag, suffix: '%' },
+  { key: 'lbFillRate', stat: 'lbFillRate', label: STRINGS.resultStats.lbFillRate, suffix: '%' },
+  { key: 'jumpDamage', stat: 'jumpDamage', label: STRINGS.resultStats.jumpD, suffix: '%' },
+  { key: 'lbDamage', stat: 'lbDamage', label: STRINGS.resultStats.lbDamage, suffix: '%' },
+  { key: 'chainMastery', stat: 'chainMastery', label: STRINGS.resultStats.chainMastery, suffix: 'x' },
 ];
 
 /** The killers of the equipment, summed by race. */

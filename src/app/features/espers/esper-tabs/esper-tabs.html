@@ -1,6 +1,6 @@
 <div class="tabs-wrapper">
   <ul class="tabs all">
-    <li [class.active]="tab() === 'ALL'" title="Stats on all espers" (click)="selected.emit('ALL')">
+    <li [class.active]="tab() === 'ALL'" [title]="t.statsOnAllEspers" (click)="selected.emit('ALL')">
       <a><app-icon name="esper-ALL" size="40" /></a>
     </li>
   </ul>

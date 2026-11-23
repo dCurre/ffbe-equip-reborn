@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { SiteFooter } from '../site-footer/site-footer';
+import { STRINGS } from '../../strings/en';
 
 /** Stands in for every page that is not migrated yet; each route swaps it for the real page. */
 @Component({
@@ -8,4 +9,6 @@ import { SiteFooter } from '../site-footer/site-footer';
   templateUrl: './page-placeholder.html',
   styleUrl: './page-placeholder.css',
 })
-export class PagePlaceholder {}
+export class PagePlaceholder {
+  protected readonly t = STRINGS.pagePlaceholder;
+}

@@ -9,6 +9,7 @@ import { Icon } from '../../../shared/components/icon/icon';
 import { Modal } from '../../../shared/components/modal/modal';
 import { TabBar, TabItem } from '../../../shared/components/tab-bar/tab-bar';
 import { StatePanel } from '../shared/state-panel';
+import { STRINGS } from '../../../strings/en';
 
 const STATS = ['atk', 'def', 'mag', 'spr'] as const;
 
@@ -37,6 +38,7 @@ type Bestiary = Record<string, Monster[]>;
   styleUrl: './monster-list.css',
 })
 export class MonsterList extends StatePanel {
+  protected readonly t = STRINGS.monsterList;
   private readonly server = inject(ServerContext).server;
   private readonly staticData = inject(StaticData);
 

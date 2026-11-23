@@ -1,0 +1,25 @@
+button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 3px 11px;
+  color: var(--color-link);
+  background-color: transparent;
+  border-style: dashed;
+  border-radius: 999px;
+}
+
+button:hover {
+  background-color: color-mix(in srgb, var(--color-link) 12%, transparent);
+}
+
+.count {
+  min-width: 18px;
+  padding: 0 5px;
+  font-size: 0.85em;
+  line-height: 18px;
+  color: #fff;
+  text-align: center;
+  background-color: var(--color-accent);
+  border-radius: 999px;
+}

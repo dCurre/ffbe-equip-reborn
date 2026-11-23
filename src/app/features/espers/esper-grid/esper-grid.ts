@@ -28,6 +28,7 @@ import {
 } from '../esper-model';
 import { NodeView, nodeView } from '../node-view';
 import { Button } from '../../../shared/components/button/button';
+import { STRINGS } from '../../../strings/en';
 
 interface Cell {
   x: number;
@@ -69,6 +70,7 @@ const ROW_PITCH = 87.225;
   styleUrl: './esper-grid.css',
 })
 export class EsperGrid {
+  protected readonly t = STRINGS.esperGrid;
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   readonly info = input.required<EsperInfo>();
   readonly current = input.required<OwnedEsper | undefined>();
@@ -94,7 +96,9 @@ export class EsperGrid {
     source: this.current,
     computation: (esper, previous) => {
       const before = previous?.source;
-      return esper && before && before.name === esper.name && esper.rarity > before.rarity ? boardReach(before.rarity) : 0;
+      return esper && before && before.name === esper.name && esper.rarity > before.rarity
+        ? boardReach(before.rarity)
+        : 0;
     },
   });
 

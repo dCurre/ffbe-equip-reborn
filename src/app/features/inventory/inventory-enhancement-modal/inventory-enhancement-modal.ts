@@ -4,6 +4,7 @@ import { ItemSummary } from '../../../game/components/item-summary/item-summary'
 import { Button } from '../../../shared/components/button/button';
 import { Modal } from '../../../shared/components/modal/modal';
 import type { Item } from '../../../game/helpers/item';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the enchantments of the game are open */
 
@@ -15,6 +16,7 @@ import type { Item } from '../../../game/helpers/item';
   styleUrls: ['../inventory-item.css', './inventory-enhancement-modal.css'],
 })
 export class InventoryEnhancementModal {
+  protected readonly t = STRINGS.inventoryEnhancementModal;
   readonly line = input.required<{ item: Item; enhancements: (string | number)[] } | null>();
   readonly enchantments = input.required<any>();
   readonly open = model(false);

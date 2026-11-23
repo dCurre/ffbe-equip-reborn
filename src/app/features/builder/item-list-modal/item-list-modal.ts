@@ -6,6 +6,7 @@ import { Modal } from '../../../shared/components/modal/modal';
 import type { Item } from '../../../game/helpers/item';
 import type { ItemActions } from '../shared/item-actions';
 import type { BuilderState } from '../shared/builder-state';
+import { STRINGS } from '../../../strings/en';
 
 /** The items excluded from the builds, or always allowed: remove one, reset the list, or go and add more. */
 @Component({
@@ -15,13 +16,16 @@ import type { BuilderState } from '../shared/builder-state';
   styleUrl: './item-list-modal.css',
 })
 export class ItemListModal {
+  protected readonly t = STRINGS.itemListModal;
   readonly kind = input.required<'exclude' | 'include'>();
   readonly state = input.required<BuilderState>();
   readonly items = input.required<ItemActions>();
   readonly open = model(false);
   readonly add = output<void>();
 
-  protected readonly ids = computed(() => (this.kind() === 'exclude' ? this.state().excluded() : this.state().included()));
+  protected readonly ids = computed(() =>
+    this.kind() === 'exclude' ? this.state().excluded() : this.state().included(),
+  );
   protected readonly entries = computed(() => {
     const { items, espers } = this.items().pickerContext();
     const ids = new Set(this.ids());

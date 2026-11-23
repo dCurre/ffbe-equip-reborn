@@ -6,26 +6,21 @@
       <app-unit-collection-stats stats [counts]="stats()" [groups]="statGroups" [rows]="statRows" />
 
       <div actions>
-        <app-dropdown-menu label="Share unit collection" [items]="exportItems" />
-        <app-action-link icon="save" label="Import unit collection" route="/data-import" />
-        <app-action-link icon="save" label="Import consumables" route="/data-import" />
-        <app-action-link icon="new-window" label="Export your data from the game" [href]="gameDataUrl" />
+        <app-dropdown-menu [label]="t.shareUnitCollection" [items]="exportItems" />
+        <app-action-link icon="save" [label]="t.importUnitCollection" route="/data-import" />
+        <app-action-link icon="save" [label]="t.importConsumables" route="/data-import" />
+        <app-action-link icon="new-window" [label]="t.exportYourDataFrom" [href]="gameDataUrl" />
       </div>
 
       <div [class.read-only]="readOnly()">
         <app-tab-panel [tabs]="tabs" [active]="tab()" (selected)="showTab($event)">
           @if (activeFilters() > 0) {
-            <button
+            <app-clear-filters
               corner
-              app-button
-              small
-              type="button"
-              class="chip clear"
-              title="Turn off every filter"
-              (click)="clearFilters()"
-            >
-              <app-icon name="remove" />Clear<span class="clear-count">{{ activeFilters() }}</span>
-            </button>
+              [count]="activeFilters()"
+              [title]="t.turnOffEveryFilter"
+              (cleared)="clearFilters()"
+            />
           }
           <div class="controls">
             @if (tab() !== 'history') {
@@ -37,7 +32,7 @@
               />
             }
             <div class="filter-panel">
-              <span class="filter-label">Show</span>
+              <span class="filter-label">{{ t.show }}</span>
               <div class="chips">
                 <button
                   app-button
@@ -45,10 +40,10 @@
                   type="button"
                   class="chip"
                   [active]="onlyOwned()"
-                  title="Show only the units you own"
+                  [title]="t.showOnlyTheUnits"
                   (click)="toggleOnlyOwned(!onlyOwned())"
                 >
-                  <app-icon name="check" />Owned
+                  <app-icon name="check" />{{ t.owned }}
                 </button>
                 <button
                   app-button
@@ -57,7 +52,7 @@
                   class="chip"
                   [active]="onlySevenStar()"
                   [disabled]="!onlyOwned()"
-                  title="Among the units you own, only those awakened to 7★"
+                  [title]="t.amongTheUnitsYou"
                   (click)="onlySevenStar.set(!onlySevenStar())"
                 >
                   <app-icon name="crystal-sevenStarCrystal" title="" />7★
@@ -68,10 +63,10 @@
                   type="button"
                   class="chip"
                   [active]="onlyTimeLimited()"
-                  title="Show only the time limited units"
+                  [title]="t.showOnlyTheTime"
                   (click)="onlyTimeLimited.set(!onlyTimeLimited())"
                 >
-                  <app-icon name="timer" />Time limited
+                  <app-icon name="timer" />{{ t.timeLimited }}
                 </button>
                 <button
                   app-button
@@ -79,18 +74,18 @@
                   type="button"
                   class="chip"
                   [active]="onlyTmrMoogles()"
-                  title="Show only the units you have TMR Moogles for"
+                  [title]="t.showOnlyTheUnits2"
                   (click)="onlyTmrMoogles.set(!onlyTmrMoogles())"
                 >
-                  <app-icon name="tmr-moogle" height="16" title="" />TMR Moogles
+                  <app-icon name="tmr-moogle" height="16" title="" />{{ t.tmrMoogles }}
                 </button>
               </div>
-              <span class="filter-label">Rarity</span>
+              <span class="filter-label">{{ t.rarity }}</span>
               <app-choice-group pills iconType="crystal" [choices]="groupChoices()" [(selected)]="selectedGroups" />
-              <span class="filter-label">EX level</span>
+              <span class="filter-label">{{ t.exLevel }}</span>
               <app-choice-group pills iconType="ex" [choices]="exChoices" [(selected)]="selectedEx" />
               @if (tab() === 'alphabetical' || tab() === 'tmr') {
-                <span class="filter-label">Letter</span>
+                <span class="filter-label">{{ t.letter }}</span>
                 <app-choice-group
                   pills
                   [choices]="letterChoices()"
@@ -125,7 +120,7 @@
               </div>
             }
             @if (shown() === 0) {
-              <p>No {{ tab() === 'tmr' ? 'TMR' : 'units' }} found...</p>
+              <p>{{ t.no }} {{ tab() === 'tmr' ? 'TMR' : 'units' }} {{ t.found }}</p>
             }
             <div #end class="end"></div>
           </div>
@@ -143,10 +138,10 @@
 
 <app-unit-awaken-modal [unit]="awakenUnit()" [(open)]="awakenOpen" (chosen)="awakenWith($event)" />
 
-<app-text-export-modal heading="Owned units" [text]="textExport()" [(open)]="textOpen" (copy)="copyText()" />
+<app-text-export-modal [heading]="t.ownedUnits" [text]="textExport()" [(open)]="textOpen" (copy)="copyText()" />
 
 <app-share-link-modal
-  heading="Link to your unit collection"
+  [heading]="t.linkToYourUnit"
   intro="This link will allow anyone to see your unit collection (as it is now)"
   [link]="share.link()"
   [copied]="share.copied()"

@@ -3,23 +3,44 @@
     <span>{{ teams().title() }}</span>
     <span class="buttons">
       @if (hasUnits()) {
-        <button app-button variant="flat" type="button" title="Save" aria-label="Save" (click)="saveClicked()">
+        <button
+          app-button
+          variant="flat"
+          type="button"
+          [title]="t.save"
+          [attr.aria-label]="t.save"
+          (click)="saveClicked()"
+        >
           <app-icon name="save" />
         </button>
       }
       @if (teams().current() >= 0) {
-        <button app-button variant="flat" type="button" title="Save as..." aria-label="Save as" (click)="nameOpen.set(true)">
+        <button
+          app-button
+          variant="flat"
+          type="button"
+          [title]="t.saveAs"
+          [attr.aria-label]="t.saveAs2"
+          (click)="nameOpen.set(true)"
+        >
           <app-icon name="add-box" />
         </button>
       }
-      <button app-button variant="flat" type="button" title="Show saved teams list" aria-label="Saved teams list" (click)="showList()">
+      <button
+        app-button
+        variant="flat"
+        type="button"
+        [title]="t.showSavedTeamsList"
+        [attr.aria-label]="t.savedTeamsList"
+        (click)="showList()"
+      >
         <app-icon name="list" />
       </button>
     </span>
   </div>
 </app-panel>
 
-<app-modal heading="Saved teams" [wide]="true" [(open)]="listOpen">
+<app-modal [heading]="t.savedTeams" [wide]="true" [(open)]="listOpen">
   @for (entry of entries(); track entry.index) {
     <div class="team">
       <div>
@@ -31,22 +52,17 @@
         </div>
       </div>
       <div class="actions">
-        <button
-          app-button
-          type="button"
-          title="Add this team to your current team"
-          (click)="importClicked(entry.index)"
-        >
-          Import
+        <button app-button type="button" [title]="t.addThisTeamTo" (click)="importClicked(entry.index)">
+          {{ t.import }}
         </button>
-        <button app-button type="button" title="Load this team, to modify it" (click)="loadClicked(entry.index)">
-          Load
+        <button app-button type="button" [title]="t.loadThisTeamTo" (click)="loadClicked(entry.index)">
+          {{ t.load }}
         </button>
         <button
           app-button
           type="button"
-          title="Delete this team"
-          aria-label="Delete this team"
+          [title]="t.deleteThisTeam"
+          [attr.aria-label]="t.deleteThisTeam"
           (click)="deleteClicked(entry.index)"
         >
           <app-icon name="remove" />
@@ -54,26 +70,26 @@
       </div>
     </div>
   } @empty {
-    <p>No saved team yet.</p>
+    <p>{{ t.noSavedTeamYet }}</p>
   }
 </app-modal>
 
-<app-modal heading="Save team as..." confirmLabel="Save" [(open)]="nameOpen" (confirmed)="confirmName()">
-  <app-input-group label="Build name">
+<app-modal [heading]="t.saveTeamAs" confirmLabel="Save" [(open)]="nameOpen" (confirmed)="confirmName()">
+  <app-input-group [label]="t.buildName">
     <input type="text" [value]="name()" (input)="name.set($any($event.target).value)" (keydown.enter)="confirmName()" />
   </app-input-group>
 </app-modal>
 
-<app-modal heading="Load saved team" confirmLabel="Load" [(open)]="loadOpen" (confirmed)="confirmLoad()">
-  <p>Loading this team will remove the units you currently have in the builder. Continue?</p>
+<app-modal [heading]="t.loadSavedTeam" confirmLabel="Load" [(open)]="loadOpen" (confirmed)="confirmLoad()">
+  <p>{{ t.loadingThisTeamWill }}</p>
 </app-modal>
 
 <app-modal
-  heading="Delete team"
+  [heading]="t.deleteTeam"
   confirmLabel="Delete"
   [danger]="true"
   [(open)]="deleteOpen"
   (confirmed)="confirmDelete()"
 >
-  <p>Are you sure to delete that team ?</p>
+  <p>{{ t.areYouSureTo }}</p>
 </app-modal>

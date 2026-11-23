@@ -1,10 +1,17 @@
 @if (filters().length) {
   <div class="chips">
     @for (filter of filters(); track filter.key) {
-      <button app-button small type="button" class="chip" title="Remove this filter" (click)="removed.emit(filter.key)">
+      <button
+        app-button
+        small
+        type="button"
+        class="chip"
+        [title]="t.removeThisFilter"
+        (click)="removed.emit(filter.key)"
+      >
         {{ filter.label }}<app-icon name="remove" />
       </button>
     }
-    <a class="clear" (click)="cleared.emit()">Clear all</a>
+    <a class="clear" (click)="cleared.emit()">{{ t.clearAll }}</a>
   </div>
 }

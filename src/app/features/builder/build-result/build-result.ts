@@ -5,6 +5,7 @@ import { Alert } from '../../../shared/components/alert/alert';
 import { Button } from '../../../shared/components/button/button';
 import { DropdownMenu, MenuItem } from '../../../shared/components/dropdown-menu/dropdown-menu';
 import { Icon } from '../../../shared/components/icon/icon';
+import { ProgressBar } from '../../../shared/components/progress-bar/progress-bar';
 import { Item } from '../../../game/helpers/item';
 import { ItemSummary } from '../../../game/components/item-summary/item-summary';
 import { enemy } from '../shared/build-inputs';
@@ -15,6 +16,7 @@ import type { OptimizerRunner } from '../shared/optimizer-runner';
 import { BuildResultStats } from '../build-result-stats/build-result-stats';
 import { resultStats } from '../shared/result-stats';
 import { StatePanel } from '../shared/state-panel';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -37,11 +39,12 @@ const SLOTS = [
 /** The build button, the items of the build and its totals. */
 @Component({
   selector: 'app-build-result',
-  imports: [Alert, Button, DropdownMenu, Icon, ItemLine, ItemSummary, BuildResultStats],
+  imports: [Alert, Button, DropdownMenu, Icon, ItemLine, ItemSummary, ProgressBar, BuildResultStats],
   templateUrl: './build-result.html',
   styleUrl: './build-result.css',
 })
 export class BuildResult extends StatePanel {
+  protected readonly t = STRINGS.buildResult;
   readonly items = input.required<ItemActions>();
   readonly sharing = input.required<BuildSharing>();
   /** The sharing of every tab: the "all units" link and text. */
@@ -85,22 +88,22 @@ export class BuildResult extends StatePanel {
   protected readonly shareItems = computed<MenuItem[]>(() => {
     const all = this.allSharing();
     const items: MenuItem[] = [
-      { label: 'Link (this unit only)', run: () => this.sharing().openShare() },
-      { label: 'Text (this unit only)', run: () => this.sharing().openText() },
-      { label: 'Image (this unit only)', run: () => this.sharing().openImage() },
+      { label: STRINGS.buildResult.linkThisUnitOnly, run: () => this.sharing().openShare() },
+      { label: STRINGS.buildResult.textThisUnitOnly, run: () => this.sharing().openText() },
+      { label: STRINGS.buildResult.imageThisUnitOnly, run: () => this.sharing().openImage() },
     ];
     if (all.length > 1) {
       items.push(
-        { label: 'Link (all units)', run: () => this.sharing().openShare(all) },
-        { label: 'Text (all units)', run: () => this.sharing().openText(all) },
-        { label: 'Image (all units)', run: () => this.sharing().openImage(all) },
+        { label: STRINGS.buildResult.linkAllUnits, run: () => this.sharing().openShare(all) },
+        { label: STRINGS.buildResult.textAllUnits, run: () => this.sharing().openText(all) },
+        { label: STRINGS.buildResult.imageAllUnits, run: () => this.sharing().openImage(all) },
       );
     }
     return items;
   });
   protected readonly clearItems = computed<MenuItem[]>(() => [
-    { label: 'Clear not pinned items (for this build)', run: () => this.items().clearItems(true) },
-    { label: 'Clear all items (for this build)', run: () => this.items().clearItems(false) },
+    { label: STRINGS.buildResult.clearNotPinnedItems, run: () => this.items().clearItems(true) },
+    { label: STRINGS.buildResult.clearAllItemsFor, run: () => this.items().clearItems(false) },
   ]);
 
   /** The concise lines show the picture and the name of the items, the detailed ones all their effects. */

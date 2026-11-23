@@ -3,6 +3,7 @@ import { CanActivateFn, Router, Routes } from '@angular/router';
 import { Homepage } from './features/homepage/homepage';
 import { BannerName } from './layout/site-header/site-header';
 import { PagePlaceholder } from './layout/page-placeholder/page-placeholder';
+import { STRINGS } from './strings/en';
 
 /** The old start page was the encyclopedia: a link with a `#...` on the homepage goes to the encyclopedia, search included. */
 const oldHomepageLink: CanActivateFn = (route) =>
@@ -24,74 +25,74 @@ export const routes: Routes = [
   {
     path: '',
     component: Homepage,
-    title: 'FFBE Equip Reborn - Homepage',
+    title: STRINGS.appRoutes.ffbeEquipRebornHomepage,
     canActivate: [oldHomepageLink],
-    data: { header: 'Welcome, Kupo!', banner: 'MogChocobo' },
+    data: { header: STRINGS.appRoutes.welcomeKupo, banner: 'MogChocobo' },
   },
   {
     path: 'builder',
     loadComponent: () => import('./features/builder/builder').then((m) => m.Builder),
-    title: 'FFBE Equip Reborn - Builder',
-    data: { header: 'Builder', banner: 'Lid' },
+    title: STRINGS.appRoutes.ffbeEquipRebornBuilder,
+    data: { header: STRINGS.appRoutes.builder, banner: 'Lid' },
   },
   {
     path: 'encyclopedia',
     loadComponent: () => import('./features/encyclopedia/encyclopedia').then((m) => m.Encyclopedia),
-    title: 'FFBE Equip Reborn - Item Encyclopedia',
-    data: { header: 'Item Encyclopedia', banner: 'Sakura' },
+    title: STRINGS.appRoutes.ffbeEquipRebornItem,
+    data: { header: STRINGS.appRoutes.itemEncyclopedia, banner: 'Sakura' },
   },
   {
     path: 'unitSearch',
     loadComponent: () => import('./features/unit-search/unit-search').then((m) => m.UnitSearch),
-    title: 'FFBE Equip Reborn - Unit Search',
-    data: { header: 'Unit Search', banner: 'Lasswell' },
+    title: STRINGS.appRoutes.ffbeEquipRebornUnit,
+    data: { header: STRINGS.appRoutes.unitSearch, banner: 'Lasswell' },
   },
   {
     path: 'inventory',
     loadComponent: () => import('./features/inventory/inventory').then((m) => m.InventoryPage),
-    title: 'FFBE Equip Reborn : Inventory',
-    data: { header: 'Inventory', banner: 'Jake' },
+    title: STRINGS.appRoutes.ffbeEquipRebornInventory,
+    data: { header: STRINGS.appRoutes.inventory, banner: 'Jake' },
   },
   {
     path: 'units',
     loadComponent: () => import('./features/units/units').then((m) => m.Units),
-    title: 'FFBE Equip Reborn : Units',
-    data: { header: 'Units', banner: 'Rain' },
+    title: STRINGS.appRoutes.ffbeEquipRebornUnits,
+    data: { header: STRINGS.appRoutes.units, banner: 'Rain' },
   },
   {
     path: 'espers',
     loadComponent: () => import('./features/espers/espers').then((m) => m.Espers),
-    title: 'FFBE Equip Reborn : Espers',
-    data: { header: 'Espers', banner: 'Nichol' },
+    title: STRINGS.appRoutes.ffbeEquipRebornEspers,
+    data: { header: STRINGS.appRoutes.espers, banner: 'Nichol' },
   },
   {
     path: 'data-import',
     loadComponent: () => import('./features/data-import/data-import').then((m) => m.DataImport),
-    title: 'FFBE Equip Reborn : Data import',
-    data: { header: 'Data import', banner: 'Charlotte' },
+    title: STRINGS.appRoutes.ffbeEquipRebornData,
+    data: { header: STRINGS.appRoutes.dataImport, banner: 'Charlotte' },
   },
   {
     path: 'contribute',
     loadComponent: () => import('./features/contribute/contribute').then((m) => m.Contribute),
-    title: 'FFBE Equip Reborn - Contribution',
-    data: { header: 'Contribute', banner: 'Fina' },
+    title: STRINGS.appRoutes.ffbeEquipRebornContribution,
+    data: { header: STRINGS.appRoutes.contribute, banner: 'Fina' },
   },
   {
     path: 'algorithm',
     loadComponent: () => import('./features/algorithm/algorithm').then((m) => m.Algorithm),
-    title: 'FFBE Equip Reborn - Algorithm',
+    title: STRINGS.appRoutes.ffbeEquipRebornAlgorithm,
     data: { theme: 'light' },
   },
   {
     path: 'builderHelp',
     loadComponent: () => import('./features/builder-help/builder-help').then((m) => m.BuilderHelp),
-    title: 'FFBE Equip Reborn : Builder Help',
+    title: STRINGS.appRoutes.ffbeEquipRebornBuilder2,
     data: { theme: 'light' },
   },
   {
     path: 'privacy',
     loadComponent: () => import('./features/privacy/privacy').then((m) => m.Privacy),
-    title: 'FFBE Equip Reborn - Privacy Policy',
+    title: STRINGS.appRoutes.ffbeEquipRebornPrivacy,
   },
   // Old links (`builder.html#...`, `espers.html?server=JP#...`) keep working: the router keeps the query and the fragment.
   { path: 'homepage.html', redirectTo: '' },
@@ -108,5 +109,5 @@ export const routes: Routes = [
     'builderHelp',
     'privacy',
   ].map((path) => ({ path: `${path}.html`, redirectTo: path })),
-  { path: '**', component: PagePlaceholder, title: 'Page not found' },
+  { path: '**', component: PagePlaceholder, title: STRINGS.appRoutes.pageNotFound },
 ];

@@ -4,6 +4,7 @@ import { Modal } from '../../../shared/components/modal/modal';
 import { Icon } from '../../../shared/components/icon/icon';
 import type { CustomGoal } from '../shared/custom-goal';
 import { CUSTOM_GOAL_PRESETS } from '../shared/custom-goal-presets';
+import { STRINGS } from '../../../strings/en';
 
 /** Writes the formula (and condition) of a custom goal. */
 @Component({
@@ -13,6 +14,7 @@ import { CUSTOM_GOAL_PRESETS } from '../shared/custom-goal-presets';
   styleUrl: './custom-goal-modal.css',
 })
 export class CustomGoalModal {
+  protected readonly t = STRINGS.customGoalModal;
   readonly goal = input.required<CustomGoal>();
   protected readonly presets = CUSTOM_GOAL_PRESETS;
 

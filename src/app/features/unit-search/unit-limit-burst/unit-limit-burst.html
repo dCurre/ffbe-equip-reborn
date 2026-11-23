@@ -2,11 +2,11 @@
   <div><app-icon class="skillIcon" name="limit-burst" size="45" /></div>
   <div class="nameAndEffects">
     <span class="name"
-      >Limit Burst : {{ lb().name }}<app-unit-skill-tags [skill]="lb()" [effects]="lb().maxEffects"
+      >{{ t.limitBurst }} {{ lb().name }}<app-unit-skill-tags [skill]="lb()" [effects]="lb().maxEffects"
     /></span>
     <app-unit-strange-stats [effects]="lb().maxEffects" />
     <div class="subSkill">
-      <span class="case">Min :</span>
+      <span class="case">{{ t.min }}</span>
       <div class="skill">
         <div class="nameAndEffects">
           @for (effect of lb().minEffects; track $index) {
@@ -16,7 +16,7 @@
       </div>
     </div>
     <div class="subSkill">
-      <span class="case">Max :</span>
+      <span class="case">{{ t.max }}</span>
       <div class="skill">
         <div class="nameAndEffects">
           @for (effect of lb().maxEffects; track $index) {

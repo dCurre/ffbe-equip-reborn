@@ -1,9 +1,9 @@
 <div>
-  Results :
+  {{ t.results }}
   @if (filtered()) {
     {{ count() }}
   } @else {
-    Add filters to see results
+    {{ t.addFiltersToSee }}
   }
 </div>
 <div class="flags">

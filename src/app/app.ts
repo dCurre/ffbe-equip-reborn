@@ -9,6 +9,7 @@ import { Toasts } from './shared/components/toasts/toasts';
 import { Inventory } from './shared/services/inventory';
 import { StaticData } from './shared/services/static-data';
 import { Theme, ThemeName } from './shared/services/theme';
+import { STRINGS } from './strings/en';
 
 @Component({
   imports: [RouterOutlet, ScrollTop, SiteHeader, Toasts],
@@ -17,6 +18,7 @@ import { Theme, ThemeName } from './shared/services/theme';
   styleUrl: './app.css',
 })
 export class App {
+  protected readonly t = STRINGS.app;
   private readonly router = inject(Router);
   private readonly theme = inject(Theme); // also applies the saved theme as soon as the app starts
   protected readonly chrome = inject(PageChrome);

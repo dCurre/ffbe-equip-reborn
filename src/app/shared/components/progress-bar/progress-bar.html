@@ -1,4 +1,4 @@
 <div class="progress" role="progressbar" [attr.aria-label]="label()" [attr.aria-valuenow]="value()">
-  <div class="progress-bar" [style.width.%]="value()"></div>
+  <div class="progress-bar" [class.finished]="finished()" [style.width.%]="value()"></div>
   <span class="progress-text">{{ value() }}%</span>
 </div>

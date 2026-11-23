@@ -1,6 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, computed, ElementRef, inject, input, model, output, signal } from '@angular/core';
 import { Icon } from '../icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /** An option of the select: a picture and a tag are optional. `tagKind` colors the tag (`damage`, `stat`, `lb`, `skill`, `magic`, `multicast`, `unsupported`). */
 export interface RichOption {
@@ -24,6 +25,7 @@ export interface RichOption {
   styleUrl: './rich-select.css',
 })
 export class RichSelect {
+  protected readonly t = STRINGS.richSelect;
   readonly options = input.required<readonly RichOption[]>();
   readonly value = model('');
   readonly placeholder = input('Select...');

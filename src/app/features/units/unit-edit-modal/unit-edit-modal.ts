@@ -4,6 +4,7 @@ import { Inventory, OwnedUnit } from '../../../shared/services/inventory';
 import { Alert } from '../../../shared/components/alert/alert';
 import { Modal } from '../../../shared/components/modal/modal';
 import { applyEdit, GameUnit, maxTrust, num, parseMoogles, UnitEdit } from '../unit-model';
+import { STRINGS } from '../../../strings/en';
 
 /** Edits what the user owns of one unit: the copies, the TMR / STMR owned, the NV extras and the TMR moogles. */
 @Component({
@@ -13,6 +14,7 @@ import { applyEdit, GameUnit, maxTrust, num, parseMoogles, UnitEdit } from '../u
   styleUrl: './unit-edit-modal.css',
 })
 export class UnitEditModal {
+  protected readonly t = STRINGS.unitEditModal;
   private readonly inventory = inject(Inventory);
   /** the units with a TMR in the game: only those have moogles to edit */
   readonly tmr = input.required<Record<string, { id: string }>>();
@@ -68,7 +70,10 @@ export class UnitEditModal {
       tmr: Math.min(Math.max(0, num(this.owned.tmr)), max.tmr),
       stmr: Math.min(Math.max(0, num(this.owned.stmr)), max.stmr),
     };
-    for (const [item, count] of [[this.tmr()[unit.id], farmed.tmr], [this.stmr()[unit.id], farmed.stmr]] as const) {
+    for (const [item, count] of [
+      [this.tmr()[unit.id], farmed.tmr],
+      [this.stmr()[unit.id], farmed.stmr],
+    ] as const) {
       if (!item) continue;
       if (count) this.inventory.items()[item.id] = count;
       else delete this.inventory.items()[item.id];

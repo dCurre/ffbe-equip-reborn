@@ -2,6 +2,7 @@ import { Component, computed, inject, input } from '@angular/core';
 import { UnitContext } from '../unit-context';
 import { conditionParts } from '../unit-skill-model';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /** ` if equiped with ...`: a skill that needs a type of equipment, an element or an item. */
 @Component({
@@ -11,6 +12,7 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrl: './unit-equiped-condition.css',
 })
 export class UnitEquipedCondition {
+  protected readonly t = STRINGS.unitEquipedCondition;
   private readonly context = inject(UnitContext);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape
   readonly conditions = input.required<any[]>();

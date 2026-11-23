@@ -4,30 +4,30 @@
 @if (s.unit()) {
   <div class="build-bar">
     @if (!challenge()) {
-      <button app-button variant="primary" type="button" class="build-button" [class.running]="runner().running()" [disabled]="!ready()" (click)="build.emit()">
+      <button
+        app-button
+        variant="primary"
+        type="button"
+        class="build-button"
+        [class.running]="runner().running()"
+        [disabled]="!ready()"
+        (click)="build.emit()"
+      >
         {{ runner().running() ? 'STOP' : 'Build !' }}
       </button>
     }
     <div class="progress-column">
-      <div
-        class="progress"
-        role="progressbar"
-        aria-label="Build progress"
-        [attr.aria-valuenow]="runner().progress()"
-      >
-        <div
-          class="progress-bar"
-          [class.finished]="!runner().running() && runner().progress() === 100"
-          [style.width.%]="runner().progress()"
-        ></div>
-        <span class="progress-text">{{ runner().progress() }}%</span>
-      </div>
+      <app-progress-bar
+        [value]="runner().progress()"
+        [label]="t.buildProgress"
+        [finished]="!runner().running() && runner().progress() === 100"
+      />
       @if (runner().running() || runner().builds()) {
-        <div class="builds-tried">Builds tried : {{ runner().builds().toLocaleString() }}</div>
+        <div class="builds-tried">{{ t.buildsTried }} {{ runner().builds().toLocaleString() }}</div>
       }
     </div>
     <label class="cores">
-      Use
+      {{ t.use }}
       <input
         type="number"
         min="1"
@@ -35,7 +35,7 @@
         [value]="s.workerCount()"
         (change)="workers.emit($any($event.target).value)"
       />
-      cores
+      {{ t.cores }}
     </label>
   </div>
 
@@ -47,8 +47,8 @@
     <button app-button variant="link" type="button" (click)="concise.set(!concise())">
       <app-icon name="search" /> {{ concise() ? 'Detailed view' : 'Concise view' }}
     </button>
-    <app-dropdown-menu plain label="Share this build" [items]="shareItems()" />
-    <app-dropdown-menu plain icon="delete" label="Clear items" [items]="clearItems()" />
+    <app-dropdown-menu plain [label]="t.shareThisBuild" [items]="shareItems()" />
+    <app-dropdown-menu plain icon="delete" [label]="t.clearItems" [items]="clearItems()" />
   </div>
 
   <div class="build-result" [class.detailed-view]="!concise()">
@@ -57,7 +57,14 @@
         <div class="slot-line" [class.enhanced]="line.item.enhancements">
           <div class="actions">
             @if (line.pinned) {
-              <button app-button variant="flat" type="button" class="pin pinned" title="Unpin this item" (click)="items().unpinItem(line.slot.index)">
+              <button
+                app-button
+                variant="flat"
+                type="button"
+                class="pin pinned"
+                [title]="t.unpinThisItem"
+                (click)="items().unpinItem(line.slot.index)"
+              >
                 <app-icon name="pin" />
               </button>
             } @else {
@@ -66,13 +73,20 @@
                 variant="flat"
                 type="button"
                 class="pin"
-                title="Pin this item"
+                [title]="t.pinThisItem"
                 (click)="items().pinItem(line.slot.index)"
               >
                 <app-icon name="pin" />
               </button>
             }
-            <button app-button variant="flat" type="button" class="remove" title="Remove this item" (click)="items().removeItem(line.slot.index)">
+            <button
+              app-button
+              variant="flat"
+              type="button"
+              class="remove"
+              [title]="t.removeThisItem"
+              (click)="items().removeItem(line.slot.index)"
+            >
               <app-icon name="delete" />
             </button>
             @if (!line.pinned && !line.item['placeHolder']) {
@@ -81,7 +95,7 @@
                 variant="flat"
                 type="button"
                 class="exclude"
-                title="Exclude this item from builds"
+                [title]="t.excludeThisItemFrom"
                 (click)="items().toggleExclude(line.item.id)"
               >
                 <app-icon name="ban" />
@@ -93,7 +107,7 @@
                 variant="flat"
                 type="button"
                 class="enchant"
-                title="Modify this weapon enchantment"
+                [title]="t.modifyThisWeaponEnchantment"
                 (click)="items().enhanceSlot(line.slot.index)"
               >
                 <app-icon name="dwarf" height="20" />
@@ -127,7 +141,7 @@
   </div>
 } @else if (!challenge()) {
   <div>
-    Please select a unit.
-    <button app-button variant="link" type="button" (click)="help.emit()">New here? How to use this</button>
+    {{ t.pleaseSelectAUnit }}
+    <button app-button variant="link" type="button" (click)="help.emit()">{{ t.newHereHowTo }}</button>
   </div>
 }

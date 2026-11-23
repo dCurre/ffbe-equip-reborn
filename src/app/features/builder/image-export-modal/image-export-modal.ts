@@ -2,6 +2,7 @@ import { Component, effect, ElementRef, input, model, viewChild } from '@angular
 import { Modal } from '../../../shared/components/modal/modal';
 import { downloadBlob } from '../../../shared/helpers/export';
 import { drawTeam } from '../shared/build-image';
+import { STRINGS } from '../../../strings/en';
 
 /** The picture of the team (one card per unit) with a Download button. */
 @Component({
@@ -11,6 +12,7 @@ import { drawTeam } from '../shared/build-image';
   styleUrl: './image-export-modal.css',
 })
 export class ImageExportModal {
+  protected readonly t = STRINGS.imageExportModal;
   readonly open = model(false);
   /** the `units` of a link */
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the unit data of a link is open

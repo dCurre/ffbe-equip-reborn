@@ -1,11 +1,11 @@
 <div class="all-espers">
   @if (logged()) {
     <a class="import-link" routerLink="/data-import" [queryParams]="serverContext.linkParams()">
-      <app-icon name="save" /> <span class="text">Import Espers</span>
+      <app-icon name="save" /> <span class="text">{{ t.importEspers }}</span>
     </a>
   }
   @if (ownedCount() === 0) {
-    <app-alert><app-icon name="info" /> You don't own any espers yet...</app-alert>
+    <app-alert><app-icon name="info" /> {{ t.youDonTOwn }}</app-alert>
   } @else {
     <div class="table-panel panel-box">
       <table>

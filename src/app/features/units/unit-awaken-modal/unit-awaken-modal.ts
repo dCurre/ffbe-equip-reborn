@@ -2,6 +2,7 @@ import { Component, input, model, output } from '@angular/core';
 import { Button } from '../../../shared/components/button/button';
 import { Modal } from '../../../shared/components/modal/modal';
 import type { GameUnit } from '../unit-model';
+import { STRINGS } from '../../../strings/en';
 
 /** Asks how a unit is awakened: with 2 copies, or with 1 and a prism. */
 @Component({
@@ -10,6 +11,7 @@ import type { GameUnit } from '../unit-model';
   templateUrl: './unit-awaken-modal.html',
 })
 export class UnitAwakenModal {
+  protected readonly t = STRINGS.unitAwakenModal;
   readonly unit = input.required<GameUnit | null>();
   readonly open = model(false);
   readonly chosen = output<1 | 2>();

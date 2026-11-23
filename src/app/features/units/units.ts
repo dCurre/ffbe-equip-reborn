@@ -25,6 +25,7 @@ import { showMoreOnScroll } from '../../shared/helpers/infinite-scroll';
 import { SearchBox } from '../../shared/components/search-box/search-box';
 import { StaticData } from '../../shared/services/static-data';
 import { Toast } from '../../shared/services/toast';
+import { ClearFilters } from '../../shared/components/clear-filters/clear-filters';
 import { Icon } from '../../shared/components/icon/icon';
 import { Button } from '../../shared/components/button/button';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
@@ -74,6 +75,7 @@ import {
   UnitEdit,
   useStmrSource,
 } from './unit-model';
+import { STRINGS } from '../../strings/en';
 
 /** The cards drawn at first, and each time the end of the list comes into view: the whole collection is a lot of cards. */
 const PAGE_SIZE = 60;
@@ -112,6 +114,7 @@ interface ReleasedUnit {
     ChoiceGroup,
     SearchBox,
     Button,
+    ClearFilters,
     ShareLinkModal,
     TextExportModal,
     UnitEditModal,
@@ -125,6 +128,7 @@ interface ReleasedUnit {
   styleUrl: './units.css',
 })
 export class Units {
+  protected readonly t = STRINGS.units;
   protected readonly gameDataUrl = GAME_DATA_URL;
 
   private readonly route = inject(ActivatedRoute);
@@ -158,18 +162,23 @@ export class Units {
   protected readonly selectedEx = signal<readonly string[]>([]);
   /** the first letters to show on the tabs that sort by name; none selected shows every letter */
   protected readonly selectedLetters = signal<readonly string[]>([]);
-  protected readonly exChoices: Choice[] = ['0', '1', '2', '3'].map((value) => ({ value, icon: 'level', label: value, tooltip: `EX level ${value}` }));
+  protected readonly exChoices: Choice[] = ['0', '1', '2', '3'].map((value) => ({
+    value,
+    icon: 'level',
+    label: value,
+    tooltip: `EX level ${value}`,
+  }));
   protected readonly sidebarCollapsed = signal(window.innerWidth < 990);
   protected readonly exportItems: MenuItem[] = [
-    { label: 'Export as CSV', run: () => this.exportCsv() },
-    { label: 'Export as simple text', run: () => this.exportText() },
-    { label: 'Get public unit collection link', run: () => this.shareCollection() },
+    { label: STRINGS.units.exportAsCsv, run: () => this.exportCsv() },
+    { label: STRINGS.units.exportAsSimpleText, run: () => this.exportText() },
+    { label: STRINGS.units.getPublicUnitCollection, run: () => this.shareCollection() },
   ];
   protected readonly tabs: TabItem<Tab>[] = [
-    { key: 'rarity', title: 'Show units by rarity', icon: 'units_stars' },
-    { key: 'alphabetical', title: 'Show units in alphabetical order', icon: 'units' },
-    { key: 'tmr', title: 'Show units by Trust name', icon: 'units_tmr' },
-    { key: 'history', title: 'Show units by events', icon: 'history' },
+    { key: 'rarity', title: STRINGS.units.showUnitsByRarity, icon: 'units_stars' },
+    { key: 'alphabetical', title: STRINGS.units.showUnitsInAlphabetical, icon: 'units' },
+    { key: 'tmr', title: STRINGS.units.showUnitsByTrust, icon: 'units_tmr' },
+    { key: 'history', title: STRINGS.units.showUnitsByEvents, icon: 'history' },
   ];
   private readonly searchBox = viewChild(SearchBox);
   private readonly results = viewChild<ElementRef<HTMLElement>>('results');
@@ -214,17 +223,17 @@ export class Units {
 
   protected readonly stats = computed(() => collectionStats(this.released(), this.owned()));
   protected readonly statRows = [
-    { key: 'NVA', crystal: 'crystal-NVA', title: 'NVA units' },
-    { key: 'NV', crystal: 'crystal-NV', title: 'NV units' },
-    { key: '7', crystal: 'crystal-sevenStarCrystal', title: 'Units awakened to 7★' },
-    { key: '5', crystal: 'crystal-rainbowCrystal', title: 'Units with base 5★' },
-    { key: '4', crystal: 'crystal-goldCrystal', title: 'Units with base 4★' },
-    { key: '3', crystal: 'crystal-blueCrystal', title: 'Units with base 3★' },
+    { key: 'NVA', crystal: 'crystal-NVA', title: STRINGS.units.nvaUnits },
+    { key: 'NV', crystal: 'crystal-NV', title: STRINGS.units.nvUnits },
+    { key: '7', crystal: 'crystal-sevenStarCrystal', title: STRINGS.units.unitsAwakenedTo7 },
+    { key: '5', crystal: 'crystal-rainbowCrystal', title: STRINGS.units.unitsWithBase5 },
+    { key: '4', crystal: 'crystal-goldCrystal', title: STRINGS.units.unitsWithBase4 },
+    { key: '3', crystal: 'crystal-blueCrystal', title: STRINGS.units.unitsWithBase3 },
   ] as const;
   protected readonly statGroups = [
-    { key: 'all', title: 'All units' },
-    { key: 'notLimited', title: 'Not-limited units' },
-    { key: 'timeLimited', title: 'Time-limited units' },
+    { key: 'all', title: STRINGS.units.allUnits },
+    { key: 'notLimited', title: STRINGS.units.notLimitedUnits },
+    { key: 'timeLimited', title: STRINGS.units.timeLimitedUnits },
   ] as const;
 
   protected readonly placeholder = computed(() => (this.tab() === 'tmr' ? 'Enter TMR name' : 'Enter unit name'));
@@ -275,8 +284,17 @@ export class Units {
       choices.set(
         value,
         icon
-          ? { value, icon: icon.replace('crystal-', ''), label: text.trim() || undefined, tooltip: soon ? 'NVA units (soon)' : unit.min_rarity === 'NV' ? 'NV units' : 'NVA units' }
-          : { value, label: rarityLabel(unit.min_rarity, max, soon), tooltip: `Base ${unit.min_rarity}★, up to ${max}★` },
+          ? {
+              value,
+              icon: icon.replace('crystal-', ''),
+              label: text.trim() || undefined,
+              tooltip: soon ? 'NVA units (soon)' : unit.min_rarity === 'NV' ? 'NV units' : 'NVA units',
+            }
+          : {
+              value,
+              label: rarityLabel(unit.min_rarity, max, soon),
+              tooltip: `Base ${unit.min_rarity}★, up to ${max}★`,
+            },
       );
     }
     return [...choices.values()];
@@ -303,7 +321,6 @@ export class Units {
     }
     return groups;
   });
-
 
   protected readonly shown = computed(() => this.groups().reduce((sum, group) => sum + group.cards.length, 0));
 
@@ -388,14 +405,14 @@ export class Units {
       this.gameDataReady.set(true);
       this.staticData.get<HistoryEntry[]>('lastItemReleases').then((history) => this.history.set(history));
     } catch {
-      this.toast.show('Error while loading the unit data', 'error');
+      this.toast.show(STRINGS.units.errorWhileLoadingThe, 'error');
       return;
     }
     if (linkId) {
       try {
         this.linked.set(await this.linkStore.load<Record<string, LinkedUnit>>(linkId));
       } catch {
-        this.toast.show('Error : no data found', 'error');
+        this.toast.show(STRINGS.units.errorNoDataFound, 'error');
       }
       this.linkLoaded.set(true);
     }
@@ -436,7 +453,8 @@ export class Units {
     const groups: Group[] = [];
     for (const unit of units) {
       const letter = initialOf(this.sortName(unit, byTrustName));
-      if (groups[groups.length - 1]?.title !== letter) groups.push({ id: `letter-${letter}`, title: letter, cards: [] });
+      if (groups[groups.length - 1]?.title !== letter)
+        groups.push({ id: `letter-${letter}`, title: letter, cards: [] });
       groups[groups.length - 1].cards.push(this.card(unit, byTrustName));
     }
     return groups;
@@ -456,7 +474,9 @@ export class Units {
         .filter((unit) => !byTrustName || this.trust().tmr[unit.id])
         .map((unit) => initialOf(this.sortName(unit, byTrustName))),
     );
-    return [...letters].sort((a, b) => a.localeCompare(b)).map((value) => ({ value, label: value, tooltip: `Names starting with ${value}` }));
+    return [...letters]
+      .sort((a, b) => a.localeCompare(b))
+      .map((value) => ({ value, label: value, tooltip: `Names starting with ${value}` }));
   });
 
   private historyGroups(): Group[] {
@@ -496,7 +516,9 @@ export class Units {
     const stmr = this.trust().stmr[unit.id];
     const farmed = this.farmed();
     const trust = (item: TrustItem | undefined, farmedCount: number, farmable: number) =>
-      item || this.readOnly() ? { name: item?.name ?? '', item, farmed: farmedCount, total: farmedCount + farmable } : null;
+      item || this.readOnly()
+        ? { name: item?.name ?? '', item, farmed: farmedCount, total: farmedCount + farmable }
+        : null;
     return {
       unit,
       classes,
@@ -523,7 +545,6 @@ export class Units {
       canStmr: unit.max_rarity === '7' || unit.max_rarity === 'NV',
     };
   }
-
 
   protected showTab(tab: Tab): void {
     this.selectedLetters.set([]); // the letters belong to the tab (unit names or TMR names)
@@ -571,8 +592,13 @@ export class Units {
     removeOne(this.inventory.units(), unit, this.farmed().tmr, this.farmed().stmr);
     // the TMR / STMR cannot be more than the copies left: all gone when the unit is
     const mine = this.inventory.units()[unit.id];
-    const max = mine ? maxTrust(unit, { number: mine.number, sevenStar: mine.sevenStar ?? 0, nv: mine.nv ?? 0 }) : { tmr: 0, stmr: 0 };
-    for (const [item, limit] of [[this.trust().tmr[unit.id], max.tmr], [this.trust().stmr[unit.id], max.stmr]] as const) {
+    const max = mine
+      ? maxTrust(unit, { number: mine.number, sevenStar: mine.sevenStar ?? 0, nv: mine.nv ?? 0 })
+      : { tmr: 0, stmr: 0 };
+    for (const [item, limit] of [
+      [this.trust().tmr[unit.id], max.tmr],
+      [this.trust().stmr[unit.id], max.stmr],
+    ] as const) {
       if (!item) continue;
       const kept = Math.min(this.inventory.count(item.id), limit);
       if (kept) this.inventory.items()[item.id] = kept;
@@ -664,7 +690,7 @@ export class Units {
   }
 
   protected copyText(): void {
-    void copyToClipboard(this.textExport()).then((ok) => ok && this.toast.show('Copied to the clipboard'));
+    void copyToClipboard(this.textExport()).then((ok) => ok && this.toast.show(STRINGS.units.copiedToTheClipboard));
   }
 
   /** The link is a snapshot of the collection at the moment of the click (it is not updated afterwards). */
@@ -693,7 +719,7 @@ export class Units {
       url.search = `?server=${this.server()}&o`;
       this.share.show(`${url.href}#${id}`);
     } catch {
-      this.toast.show('Error while creating the public link', 'error');
+      this.toast.show(STRINGS.units.errorWhileCreatingThe, 'error');
     }
   }
 }

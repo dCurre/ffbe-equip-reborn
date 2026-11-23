@@ -1,41 +1,36 @@
 <app-modal [heading]="'Edit ' + (unit()?.name ?? '')" confirmLabel="Save" [(open)]="open" (confirmed)="save()">
   <form class="edit-form" (submit)="$event.preventDefault(); save()">
     @if (canEdit('nv')) {
-      <label>NV owned <input type="number" min="0" name="nv" [(ngModel)]="edit.nv" /></label>
+      <label>{{ t.nvOwned }} <input type="number" min="0" name="nv" [(ngModel)]="edit.nv" /></label>
     }
     @if (canEdit('sevenStar')) {
-      <label>7* owned <input type="number" min="0" name="sevenStar" [(ngModel)]="edit.sevenStar" /></label>
+      <label>{{ t.n7Owned }} <input type="number" min="0" name="sevenStar" [(ngModel)]="edit.sevenStar" /></label>
     }
     @if (canEdit('number')) {
-      <label>6* or under owned <input type="number" min="0" name="number" [(ngModel)]="edit.number" /></label>
+      <label>{{ t.n6OrUnderOwned }} <input type="number" min="0" name="number" [(ngModel)]="edit.number" /></label>
     }
     @if (canEdit('tmr')) {
       <label>
-        TMR owned
+        {{ t.tmrOwned }}
         <input type="number" min="0" [max]="max().tmr" name="tmrOwned" [(ngModel)]="owned.tmr" />
       </label>
     }
     @if (canEdit('stmr')) {
       <label>
-        STMR owned
+        {{ t.stmrOwned }}
         <input type="number" min="0" [max]="max().stmr" name="stmrOwned" [(ngModel)]="owned.stmr" />
       </label>
     }
     @if (canEdit('nvExtras')) {
       <label
-        >Fragments owned <input type="number" min="0" step="5" name="fragments" [(ngModel)]="edit.fragments"
+        >{{ t.fragmentsOwned }} <input type="number" min="0" step="5" name="fragments" [(ngModel)]="edit.fragments"
       /></label>
-      <label>EX Level <input type="number" min="0" max="3" name="exRank" [(ngModel)]="edit.exRank" /></label>
+      <label>{{ t.exLevel }} <input type="number" min="0" max="3" name="exRank" [(ngModel)]="edit.exRank" /></label>
     }
     @if (canEdit('moogles')) {
       <label class="stacked">
-        TMR Moogles owned
-        <input
-          type="text"
-          name="tmrMoogles"
-          placeholder="Enter values of tmr moogles, separated by comma"
-          [(ngModel)]="edit.tmrMoogles"
-        />
+        {{ t.tmrMooglesOwned }}
+        <input type="text" name="tmrMoogles" [placeholder]="t.enterValuesOfTmr" [(ngModel)]="edit.tmrMoogles" />
       </label>
     }
     @if (error()) {

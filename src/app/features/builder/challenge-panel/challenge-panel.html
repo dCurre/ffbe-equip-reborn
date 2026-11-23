@@ -1,5 +1,7 @@
 <app-panel>
-  <div panelHeading class="heading"><span>Parameter challenges</span></div>
+  <div panelHeading class="heading">
+    <span>{{ t.parameterChallenges }}</span>
+  </div>
   @if (available()) {
     <div class="challenge">
       <div class="line">
@@ -29,9 +31,9 @@
           </label>
         }
       </div>
-      <p>(Units will be assumed fully leveled, fully potted, and with relevant abilities enhanced)</p>
+      <p>{{ t.unitsWillBeAssumed }}</p>
     </div>
   } @else {
-    <app-alert kind="info">Parameter Challenge feature is only available when logged-in</app-alert>
+    <app-alert kind="info">{{ t.parameterChallengeFeatureIs }}</app-alert>
   }
 </app-panel>

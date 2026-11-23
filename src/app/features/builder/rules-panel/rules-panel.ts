@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Checkbox } from '../../../shared/components/checkbox/checkbox';
 import { Panel } from '../../../shared/components/panel/panel';
 import { StatePanel } from '../shared/state-panel';
+import { STRINGS } from '../../../strings/en';
 
 /** The rules the build must follow, and the damage variance. */
 @Component({
@@ -11,6 +12,7 @@ import { StatePanel } from '../shared/state-panel';
   styleUrls: ['../shared/form-common.css', './rules-panel.css'],
 })
 export class RulesPanel extends StatePanel {
+  protected readonly t = STRINGS.rulesPanel;
   protected readonly overcapStats = [
     ['hp', 'HP'],
     ['mp', 'MP'],

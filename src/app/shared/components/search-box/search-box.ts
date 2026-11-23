@@ -1,6 +1,7 @@
 import { Component, ElementRef, input, OnInit, output, signal, viewChild } from '@angular/core';
 import { Button } from '../button/button';
 import { Icon } from '../icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /**
  * The search field of a page: a magnifier, a clear button when there is text.
@@ -13,6 +14,7 @@ import { Icon } from '../icon/icon';
   styleUrl: './search-box.css',
 })
 export class SearchBox implements OnInit {
+  protected readonly t = STRINGS.searchBox;
   readonly placeholder = input('Search');
   /** the text the box starts with (a search restored from a link); later changes of it are ignored */
   readonly initial = input('');

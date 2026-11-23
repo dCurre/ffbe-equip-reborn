@@ -7,6 +7,7 @@ import type { Toast } from '../../../shared/services/toast';
 import { updateGoal } from './build-inputs';
 import type { BuilderState, BuilderUnit } from './builder-state';
 import { choiceFromFormula } from './goal';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -46,7 +47,7 @@ export class UnitLoader {
     try {
       await this.loadSkills(skillsId);
     } catch {
-      this.toast.show('Error while loading the skills of the unit', 'error');
+      this.toast.show(STRINGS.unitLoader.errorWhileLoadingThe, 'error');
       return;
     }
     const previous = this.s.build();

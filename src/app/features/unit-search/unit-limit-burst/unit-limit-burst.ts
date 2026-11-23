@@ -3,6 +3,7 @@ import { UnitEffect } from '../unit-effect/unit-effect';
 import { UnitSkillTags } from '../unit-skill-tags/unit-skill-tags';
 import { UnitStrangeStats } from '../unit-strange-stats/unit-strange-stats';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
@@ -14,5 +15,6 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrls: ['../unit-skill/unit-skill.css', './unit-limit-burst.css'],
 })
 export class UnitLimitBurst {
+  protected readonly t = STRINGS.unitLimitBurst;
   readonly lb = input.required<any>();
 }

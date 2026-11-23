@@ -9,4 +9,6 @@ import { Component, input } from '@angular/core';
 export class ProgressBar {
   readonly value = input.required<number>();
   readonly label = input('Progress');
+  /** The bar turns sky blue when the work is done. */
+  readonly finished = input(false);
 }

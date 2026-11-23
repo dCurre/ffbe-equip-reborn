@@ -296,6 +296,12 @@ select {
   background-color: var(--color-menu-hover-background);
 }
 
+/* The current page: bold with a bar on the left, so it is not mistaken for the hovered entry */
+.dropdown a.active {
+  font-weight: 700;
+  box-shadow: inset 4px 0 0 var(--color-menu-hover-text);
+}
+
 /* ---- smaller screens ---- */
 
 @media (max-width: 991px) {
@@ -411,11 +417,19 @@ select {
     flex-wrap: wrap;
     justify-content: space-around;
   }
+
 }
 
 @media (max-width: 991px) {
   .dropdown li {
     height: 48px;
+  }
+
+  /* The link fills the whole row, so there is no dead space between entries */
+  .dropdown a {
+    display: flex;
+    align-items: center;
+    height: 100%;
   }
 }
 

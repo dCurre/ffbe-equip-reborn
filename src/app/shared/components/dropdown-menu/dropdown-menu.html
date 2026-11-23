@@ -1,9 +1,9 @@
 <div class="dropdown" [class.plain]="plain()" (click)="$event.stopPropagation()">
   <a class="link" (click)="open.set(!open())"
-    ><app-icon [name]="icon()" /> <span>{{ label() }} <app-icon name="caret-down" /></span></a
-  >
+    ><app-icon [name]="icon()" /> <span>{{ label() }} <app-icon name="caret-down" /></span
+  ></a>
   @if (open()) {
-    <ul class="menu">
+    <ul class="menu menu-box">
       @for (item of items(); track item.label) {
         <li>
           <a (click)="run(item)">{{ item.label }}</a>

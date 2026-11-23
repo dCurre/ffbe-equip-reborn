@@ -36,7 +36,7 @@
 
           @if (current()) {
             <div class="share-link">
-              <button app-button (click)="openShare()"><app-icon name="link" /> Get a link to this Esper build</button>
+              <button app-button (click)="openShare()"><app-icon name="link" /> {{ t.getALinkTo }}</button>
             </div>
           }
 
@@ -59,7 +59,7 @@
 </app-page-content>
 
 <app-share-link-modal
-  heading="Link to your Esper build"
+  [heading]="t.linkToYourEsper"
   intro="This link will allow anyone to visualize your Esper build"
   [link]="share.link()"
   [copied]="share.copied()"

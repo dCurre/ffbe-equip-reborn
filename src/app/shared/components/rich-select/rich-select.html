@@ -12,8 +12,8 @@
       type="text"
       class="search"
       autocomplete="off"
-      placeholder="Search"
-      aria-label="Search"
+      [placeholder]="t.search"
+      [attr.aria-label]="t.search"
       [value]="query()"
       (input)="query.set($any($event.target).value)"
       (keydown.escape)="open.set(false)"
@@ -21,16 +21,12 @@
     <ul>
       @for (option of shown(); track option.value) {
         <li>
-          <a
-            [class.selected]="option.value === value()"
-            [class.disabled]="option.disabled"
-            (click)="pick(option)"
-          >
+          <a [class.selected]="option.value === value()" [class.disabled]="option.disabled" (click)="pick(option)">
             <ng-container *ngTemplateOutlet="row; context: { $implicit: option }" />
           </a>
         </li>
       } @empty {
-        <li class="empty">No results</li>
+        <li class="empty">{{ t.noResults }}</li>
       }
     </ul>
   </div>

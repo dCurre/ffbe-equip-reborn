@@ -184,7 +184,6 @@ code {
   border-radius: var(--radius);
 }
 
-
 /* the checkboxes of the old site: a dark square with a check */
 input[type='checkbox'] {
   appearance: none;
@@ -240,6 +239,30 @@ input[type='checkbox']:checked {
 }
 .item-cards .td {
   line-height: 1.42857143;
+}
+
+/* --- The list that opens under a field or a button (`combobox`, `dropdown-menu`): the box and its links; each sets its own position and padding of the links --- */
+
+.menu-box {
+  position: absolute;
+  z-index: 1000;
+  margin: 2px 0 0;
+  padding: 5px 0;
+  list-style: none;
+  background-color: var(--color-menu-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+.menu-box a {
+  display: block;
+  color: var(--color-menu-text);
+  cursor: pointer;
+}
+.menu-box a:hover,
+.menu-box a.selected {
+  color: var(--color-menu-hover-text);
+  background-color: var(--color-menu-hover-background);
+  text-decoration: none;
 }
 
 /* --- The white box of a panel (`app-panel`, or a plain element that needs the same look) --- */

@@ -1,0 +1,3 @@
+<button app-button small type="button" [title]="title()" (click)="cleared.emit()">
+  <app-icon name="remove" />{{ t.clear }}<span class="count">{{ count() }}</span>
+</button>

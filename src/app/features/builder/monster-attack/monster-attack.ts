@@ -8,6 +8,7 @@ import { Icon } from '../../../shared/components/icon/icon';
 import { Modal } from '../../../shared/components/modal/modal';
 import { defaultMonsterAttackFormula } from '../shared/goal';
 import { StatePanel } from '../shared/state-panel';
+import { STRINGS } from '../../../strings/en';
 
 /** The attack of the monster, as a formula: shown in a line and changed in a dialog. */
 @Component({
@@ -17,6 +18,7 @@ import { StatePanel } from '../shared/state-panel';
   styleUrl: './monster-attack.css',
 })
 export class MonsterAttack extends StatePanel {
+  protected readonly t = STRINGS.monsterAttack;
   private readonly toast = inject(Toast);
 
   protected readonly open = signal(false);
@@ -36,9 +38,9 @@ export class MonsterAttack extends StatePanel {
       formula = null;
     }
     if (!formula) {
-      this.toast.show('This formula cannot be read', 'error');
+      this.toast.show(STRINGS.monsterAttack.thisFormulaCannotBe, 'error');
     } else if (!isAttackFormula(formula)) {
-      this.toast.show('The inputed formula is not a valid simple damage formula', 'error');
+      this.toast.show(STRINGS.monsterAttack.theInputedFormulaIs, 'error');
     } else {
       this.set(formula);
       this.open.set(false);

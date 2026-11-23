@@ -1,10 +1,10 @@
 <app-page-content>
   <app-page-column [half]="true">
-    <app-panel heading="Help improve FFBE Equip Reborn">
-      <p>Found a problem or have an idea? Open an issue on GitHub (a free GitHub account is needed):</p>
-      <button app-button (click)="openIssue('bug_report.yml')"><app-icon name="alert" /> Report a bug</button>
+    <app-panel [heading]="t.helpImproveFfbeEquip">
+      <p>{{ t.foundAProblemOr }}</p>
+      <button app-button (click)="openIssue('bug_report.yml')"><app-icon name="alert" /> {{ t.reportABug }}</button>
       <button app-button (click)="openIssue('suggestion.yml')">
-        <app-icon name="thumbs-up" /> Suggest an improvement
+        <app-icon name="thumbs-up" /> {{ t.suggestAnImprovement }}
       </button>
     </app-panel>
     <app-site-footer />

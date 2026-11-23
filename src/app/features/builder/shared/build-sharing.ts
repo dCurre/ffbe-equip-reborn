@@ -24,6 +24,7 @@ import { formulaByGoal } from './goal';
 import type { ItemActions } from './item-actions';
 import { ADDITIONAL_FILTERS, oldLinkToData, shortLinkToData, stateData, unitState } from './state-hash';
 import type { UnitLoader } from './unit-loader';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -118,7 +119,7 @@ export class BuildSharing {
       url.search = `?server=${this.serverContext.server()}`;
       this.share.show(`${url.href}#${id}`);
     } catch {
-      this.toast.show('Failed to generate url', 'error');
+      this.toast.show(STRINGS.buildSharing.failedToGenerateUrl, 'error');
     }
   }
 
@@ -196,7 +197,7 @@ export class BuildSharing {
   }
 
   copyText(): void {
-    void copyToClipboard(this.textValue()).then((ok) => ok && this.toast.show('Copied', 'success'));
+    void copyToClipboard(this.textValue()).then((ok) => ok && this.toast.show(STRINGS.buildSharing.copied, 'success'));
   }
 
   // --- Opening a link ---
@@ -210,7 +211,7 @@ export class BuildSharing {
       if (this.linkStore.isLinkId(fragment)) {
         data = await this.linkStore.load(fragment);
       } else if (this.linkStore.isOldLinkId(fragment)) {
-        this.toast.show('This link was made by FFBE Equip Next and its data is no longer available.', 'error');
+        this.toast.show(STRINGS.buildSharing.thisLinkWasMade, 'error');
         return;
       } else {
         const parsed = JSON.parse(atob(fragment));
@@ -230,7 +231,7 @@ export class BuildSharing {
       // the link is not kept in the address: a reload starts from an empty page
       this.router.navigate([], { fragment: undefined, queryParamsHandling: 'preserve', replaceUrl: true });
     } catch {
-      this.toast.show('This build link does not exist or could not be loaded.', 'error');
+      this.toast.show(STRINGS.buildSharing.thisBuildLinkDoes, 'error');
     }
   }
 
@@ -251,7 +252,7 @@ export class BuildSharing {
     // the source "owned, available for expeditions" does not exist anymore: it opens as "owned"
     if (selector?.mainSelector === 'ownedAvailableForExpedition') selector.mainSelector = 'owned';
     if (selector?.mainSelector === 'owned' && this.inventory.status() !== 'loaded') {
-      this.toast.show('This build uses your owned equipments: log in to open it', 'warn');
+      this.toast.show(STRINGS.buildSharing.thisBuildUsesYour, 'warn');
       return;
     }
     const monster = data.monster;

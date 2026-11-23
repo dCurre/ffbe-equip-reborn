@@ -13,26 +13,19 @@ import { UnitBuffs } from '../unit-buffs/unit-buffs';
 import { UnitEquipable } from '../unit-equipable/unit-equipable';
 import { UnitStats } from '../unit-stats/unit-stats';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** The unit of the page: its level, enhancements, stats with pots and buffs, and the equipment it can use. */
 @Component({
   selector: 'app-unit-panel',
-  imports: [
-    Button,
-    Combobox,
-    Panel,
-    ChoiceGroup,
-    UnitStats,
-    UnitBuffs,
-    UnitEquipable,
-    Icon,
-  ],
+  imports: [Button, Combobox, Panel, ChoiceGroup, UnitStats, UnitBuffs, UnitEquipable, Icon],
   templateUrl: './unit-panel.html',
   styleUrls: ['../shared/form-common.css', './unit-panel.css'],
 })
 export class UnitPanel extends StatePanel {
+  protected readonly t = STRINGS.unitPanel;
   readonly loader = input.required<UnitLoader>();
   /** `choose`: the line to choose the unit (inside the card of the goal); `details`: its panel with the stats */
   readonly part = input<'choose' | 'details'>('details');

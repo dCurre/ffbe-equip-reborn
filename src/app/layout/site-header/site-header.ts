@@ -8,8 +8,10 @@ import { GoogleDrive } from '../../shared/services/google-drive';
 import { Inventory } from '../../shared/services/inventory';
 import { Language, LANGUAGES, ServerContext, SERVERS } from '../../shared/services/server-context';
 import { Theme } from '../../shared/services/theme';
+import { STRINGS } from '../../strings/en';
 
-export type BannerName = 'Sakura' | 'Lasswell' | 'Jake' | 'Rain' | 'Nichol' | 'Lid' | 'Fina' | 'MogChocobo' | 'Charlotte';
+export type BannerName =
+  'Sakura' | 'Lasswell' | 'Jake' | 'Rain' | 'Nichol' | 'Lid' | 'Fina' | 'MogChocobo' | 'Charlotte';
 
 /** Left padding of the title (px) so it clears the character picture: wide screens, up to 991px, up to 768px. */
 const BANNER_PADDING: Record<BannerName, [number, number, number]> = {
@@ -28,15 +30,15 @@ const BANNER_PADDING: Record<BannerName, [number, number, number]> = {
 const FLAG_POSITION: Record<Language, number> = { en: -596, zh: -1156, ko: -820, fr: -660, de: -564, es: -612 };
 
 const MENU = [
-  { path: '/', label: 'Home' },
-  { path: '/builder', label: 'Unit builder' },
-  { path: '/encyclopedia', label: 'Encyclopedia' },
-  { path: '/unitSearch', label: 'Unit Search' },
-  { path: '/inventory', label: 'My inventory' },
-  { path: '/units', label: 'My units' },
-  { path: '/espers', label: 'My Espers' },
-  { path: '/data-import', label: 'Data import' },
-  { path: '/contribute', label: 'Contribute' },
+  { path: '/', label: STRINGS.siteHeader.home },
+  { path: '/builder', label: STRINGS.siteHeader.unitBuilder },
+  { path: '/encyclopedia', label: STRINGS.siteHeader.encyclopedia },
+  { path: '/unitSearch', label: STRINGS.siteHeader.unitSearch },
+  { path: '/inventory', label: STRINGS.siteHeader.myInventory },
+  { path: '/units', label: STRINGS.siteHeader.myUnits },
+  { path: '/espers', label: STRINGS.siteHeader.myEspers },
+  { path: '/data-import', label: STRINGS.siteHeader.dataImport },
+  { path: '/contribute', label: STRINGS.siteHeader.contribute },
 ];
 
 /** Page title, menu, login status, theme, language and server buttons: the old `layout.js` header. */
@@ -47,6 +49,7 @@ const MENU = [
   styleUrl: './site-header.css',
 })
 export class SiteHeader {
+  protected readonly t = STRINGS.siteHeader;
   readonly title = input.required<string>();
   readonly banner = input.required<BannerName>();
 

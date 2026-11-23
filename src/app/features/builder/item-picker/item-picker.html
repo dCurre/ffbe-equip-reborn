@@ -1,21 +1,21 @@
-<app-modal heading="Choose an item" [wide]="true" [(open)]="open">
+<app-modal [heading]="t.chooseAnItem" [wide]="true" [(open)]="open">
   <div class="search-line">
     <input
       type="text"
       class="search"
-      placeholder="Search"
-      aria-label="Search"
+      [placeholder]="t.search"
+      [attr.aria-label]="t.search"
       [value]="text()"
       (input)="onSearch($event)"
     />
     <label class="stat">
-      Sort by
+      {{ t.sortBy }}
       <select [value]="stat()" (change)="stat.set($any($event.target).value)">
-        <option value="">name</option>
+        <option value="">{{ t.name }}</option>
         @for (name of statChoices; track name) {
-          <option [value]="name">{{ name.toUpperCase() }} (total)</option>
+          <option [value]="name">{{ name.toUpperCase() }} {{ t.total }}</option>
           @if (name !== 'evade' && name !== 'inflict' && name !== 'resist') {
-            <option [value]="name + '-flat'">{{ name.toUpperCase() }} (flat)</option>
+            <option [value]="name + '-flat'">{{ name.toUpperCase() }} {{ t.flat }}</option>
           }
         }
       </select>
@@ -23,9 +23,9 @@
   </div>
   <div class="options">
     @if (canFilterOwned()) {
-      <app-checkbox [(checked)]="onlyOwned">Only show owned equipment</app-checkbox>
+      <app-checkbox [(checked)]="onlyOwned">{{ t.onlyShowOwnedEquipment }}</app-checkbox>
     }
-    <app-checkbox [(checked)]="excludeNotReleased">Exclude not released yet</app-checkbox>
+    <app-checkbox [(checked)]="excludeNotReleased">{{ t.excludeNotReleasedYet }}</app-checkbox>
   </div>
   @if (typeChoices().length > 1) {
     <div class="types">
@@ -62,9 +62,9 @@
         >
           <div class="td flag">
             @if (behavior() === 'include') {
-              <span [class.on]="isIncluded(item)" title="Always allow this item">&#10004;</span>
+              <span [class.on]="isIncluded(item)" [title]="t.alwaysAllowThisItem">&#10004;</span>
             } @else {
-              <span [class.on]="isExcluded(item)" title="Exclude this item from builds">&#128683;</span>
+              <span [class.on]="isExcluded(item)" [title]="t.excludeThisItemFrom">&#128683;</span>
             }
           </div>
           <app-item-line
@@ -76,7 +76,7 @@
           />
           @if (item.type === 'visionCard') {
             <div class="td levels">
-              Level:
+              {{ t.level }}
               @for (level of cardLevels(item); track level.level) {
                 <button app-button type="button" [class]="level.state" (click)="pickCard(item, level, $event)">
                   {{ level.level }}
@@ -86,7 +86,14 @@
           }
           @if (behavior() === 'equip') {
             <div class="td enchantment">
-              <button app-button variant="flat" type="button" class="dwarf" title="Modify the enhancements" (click)="enhanceItem.emit(item)">
+              <button
+                app-button
+                variant="flat"
+                type="button"
+                class="dwarf"
+                [title]="t.modifyTheEnhancements"
+                (click)="enhanceItem.emit(item)"
+              >
                 <app-icon name="dwarf" height="28" />
               </button>
             </div>
@@ -101,7 +108,7 @@
     </div>
     <div #end class="end"></div>
     @if (results().length === 0) {
-      <p>No results…</p>
+      <p>{{ t.noResults }}</p>
     }
   </div>
 </app-modal>

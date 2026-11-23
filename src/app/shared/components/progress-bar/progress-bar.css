@@ -1,3 +1,7 @@
+:host {
+  display: block;
+}
+
 .progress {
   position: relative;
   height: 34px;
@@ -10,6 +14,10 @@
   height: 100%;
   background-color: #4caf50;
   transition: width 0.3s;
+}
+
+.progress-bar.finished {
+  background-color: skyblue;
 }
 
 .progress-text {

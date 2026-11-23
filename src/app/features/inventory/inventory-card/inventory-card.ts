@@ -5,6 +5,7 @@ import { ItemSummary } from '../../../game/components/item-summary/item-summary'
 import { ItemEntry } from '../inventory-model';
 import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the enchantments of the game are open */
 
@@ -16,6 +17,7 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrls: ['../inventory-item.css', './inventory-card.css'],
 })
 export class InventoryCard {
+  protected readonly t = STRINGS.inventoryCard;
   readonly line = input.required<ItemEntry>();
   readonly tab = input.required<string>();
   /** the state classes of the card, computed by the page (they depend on the whole inventory) */

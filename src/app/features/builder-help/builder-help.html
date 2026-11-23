@@ -1,9 +1,9 @@
 <app-page-content>
   <app-page-column>
-    <div class="navbar">FFBE Equip Reborn - Builder Help</div>
+    <div class="navbar">{{ t.ffbeEquipRebornBuilder }}</div>
     <div class="group">
       <details class="help panel-box" open>
-        <summary>Custom goal usage</summary>
+        <summary>{{ t.customGoalUsage }}</summary>
         <div class="help-body">
           Custom goals are used to define how you want to build your unit. Each custom goal contains one or more
           [formulae], separated by semicolons [;], without a semicolon at the end. Custom goals can be as simple as a
@@ -29,11 +29,11 @@
         </div>
       </details>
       <details class="help panel-box">
-        <summary>Simulating unit skills</summary>
+        <summary>{{ t.simulatingUnitSkills }}</summary>
         <div class="help-body">
           <div class="group">
             <details class="help panel-box" open>
-              <summary>Unit skill multipliers</summary>
+              <summary>{{ t.unitSkillMultipliers }}</summary>
               <div class="help-body">
                 Unit Skill Multiplers: Skill Multipliers can be entered directly into the custom goal as a multiplier of
                 the damage variable. For example, to calculate damage using a physical attack with a 2.6x multiplier,
@@ -41,26 +41,22 @@
               </div>
             </details>
             <details class="help panel-box" open>
-              <summary>Unit buffs and breaks</summary>
+              <summary>{{ t.unitBuffsAndBreaks }}</summary>
               <div class="help-body">
-                Unit Buffs and Breaks: Unit Buffs and Breaks are entered into the unit's information, in the third box
-                next to the affected attribute. Buffs and Breaks stack additively, but only the strongest of each is
-                applied. A 120% buff does not gain anything from applying a 50% buff, but does lose some potency to a
-                50% break, which results in a 70% buff. To calculate this combination of Buff and Break as part of
-                Noctis' Atk, we enter this number (70%) next to his Atk attribute, so that his unit information reads as
-                [atk : 158 (base) : +30 (pots) : 70% (buff)].
+                {{ t.unitBuffsAndBreaks2 }}
               </div>
             </details>
           </div>
         </div>
       </details>
       <details class="help panel-box">
-        <summary>3. What is CSS?</summary>
+        <summary>{{ t.n3WhatIsCss }}</summary>
         <div class="help-body">
           <p>
-            CSS stands for Cascading Style Sheet. CSS allows you to specify various style properties for a given HTML
-            element such as colors, backgrounds, fonts etc.
-            <a href="https://www.tutorialrepublic.com/css-tutorial/" target="_blank" rel="noreferrer">Learn more.</a>
+            {{ t.cssStandsForCascading }}
+            <a href="https://www.tutorialrepublic.com/css-tutorial/" target="_blank" rel="noreferrer">{{
+              t.learnMore
+            }}</a>
           </p>
         </div>
       </details>

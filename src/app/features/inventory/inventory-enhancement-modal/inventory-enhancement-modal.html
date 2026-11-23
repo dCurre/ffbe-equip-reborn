@@ -1,6 +1,6 @@
-<app-modal heading="Item management" [(open)]="open">
+<app-modal [heading]="t.itemManagement" [(open)]="open">
   @if (line()) {
-    <button app-button modalFooter type="button" class="danger" (click)="cleared.emit()">Clear all</button>
+    <button app-button modalFooter type="button" class="danger" (click)="cleared.emit()">{{ t.clearAll }}</button>
   }
   @if (line(); as current) {
     <div class="enhancing-title item">

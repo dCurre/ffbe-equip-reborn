@@ -7,6 +7,7 @@ import type { Toast } from '../../../shared/services/toast';
 import { chooseGoal, updateGoal } from './build-inputs';
 import type { BuilderState } from './builder-state';
 import { choiceFromFormula } from './goal';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -35,7 +36,7 @@ export class CustomGoal {
       this.open.set(false);
       this.s.refresh();
     } catch {
-      this.toast.show('This formula cannot be read', 'error');
+      this.toast.show(STRINGS.customGoal.thisFormulaCannotBe, 'error');
     }
   }
 

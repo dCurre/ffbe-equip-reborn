@@ -29,7 +29,7 @@ import { PageContent } from '../../layout/page-content/page-content';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { SearchBox } from '../../shared/components/search-box/search-box';
 import { TabPanel } from '../../shared/components/tab-panel/tab-panel';
-import { TabItem } from '../../shared/components/tab-bar/tab-bar';
+import { tabsWithCounts } from '../../shared/components/tab-bar/tab-bar';
 import { ActiveFilter, ActiveFilters } from '../unit-search/active-filters/active-filters';
 import { highlightText } from '../../shared/helpers/highlight';
 import { Inventory } from '../../shared/services/inventory';
@@ -42,6 +42,7 @@ import { Checkbox } from '../../shared/components/checkbox/checkbox';
 import { ResultsHeading } from '../../shared/components/results-heading/results-heading';
 import { ResultsSwitch } from '../../shared/components/results-switch/results-switch';
 import { showMoreOnScroll } from '../../shared/helpers/infinite-scroll';
+import { STRINGS } from '../../strings/en';
 
 /** The filters as they are saved in the `#...` of the URL (base64 of this object; the old site wrote the same). */
 interface SavedState {
@@ -65,36 +66,36 @@ interface SavedState {
 
 type Group = 'item' | 'stats' | 'effects';
 const GROUPS: { key: Group; title: string }[] = [
-  { key: 'item', title: 'Item' },
-  { key: 'stats', title: 'Stats' },
-  { key: 'effects', title: 'Effects' },
+  { key: 'item', title: STRINGS.encyclopedia.item },
+  { key: 'stats', title: STRINGS.encyclopedia.stats },
+  { key: 'effects', title: STRINGS.encyclopedia.effects },
 ];
 
 const PAGE_SIZE = 50;
 const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1);
 
 const ACCESS_FILTERS = [
-  { icon: 'shop', value: 'shop', tooltip: 'items from town shops' },
-  { icon: 'story', value: 'chest/quest', tooltip: 'items from story chests and quests' },
-  { icon: 'key', value: 'key', tooltip: 'items obtained with vault keys' },
-  { icon: 'colosseum', value: 'colosseum', tooltip: 'items obtained in the Colosseum' },
-  { icon: 'tmr_1-2stars', value: 'TMR-1*/TMR-2*', tooltip: 'TMR of 1★ or 2★ base units' },
-  { icon: 'tmr_3-4stars', value: 'TMR-3*/TMR-4*', tooltip: 'TMR of 3★ or 4★ base units' },
-  { icon: 'tmr_5stars', value: 'TMR-5*', tooltip: 'TMR of 5★ base units' },
-  { icon: 'stmr', value: 'STMR', tooltip: 'Super TMR of 7★ units' },
-  { icon: 'event', value: 'event', tooltip: 'items from event rewards' },
-  { icon: 'recipe', value: 'recipe', tooltip: 'items crafted from recipes' },
-  { icon: 'trophy', value: 'trophy', tooltip: 'items earned from trophy achievements' },
-  { icon: 'chocobo', value: 'chocobo', tooltip: 'items exchanged with fat chocobo or mother chocobo' },
-  { icon: 'trial', value: 'trial', tooltip: 'items from trial rewards' },
-  { icon: 'unitExclusive', value: 'unitExclusive', tooltip: 'items having an ability exclusive to a specific unit' },
-  { icon: 'premium', value: 'premium', tooltip: 'items from premium (paid) bundles' },
-  { icon: 'darkVision', value: 'darkVision', tooltip: 'items from Dark Vision' },
+  { icon: 'shop', value: 'shop', tooltip: STRINGS.encyclopedia.itemsFromTownShops },
+  { icon: 'story', value: 'chest/quest', tooltip: STRINGS.encyclopedia.itemsFromStoryChests },
+  { icon: 'key', value: 'key', tooltip: STRINGS.encyclopedia.itemsObtainedWithVault },
+  { icon: 'colosseum', value: 'colosseum', tooltip: STRINGS.encyclopedia.itemsObtainedInThe },
+  { icon: 'tmr_1-2stars', value: 'TMR-1*/TMR-2*', tooltip: STRINGS.encyclopedia.tmrOf1Or },
+  { icon: 'tmr_3-4stars', value: 'TMR-3*/TMR-4*', tooltip: STRINGS.encyclopedia.tmrOf3Or },
+  { icon: 'tmr_5stars', value: 'TMR-5*', tooltip: STRINGS.encyclopedia.tmrOf5Base },
+  { icon: 'stmr', value: 'STMR', tooltip: STRINGS.encyclopedia.superTmrOf7 },
+  { icon: 'event', value: 'event', tooltip: STRINGS.encyclopedia.itemsFromEventRewards },
+  { icon: 'recipe', value: 'recipe', tooltip: STRINGS.encyclopedia.itemsCraftedFromRecipes },
+  { icon: 'trophy', value: 'trophy', tooltip: STRINGS.encyclopedia.itemsEarnedFromTrophy },
+  { icon: 'chocobo', value: 'chocobo', tooltip: STRINGS.encyclopedia.itemsExchangedWithFat },
+  { icon: 'trial', value: 'trial', tooltip: STRINGS.encyclopedia.itemsFromTrialRewards },
+  { icon: 'unitExclusive', value: 'unitExclusive', tooltip: STRINGS.encyclopedia.itemsHavingAnAbility },
+  { icon: 'premium', value: 'premium', tooltip: STRINGS.encyclopedia.itemsFromPremiumPaid },
+  { icon: 'darkVision', value: 'darkVision', tooltip: STRINGS.encyclopedia.itemsFromDarkVision },
 ].map((access) => ({ ...access, tooltip: `Filter out ${access.tooltip}` }));
 
 const connector = (what: string): Choice[] => [
-  { value: 'or', label: 'OR', tooltip: `Show items having at least one of the selected ${what}` },
-  { value: 'and', label: 'AND', tooltip: `Show items having all of the selected ${what}` },
+  { value: 'or', label: STRINGS.encyclopedia.or, tooltip: `Show items having at least one of the selected ${what}` },
+  { value: 'and', label: STRINGS.encyclopedia.and, tooltip: `Show items having all of the selected ${what}` },
 ];
 
 /** Search and filter every item of the game by type, element, stat, access, killer, ... */
@@ -121,6 +122,7 @@ const connector = (what: string): Choice[] => [
   styleUrls: ['../../shared/styles/search-page.css', './encyclopedia.css'],
 })
 export class Encyclopedia {
+  protected readonly t = STRINGS.encyclopedia;
   private readonly staticData = inject(StaticData);
   private readonly inventory = inject(Inventory);
   private readonly route = inject(ActivatedRoute);
@@ -296,12 +298,7 @@ export class Encyclopedia {
     add('killers', 'effects', `Killers${logic(this.killersLogic())}: ${killers.join(', ')}`, killers.length > 0);
     return list;
   });
-  protected readonly tabs = computed<TabItem<Group>[]>(() =>
-    GROUPS.map(({ key, title }) => {
-      const count = this.filters().filter((f) => f.group === key).length;
-      return { key, title: count ? `${title} (${count})` : title };
-    }),
-  );
+  protected readonly tabs = computed(() => tabsWithCounts(GROUPS, this.filters()));
   protected readonly ownedCount = (item: Item): number | null =>
     this.loggedIn() ? this.inventory.count(item.id) : null;
 

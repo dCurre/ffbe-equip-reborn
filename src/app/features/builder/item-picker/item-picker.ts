@@ -23,6 +23,7 @@ import { Checkbox } from '../../../shared/components/checkbox/checkbox';
 import { Modal } from '../../../shared/components/modal/modal';
 import { showMoreOnScroll } from '../../../shared/helpers/infinite-scroll';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -54,6 +55,7 @@ export interface PickerContext {
   styleUrl: './item-picker.css',
 })
 export class ItemPicker {
+  protected readonly t = STRINGS.itemPicker;
   readonly open = signal(false);
   readonly context = input.required<PickerContext>();
   /** the types of equipment the slot takes (all of them to choose items to include) */

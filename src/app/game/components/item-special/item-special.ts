@@ -6,6 +6,7 @@ import { GameText } from '../game-text/game-text';
 import { KillerList } from '../killer-list/killer-list';
 import { ResistList } from '../resist-list/resist-list';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /** The special effects of an item as a list: elements, resists, killers, skills, masteries... (an empty cell without any). */
 @Component({
@@ -16,6 +17,7 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrl: './item-special.css',
 })
 export class ItemSpecial {
+  protected readonly t = STRINGS.itemSpecial;
   readonly item = input.required<Item>();
 
   protected readonly effects = computed(() => itemEffects(this.item()));

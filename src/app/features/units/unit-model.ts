@@ -1,6 +1,7 @@
 import type { SpriteName } from '../../shared/components/icon/icon';
 import type { Item } from '../../game/helpers/item';
 import { OwnedUnit, OwnedUnits } from '../../shared/services/inventory';
+import { STRINGS } from '../../strings/en';
 
 /** A unit of `units.json` (only the fields this page uses). `min_rarity` / `max_rarity` are strings in the data. */
 export interface GameUnit {
@@ -254,12 +255,12 @@ export type StmrSource = 'sevenStar' | 'twoLower' | 'oneLowerAndMoogle' | 'moogl
 
 export function farmedStmrSources(mine: OwnedUnit): { source: StmrSource; text: string }[] {
   const sources: { source: StmrSource; text: string }[] = [];
-  if ((mine.sevenStar ?? 0) >= 2) sources.push({ source: 'sevenStar', text: 'Fused a 7*' });
-  if (mine.number >= 2) sources.push({ source: 'twoLower', text: 'Fused two 5/6*' });
+  if ((mine.sevenStar ?? 0) >= 2) sources.push({ source: 'sevenStar', text: STRINGS.unitModel.fusedA7 });
+  if (mine.number >= 2) sources.push({ source: 'twoLower', text: STRINGS.unitModel.fusedTwo56 });
   if (mine.number >= 1) {
-    sources.push({ source: 'oneLowerAndMoogle', text: 'Fused one 5/6* and a Super Trust Moogle' });
+    sources.push({ source: 'oneLowerAndMoogle', text: STRINGS.unitModel.fusedOne56 });
   }
-  sources.push({ source: 'moogles', text: 'Fused Super Trust Moogles' });
+  sources.push({ source: 'moogles', text: STRINGS.unitModel.fusedSuperTrustMoogles });
   return sources;
 }
 

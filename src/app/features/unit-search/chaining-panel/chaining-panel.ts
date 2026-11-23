@@ -4,6 +4,7 @@ import { Choice, ChoiceGroup } from '../../../shared/components/choice-group/cho
 import { FilterHeading } from '../../../shared/components/filter-heading/filter-heading';
 import { Panel } from '../../../shared/components/panel/panel';
 import { SkillFilter } from '../unit-search-model';
+import { STRINGS } from '../../../strings/en';
 
 /** Filters the units by the chaining family of their skills and how many times it is cast. */
 @Component({
@@ -13,28 +14,29 @@ import { SkillFilter } from '../unit-search-model';
   styleUrls: ['../../../shared/styles/search-page.css', './chaining-panel.css'],
 })
 export class ChainingPanel {
+  protected readonly t = STRINGS.chainingPanel;
   readonly skillFilter = model.required<SkillFilter>();
 
   protected readonly skillTypes: Choice[] = [
-    { label: 'Active', value: 'actives' },
-    { label: 'LB', value: 'lb' },
+    { label: STRINGS.chainingPanel.active, value: 'actives' },
+    { label: STRINGS.chainingPanel.lb, value: 'lb' },
   ];
   protected readonly areas: Choice[] = [
-    { label: 'ST', value: 'ST' },
-    { label: 'AOE', value: 'AOE' },
+    { label: STRINGS.chainingPanel.st, value: 'ST' },
+    { label: STRINGS.chainingPanel.aoe, value: 'AOE' },
   ];
   protected readonly families: Choice[] = [
     ...Object.entries(chainFamilySkillName)
       .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
       .map(([value, name]) => ({ value, label: value, tooltip: `${value} - ${name}` })),
-    { value: 'chainTag', label: 'Chain by itself' },
+    { value: 'chainTag', label: STRINGS.chainingPanel.chainByItself },
   ];
   protected readonly multicastCounts = [
-    { value: '1', label: 'Single cast (1/Any)' },
-    { value: '2', label: 'W-cast (2)' },
-    { value: '3', label: 'T-cast (3)' },
-    { value: '4', label: 'Q-cast (4)' },
-    { value: '5', label: 'V-cast (5)' },
+    { value: '1', label: STRINGS.chainingPanel.singleCast1Any },
+    { value: '2', label: STRINGS.chainingPanel.wCast2 },
+    { value: '3', label: STRINGS.chainingPanel.tCast3 },
+    { value: '4', label: STRINGS.chainingPanel.qCast4 },
+    { value: '5', label: STRINGS.chainingPanel.vCast5 },
   ];
 
   protected readonly family = computed(() => [this.skillFilter().chainFamily]);

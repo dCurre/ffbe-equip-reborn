@@ -6,23 +6,19 @@ import { UnitSkillTags } from '../unit-skill-tags/unit-skill-tags';
 import { UnitStrangeStats } from '../unit-strange-stats/unit-strange-stats';
 import { ifUsedAfter, unlockLines } from '../unit-skill-model';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
 /** A skill of a unit: its name and costs, what unlocks it, and its effects (which can show other skills). */
 @Component({
   selector: 'app-unit-skill',
-  imports: [
-    UnitEquipedCondition,
-    UnitSkillTags,
-    UnitStrangeStats,
-    forwardRef(() => UnitEffect),
-    Icon,
-  ],
+  imports: [UnitEquipedCondition, UnitSkillTags, UnitStrangeStats, forwardRef(() => UnitEffect), Icon],
   templateUrl: './unit-skill.html',
   styleUrl: './unit-skill.css',
 })
 export class UnitSkill {
+  protected readonly t = STRINGS.unitSkill;
   private readonly context = inject(UnitContext);
   readonly skill = input.required<any>();
   /** the skills of the unit list what unlocks them; the ones shown inside another skill do not */

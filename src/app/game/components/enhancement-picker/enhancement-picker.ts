@@ -1,6 +1,7 @@
 import { Component, computed, input, output } from '@angular/core';
 import { itemEnhancementLabels } from '../../../../core/constants/item-enhancement-labels';
 import { ENHANCEMENT_GROUPS } from '../../helpers/enhancement-groups';
+import { STRINGS } from '../../../strings/en';
 
 /** The enhancements an item can have, in columns: click a value to select or unselect it (`toggled`). */
 @Component({
@@ -24,7 +25,7 @@ export class EnhancementPicker {
       label: value.effects,
     }));
     return [
-      { title: 'Rare', choices: [...(special ? [{ key: 'special_1', label: special }] : []), ...rare] },
+      { title: STRINGS.enhancementPicker.rare, choices: [...(special ? [{ key: 'special_1', label: special }] : []), ...rare] },
       ...ENHANCEMENT_GROUPS.map((group) => ({
         title: group.title,
         choices: group.choices.map(([key, label]) => ({ key, label })),

@@ -1,5 +1,6 @@
 import { Component, ElementRef, inject, output, signal, viewChild } from '@angular/core';
 import { Toast } from '../../services/toast';
+import { STRINGS } from '../../../strings/en';
 
 /** A zone to choose a JSON file or drop it on: the file is read and emitted already parsed (`fileLoaded`). */
 @Component({
@@ -8,6 +9,7 @@ import { Toast } from '../../services/toast';
   styleUrl: './file-drop.css',
 })
 export class FileDrop {
+  protected readonly t = STRINGS.fileDrop;
   readonly fileLoaded = output<unknown>();
   private readonly toast = inject(Toast);
 
@@ -41,7 +43,7 @@ export class FileDrop {
     try {
       this.fileLoaded.emit(JSON.parse(await file.text()));
     } catch {
-      this.toast.show('The imported file is not in json format', 'error');
+      this.toast.show(STRINGS.fileDrop.theImportedFileIs, 'error');
     }
   }
 }

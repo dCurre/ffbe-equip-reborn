@@ -6,6 +6,7 @@ import { Modal } from '../../../shared/components/modal/modal';
 import { Panel } from '../../../shared/components/panel/panel';
 import { Toast } from '../../../shared/services/toast';
 import type { SavedTeams } from '../shared/saved-teams';
+import { STRINGS } from '../../../strings/en';
 
 /** The teams saved in the Drive: the one being edited with its save buttons, and the list to load, import or delete. */
 @Component({
@@ -15,6 +16,7 @@ import type { SavedTeams } from '../shared/saved-teams';
   styleUrl: './saved-teams.css',
 })
 export class SavedTeamsPanel {
+  protected readonly t = STRINGS.savedTeams;
   private readonly toast = inject(Toast);
 
   readonly teams = input.required<SavedTeams>();
@@ -52,7 +54,7 @@ export class SavedTeamsPanel {
   protected confirmName(): void {
     const name = this.name().trim();
     if (!name) {
-      this.toast.show('Please enter a name', 'error');
+      this.toast.show(STRINGS.savedTeams.pleaseEnterAName, 'error');
       return;
     }
     this.nameOpen.set(false);

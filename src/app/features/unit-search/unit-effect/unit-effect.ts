@@ -3,6 +3,7 @@ import { UnitContext } from '../unit-context';
 import { UnitEffectDescription } from '../unit-effect-description/unit-effect-description';
 import { UnitSkill } from '../unit-skill/unit-skill';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
@@ -14,6 +15,7 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrls: ['../unit-skill/unit-skill.css', './unit-effect.css'],
 })
 export class UnitEffect {
+  protected readonly t = STRINGS.unitEffect;
   private readonly context = inject(UnitContext);
   readonly entry = input.required<any>();
   /** the skills already shown above this one: a skill that uses itself is not unrolled again */

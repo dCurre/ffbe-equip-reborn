@@ -2,6 +2,7 @@ import { afterNextRender, Component, DestroyRef, ElementRef, inject, viewChild }
 import { RouterLink } from '@angular/router';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
 import { ServerContext } from '../../shared/services/server-context';
+import { STRINGS } from '../../strings/en';
 
 const MAX_DELTA_PX = 50;
 /** Below this width the background is a fixed picture, without the parallax. */
@@ -19,16 +20,17 @@ interface Layer {
 }
 
 const MENU_BUTTONS = [
-  [{ path: '/builder', title: 'Unit builder', character: 'Lid' }],
+  [{ path: '/builder', title: STRINGS.homepage.unitBuilder, character: 'Lid' }],
   [
-    { path: '/encyclopedia', title: 'Encyclopedia', character: 'Sakura' },
-    { path: '/unitSearch', title: 'Unit search', character: 'Lasswell' },
+    { path: '/encyclopedia', title: STRINGS.homepage.encyclopedia, character: 'Sakura' },
+    { path: '/unitSearch', title: STRINGS.homepage.unitSearch, character: 'Lasswell' },
   ],
   [
-    { path: '/inventory', title: 'My inventory', character: 'Jake' },
-    { path: '/units', title: 'My units', character: 'Rain' },
-    { path: '/espers', title: 'My Espers', character: 'Nichol' },
+    { path: '/inventory', title: STRINGS.homepage.myInventory, character: 'Jake' },
+    { path: '/units', title: STRINGS.homepage.myUnits, character: 'Rain' },
+    { path: '/espers', title: STRINGS.homepage.myEspers, character: 'Nichol' },
   ],
+  [{ path: '/data-import', title: STRINGS.homepage.dataImport, character: 'Charlotte' }],
 ];
 
 /** The start page: the menu over a background of four layers that move with the mouse and the scroll. */
@@ -39,6 +41,7 @@ const MENU_BUTTONS = [
   styleUrl: './homepage.css',
 })
 export class Homepage {
+  protected readonly t = STRINGS.homepage;
   protected readonly lines = MENU_BUTTONS;
   protected readonly serverContext = inject(ServerContext);
   private readonly mainmenu = viewChild.required<ElementRef<HTMLElement>>('mainmenu');

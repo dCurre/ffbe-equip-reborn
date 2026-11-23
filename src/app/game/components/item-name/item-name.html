@@ -10,7 +10,7 @@
     <app-wiki-link [name]="item().name" />
   }
   @if (item()['level']) {
-    {{ ' ' }}<span class="rarity">level {{ item()['level'] }}</span>
+    {{ ' ' }}<span class="rarity">{{ t.level }} {{ item()['level'] }}</span>
   }
   @if (item()['buildLink']) {
     <a [href]="item()['buildLink']" target="_blank" rel="noreferrer" class="buildLink"><app-icon name="list" /></a>
@@ -36,7 +36,7 @@
   }
 </div>
 @if (item()['userPseudo']) {
-  <div class="userPseudo">item added by {{ item()['userPseudo'] }}</div>
+  <div class="userPseudo">{{ t.itemAddedBy }} {{ item()['userPseudo'] }}</div>
 }
 @if (item()['enhancements']) {
   <div class="enhancements"><app-icon name="dwarf" height="24" />{{ enhancements() }}</div>

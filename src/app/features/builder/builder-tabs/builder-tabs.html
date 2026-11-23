@@ -22,7 +22,7 @@
           type="button"
           class="close"
           [disabled]="disabled()"
-          aria-label="Close tab"
+          [attr.aria-label]="t.closeTab"
           (click)="close.emit(i)"
         >
           <app-icon name="remove" />
@@ -37,7 +37,7 @@
       type="button"
       class="add"
       [disabled]="disabled()"
-      aria-label="New tab"
+      [attr.aria-label]="t.newTab"
       (click)="add.emit()"
     >
       <app-icon name="add" />

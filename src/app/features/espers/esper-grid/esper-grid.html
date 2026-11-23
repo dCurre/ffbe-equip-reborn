@@ -1,19 +1,32 @@
 <div #panWrapper class="pan-wrapper">
   @if (current(); as esper) {
-    <div class="sp-fixed" [class.shown]="gridView() || spFixed()" title="SP">
-      <span class="name">SP</span>
+    <div class="sp-fixed" [class.shown]="gridView() || spFixed()" [title]="t.sp">
+      <span class="name">{{ t.sp }}</span>
       <span [class.error]="sp()!.used > sp()!.available">{{ sp()!.used }} / {{ sp()!.available }}</span>
     </div>
     <div class="grid-trimmer">
       <div #gridContainer class="grid-container">
         <svg class="lines" viewBox="0 0 1000 1000" aria-hidden="true">
           @for (line of lines(); track line.key) {
-            <line animate.leave="leaving" [class.fresh]="line.fresh" [attr.x1]="line.x1" [attr.y1]="line.y1" [attr.x2]="line.x2" [attr.y2]="line.y2" />
+            <line
+              animate.leave="leaving"
+              [class.fresh]="line.fresh"
+              [attr.x1]="line.x1"
+              [attr.y1]="line.y1"
+              [attr.x2]="line.x2"
+              [attr.y2]="line.y2"
+            />
           }
         </svg>
         <ul class="grid" [style.--cell-width.px]="cellWidth" [style.--cell-height.px]="cellHeight">
           @for (cell of cells(); track cell.position) {
-            <li animate.leave="leaving" [class.center]="cell.isCenter" [style.left.px]="cell.left" [style.top.px]="cell.top" [class.fresh]="cell.fresh">
+            <li
+              animate.leave="leaving"
+              [class.center]="cell.isCenter"
+              [style.left.px]="cell.left"
+              [style.top.px]="cell.top"
+              [class.fresh]="cell.fresh"
+            >
               <div
                 class="hexagon"
                 [class]="cell.kinds"
@@ -49,11 +62,11 @@
                     <span class="text">
                       @for (part of view.conditional; track part.equipment) {
                         <img class="icon" [src]="'img/items/' + part.icon" alt="" />
-                        {{ part.stats }} if <app-icon [name]="'equipment-' + part.equipment" size="20" />
+                        {{ part.stats }} {{ t.if }} <app-icon [name]="'equipment-' + part.equipment" size="20" />
                       }
                     </span>
                   }
-                  <span class="cost">{{ view.cost }} SP</span>
+                  <span class="cost">{{ view.cost }} {{ t.sp }}</span>
                 }
               </div>
             </li>
@@ -64,6 +77,13 @@
   }
 </div>
 
-<button app-button variant="flat" type="button" class="toggle-grid" title="Toggle Esper training grid" (click)="toggleGrid()">
+<button
+  app-button
+  variant="flat"
+  type="button"
+  class="toggle-grid"
+  [title]="t.toggleEsperTrainingGrid"
+  (click)="toggleGrid()"
+>
   <app-icon [name]="gridView() ? 'list' : 'grid'" />
 </button>

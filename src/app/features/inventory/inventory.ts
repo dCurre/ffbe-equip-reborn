@@ -46,8 +46,10 @@ import {
   toggleExcludedFromExpedition,
   farmTmr,
 } from './inventory-model';
+import { ClearFilters } from '../../shared/components/clear-filters/clear-filters';
 import { Icon } from '../../shared/components/icon/icon';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
+import { STRINGS } from '../../strings/en';
 
 type SortChoice = { stat: string; ascending: boolean };
 type Tab = 'equipment' | 'materia' | 'farmableStmr' | 'history' | 'settings';
@@ -89,6 +91,7 @@ const HISTORY_PAGE = 3;
     InventoryCard,
     InventoryEnhancementModal,
     Modal,
+    ClearFilters,
     Icon,
     ChoiceGroup,
     SearchBox,
@@ -97,6 +100,7 @@ const HISTORY_PAGE = 3;
   styleUrl: './inventory.css',
 })
 export class InventoryPage {
+  protected readonly t = STRINGS.inventory;
   protected readonly gameDataUrl = GAME_DATA_URL;
 
   private readonly route = inject(ActivatedRoute);
@@ -127,15 +131,20 @@ export class InventoryPage {
   protected readonly onlyTimeLimited = signal(false);
   protected readonly sidebarCollapsed = signal(window.innerWidth < 990);
   protected readonly exportItems: MenuItem[] = [
-    { label: 'Export as CSV', run: () => this.exportCsv() },
-    { label: 'Export as json', run: () => this.exportJson() },
+    { label: STRINGS.inventory.exportAsCsv, run: () => this.exportCsv() },
+    { label: STRINGS.inventory.exportAsJson, run: () => this.exportJson() },
   ];
   protected readonly tabs: TabItem<Tab>[] = [
-    { key: 'equipment', title: 'Show all equipments', icon: 'equipments' },
-    { key: 'materia', title: 'Show all materia', icon: 'materia' },
-    { key: 'farmableStmr', title: 'Show obtainable STMR', image: 'img/units/unit_ills_906000105.png', kind: 'stmr' },
-    { key: 'history', title: 'Show inventory by events', icon: 'history' },
-    { key: 'settings', title: 'Show inventory tools', icon: 'settings' },
+    { key: 'equipment', title: STRINGS.inventory.showAllEquipments, icon: 'equipments' },
+    { key: 'materia', title: STRINGS.inventory.showAllMateria, icon: 'materia' },
+    {
+      key: 'farmableStmr',
+      title: STRINGS.inventory.showObtainableStmr,
+      image: 'img/units/unit_ills_906000105.png',
+      kind: 'stmr',
+    },
+    { key: 'history', title: STRINGS.inventory.showInventoryByEvents, icon: 'history' },
+    { key: 'settings', title: STRINGS.inventory.showInventoryTools, icon: 'settings' },
   ];
   private readonly searchBox = viewChild(SearchBox);
 
@@ -156,7 +165,11 @@ export class InventoryPage {
     ].map((choice) => {
       const on = current?.stat === choice.value;
       const single = choice.value !== 'name';
-      const standard = this.byType() ? 'grouped by type' : this.defaultSortStat() === 'name' ? 'A-Z' : 'ATK, from the highest';
+      const standard = this.byType()
+        ? 'grouped by type'
+        : this.defaultSortStat() === 'name'
+          ? 'A-Z'
+          : 'ATK, from the highest';
       const next = single
         ? on
           ? `the default (${standard})`
@@ -394,7 +407,7 @@ export class InventoryPage {
       this.releases.set(releases);
       this.dataReady.set(true);
     } catch {
-      this.toast.show('Error while loading the item data', 'error');
+      this.toast.show(STRINGS.inventory.errorWhileLoadingThe, 'error');
     }
   }
 
@@ -499,7 +512,7 @@ export class InventoryPage {
     if (!current) return;
     const result = toggleEnhancement(this.user.items(), current.item.id, current.pos, value);
     if (result === 'full') {
-      this.toast.show('No more than 3 item enhancements can be selected', 'warn');
+      this.toast.show(STRINGS.inventory.noMoreThan3, 'warn');
       return;
     }
     if (result === 'copyRemoved') this.setEnhancingOpen(false);

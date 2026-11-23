@@ -46,6 +46,7 @@ import { SavedTeams } from './shared/saved-teams';
 import { BuilderState, BuilderUnit } from './shared/builder-state';
 import { UnitLoader } from './shared/unit-loader';
 import { UnitPanel } from './unit-panel/unit-panel';
+import { STRINGS } from '../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
@@ -62,7 +63,7 @@ function unitIconId(id: string, unit: BuilderUnit): string {
   return id.slice(0, -1) + (unit.max_rarity === 'NV' ? '7' : unit.max_rarity);
 }
 
-type SettingsTab ='rules' | 'monster' | 'equipments';
+type SettingsTab = 'rules' | 'monster' | 'equipments';
 
 /** One tab of the page: a unit being built. */
 interface BuilderTab {
@@ -108,6 +109,7 @@ interface BuilderTab {
   styleUrl: './builder.css',
 })
 export class Builder {
+  protected readonly t = STRINGS.builder;
   private readonly staticData = inject(StaticData);
   protected readonly inventory = inject(Inventory);
   private readonly serverContext = inject(ServerContext);
@@ -162,8 +164,8 @@ export class Builder {
   /** Building a unit, or looking for the unit that passes a Parameter Challenge. */
   protected readonly mode = signal<'build' | 'challenge'>('build');
   protected readonly modes: TabItem<'build' | 'challenge'>[] = [
-    { key: 'build', title: 'Build a unit' },
-    { key: 'challenge', title: 'Parameter challenges' },
+    { key: 'build', title: STRINGS.builder.buildAUnit },
+    { key: 'challenge', title: STRINGS.builder.parameterChallenges },
   ];
 
   protected readonly helpOpen = signal(false);
@@ -174,11 +176,11 @@ export class Builder {
   protected readonly settingsTabs = computed<TabItem<SettingsTab>[]>(() =>
     this.mode() === 'build'
       ? [
-          { key: 'rules', title: 'Build rules' },
-          { key: 'monster', title: 'Monster' },
-          { key: 'equipments', title: 'Equipments' },
+          { key: 'rules', title: STRINGS.builder.buildRules },
+          { key: 'monster', title: STRINGS.builder.monster },
+          { key: 'equipments', title: STRINGS.builder.equipments },
         ]
-      : [{ key: 'equipments', title: 'Equipments' }],
+      : [{ key: 'equipments', title: STRINGS.builder.equipments }],
   );
   protected readonly shownSettings = computed<SettingsTab>(() =>
     this.mode() === 'build' ? this.settingsTab() : 'equipments',
@@ -269,7 +271,7 @@ export class Builder {
     const empty = this.tabs().length === 1 && !this.tab.s.unit();
     if ((empty ? 0 : this.tabs().length) + team.units.length > this.maxTabs) {
       this.toast.show(
-        'Importing this team would result in more than 10 units. Please remove some units before doing that.',
+        STRINGS.builder.importingThisTeamWould,
         'error',
       );
       return;
@@ -373,7 +375,7 @@ export class Builder {
           onNoCombination: () =>
             this.s.message.set('The build rules chosen are not compatible with available equipments'),
           onConditionNotMet: () => this.s.message.set('The condition set in the goal are impossible to meet.'),
-          onWeaponsSwitched: () => this.toast.show('Weapons hands were switched to optimize build', 'success'),
+          onWeaponsSwitched: () => this.toast.show(STRINGS.builder.weaponsHandsWereSwitched, 'success'),
           ...callbacks,
         },
         this.s.excluded(),

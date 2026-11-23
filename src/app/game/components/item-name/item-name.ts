@@ -6,6 +6,7 @@ import { Item } from '../../helpers/item';
 import { ItemEnchantments } from '../../models/item-context.model';
 import { itemStats } from '../../helpers/item-stats';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /** The name of an item with its wiki link, rarity, level, stats and enhancements. */
 @Component({
@@ -16,6 +17,7 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrl: './item-name.css',
 })
 export class ItemName {
+  protected readonly t = STRINGS.itemName;
   readonly item = input.required<Item>();
   /** the enchantments (`itemEnchants.json`), to name the rare enhancements of an item */
   readonly enchantments = input<ItemEnchantments>();

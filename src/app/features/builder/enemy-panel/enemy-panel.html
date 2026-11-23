@@ -1,23 +1,24 @@
 <app-panel>
-  <div panelHeading class="heading"><span>Monster</span></div>
+  <div panelHeading class="heading">
+    <span>{{ t.monster }}</span>
+  </div>
   <div class="enemy">
     <app-monster-list class="monster-list" [state]="s" />
     @if (negativeValues()) {
-      <div class="warning">
-        <app-icon name="alert" /> You entered negative breaks or imperils. Break and imperil usually are positive
-        numbers. You are currently buffing the enemy
-      </div>
+      <div class="warning"><app-icon name="alert" /> {{ t.youEnteredNegativeBreaks }}</div>
     }
     <div class="stats">
       @for (stat of stats; track stat) {
         <app-input-group [label]="stat.toUpperCase()">
-          <app-number-field [min]="0"
+          <app-number-field
+            [min]="0"
             placeholder="100"
             [title]="'Base ' + stat.toUpperCase()"
             [value]="s.monster()[stat]"
             (valueChange)="setMonsterStat(stat, $event)"
           />
-          <app-number-field [min]="0"
+          <app-number-field
+            [min]="0"
             withIcon
             suffix="%"
             tone="debuff"
@@ -39,7 +40,8 @@
               <app-icon [name]="s.monsterBreakability()[stat] ? 'arrow-down' : 'ban'" />
             </button>
           </app-number-field>
-          <app-number-field [min]="0"
+          <app-number-field
+            [min]="0"
             withIcon
             suffix="%"
             tone="buff"
@@ -47,7 +49,7 @@
             [value]="s.monsterBuffs()[stat] ?? ''"
             (valueChange)="setStatField('monsterBuffs', stat, $event)"
           >
-            <app-icon leading name="arrow-up" title="buff" />
+            <app-icon leading name="arrow-up" [title]="t.buff" />
           </app-number-field>
         </app-input-group>
       }
@@ -63,7 +65,11 @@
       @for (element of elements; track element) {
         <div class="element">
           <span class="element-icon" [title]="ucFirst(element)"
-            ><app-icon [name]="'element-' + element" size="34" /><app-icon name="equipment-heavyShield" class="shield" size="20" /></span>
+            ><app-icon [name]="'element-' + element" size="34" /><app-icon
+              name="equipment-heavyShield"
+              class="shield"
+              size="20"
+          /></span>
           <app-input-group>
             <app-number-field
               [width]="60"
@@ -72,7 +78,8 @@
               [value]="s.monsterResists()[element] ?? ''"
               (valueChange)="setMonsterResist(element, $event)"
             />
-            <app-number-field [min]="0"
+            <app-number-field
+              [min]="0"
               withIcon
               [width]="60"
               [tone]="tone(s.monsterImperils()[element], false)"
@@ -80,7 +87,7 @@
               [value]="s.monsterImperils()[element] ?? ''"
               (valueChange)="setMonsterImperil(element, $event)"
             >
-              <app-icon leading name="arrow-down" title="imperil" />
+              <app-icon leading name="arrow-down" [title]="t.imperil" />
             </app-number-field>
           </app-input-group>
         </div>

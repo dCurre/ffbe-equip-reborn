@@ -2,6 +2,7 @@ import { Component, inject, input } from '@angular/core';
 import { ServerContext } from '../../services/server-context';
 import { wikiUrl } from '../../helpers/wiki';
 import { Icon } from '../icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /** A name followed by the link to its wiki page (the old `toLink`): on the JP server only when `always` is set. */
 @Component({
@@ -11,6 +12,7 @@ import { Icon } from '../icon/icon';
   styleUrl: './wiki-link.css',
 })
 export class WikiLink {
+  protected readonly t = STRINGS.wikiLink;
   protected readonly server = inject(ServerContext);
   readonly name = input.required<string>();
   /** The wiki page when it is not the name. */

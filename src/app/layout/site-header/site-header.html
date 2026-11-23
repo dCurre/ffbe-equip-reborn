@@ -1,14 +1,14 @@
 <header [style]="bannerPadding()">
   <div class="top-buttons">
     <label class="theme">
-      <span class="theme-title">Theme :</span>
+      <span class="theme-title">{{ t.theme }}</span>
       <select [value]="theme.current()" (change)="chooseTheme($event)">
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
+        <option value="light">{{ t.light }}</option>
+        <option value="dark">{{ t.dark }}</option>
       </select>
     </label>
     @if (serverContext.server() === 'GL') {
-      <div class="languages" role="group" aria-label="Language">
+      <div class="languages" role="group" [attr.aria-label]="t.language">
         @for (language of languages; track language) {
           <button
             app-button
@@ -24,7 +24,7 @@
         }
       </div>
     }
-    <div class="servers" role="group" aria-label="Server">
+    <div class="servers" role="group" [attr.aria-label]="t.server">
       @for (server of servers; track server) {
         <button
           app-button
@@ -40,41 +40,48 @@
 
   <div class="content">
     <h1 class="title">{{ title() }}</h1>
-    <div class="inventory" role="group" aria-label="Inventory">
+    <div class="inventory" role="group" [attr.aria-label]="t.inventory">
       @if (loggedIn()) {
-        <button app-button type="button" class="logout" title="logout" aria-label="logout" (click)="logout()">
+        <button
+          app-button
+          type="button"
+          class="logout"
+          [title]="t.logout"
+          [attr.aria-label]="t.logout"
+          (click)="logout()"
+        >
           <app-icon name="logout" />
         </button>
       } @else {
-        <button app-button type="button" class="login" (click)="openLoginDialog()">Log in</button>
+        <button app-button type="button" class="login" (click)="openLoginDialog()">{{ t.logIn }}</button>
       }
       <div class="status">
         @switch (inventory.status()) {
           @case ('loaded') {
-            <span>Inventory loaded</span>
+            <span>{{ t.inventoryLoaded }}</span>
             <div class="counts">
-              <span>{{ inventory.unitCount() }} units</span>
-              <span>{{ inventory.itemCount() }} items</span>
+              <span>{{ inventory.unitCount() }} {{ t.units }}</span>
+              <span>{{ inventory.itemCount() }} {{ t.items }}</span>
             </div>
           }
           @case ('loading') {
-            <span>Loading inventory</span>
+            <span>{{ t.loadingInventory }}</span>
           }
           @default {
-            <span>Inventory not loaded</span>
+            <span>{{ t.inventoryNotLoaded }}</span>
           }
         }
       </div>
     </div>
   </div>
 
-  <nav class="desktop" aria-label="Main">
+  <nav class="desktop" [attr.aria-label]="t.main">
     <a
       class="logo"
       routerLink="/"
       [queryParams]="serverContext.linkParams()"
-      title="Return to homepage"
-      aria-label="Return to homepage"
+      [title]="t.returnToHomepage"
+      [attr.aria-label]="t.returnToHomepage"
     ></a>
     @for (item of menu; track item.path) {
       <a
@@ -87,13 +94,13 @@
     }
   </nav>
 
-  <nav class="mobile" aria-label="Main">
+  <nav class="mobile" [attr.aria-label]="t.main">
     <button
       app-button
       variant="flat"
       type="button"
       class="logo"
-      aria-label="Menu"
+      [attr.aria-label]="t.menu"
       [attr.aria-expanded]="menuOpen()"
       (click)="menuOpen.set(!menuOpen())"
     >
@@ -122,18 +129,20 @@
   <div class="banner-person" [style.background-image]="bannerPersonImage()"></div>
 </header>
 
-<app-modal heading="Google Authentication" confirmLabel="Continue" [(open)]="loginOpen" (confirmed)="login()">
-  <p>A Google login window will open. Logging in is optional: it lets you save your units, inventory, espers, consumables and builder teams.</p>
+<app-modal [heading]="t.googleAuthentication" confirmLabel="Continue" [(open)]="loginOpen" (confirmed)="login()">
+  <p>{{ t.aGoogleLoginWindow }}</p>
   <p>
-    Your data is stored in a hidden
-    <a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer">app folder</a>
-    of your own Google Drive; FFBE Equip Reborn can only access that folder and no other file. The site never sees your Google password.
+    {{ t.yourDataIsStored }}
+    <a href="https://developers.google.com/drive/v3/web/appdata" target="_blank" rel="noreferrer">{{ t.appFolder }}</a>
+    {{ t.ofYourOwnGoogle }}
   </p>
   <p>
-    To keep you logged in until you log out, a small service of this site keeps the Google renewal token. Logging out deletes it.
+    {{ t.toKeepYouLogged }}
   </p>
-  <p><a routerLink="/privacy" target="_blank">Privacy policy</a></p>
+  <p>
+    <a routerLink="/privacy" target="_blank">{{ t.privacyPolicy }}</a>
+  </p>
   @if (loginError()) {
-    <app-alert kind="danger">Login failed: {{ loginError() }}</app-alert>
+    <app-alert kind="danger">{{ t.loginFailed }} {{ loginError() }}</app-alert>
   }
 </app-modal>

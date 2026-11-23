@@ -2,6 +2,7 @@ import { Component, computed, input } from '@angular/core';
 import { killerList } from '../../../../core/constants/base-lists';
 import { ValueGroup } from '../value-group/value-group';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 export interface KillerEntry {
   name: string;
@@ -22,6 +23,7 @@ interface Group {
   styleUrl: './killer-list.css',
 })
 export class KillerList {
+  protected readonly t = STRINGS.killerList;
   readonly killers = input<readonly KillerEntry[] | undefined>();
   /** the races to highlight (a search): the groups with one of them are marked `selected` */
   readonly selected = input<{ physical: readonly string[]; magical: readonly string[] } | undefined>();
@@ -31,7 +33,6 @@ export class KillerList {
     physical: this.group('physical'),
     magical: this.group('magical'),
   }));
-
 
   protected isSelected(kind: 'physical' | 'magical', races: string[]): boolean {
     return !!this.selected()?.[kind].some((race) => races.includes(race));

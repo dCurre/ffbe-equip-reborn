@@ -1,6 +1,7 @@
 import { Component, input, model, output } from '@angular/core';
 import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';
+import { STRINGS } from '../../../strings/en';
 
 /** The tab bar of the builder: one tab per unit being built. */
 @Component({
@@ -10,6 +11,7 @@ import { Icon } from '../../../shared/components/icon/icon';
   styleUrl: './builder-tabs.css',
 })
 export class BuilderTabs {
+  protected readonly t = STRINGS.builderTabs;
   readonly names = input.required<string[]>();
   /** the picture of the unit of each tab ('' for none) */
   readonly icons = input<string[]>([]);

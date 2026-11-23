@@ -6,5 +6,5 @@
   (drop)="dropped($event)"
 >
   <input #file type="file" accept=".json,application/json" (change)="chooseFile($event)" />
-  <span class="hint">or drop the file here</span>
+  <span class="hint">{{ t.orDropTheFile }}</span>
 </div>

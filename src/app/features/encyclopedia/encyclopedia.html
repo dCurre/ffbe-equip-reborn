@@ -6,15 +6,15 @@
           @if (tab() === 'item') {
             <app-panel>
               <div panelHeading class="heading">
-                <span>Equipment types</span>
-                <a class="link" (click)="selectTypes(weapons)">Select all weapons</a>
-                <a class="link" (click)="selectTypes(armors)">Select all armors</a>
+                <span>{{ t.equipmentTypes }}</span>
+                <a class="link" (click)="selectTypes(weapons)">{{ t.selectAllWeapons }}</a>
+                <a class="link" (click)="selectTypes(armors)">{{ t.selectAllArmors }}</a>
                 @if (unit()) {
-                  <a class="link" (click)="selectTypes(weapons, true)">Select unit weapons</a>
-                  <a class="link" (click)="selectTypes(armors, true)">Select unit armors</a>
+                  <a class="link" (click)="selectTypes(weapons, true)">{{ t.selectUnitWeapons }}</a>
+                  <a class="link" (click)="selectTypes(armors, true)">{{ t.selectUnitArmors }}</a>
                 }
                 @if (types().length) {
-                  <a class="link" (click)="types.set([])">unselect all</a>
+                  <a class="link" (click)="types.set([])">{{ t.unselectAll }}</a>
                 }
               </div>
               <app-choice-group [choices]="typeChoices" iconType="equipment" [(selected)]="types" />
@@ -23,7 +23,7 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
-                title="Remove Access"
+                [title]="t.removeAccess"
                 [clearable]="accessToRemove().length > 0"
                 (cleared)="accessToRemove.set([])"
               />
@@ -40,9 +40,9 @@
 
             <app-panel>
               <div panelHeading class="heading">
-                <span>Desired stat (filter and sort)</span>
+                <span>{{ t.desiredStatFilterAnd }}</span>
                 @if (stat().length) {
-                  <a class="link" (click)="stat.set([])">unselect</a>
+                  <a class="link" (click)="stat.set([])">{{ t.unselect }}</a>
                 }
                 <span class="spacer"></span>
                 <button
@@ -50,7 +50,7 @@
                   type="button"
                   class="toggle"
                   [class.active]="percentageStat()"
-                  title="Include stat % modifiers in the stat calculation"
+                  [title]="t.includeStatModifiersIn"
                   (click)="percentageStat.set(!percentageStat())"
                 >
                   %
@@ -60,10 +60,10 @@
                   type="button"
                   class="toggle"
                   [class.active]="staticStats()"
-                  title="Include static stats in the stat calculation"
+                  [title]="t.includeStaticStatsIn"
                   (click)="staticStats.set(!staticStats())"
                 >
-                  Static
+                  {{ t.static }}
                 </button>
               </div>
               <app-choice-group [choices]="statChoices" iconType="sort" [single]="true" [(selected)]="stat" />
@@ -72,7 +72,7 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
-                title="Additional stat filter"
+                [title]="t.additionalStatFilter"
                 [clearable]="additionalStat().length > 0"
                 (cleared)="additionalStat.set([])"
               />
@@ -83,7 +83,7 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
-                title="Elements"
+                [title]="t.elements"
                 [clearable]="elements().length > 0"
                 (cleared)="elements.set([])"
               >
@@ -95,7 +95,7 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
-                title="Status ailment"
+                [title]="t.statusAilment"
                 [clearable]="ailments().length > 0"
                 (cleared)="ailments.set([])"
               >
@@ -107,7 +107,7 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
-                title="Killers"
+                [title]="t.killers"
                 [clearable]="hasKillers()"
                 (cleared)="physicalKillers.set([]); magicalKillers.set([])"
               >
@@ -133,18 +133,14 @@
       <app-panel [class.filters-view]="!showingResults()">
         <div panelHeading class="top">
           @if (ready()) {
-            <app-search-box
-              [initial]="search()"
-              placeholder="Enter search text. Will search in item name, stats, abilities, TMR's unit, ..."
-              (search)="search.set($event)"
-            />
+            <app-search-box [initial]="search()" [placeholder]="t.enterSearchTextWill" (search)="search.set($event)" />
           }
           <app-active-filters [filters]="filters()" (removed)="removeFilter($event)" (cleared)="clearFilters()" />
           <app-results-heading [count]="results().length" [filtered]="hasFilter()">
             @if (loggedIn()) {
-              <app-checkbox [(checked)]="onlyOwned">Only show owned items</app-checkbox>
+              <app-checkbox [(checked)]="onlyOwned">{{ t.onlyShowOwnedItems }}</app-checkbox>
             }
-            <app-checkbox [(checked)]="showNotReleased">Show unreleased items</app-checkbox>
+            <app-checkbox [(checked)]="showNotReleased">{{ t.showUnreleasedItems }}</app-checkbox>
           </app-results-heading>
         </div>
         <div #table class="items" [class]="'items ' + dimmedStats()" [class.notSorted]="!selectedStat()">

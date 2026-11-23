@@ -10,7 +10,15 @@
     (input)="type($any($event.target).value)"
   />
   @if (text()) {
-    <button app-button variant="flat" type="button" class="clear" title="Clear the search" aria-label="Clear the search" (click)="clear()">
+    <button
+      app-button
+      variant="flat"
+      type="button"
+      class="clear"
+      [title]="t.clearTheSearch"
+      [attr.aria-label]="t.clearTheSearch"
+      (click)="clear()"
+    >
       <app-icon name="remove" />
     </button>
   }

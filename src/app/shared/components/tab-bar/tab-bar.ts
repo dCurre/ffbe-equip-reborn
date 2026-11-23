@@ -10,6 +10,17 @@ export interface TabItem<T extends string> {
   kind?: 'stmr' | 'small';
 }
 
+/** The tabs of the filter groups, each title followed by the number of filters that are on in that group. */
+export function tabsWithCounts<T extends string>(
+  groups: readonly { key: T; title: string }[],
+  filters: readonly { group: T }[],
+): TabItem<T>[] {
+  return groups.map(({ key, title }) => {
+    const count = filters.filter((f) => f.group === key).length;
+    return { key, title: count ? `${title} (${count})` : title };
+  });
+}
+
 /** Tabs with a picture each (the collection pages): the `active` key is highlighted, `selected` fires on a click. */
 @Component({
   imports: [Icon],

@@ -6,6 +6,7 @@ import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';
 import { InputGroup } from '../../../shared/components/input-group/input-group';
 import { NumberField } from '../../../shared/components/number-field/number-field';
+import { STRINGS } from '../../../strings/en';
 
 /** The base stats of the unit, with the pots, the buffs and the limit break rates. */
 @Component({
@@ -15,18 +16,19 @@ import { NumberField } from '../../../shared/components/number-field/number-fiel
   styleUrl: './unit-stats.css',
 })
 export class UnitStats extends StatePanel {
+  protected readonly t = STRINGS.unitStats;
   /** The order of the old page: two by line. */
   protected readonly mainStats = ['hp', 'mp', 'atk', 'mag', 'def', 'spr'].filter((stat) => baseStats.includes(stat));
 
   /** The values of the unit that are not a stat: the LB rates, the mitigations, draw attacks and LB damage. */
   protected readonly rows = [
-    { key: 'lbFill', label: 'LB gauge fill rate', suffix: '%' },
-    { key: 'lbShards', label: 'Expected LB shards per turn', suffix: '' },
-    { key: 'physical', label: 'Physical mitigation', suffix: '%' },
-    { key: 'magical', label: 'Magical mitigation', suffix: '%' },
-    { key: 'global', label: 'Global mitigation', suffix: '%' },
-    { key: 'drawAttacks', label: 'Draw attacks', suffix: '%' },
-    { key: 'lbDamage', label: '+LB damage', suffix: '%' },
+    { key: 'lbFill', label: STRINGS.unitStats.lbGaugeFillRate, suffix: '%' },
+    { key: 'lbShards', label: STRINGS.unitStats.expectedLbShardsPer, suffix: '' },
+    { key: 'physical', label: STRINGS.unitStats.physicalMitigation, suffix: '%' },
+    { key: 'magical', label: STRINGS.unitStats.magicalMitigation, suffix: '%' },
+    { key: 'global', label: STRINGS.unitStats.globalMitigation, suffix: '%' },
+    { key: 'drawAttacks', label: STRINGS.unitStats.drawAttacks, suffix: '%' },
+    { key: 'lbDamage', label: STRINGS.unitStats.lbDamage, suffix: '%' },
   ];
 
   protected rowValue(key: string): string {

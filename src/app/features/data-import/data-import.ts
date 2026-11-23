@@ -26,6 +26,7 @@ import { consumablesFromFile, ImportedUnit, importUnits } from '../units/unit-im
 import { GameUnit, TrustItem } from '../units/unit-model';
 import { detectImportKind, ImportKind } from './import-kind';
 import { consumablesFromSaveFile, espersFromSave, GameSave, itemsFromSave, unitsFromSave } from './save-import';
+import { STRINGS } from '../../strings/en';
 
 interface KindInfo {
   heading: string;
@@ -45,28 +46,29 @@ interface RecapLine {
 
 const KINDS: Record<ImportKind, KindInfo> = {
   units: {
-    heading: 'Unit collection',
-    text: 'The units you own, with their TMR and STMR: for My units and the Unit builder.',
+    heading: STRINGS.dataImport.unitCollection,
+    text: STRINGS.dataImport.theUnitsYouOwn,
     warning: 'It will override your unit collection on FFBE Equip Reborn',
   },
   consumables: {
-    heading: 'Consumables',
-    text: 'The consumables you own: the items used to awaken the units.',
+    heading: STRINGS.dataImport.consumables,
+    text: STRINGS.dataImport.theConsumablesYouOwn,
     warning: 'It will override your consumables on FFBE Equip Reborn',
   },
   inventory: {
-    heading: 'Inventory',
-    text: 'The equipment, materia and vision cards you own: for My inventory and the "Only owned" builds.',
+    heading: STRINGS.dataImport.inventory,
+    text: STRINGS.dataImport.theEquipmentMateriaAnd,
     warning: 'This feature is a Work in Progress. It will override your inventory on FFBE Equip Reborn',
   },
   save: {
-    heading: 'Full save',
-    text: 'Save of FFBE Offline (the full export of the game): the unit collection, the consumables, the inventory and the Espers are read from it.',
-    warning: 'It will override your unit collection, consumables, inventory and Espers (if the save has any) on FFBE Equip Reborn',
+    heading: STRINGS.dataImport.fullSave,
+    text: STRINGS.dataImport.saveOfFfbeOffline,
+    warning:
+      'It will override your unit collection, consumables, inventory and Espers (if the save has any) on FFBE Equip Reborn',
   },
   espers: {
-    heading: 'Espers',
-    text: 'The Espers you own, with their rarity, level and board.',
+    heading: STRINGS.dataImport.espers,
+    text: STRINGS.dataImport.theEspersYouOwn,
     warning: 'It will override your Espers on FFBE Equip Reborn',
   },
 };
@@ -83,6 +85,7 @@ interface ReleasedUnit {
   styleUrl: './data-import.css',
 })
 export class DataImport {
+  protected readonly t = STRINGS.dataImport;
   private readonly staticData = inject(StaticData);
   private readonly toast = inject(Toast);
   private readonly userData = inject(UserData);
@@ -164,7 +167,7 @@ export class DataImport {
       this.serverContext.server(),
     );
     this.pendingInventory = inventory;
-    return { label: 'Inventory', found: file.length - messages.length, ignored: messages.length };
+    return { label: STRINGS.dataImport.inventory, found: file.length - messages.length, ignored: messages.length };
   }
 
   /** Forgets the file: nothing is imported. */
@@ -179,10 +182,10 @@ export class DataImport {
   protected async loadFile(data: unknown): Promise<void> {
     this.cancel();
     const kind = detectImportKind(data);
-    if (kind === 'empty') return this.toast.show('The file is empty: there is nothing to import', 'error');
+    if (kind === 'empty') return this.toast.show(STRINGS.dataImport.theFileIsEmpty, 'error');
     if (!kind) {
       return this.toast.show(
-        'This file is not an export of the game the site knows: full save, unit collection, consumables, inventory or Espers',
+        STRINGS.dataImport.thisFileIsNot,
         'error',
       );
     }
@@ -190,7 +193,7 @@ export class DataImport {
     try {
       await this.loadGameData(kind);
     } catch {
-      this.toast.show('Error while loading the game data', 'error');
+      this.toast.show(STRINGS.dataImport.errorWhileLoadingThe, 'error');
       return;
     } finally {
       this.busy.set(false);
@@ -216,12 +219,12 @@ export class DataImport {
         recap.push({ ...this.readInventory(itemsFromSave(save)), source: 'inventory, vision_cards' });
         const consumables = consumablesFromSaveFile(save);
         this.pendingConsumables = consumablesFromFile(consumables);
-        recap.push({ label: 'Consumables', found: consumables.length, ignored: 0, source: 'inventory' });
+        recap.push({ label: STRINGS.dataImport.consumables, found: consumables.length, ignored: 0, source: 'inventory' });
         break;
       }
       case 'consumables':
         this.pendingConsumables = consumablesFromFile(data as never);
-        recap.push({ label: 'Consumables', found: Object.keys(this.pendingConsumables).length, ignored: 0 });
+        recap.push({ label: STRINGS.dataImport.consumables, found: Object.keys(this.pendingConsumables).length, ignored: 0 });
         break;
       case 'inventory':
         recap.push(this.readInventory(data as ImportedItem[]));
@@ -245,12 +248,12 @@ export class DataImport {
     });
     this.pendingUnits = owned;
     const found = Object.values(owned).reduce((sum, u) => sum + u.number + (u.sevenStar ?? 0) + (u.nv ?? 0), 0);
-    return { label: 'Units', found, ignored: messages.length };
+    return { label: STRINGS.dataImport.units, found, ignored: messages.length };
   }
 
   private espersLine(file: ImportedEsper[]): RecapLine {
     const found = knownEspers(file).length;
-    return { label: 'Espers', found, ignored: file.length - found };
+    return { label: STRINGS.dataImport.espers, found, ignored: file.length - found };
   }
 
   /** What the chosen file writes in the account, one step each (the text is shown while it works). */
@@ -260,17 +263,20 @@ export class DataImport {
     const all = kind === 'save';
     const steps: { text: string; work: () => Promise<unknown> }[] = [];
     if ((all || kind === 'units') && pendingUnits) {
-      steps.push({ text: 'Saving your unit collection', work: () => this.inventory.replace('units', pendingUnits) });
+      steps.push({ text: STRINGS.dataImport.savingYourUnitCollection, work: () => this.inventory.replace('units', pendingUnits) });
     }
     if ((all || kind === 'consumables') && pendingConsumables) {
-      steps.push({ text: 'Saving your consumables', work: () => this.inventory.replace('consumables', pendingConsumables) });
+      steps.push({
+        text: STRINGS.dataImport.savingYourConsumables,
+        work: () => this.inventory.replace('consumables', pendingConsumables),
+      });
     }
     if ((all || kind === 'inventory') && pendingInventory) {
-      steps.push({ text: 'Saving your inventory', work: () => this.replaceItems(pendingInventory) });
+      steps.push({ text: STRINGS.dataImport.savingYourInventory, work: () => this.replaceItems(pendingInventory) });
     }
     if ((all || kind === 'espers') && pendingEspers && knownEspers(pendingEspers).length > 0) {
       steps.push({
-        text: 'Saving your Espers',
+        text: STRINGS.dataImport.savingYourEspers,
         work: () => this.userData.write('espers', importEspers(pendingEspers, this.espers, this.boards)),
       });
     }
@@ -280,7 +286,10 @@ export class DataImport {
   protected async run(): Promise<void> {
     const steps = this.importSteps();
     if (steps.length === 0) {
-      this.toast.show(this.kind() === 'espers' ? 'No known esper found in the file' : 'Please select a file to import', 'warn');
+      this.toast.show(
+        this.kind() === 'espers' ? 'No known esper found in the file' : 'Please select a file to import',
+        'warn',
+      );
       return;
     }
     this.busy.set(true);
