@@ -11,6 +11,7 @@ import {
   GameUnit,
   parseMoogles,
   rarityLabel,
+  rarityParts,
   canRemove,
 removeOne,
   sortByRarity,
@@ -32,7 +33,7 @@ describe('unit model', () => {
     expect(rarityLabel('3', '5')).toBe('★★★☆☆');
     expect(rarityLabel('NV', 'NV')).toBe('NV');
     expect(rarityLabel('5', 'NV')).toBe('NVA');
-    expect(rarityLabel('5', 'NV', true)).toBe('NVA (soon)');
+    expect(rarityParts('4', 'NV')).toEqual({ icon: 'crystal-NVA', text: ' ★★★★' });
   });
 
   it('shows the 6* picture of a 7* unit that is not awakened', () => {
@@ -41,8 +42,7 @@ describe('unit model', () => {
     expect(unitImage(seven, { number: 1, farmable: 0, sevenStar: 1 })).toBe('img/units/unit_icon_10000010' + '7.png');
   });
 
-  it('sorts by max rarity, then base rarity, then name; a soon NVA goes below the released NVAs', () => {
-    const released = new Set(['shifted']);
+  it('sorts by max rarity, then base rarity, then name', () => {
     const list = [
       unit('a', '3', '6'),
       unit('b', '5', '7'),
@@ -51,7 +51,7 @@ describe('unit model', () => {
       unit('e', '4', 'NV'),
       unit('f', '3', '7', { unreleased7Star: true }),
     ];
-    expect(sortByRarity(list, released).map((u) => u.id)).toEqual(['d', 'e', 'b', 'c', 'a', 'f']);
+    expect(sortByRarity(list).map((u) => u.id)).toEqual(['d', 'e', 'b', 'c', 'a', 'f']);
   });
 
   it('searches the words in the name or in the equipment', () => {

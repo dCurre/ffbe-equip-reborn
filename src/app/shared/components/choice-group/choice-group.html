@@ -8,10 +8,13 @@
     (click)="toggle(choice.value)"
   >
     @if (choice.icon !== undefined || choice.label === undefined) {
-      <app-icon [name]="iconId(choice)" [size]="iconSize() ?? (pills() ? undefined : 38)" />
+      <app-icon [name]="iconId(choice)" [size]="iconSize() ?? (pills() ? undefined : 38)" [width]="choice.width" />
     }
     @if (choice.label !== undefined) {
       {{ choice.label }}
+    }
+    @if (isExcluded(choice.value)) {
+      <app-icon class="excluded" name="ban-bold" />
     }
   </button>
 }

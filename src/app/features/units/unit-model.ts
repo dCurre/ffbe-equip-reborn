@@ -29,14 +29,8 @@ export interface TrustItem extends Item {
   stmrUnit?: string;
 }
 
-/** Ids of the units of the released list: a unit whose Brave Shift is not released yet is "soon" an NVA. */
-export type ReleasedIds = ReadonlySet<string>;
-
 export const isNV = (unit: GameUnit): boolean => unit.min_rarity === 'NV';
 export const isNVA = (unit: GameUnit): boolean => unit.max_rarity === 'NV' && unit.min_rarity !== 'NV';
-
-export const isSoonNVA = (unit: GameUnit, released: ReleasedIds): boolean =>
-  isNVA(unit) && (!unit.braveShift || !released.has(unit.braveShift));
 
 /** The max rarity shown: a 7* that is not released yet counts as a 6*. */
 export const shownMaxRarity = (unit: GameUnit): string | number => (unit.unreleased7Star ? 6 : unit.max_rarity);
@@ -47,22 +41,22 @@ export const baseCrystal = (unit: GameUnit): SpriteName | null =>
     Number(unit.min_rarity) as 3 | 4 | 5
   ] ?? null;
 
-/** A rarity to draw: an NV / NVA crystal picture, then text (the stars, or "(soon)"). */
+/** A rarity to draw: an NV / NVA crystal picture, then text (the stars). */
 export interface RarityParts {
   icon: SpriteName | null;
   text: string;
 }
 
-export function rarityParts(min: string | number, max: string | number, soon = false): RarityParts {
+export function rarityParts(min: string | number, max: string | number): RarityParts {
   if (min === 'NV') return { icon: 'crystal-NV', text: '' };
-  if (max === 'NV') return { icon: 'crystal-NVA', text: soon ? ' (soon)' : '' };
-  return { icon: null, text: rarityLabel(min, max, soon) };
+  if (max === 'NV') return { icon: 'crystal-NVA', text: ' ' + '★'.repeat(Number(min)) }; // the base, as the stars of the other rarities
+  return { icon: null, text: rarityLabel(min, max) };
 }
 
-export function rarityLabel(min: string | number, max: string | number, soon = false): string {
+export function rarityLabel(min: string | number, max: string | number): string {
   if (min === 'NV') return 'NV';
-  if (max === 'NV') return soon ? 'NVA (soon)' : 'NVA';
-  return '★'.repeat(Number(min)) + '☆'.repeat(Math.max(0, Number(max) - Number(min))) + (soon ? ' (soon)' : '');
+  if (max === 'NV') return 'NVA';
+  return '★'.repeat(Number(min)) + '☆'.repeat(Math.max(0, Number(max) - Number(min)));
 }
 
 /** The picture of a unit: its highest form (a 7* that is not owned as 7* shows the 6* picture). */
@@ -74,17 +68,15 @@ export function unitImage(unit: GameUnit, owned: OwnedUnit | undefined): string 
   return `${image}.png`;
 }
 
-const rarityValue = (unit: GameUnit, released: ReleasedIds): number => {
-  let max = unit.max_rarity === 'NV' ? 8 : Number(unit.max_rarity);
-  if (max === 8 && isSoonNVA(unit, released)) max = 7.5;
-  if (max === 7 && unit.unreleased7Star) max = 6;
-  return max;
+const rarityValue = (unit: GameUnit): number => {
+  const max = unit.max_rarity === 'NV' ? 8 : Number(unit.max_rarity);
+  return max === 7 && unit.unreleased7Star ? 6 : max;
 };
 
-export function sortByRarity(units: readonly GameUnit[], released: ReleasedIds): GameUnit[] {
+export function sortByRarity(units: readonly GameUnit[]): GameUnit[] {
   return [...units].sort((a, b) => {
-    const maxA = rarityValue(a, released);
-    const maxB = rarityValue(b, released);
+    const maxA = rarityValue(a);
+    const maxB = rarityValue(b);
     if (maxA !== maxB) return maxB - maxA;
     if (a.min_rarity === b.min_rarity) return a.name.localeCompare(b.name);
     return (b.min_rarity === 'NV' ? 8 : Number(b.min_rarity)) - (a.min_rarity === 'NV' ? 8 : Number(a.min_rarity));

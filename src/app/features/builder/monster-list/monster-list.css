@@ -2,3 +2,11 @@ app-tab-bar {
   display: block;
   margin-bottom: 8px;
 }
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}

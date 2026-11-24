@@ -16,6 +16,23 @@ app-icon {
   display: block;
 }
 
+button {
+  position: relative;
+}
+
+/* an excluded choice: the red crossed circle of the builder over its picture */
+.excluded {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  color: red;
+  pointer-events: none;
+}
+
 /* the pills: round buttons apart from each other */
 :host(.pills) {
   gap: 6px;

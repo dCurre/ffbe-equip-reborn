@@ -134,3 +134,28 @@ describe('Units page', () => {
     expect(page.querySelectorAll('.unit').length).toBe(1);
   });
 });
+
+describe('Units page rarity filter', () => {
+  it('has an NV+ choice that keeps the NV+ units only, wherever their group is', async () => {
+    const nv = [unit('100000207', 'Plain NV', 'NV', 'NV'), unit('100000307', 'Plus NV', 'NV', 'NV', { nvPlus: true })];
+    const data: Record<string, unknown> = {
+      units: Object.fromEntries(nv.map((u) => [u.id, u])),
+      releasedUnits: { '100000207': { type: 'summon' }, '100000307': { type: 'summon' } },
+      data: [],
+      lastItemReleases: [],
+    };
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), { provide: StaticData, useValue: { get: async (name: string) => data[name] } }],
+    });
+    TestBed.inject(Inventory).status.set('loaded');
+    const fixture = TestBed.createComponent(Units);
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const page = fixture.nativeElement as HTMLElement;
+    expect(page.querySelectorAll('.unit').length).toBe(2);
+    (fixture.componentInstance as unknown as { selectedGroups: { set(v: string[]): void } }).selectedGroups.set(['nvPlus']);
+    fixture.detectChanges();
+    const names = [...page.querySelectorAll('.unit .unit-name')].map((n) => n.textContent?.trim());
+    expect(names).toEqual(['Plus NV']);
+  });
+});

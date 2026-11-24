@@ -170,7 +170,7 @@ for (const lang of ['de', 'es', 'fr', 'ko', 'zh']) {
 }
 
 // --- Global only: no Japan version of these ---
-for (const name of ['monsters', 'lastItemReleases', 'changes', 'foundSkills', 'foundSpecialSkills', 'foundAutoCastedSkills', 'dataVersion']) {
+for (const name of ['lastItemReleases', 'changes', 'foundSkills', 'foundSpecialSkills', 'foundAutoCastedSkills', 'dataVersion']) {
     const data = read('GL', name);
     if (data !== undefined) write(name, data);
 }

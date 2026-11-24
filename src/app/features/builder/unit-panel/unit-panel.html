@@ -23,7 +23,7 @@
       <img class="unit-icon" [src]="'img/units/unit_icon_' + pictureId(unit.id) + '.png'" alt="" />
       <span class="rarity" [title]="'Rarity ' + unit.max_rarity">
         @if (unit.max_rarity === 'NV') {
-          <app-icon [name]="unit['nvPlus'] ? 'nv-plus' : 'nv'" height="1em" />
+          <app-icon [name]="unit['nvPlus'] ? 'crystal-NVPlus' : 'nv'" height="1em" />
         } @else {
           {{ stars(unit.max_rarity) }}
         }

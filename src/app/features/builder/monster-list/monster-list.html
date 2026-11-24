@@ -1,11 +1,17 @@
-@if (bestiary.hasValue()) {
-  <button app-button small type="button" (click)="open.set(true)">
-    <app-icon name="monster" /> {{ t.monsterList2 }}
-  </button>
-}
+<button app-button small type="button" (click)="open.set(true)">
+  <app-icon name="monster" /> {{ t.monsterList2 }}
+</button>
 
 <app-modal [heading]="t.monsterList" [wide]="true" [(open)]="open">
   <app-tab-bar [tabs]="categories()" [active]="category()" (selected)="category.set($event)" />
+  @if (isGame()) {
+    <div class="filters">
+      <app-search-box [placeholder]="t.searchMonster" (search)="query.set($event)" />
+      @if (events().length) {
+        <app-combobox [options]="events()" [(value)]="event" [emptyLabel]="t.allEvents" />
+      }
+    </div>
+  }
   <div class="items results">
     <div class="tbody">
       @for (row of rows(); track row.monster.name) {
@@ -15,4 +21,7 @@
       }
     </div>
   </div>
+  @if (truncated()) {
+    <p>{{ t.firstShown }}</p>
+  }
 </app-modal>

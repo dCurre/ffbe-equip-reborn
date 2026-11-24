@@ -55,7 +55,6 @@ import {
   GameUnit,
   isNV,
   isNVA,
-  isSoonNVA,
   num,
   parseMoogles,
   baseCrystal,
@@ -79,6 +78,8 @@ import { STRINGS } from '../../strings/en';
 
 /** The cards drawn at first, and each time the end of the list comes into view: the whole collection is a lot of cards. */
 const PAGE_SIZE = 60;
+/** The value of the NV+ choice of the rarity filter (it is no group: see `passesFilters`). */
+const NV_PLUS = 'nvPlus';
 
 type Tab = 'rarity' | 'alphabetical' | 'tmr' | 'history';
 
@@ -142,7 +143,6 @@ export class Units {
   // --- Game data ---
   protected readonly allUnits = signal<Record<string, GameUnit>>({});
   private readonly released = signal<GameUnit[]>([]);
-  private readonly releasedIds = signal<ReadonlySet<string>>(new Set());
   private readonly items = signal<TrustItem[]>([]);
   private readonly history = signal<HistoryEntry[]>([]);
   private readonly gameDataReady = signal(false);
@@ -258,29 +258,28 @@ export class Units {
     if (this.onlyOwned() && !(mine && (mine.number || mine.sevenStar || mine.nv))) return false;
     if (this.onlyOwned() && this.onlySevenStar() && !(unit.min_rarity !== 'NV' && mine?.sevenStar)) return false;
     if (this.onlyTimeLimited() && unit.summon_type !== 'event') return false;
-    if (this.selectedGroups().length && !this.selectedGroups().includes(this.groupId(unit))) return false;
+    const groups = this.selectedGroups();
+    // "NV+" is not a group of its own (the NV+ units are in the NV group): it picks them whatever their group
+    if (groups.length && !groups.includes(this.groupId(unit)) && !(groups.includes(NV_PLUS) && unit.nvPlus)) return false;
     // an EX level only exists on an NV copy you own
     if (this.selectedEx().length && !(mine?.nv && this.selectedEx().includes(String(mine.exRank ?? 0)))) return false;
     return !this.onlyTmrMoogles() || !!mine?.tmrMoogles?.length;
   }
 
-  /** The id of the rarity group of a unit: "min of max" (a "soon" NVA is apart). It is the id of its heading too. */
+  /** The id of the rarity group of a unit: "min of max" . It is the id of its heading too. */
   private groupId(unit: GameUnit): string {
-    const soon = isSoonNVA(unit, this.releasedIds());
-    return `rarity-${unit.min_rarity}-of-${shownMaxRarity(unit)}${soon ? '_soon' : ''}`;
+    return `rarity-${unit.min_rarity}-of-${shownMaxRarity(unit)}`;
   }
 
   /** The rarity groups to choose from (a filter): every group of the released units, whatever the other filters say. */
   protected readonly selectedGroups = signal<readonly string[]>([]);
   protected readonly groupChoices = computed<Choice[]>(() => {
-    const released = this.releasedIds();
     const choices = new Map<string, Choice>();
-    for (const unit of sortByRarity(this.released(), released)) {
+    for (const unit of sortByRarity(this.released())) {
       const value = this.groupId(unit);
       if (choices.has(value)) continue;
       const max = shownMaxRarity(unit);
-      const soon = isSoonNVA(unit, released);
-      const { icon, text } = rarityParts(unit.min_rarity, max, soon);
+      const { icon, text } = rarityParts(unit.min_rarity, max);
       choices.set(
         value,
         icon
@@ -288,33 +287,31 @@ export class Units {
               value,
               icon: icon.replace('crystal-', ''),
               label: text.trim() || undefined,
-              tooltip: soon ? 'NVA units (soon)' : unit.min_rarity === 'NV' ? 'NV units' : 'NVA units',
+              tooltip: unit.min_rarity === 'NV' ? 'NV units' : `NVA units, base ${unit.min_rarity}★`,
             }
           : {
               value,
-              label: rarityLabel(unit.min_rarity, max, soon),
+              label: rarityLabel(unit.min_rarity, max),
               tooltip: `Base ${unit.min_rarity}★, up to ${max}★`,
             },
       );
     }
-    return [...choices.values()];
+    return [{ value: NV_PLUS, icon: 'NVPlus', width: 30, tooltip: 'NV+ units' }, ...choices.values()];
   });
 
   protected readonly groups = computed<Group[]>(() => {
     const tab = this.tab();
-    const released = this.releasedIds();
     if (tab === 'history') return this.historyGroups();
     if (tab === 'alphabetical') return this.byLetter(sortAlphabetically(this.visible()), false);
     if (tab === 'tmr') return this.byLetter(sortByTrustName(this.visible(), this.trust().tmr), true);
     // by rarity: one heading for each "min of max" rarity
     const groups: Group[] = [];
-    for (const unit of sortByRarity(this.visible(), released)) {
-      const soon = isSoonNVA(unit, released);
+    for (const unit of sortByRarity(this.visible())) {
       const max = shownMaxRarity(unit);
       const id = this.groupId(unit);
       let group = groups[groups.length - 1];
       if (group?.id !== id) {
-        group = { id, title: id, rarity: rarityParts(unit.min_rarity, max, soon), cards: [] };
+        group = { id, title: id, rarity: rarityParts(unit.min_rarity, max), cards: [] };
         groups.push(group);
       }
       group.cards.push(this.card(unit));
@@ -398,7 +395,6 @@ export class Units {
       // a [JP] version of a unit (`variantOf`) is not another unit to own: it only shows in the builder and the search
       const list = Object.values(units).filter((unit) => !unit.braveShifted && !unit.variantOf);
       this.allUnits.set(units);
-      this.releasedIds.set(new Set(Object.keys(released)));
       this.released.set(
         list.filter((unit) => released[unit.id]).map((unit) => ({ ...unit, summon_type: released[unit.id].type })),
       );
@@ -663,7 +659,7 @@ export class Units {
     const { tmr, stmr } = this.farmed();
     let csv =
       'Unit Id; Unit Name;Min Rarity;Max Rarity;Number Owned (not 7*); 7* Number owned;Number of TMR owned;Number of STMR owned;Number of TMR still farmable;Number of STMR still obtainable\n';
-    for (const unit of sortByRarity(Object.values(this.allUnits()), this.releasedIds())) {
+    for (const unit of sortByRarity(Object.values(this.allUnits()))) {
       const mine = owned[unit.id];
       if (!mine) continue;
       csv +=

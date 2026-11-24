@@ -150,6 +150,8 @@ export class InventoryPage {
 
   /** the types to show on the tabs that list by type; none selected shows every type */
   protected readonly selectedTypes = signal<readonly string[]>([]);
+  /** the types to hide (a second click on a type button) */
+  protected readonly excludedTypes = signal<readonly string[]>([]);
   /** the sort chosen on each tab (none: the default of the tab, shown as selected): a stat from the highest and off, the name ascending, descending and off */
   private readonly sorts = signal<Record<string, SortChoice | null>>({});
   /** the sort of the open tab: each tab keeps its own */
@@ -248,8 +250,12 @@ export class InventoryPage {
       .filter((line) => !text || containsText(text, line.item))
       .filter((line) => !this.ownedFilter() || line.ownedNumber);
     const types = this.shownTypes();
+    const hidden = this.shownExcluded();
     return sortEntries(
-      lines.filter((line) => !this.byType() || !types.length || types.includes(line.item.type)),
+      lines.filter(
+        (line) =>
+          !this.byType() || ((!types.length || types.includes(line.item.type)) && !hidden.includes(line.item.type)),
+      ),
       this.sort()?.stat ?? this.defaultSortStat(),
       // the stats go from the highest and the names from A unless turned around
       this.sort() ? this.sort()!.ascending !== (this.sort()!.stat === 'name') : false,
@@ -272,9 +278,14 @@ export class InventoryPage {
     const available = new Set(this.typeChoices().map((choice) => choice.value));
     return this.selectedTypes().filter((type) => available.has(type));
   });
-  /** how many of the filters are on: the types chosen, a sort */
+  private readonly shownExcluded = computed(() => {
+    const available = new Set(this.typeChoices().map((choice) => choice.value));
+    return this.excludedTypes().filter((type) => available.has(type));
+  });
+  /** how many of the filters are on: the types chosen or excluded, a sort */
   protected readonly activeFilters = computed(
-    () => this.shownTypes().length + (this.sort() ? 1 : 0) + (this.ownedFilter() ? 1 : 0),
+    () =>
+      this.shownTypes().length + this.shownExcluded().length + (this.sort() ? 1 : 0) + (this.ownedFilter() ? 1 : 0),
   );
   /** the "only owned" filter is on, on a tab it applies to */
   protected readonly ownedFilter = computed(() => this.onlyOwned() && ['equipment', 'materia'].includes(this.tab()));
@@ -432,6 +443,7 @@ export class InventoryPage {
 
   protected clearFilters(): void {
     this.selectedTypes.set([]);
+    this.excludedTypes.set([]);
     this.onlyOwned.set(false);
     this.setSort(null);
   }

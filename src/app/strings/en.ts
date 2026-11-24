@@ -738,6 +738,18 @@ export const STRINGS = {
   monsterList: {
     monsterList: 'Monster List',
     monsterList2: 'Monster list',
+    groups: {
+      permanent: 'Permanent',
+      season1: 'Season 1',
+      season2: 'Season 2',
+      season3: 'Season 3',
+      season4: 'Season 4',
+      collaborations: 'Collaborations',
+      none: 'No event',
+    },
+    allEvents: 'All events',
+    searchMonster: 'Search a monster',
+    firstShown: 'Only the first matches are shown: refine the search.',
   },
   nodeView: {
     stReflectionBoost: 'ST Reflection Boost',

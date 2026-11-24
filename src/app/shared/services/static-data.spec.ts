@@ -50,7 +50,7 @@ describe('StaticData', () => {
   it('does not remember a failed download', async () => {
     fetchSpy.mockResolvedValueOnce(new Response('', { status: 404 }));
     const data = TestBed.inject(StaticData);
-    await expect(data.get('monsters')).rejects.toThrow('404');
-    expect(await data.get('monsters')).toEqual({ a: 1 });
+    await expect(data.get('monstersAll')).rejects.toThrow('404');
+    expect(await data.get('monstersAll')).toEqual({ a: 1 });
   });
 });

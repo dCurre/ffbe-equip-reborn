@@ -9,6 +9,8 @@ export interface Choice {
   /** a text instead of a picture, or next to the picture when there is an `icon` too */
   label?: string;
   tooltip?: string;
+  /** the width of the picture when it is not the size of the others (the height follows) */
+  width?: number;
   /** shown but not to choose (a value that no result could have with the others chosen) */
   disabled?: boolean;
 }
@@ -34,11 +36,19 @@ export class ChoiceGroup {
   readonly pills = input(false, { transform: booleanAttribute });
   /** the values selected (for `single`, zero or one value) */
   readonly selected = model<readonly string[]>([]);
+  /** a second click excludes the choice (crossed out in red) and a third clears it; `excluded` has the values excluded */
+  readonly excludable = input(false, { transform: booleanAttribute });
+  readonly excluded = model<readonly string[]>([]);
 
   private readonly set = computed(() => new Set(this.selected()));
+  private readonly excludedSet = computed(() => new Set(this.excluded()));
 
   protected isSelected(value: string): boolean {
     return this.set().has(value);
+  }
+
+  protected isExcluded(value: string): boolean {
+    return this.excludedSet().has(value);
   }
 
   protected iconId(choice: Choice): string {
@@ -48,7 +58,14 @@ export class ChoiceGroup {
   protected toggle(value: string): void {
     // like a radio button: the chosen one stays chosen, another click elsewhere replaces it
     if (this.single()) this.selected.set([value]);
-    else
+    else if (this.excludable()) {
+      // none -> selected -> excluded -> none
+      if (this.excludedSet().has(value)) this.excluded.set(this.excluded().filter((v) => v !== value));
+      else if (this.set().has(value)) {
+        this.selected.set(this.selected().filter((v) => v !== value));
+        this.excluded.set([...this.excluded(), value]);
+      } else this.selected.set([...this.selected(), value]);
+    } else
       this.selected.set(
         this.set().has(value) ? this.selected().filter((v) => v !== value) : [...this.selected(), value],
       );

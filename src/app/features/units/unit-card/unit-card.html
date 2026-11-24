@@ -2,7 +2,11 @@
   <div class="avatar">
     <img class="unit-image" [src]="card().image" loading="lazy" width="56" height="56" alt="" />
     @if (card().rarity.icon) {
-      <app-icon class="avatar-tag" [name]="card().rarity.icon!" />
+      @if (card().unit.nvPlus && card().rarity.icon === 'crystal-NV') {
+        <app-icon class="avatar-tag" name="crystal-NVPlus" width="30" />
+      } @else {
+        <app-icon class="avatar-tag" [name]="card().rarity.icon!" />
+      }
     }
   </div>
   <div class="main">
@@ -11,9 +15,6 @@
         <app-wiki-link [name]="card().name" />
       } @else {
         <app-wiki-link [name]="card().unit.name" />
-      }
-      @if (card().unit.nvPlus) {
-        <app-icon name="nv-plus" height="1em" />
       }
       @if (card().timeLimited) {
         <span class="time" [title]="t.timeLimitedUnit"><app-icon name="timer" /></span>

@@ -362,7 +362,8 @@ export const ICONS = {
   // --- Fixed pictures ---
   dwarf: { kind: 'image', src: 'img/icons/dwarf.png', title: 'Enhancements' },
   nv: { kind: 'image', src: 'img/icons/NV.png', title: 'NV' },
-  'nv-plus': { kind: 'image', src: 'img/icons/NVPlus.png', title: 'NV+ (enhanced with Azure Pearls)' },
+  // in the crystal table, so that the rarity filter of the Units page can show it like the others
+  'crystal-NVPlus': { kind: 'image', src: 'img/icons/NVPlus.png', title: 'NV+ (enhanced with Azure Pearls)' },
   'brave-shift': { kind: 'image', src: 'img/icons/braveShift.png', title: 'Brave Shift' },
   killer: { kind: 'image', src: 'img/icons/killer.png', title: 'Killers' },
   'limit-burst': { kind: 'image', src: 'img/icons/lb.png', title: 'Limit Burst' },
