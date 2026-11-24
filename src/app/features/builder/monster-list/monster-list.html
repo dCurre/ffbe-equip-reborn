@@ -3,20 +3,35 @@
 </button>
 
 <app-modal [heading]="t.monsterList" [wide]="true" [(open)]="open">
-  <app-tab-bar [tabs]="categories()" [active]="category()" (selected)="category.set($event)" />
-  @if (isGame()) {
-    <div class="filters">
-      <app-search-box [placeholder]="t.searchMonster" (search)="query.set($event)" />
-      @if (events().length) {
-        <app-combobox [options]="events()" [(value)]="event" [emptyLabel]="t.allEvents" />
-      }
-    </div>
-  }
+  <app-tab-bar scrollable [tabs]="categories()" [active]="category()" (selected)="category.set($event)" />
+  <div class="filters">
+    <app-search-box [placeholder]="t.searchMonster" (search)="query.set($event)" />
+    @if (events().length) {
+      <app-combobox [options]="events()" [(value)]="event" [emptyLabel]="t.allEvents" />
+    }
+  </div>
   <div class="items results">
+    <div class="thead">
+      <div class="tr">
+        <div class="td th">{{ t.name }}</div>
+        <div class="td th">{{ t.dungeon }}</div>
+        <div class="td th">{{ t.resistances }}</div>
+        <div class="td th">{{ t.type }}</div>
+      </div>
+    </div>
     <div class="tbody">
-      @for (row of rows(); track row.monster.name) {
+      @for (row of rows(); track row.location) {
         <div class="tr selectable" (click)="choose(row.monster)">
-          <app-item-line class="inline" [item]="row.item" />
+          <app-item-name [item]="row.item" [link]="false" />
+          <div class="td where">
+            @if (row.where.page) {
+              <app-wiki-link [name]="row.where.text" [page]="row.where.page" />
+            } @else {
+              {{ row.where.text }}
+            }
+          </div>
+          <app-monster-traits [traits]="row.monster['traits']" />
+          <app-item-access [item]="row.item" />
         </div>
       }
     </div>

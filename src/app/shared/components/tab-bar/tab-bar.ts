@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { booleanAttribute, Component, input, output } from '@angular/core';
 import { Icon } from '../../../shared/components/icon/icon';
 
 /** A tab of the bar: the sprite `img-tab-<icon>` or a picture (the title alone when there is none), and a title. `kind` sizes a picture. */
@@ -25,6 +25,7 @@ export function tabsWithCounts<T extends string>(
 @Component({
   imports: [Icon],
   selector: 'app-tab-bar',
+  host: { '[class.scrollable]': 'scrollable()' },
   templateUrl: './tab-bar.html',
   styleUrl: './tab-bar.css',
 })
@@ -32,4 +33,6 @@ export class TabBar<T extends string> {
   readonly tabs = input.required<readonly TabItem<T>[]>();
   readonly active = input.required<T>();
   readonly selected = output<T>();
+  /** many tabs: one line that scrolls sideways, with a fade at the right edge (as the Esper tabs) */
+  readonly scrollable = input(false, { transform: booleanAttribute });
 }

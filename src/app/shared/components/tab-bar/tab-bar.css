@@ -52,3 +52,30 @@ li.active a {
   height: 40px;
   margin: 5px;
 }
+
+:host(.scrollable) {
+  position: relative;
+}
+
+:host(.scrollable) .tabs {
+  overflow: auto hidden;
+  scroll-behavior: smooth;
+}
+
+:host(.scrollable) li {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* the fade over the tabs that continue; its color is the one of the box around the bar */
+:host(.scrollable)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  width: 50px;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to left, var(--tab-fade, var(--color-background)), transparent);
+}

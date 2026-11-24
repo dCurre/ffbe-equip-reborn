@@ -37,3 +37,6 @@ English: `F_TEXT_MONSTER_NAME` of packs `content-003` and `kira-event` (key `MST
 
 ## Names in other languages
 `public/ALL/monstersAll_<fr|de|es|ko|zh>.json`: one array per language, same order and length as `monstersAll.json`, `""` where the English name stays. Built from `aEnigmatic/ffbe-gl-strings` `MST_MONSTER_NAME.json` (value order en, zh, ko, fr, de, es, id) looked up by the part row id of each entry, then by its 7-digit group id; control characters are stripped. Keep the id of each entry while building (a curated boss uses the id of its matched game row; the ones without a row, e.g. Antenolla A-D, stay English). The page loads the file of its language with `StaticData.get('monstersAll', true)`.
+
+## Fields of `monstersAll.json` today (edited by hand, no generator in the repo)
+Besides name, stats, `races`, `hp`/`mp`, `category` (curated rows): each row has `locations` (one object per dungeon where the boss appears: `tab`, `trial`, `dungeon`, `dungeonPage`, `release`; the Builder list shows the boss in each) and `traits` (absorb, resist, weak, statusResist, break, immune, vulnerable, notes, ready for icons). The raw `resist`, `absorb`, `breakability` and `special` fields no longer exist in the file.

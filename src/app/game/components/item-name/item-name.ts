@@ -19,6 +19,8 @@ import { STRINGS } from '../../../strings/en';
 export class ItemName {
   protected readonly t = STRINGS.itemName;
   readonly item = input.required<Item>();
+  /** the name is a link to the wiki (a list that links something else, like the dungeon of a boss, turns it off) */
+  readonly link = input(true);
   /** the enchantments (`itemEnchants.json`), to name the rare enhancements of an item */
   readonly enchantments = input<ItemEnchantments>();
 

@@ -1,7 +1,16 @@
-@for (access of accesses(); track $index) {
-  <div class="access" [class.notSelected]="access.blocked" [class.forbiddenAccess]="access.blocked">
-    {{ access.label }}
+@if (item().type === 'monster') {
+  <!-- the access of a monster is its races: the picture of the race, as the killers show it -->
+  <div class="races">
+    @for (race of item().access ?? []; track race) {
+      <app-icon [name]="'killer-physical-' + race" [title]="raceTitle(race)" size="30" />
+    }
   </div>
+} @else {
+  @for (access of accesses(); track $index) {
+    <div class="access" [class.notSelected]="access.blocked" [class.forbiddenAccess]="access.blocked">
+      {{ access.label }}
+    </div>
+  }
 }
 @if (tmrUnit(); as tmr) {
   <div class="unit">

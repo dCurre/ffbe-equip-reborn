@@ -1,6 +1,11 @@
 :host {
   display: block;
 }
+.races {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
 .exclusive {
   font-weight: bold;
 }

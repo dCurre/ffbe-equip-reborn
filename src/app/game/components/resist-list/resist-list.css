@@ -5,13 +5,13 @@
 .value {
   position: relative;
   display: inline-block;
-  width: 38px;
-  height: 38px;
+  width: var(--resist-size, 38px);
+  height: var(--resist-size, 38px);
 }
 .mini {
   position: absolute;
-  margin-top: 19px;
-  margin-left: 19px;
+  margin-top: calc(var(--resist-size, 38px) / 2);
+  margin-left: calc(var(--resist-size, 38px) / 2);
   border-radius: 5px;
 }
 .with-mini {

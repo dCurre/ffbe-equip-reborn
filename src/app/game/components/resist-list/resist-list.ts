@@ -28,7 +28,7 @@ export class ResistList {
   /** the equipment picture shown small over each element / ailment: a shield for resistances, a sword for inflictions */
   readonly icon = input('heavyShield');
 
-  protected readonly elements = computed(() => this.group(elementList));
+  protected readonly elements = computed(() => this.group([...elementList, 'noElement']));
   protected readonly ailments = computed(() => this.group(ailmentList));
 
 

@@ -2,7 +2,9 @@
   @if (item().rarity) {
     <span class="rarity">{{ item().rarity }}★</span>{{ ' ' }}
   }
-  @if (item()['placeHolder']) {
+  @if (!link()) {
+  {{ item().name }}
+} @else if (item()['placeHolder']) {
     <app-wiki-link [name]="item().name" [page]="categoryPage()" />
   } @else if (item()['wikiEntry']) {
     <app-wiki-link [name]="item().name" [page]="item()['wikiEntry']" />

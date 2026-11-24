@@ -55,6 +55,10 @@ export class ItemAccess {
     this.conditions().every((condition) => weaponList.includes(condition.name)) ? ' or ' : ' and ',
   );
 
+  protected raceTitle(race: string): string {
+    return race.charAt(0).toUpperCase() + race.slice(1);
+  }
+
   private unit(key: 'tmrUnit' | 'stmrUnit'): { id: string; unit?: ItemUnits[string] } | undefined {
     const id = this.item()[key];
     return id ? { id, unit: this.units()[id] } : undefined;

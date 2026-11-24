@@ -1,13 +1,16 @@
 import { Component, computed, inject, linkedSignal, resource, signal } from '@angular/core';
 import { elementList } from '../../../../core/constants/base-lists';
 import { Item } from '../../../game/helpers/item';
-import { ItemLine } from '../../../game/components/item-line/item-line';
+import { ItemAccess } from '../../../game/components/item-access/item-access';
+import { ItemName } from '../../../game/components/item-name/item-name';
+import { MonsterTraits, Traits } from './monster-traits/monster-traits';
 import { ServerContext } from '../../../shared/services/server-context';
 import { StaticData } from '../../../shared/services/static-data';
 import { Button } from '../../../shared/components/button/button';
 import { Combobox } from '../../../shared/components/combobox/combobox';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Modal } from '../../../shared/components/modal/modal';
+import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { SearchBox } from '../../../shared/components/search-box/search-box';
 import { TabBar, TabItem } from '../../../shared/components/tab-bar/tab-bar';
 import { StatePanel } from '../shared/state-panel';
@@ -21,11 +24,33 @@ const GROUPS = ['permanent', 'season1', 'season2', 'season3', 'season4', 'collab
 const MAX_ROWS = 100;
 const HP_FORMAT = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 });
 
-/** The group of events of a monster of the game data (`none` = no event found); the curated ones belong to a category instead. */
-const groupOf = (monster: { [field: string]: unknown }): string | undefined =>
-  monster['category'] ? undefined : ((monster['eventGroup'] as string | undefined) ?? 'none');
+/** The tabs that come first in the bar, in this order; the rest follows (the other curated categories, then the groups of events). */
+const FIRST = [
+  'C. of the Fallen',
+  'C. of the Indignant (Scorns)',
+  'C. of the Vengeful',
+  'C. of Arms',
+  'Advent of Purgatory',
+  'Dark Visions',
+  'Clash of Wills',
+];
 
-/** A monster of `monstersAll.json`: the curated ones have a `category` (`Recent`, `Espers`, ...), the others come from the game data. */
+/**
+ * One place of a monster: the `tab` it is listed in, the `trial` (the trial or event chosen inside the tab), the `dungeon` (the text of
+ * the column) with its wiki page, and the release of the trial or event.
+ */
+interface Location {
+  tab: string;
+  trial: string;
+  dungeon: string;
+  dungeonPage?: string;
+  release?: string;
+}
+
+/**
+ * A monster of `monstersAll.json`: the curated ones have a `category` (`Recent`, `Espers`, ...), the others come from the game data.
+ * It is one entry per boss: `locations` are all the dungeons where it appears, and the list shows it in each of them.
+ */
 interface Monster {
   name: string;
   races: string[];
@@ -33,8 +58,8 @@ interface Monster {
   def: number;
   mag: number;
   spr: number;
-  resist?: { name: string; percent: number }[];
-  breakability?: Record<string, boolean>;
+  traits?: Traits;
+  locations: Location[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [field: string]: any;
 }
@@ -42,7 +67,7 @@ interface Monster {
 /** The list of the known monsters (a link and a dialog): choosing one fills the stats, races and resistances of the enemy. */
 @Component({
   selector: 'app-monster-list',
-  imports: [Button, Combobox, Icon, Modal, ItemLine, SearchBox, TabBar],
+  imports: [Button, Combobox, Icon, Modal, ItemAccess, ItemName, MonsterTraits, SearchBox, TabBar, WikiLink],
   templateUrl: './monster-list.html',
   styleUrl: './monster-list.css',
 })
@@ -65,63 +90,66 @@ export class MonsterList extends StatePanel {
   });
   private readonly entries = computed(() => {
     const names = this.translated.value();
-    return (this.bestiary.value() ?? []).map((monster, index) => ({ monster, name: names?.[index] || monster.name }));
+    return (this.bestiary.value() ?? []).flatMap((monster, index) =>
+      monster.locations.map((location) => ({ monster, name: names?.[index] || monster.name, location })),
+    );
   });
-  /** the curated categories in the order of the file, then the groups of events of the monsters of the game data */
+  /** the Chamber and event tabs first, the other curated categories in the order of the file, then the groups of events of the game data */
   protected readonly categories = computed<TabItem<string>[]>(() => {
-    const monsters = this.bestiary.value() ?? [];
-    const groups = new Set(monsters.map((monster) => groupOf(monster)));
+    const tabs = new Set(this.entries().map(({ location }) => location.tab));
     const titles: Record<string, string> = this.t.groups;
+    const named = new Set([...FIRST, ...tabs].filter((tab) => tabs.has(tab) && !tab.startsWith(GROUP)));
     return [
-      ...[...new Set(monsters.map((monster) => monster['category'] as string | undefined))]
-        .filter((name): name is string => !!name)
-        .map((name) => ({ key: name, title: name })),
-      ...GROUPS.filter((group) => groups.has(group)).map((group) => ({ key: GROUP + group, title: titles[group] })),
+      ...[...named].map((name) => ({ key: name, title: name })),
+      ...GROUPS.filter((group) => tabs.has(GROUP + group)).map((group) => ({ key: GROUP + group, title: titles[group] })),
     ];
   });
   /** the category shown: the first one until another is chosen */
   protected readonly category = linkedSignal(() => this.categories()[0]?.key);
-  /** the group of events shown, when the tab is one of the game data monsters */
-  private readonly group = computed(() => (this.category()?.startsWith(GROUP) ? this.category().slice(GROUP.length) : undefined));
-  protected readonly isGame = computed(() => this.group() !== undefined);
   protected readonly query = signal('');
-  /** the event chosen in the group ('' = all of them); a new tab starts again from all */
+  /** the trial or event chosen in the tab ('' = all of them); a new tab starts again from all */
   protected readonly event = linkedSignal<string, string>({ source: () => this.category(), computation: () => '' });
-  /** the events of the group, the newest first (the ones without a date at the end) */
+  /** the trials or events of the tab, the newest first (the ones without a date at the end) */
   protected readonly events = computed(() => {
     const released = new Map<string, string>();
-    for (const { monster } of this.entries()) {
-      if (groupOf(monster) === this.group() && monster['event']) released.set(monster['event'], monster['release'] ?? '');
+    for (const { location } of this.entries()) {
+      const trial = location.trial;
+      if (location.tab !== this.category() || !trial) continue;
+      const known = released.get(trial);
+      const release = location.release ?? '';
+      // a trial is as old as its first release (a rerun has a later date)
+      if (known === undefined || (release && (!known || release < known))) released.set(trial, release);
     }
     return [...released].sort((a, b) => b[1].localeCompare(a[1]) || a[0].localeCompare(b[0])).map(([name]) => name);
   });
   private readonly matches = computed(() => {
     const text = this.query().trim().toLowerCase();
     const event = this.event();
+    const category = this.category();
     // the search finds the monster by its name in the language of the page and by the English one
-    return this.entries().filter(
-      ({ monster, name }) =>
-        groupOf(monster) === this.group() &&
-        (!event || monster['event'] === event) &&
-        `${name} ${monster.name} ${monster['event'] ?? ''}`.toLowerCase().includes(text),
+    const found = this.entries().filter(
+      ({ monster, name, location }) =>
+        location.tab === category &&
+        (!event || location.trial === event) &&
+        `${name} ${monster.name} ${location.dungeon}`.toLowerCase().includes(text),
     );
+    // newest first, the undated last; the other curated categories keep the order of the file
+    return FIRST.includes(category) || !!category?.startsWith(GROUP)
+      ? found.sort((a, b) => (b.location.release ?? '').localeCompare(a.location.release ?? ''))
+      : found;
   });
-  protected readonly truncated = computed(() => this.isGame() && this.matches().length > MAX_ROWS);
+  protected readonly truncated = computed(() => this.matches().length > MAX_ROWS);
   /** the monsters of the category, each with the item the line shows (a monster is shown like an item) */
   protected readonly rows = computed(() => {
-    const category = this.category();
-    const entries = this.isGame()
-      ? this.matches().slice(0, MAX_ROWS)
-      : this.entries().filter(({ monster }) => monster['category'] === category);
-    return entries.map(({ monster, name }) => ({
+    return this.matches().slice(0, MAX_ROWS).map(({ monster, name, location }) => ({
       monster,
-      // the monsters of the big list share names (levels, phases): the HP and the event tell them apart
+      location,
+      where: { text: location.dungeon, page: location.dungeonPage },
+      // the monsters of the big list share names (levels, phases): the HP tells them apart
       item: {
         ...monster,
         id: monster.name,
-        name: this.isGame() ? this.label(monster, name) : name,
-        // the wiki page is the English name, not the translated one
-        wikiEntry: monster['wikiEntry'] ?? monster.name,
+        name: monster['category'] ? name : this.label(monster, name),
         type: 'monster',
         access: monster.races,
       } as Item,
@@ -129,8 +157,7 @@ export class MonsterList extends StatePanel {
   });
 
   private label(monster: Monster, name: string): string {
-    const event = monster['event'] ? `, ${monster['event']}${monster['release'] ? ` ${monster['release']}` : ''}` : '';
-    return `${name} (${HP_FORMAT.format(monster['hp'])} HP${event})`;
+    return `${name} (${HP_FORMAT.format(monster['hp'])} HP)`;
   }
 
   protected choose(monster: Monster): void {
@@ -140,13 +167,15 @@ export class MonsterList extends StatePanel {
     s.monsterBuffs.set(Object.fromEntries(STATS.map((stat) => [stat, text(monster[`${stat}%`])])));
     s.monsterBreaks.set({});
     // the monsters without data about it cannot be broken
-    s.monsterBreakability.set(Object.fromEntries(STATS.map((stat) => [stat, !!monster.breakability?.[stat]])));
+    s.monsterBreakability.set(Object.fromEntries(STATS.map((stat) => [stat, !!monster.traits?.break?.includes(stat)])));
     s.monsterResists.set(
       Object.fromEntries(
         elementList.map((element) => [
           element,
-          // the big list gives the absorbed elements apart: they are 999 like in the curated ones
-          monster['absorb']?.includes(element) ? '999' : text(monster.resist?.find((r) => r.name === element)?.percent),
+          // the absorbed elements are 999 in the Builder
+          monster.traits?.absorb?.includes(element)
+            ? '999'
+            : text([...(monster.traits?.resist ?? []), ...(monster.traits?.weak ?? [])].find((r) => r.name === element)?.percent),
         ]),
       ),
     );
