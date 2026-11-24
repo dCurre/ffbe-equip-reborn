@@ -183,10 +183,11 @@ export class Encyclopedia {
     tooltip: `Magical ${value} killer`,
   }));
   protected readonly accessChoices: Choice[] = ACCESS_FILTERS;
-  protected readonly additionalStatChoices: Choice[] = [...baseStats, 'twoHanded'].map((value) => ({
-    value,
-    tooltip: value.toUpperCase(),
-  }));
+  protected readonly additionalStatChoices: Choice[] = [
+    ...[...baseStats, 'twoHanded'].map((value) => ({ value, tooltip: value.toUpperCase() })),
+    { value: 'lbDamage', tooltip: 'Increase LB damage' },
+    { value: 'evoMag', tooltip: 'Increase Esper (evocation) summon damage' },
+  ];
   protected readonly elementsConnector = connector('elements');
   protected readonly ailmentsConnector = connector('ailments');
   protected readonly killersConnector = connector('killers');
@@ -282,7 +283,9 @@ export class Encyclopedia {
     add('accessToRemove', 'item', `Without: ${this.accessToRemove().join(', ')}`, this.accessToRemove().length > 0);
     add('unit', 'stats', `Unit: ${this.unitName()}`, !!this.unit());
     add('stat', 'stats', `Sorted by ${upper(this.stat())}`, this.stat().length > 0);
-    add('additionalStat', 'stats', `Also: ${upper(this.additionalStat())}`, this.additionalStat().length > 0);
+    add('additionalStat', 'stats', `Also: ${this.additionalStat()
+        .map((v) => this.additionalStatChoices.find((c) => c.value === v)?.tooltip ?? v.toUpperCase())
+        .join(', ')}`, this.additionalStat().length > 0);
     add(
       'elements',
       'effects',

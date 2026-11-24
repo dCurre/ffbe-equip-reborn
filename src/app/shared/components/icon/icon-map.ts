@@ -330,6 +330,8 @@ export const ICONS = {
   'stat-mp': { kind: 'sprite', title: 'MP' },
   'stat-spr': { kind: 'sprite', title: 'SPR' },
   'stat-twoHanded': { kind: 'sprite', title: 'Two-handed' },
+  'stat-lbDamage': { kind: 'image', src: 'img/icons/lb.png', title: 'Increase LB damage' },
+  'stat-evoMag': { kind: 'image', src: 'img/espers/ALL.png', title: 'Increase Esper (evocation) summon damage' },
   // --- Sprites: tab ---
   'tab-equipments': { kind: 'sprite', title: 'Equipments' },
   'tab-history': { kind: 'sprite', title: 'History' },
