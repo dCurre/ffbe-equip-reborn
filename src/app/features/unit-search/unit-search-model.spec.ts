@@ -79,6 +79,16 @@ describe('unit search', () => {
     expect(ids(state)).toEqual(['3']);
   });
 
+  it('filters by role, any of the roles chosen', () => {
+    const ctx = { ...context(), units: { ...units, '1': skillUnit('1', 'Rain', { roles: ['physicalTank', 'support'] }), '2': skillUnit('2', 'Fina', { roles: ['healer'] }) } };
+    const state = defaultState();
+    state.roles = ['physicalTank'];
+    expect(hasSearch(state)).toBe(true);
+    expect(ids(state, ctx)).toEqual(['1']);
+    state.roles = ['healer', 'support'];
+    expect(ids(state, ctx)).toEqual(['1', '2']);
+  });
+
   it('picks the NV+ units with NV+, and all the NV units with NV', () => {
     const nv = searchUnit('4', { maxRarity: 'NV' });
     const nvPlus = searchUnit('5', { maxRarity: 'NV', nvPlus: true });
@@ -170,9 +180,10 @@ describe('unit search', () => {
     state.types = ['sword'];
     state.baseRarity = ['5'];
     state.series = ['10001'];
+    state.roles = ['physicalTank'];
     const back = stateFromHash(stateToHash(state));
     expect(back.criteria.elements).toEqual(state.criteria.elements);
-    expect(back).toMatchObject({ searchText: 'rain', types: ['sword'], baseRarity: ['5'], series: ['10001'] });
+    expect(back).toMatchObject({ searchText: 'rain', types: ['sword'], baseRarity: ['5'], series: ['10001'], roles: ['physicalTank'] });
     expect(stateFromHash('not base 64').criteria.elements.values).toEqual([]);
   });
 });

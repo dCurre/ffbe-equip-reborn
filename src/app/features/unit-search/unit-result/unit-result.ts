@@ -1,5 +1,6 @@
 import { Component, computed, inject, input, output } from '@angular/core';
 import { ailmentList, elementList, killerList } from '../../../../core/constants/base-lists';
+import { roleList } from '../../../../core/constants/unit-restrictions';
 import { KillerList } from '../../../game/components/killer-list/killer-list';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { UnitContext } from '../unit-context';
@@ -42,6 +43,13 @@ export class UnitResult {
     return `img/units/unit_icon_${pictureId(unit.id).slice(0, -1)}${max}.png`;
   });
   protected readonly open = computed(() => this.state().fullyDisplayedUnits.includes(this.unit().id));
+  /** the roles of the unit, the ones that are not searched dimmed while some role is searched */
+  protected readonly roles = computed(() => {
+    const searched = this.state().roles;
+    return roleList
+      .filter((name) => this.unit().roles?.includes(name))
+      .map((name) => ({ name, dimmed: searched.length > 0 && !searched.includes(name) }));
+  });
   protected readonly killers = computed(() => passiveKillers(this.result().searchData));
   protected readonly killerSelection = computed(() => {
     const { criteria } = this.state();

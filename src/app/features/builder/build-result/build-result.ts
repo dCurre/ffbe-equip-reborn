@@ -66,9 +66,7 @@ export class BuildResult extends StatePanel {
     const build = this.s.build();
     if (!build.unit || !build.build?.length) return null;
     const variation = this.s.goalVariation() as 'min' | 'avg' | 'max';
-    // -1 is the value of a build no search has filled: the value is calculated from the items it has, as the old page did
-    const found = build.buildValue?.[variation] !== -1 ? build.buildValue : null;
-    return resultStats(build, enemy(this.s), variation, found);
+    return resultStats(build, enemy(this.s), variation);
   });
   protected readonly lines = computed(() => {
     this.s.tick();

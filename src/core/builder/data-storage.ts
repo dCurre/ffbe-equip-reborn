@@ -2,7 +2,7 @@ import { computeFarmableStmr, getItemEntry } from './item-entry.js';
 import { getValue } from './item-values.js';
 import { elementList } from '../constants/base-lists.js';
 import { percentValues } from '../constants/stat-values.js';
-import { getAvailableNumbers, getOwnedNumber, calculateAlreadyUsedItems } from './storage/item-ownership.js';
+import { getAvailableNumbers, getOwnedNumber, getOwnedCardNumber, calculateAlreadyUsedItems } from './storage/item-ownership.js';
 import {
   itemCanBeOfUseForGoal,
   itemWithUnstackableSkillOnlyUsefulInOne,
@@ -38,6 +38,8 @@ export class DataStorage {
   onlyUseShopRecipeItems: any;
   exludeEventEquipment: any;
   excludeNotReleasedYet: any;
+  /** only the equipment of the Global version */
+  excludeJapan: any;
   excludeTMR5: any;
   excludePremium: any;
   excludeSTMR: any;
@@ -79,6 +81,7 @@ export class DataStorage {
     this.onlyUseShopRecipeItems = false;
     this.exludeEventEquipment = false;
     this.excludeNotReleasedYet = true;
+    this.excludeJapan = false;
     this.excludeTMR5 = false;
     this.exludeEventEquipment = false;
     this.excludePremium = false;
@@ -313,6 +316,10 @@ export class DataStorage {
 
   getOwnedNumber(item) {
     return getOwnedNumber(this, item);
+  }
+
+  getOwnedCardNumber(cardId: string) {
+    return getOwnedCardNumber(this, cardId);
   }
 
   /** The items the other builds of the page use (`builds` and `currentUnitIndex` are only for a page with a single build). */

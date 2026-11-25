@@ -39,9 +39,17 @@ export function getUsedStatValue(
   return getStatCalculatedValue(context, itemAndPassives, stat, unitBuild).total;
 }
 
-// Adds the killers of the equipped items matching the enemy races, capped at 300% per race
+// Adds the killers of the equipped items matching the enemy races, capped at 300% per race. The killers of the Galvanite
+// nodes of the Esper (Stat Break, `limitKillers`) are a bucket of their own: up to 50% per race on top of the 300%.
 export function addItemKillers(cumulatedKillerByRace: any, itemAndPassives: any, enemyStats: any, killerType: string) {
+  const limitBreakByRace: Record<string, number> = {};
   for (var equipedIndex = itemAndPassives.length; equipedIndex--;) {
+    const limitKillers = itemAndPassives[equipedIndex]?.limitKillers;
+    for (const killer of limitKillers ?? []) {
+      if (enemyStats.races.includes(killer.name) && killer[killerType]) {
+        limitBreakByRace[killer.name] = Math.min(50, (limitBreakByRace[killer.name] ?? 0) + killer[killerType]);
+      }
+    }
     if (itemAndPassives[equipedIndex] && itemAndPassives[equipedIndex].killers) {
       for (var killerIndex = itemAndPassives[equipedIndex].killers.length; killerIndex--;) {
         var killer: any = itemAndPassives[equipedIndex].killers[killerIndex];
@@ -51,6 +59,7 @@ export function addItemKillers(cumulatedKillerByRace: any, itemAndPassives: any,
       }
     }
   }
+  for (const [race, bonus] of Object.entries(limitBreakByRace)) cumulatedKillerByRace[race] += bonus;
 }
 
 // Adds the elements of the two weapons (slots 0 and 1) that are not already in `elements`
@@ -80,11 +89,12 @@ export function getDamageMultiplier(unitBuild: any): any {
 
 export function getChainMult(unitBuild, itemAndPassives) {
   let chainMult = 4;
+  // two weapons and a passive of the unit (that applies) or an item that improves the dual wield, as the stat of the chain mastery
   if (
-    unitBuild.hasDualWieldMastery() &&
     itemAndPassives[0] &&
     itemAndPassives[1] &&
-    weaponList.includes(itemAndPassives[1].type)
+    weaponList.includes(itemAndPassives[1].type) &&
+    itemAndPassives.some((item) => item?.improvedTDW)
   ) {
     chainMult = 8;
   }

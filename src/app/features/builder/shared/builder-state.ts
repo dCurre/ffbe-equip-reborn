@@ -15,7 +15,7 @@ import { OptimizerRunner } from './optimizer-runner';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
-export type EquipmentSource = 'all' | 'owned' | 'shop';
+export type EquipmentSource = 'all' | 'global' | 'owned' | 'shop';
 
 /** A unit of `unitsWithPassives.json` (the data the builder works on). */
 export interface BuilderUnit {

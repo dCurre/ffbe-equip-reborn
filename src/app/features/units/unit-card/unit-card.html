@@ -20,6 +20,11 @@
         <span class="time" [title]="t.timeLimitedUnit"><app-icon name="timer" /></span>
       }
     </div>
+    <div class="roles">
+      @for (role of roles(); track role.name) {
+        <app-icon class="role" [class.dimmed]="role.dimmed" [name]="'restriction-' + role.name" height="22" />
+      }
+    </div>
     @if (card().rarity.text) {
       <div class="rarity">{{ card().rarity.text }}</div>
     }

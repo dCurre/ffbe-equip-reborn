@@ -75,6 +75,15 @@
                 }
               </div>
             }
+            @if (restrictionChoices().length) {
+              <span class="filter-label">{{ t.onlyFor }}</span>
+              <app-choice-group
+                pills
+                iconType="restriction"
+                [choices]="restrictionChoices()"
+                [(selected)]="selectedRestrictions"
+              />
+            }
             @if (showSort()) {
               <span class="filter-label">{{ t.sortBy }}</span>
               <app-choice-group

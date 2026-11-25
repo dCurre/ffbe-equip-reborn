@@ -160,6 +160,9 @@ export function getEsperItem(esper) {
   if (esper.killers) {
     item.killers = esper.killers;
   }
+  if (esper.limitKillers) {
+    item.limitKillers = esper.limitKillers;
+  }
   if (esper.resist) {
     item.resist = esper.resist;
   }
@@ -185,7 +188,8 @@ export function getEsperItem(esper) {
     item.evade = esper.evade;
   }
   if (esper.buildLink) {
-    item.buildLink = esper.buildLink;
+    // the Esper saved by the old site has its link to `espers.html`, a page that does not exist anymore
+    item.buildLink = esper.buildLink.replace(/^espers\.html/, 'espers');
   }
   if (esper.conditional) {
     item.conditional = esper.conditional;

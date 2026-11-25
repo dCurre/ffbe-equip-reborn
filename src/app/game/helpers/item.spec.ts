@@ -88,6 +88,23 @@ describe('item filters', () => {
     list.forEach((i) => (i.calculatedValue = 0));
     expect(sortItems(list, 'u1').map((i) => i.id)).toEqual(['1', '2']);
   });
+
+  it('puts the Vision Card of the unit first', () => {
+    const card = item('4', 'A Card', { type: 'visionCard', vc: ['u1', 'u9'] });
+    card.calculatedValue = 0;
+    staff.calculatedValue = 10;
+    expect(sortItems([staff, card], 'u1').map((i) => i.id)).toEqual(['4', '2']);
+    expect(sortItems([staff, card], 'u2').map((i) => i.id)).toEqual(['2', '4']);
+  });
+
+  it('puts the TMR of the other form of a Brave Shift unit first too, after the one of the form itself', () => {
+    const list = [staff, sword];
+    staff.calculatedValue = 10; // a better item, which only the TMR of the unit goes before
+    sword.calculatedValue = 0;
+    // the TMR (`tmrUnit`) is the one of u1: for the form u1-bs it is the TMR of the other form
+    expect(sortItems(list, ['u1-bs', 'u1']).map((i) => i.id)).toEqual(['1', '2']);
+    expect(sortItems(list, ['u1-bs']).map((i) => i.id)).toEqual(['2', '1']);
+  });
 });
 
 describe('item stats, effects and access', () => {

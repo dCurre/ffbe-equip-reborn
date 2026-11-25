@@ -80,8 +80,13 @@
           <app-icon-tile
             [icon]="'killer-' + row.kind + '-' + tile.name"
             [value]="tile.value"
-            [overCap]="tile.value > 300"
-            [tooltip]="tile.name + ' killer' + (tile.value > 300 ? ' (only 300% taken into account)' : '')"
+            [overCap]="tile.normal > 300"
+            [tooltip]="
+              tile.name +
+              ' killer' +
+              (tile.limit ? ' (including ' + tile.limit + '% Limit Break)' : '') +
+              (tile.normal > 300 ? ' (only 300% taken into account, besides the Limit Break)' : '')
+            "
           />
         }
       </div>

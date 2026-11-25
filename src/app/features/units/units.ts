@@ -31,6 +31,8 @@ import { Button } from '../../shared/components/button/button';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
 import { copyToClipboard } from '../../shared/helpers/clipboard';
 import { DropdownMenu, MenuItem } from '../../shared/components/dropdown-menu/dropdown-menu';
+import { roleList } from '../../../core/constants/unit-restrictions';
+import { iconInfo } from '../../shared/components/icon/icon-map';
 import { LoadStatus } from '../../shared/components/load-status/load-status';
 import { ActionLink, GAME_DATA_URL } from '../../shared/components/action-link/action-link';
 import { CollectionLayout } from '../../shared/components/collection-layout/collection-layout';
@@ -162,6 +164,13 @@ export class Units {
   protected readonly selectedEx = signal<readonly string[]>([]);
   /** the first letters to show on the tabs that sort by name; none selected shows every letter */
   protected readonly selectedLetters = signal<readonly string[]>([]);
+  /** the roles to show; none selected shows every unit, one with any of them is shown otherwise */
+  protected readonly selectedRoles = signal<readonly string[]>([]);
+  /** only the icon (`restriction-<role>`), with its tooltip */
+  protected readonly roleChoices: Choice[] = roleList.map((value) => ({
+    value,
+    tooltip: iconInfo(`restriction-${value}`)?.title,
+  }));
   protected readonly exChoices: Choice[] = ['0', '1', '2', '3'].map((value) => ({
     value,
     icon: 'level',
@@ -261,6 +270,7 @@ export class Units {
     const groups = this.selectedGroups();
     // "NV+" is not a group of its own (the NV+ units are in the NV group): it picks them whatever their group
     if (groups.length && !groups.includes(this.groupId(unit)) && !(groups.includes(NV_PLUS) && unit.nvPlus)) return false;
+    if (this.selectedRoles().length && !this.selectedRoles().some((role) => unit.roles?.includes(role))) return false;
     // an EX level only exists on an NV copy you own
     if (this.selectedEx().length && !(mine?.nv && this.selectedEx().includes(String(mine.exRank ?? 0)))) return false;
     return !this.onlyTmrMoogles() || !!mine?.tmrMoogles?.length;
@@ -332,6 +342,7 @@ export class Units {
       this.onlyTmrMoogles(),
       this.selectedGroups(),
       this.selectedEx(),
+      this.selectedRoles(),
       this.selectedLetters(),
     ],
     computation: () => PAGE_SIZE,
@@ -554,6 +565,7 @@ export class Units {
       [this.onlyOwned(), this.onlySevenStar(), this.onlyTimeLimited(), this.onlyTmrMoogles()].filter(Boolean).length +
       this.selectedGroups().length +
       this.selectedEx().length +
+      this.selectedRoles().length +
       this.selectedLetters().length,
   );
 
@@ -564,6 +576,7 @@ export class Units {
     this.onlyTmrMoogles.set(false);
     this.selectedGroups.set([]);
     this.selectedEx.set([]);
+    this.selectedRoles.set([]);
     this.selectedLetters.set([]);
   }
 

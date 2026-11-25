@@ -55,6 +55,10 @@ export function getAvailableNumbers(storage: DataStorage, item) {
         return { total: 0, available: 0, totalOwnedNumber: 0 };
       }
     } else {
+      // the items that only the Japan version has (`server: 'JP'`)
+      if (storage.excludeJapan && item.server === 'JP') {
+        return { total: 0, available: 0, totalOwnedNumber: 0 };
+      }
       if (
         storage.excludeNotReleasedYet ||
         storage.excludeTMR5 ||
@@ -168,6 +172,21 @@ export function getOwnedNumber(storage: DataStorage, item) {
     availableNumber = totalNumber;
   }
   return { total: totalNumber, available: availableNumber, totalOwnedNumber: totalOwnedNumber };
+}
+
+/** What is owned of a vision card (`cardId` without the level) at any level: the copies of every level it is owned at. */
+export function getOwnedCardNumber(storage: DataStorage, cardId: string) {
+  const inventory = storage.itemInventory;
+  // like the inventory page: copies without a level are at level 1
+  const levels: (number | null)[] = inventory.visionCardsLevels?.[cardId] ?? (inventory[cardId] ? [1] : []);
+  let total = 0;
+  let available = 0;
+  for (const level of new Set(levels.map((l) => l ?? 1))) {
+    const numbers = getOwnedNumber(storage, { id: `${cardId}-${level}`, type: 'visionCard', access: [] });
+    total += numbers.total;
+    available += numbers.available;
+  }
+  return { total, available };
 }
 
 export function calculateAlreadyUsedItems(storage: DataStorage, builds, currentUnitIndex) {

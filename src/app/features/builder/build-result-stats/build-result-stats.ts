@@ -32,8 +32,10 @@ export class BuildResultStats {
     (['physical', 'magical'] as const).map((kind) => ({
       kind,
       tiles: killerList.flatMap((name) => {
-        const value = this.result().killers.find((killer) => killer.name === name)?.[kind];
-        return value ? [{ name, value }] : [];
+        const killer = this.result().killers.find((entry) => entry.name === name);
+        const normal = killer?.[kind] ?? 0;
+        const limit = killer?.[kind === 'physical' ? 'limitPhysical' : 'limitMagical'] ?? 0;
+        return normal + limit ? [{ name, normal, limit, value: normal + limit }] : [];
       }),
     })),
   );

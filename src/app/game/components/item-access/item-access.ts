@@ -1,6 +1,7 @@
 import { booleanAttribute, Component, computed, input } from '@angular/core';
 import { elementList } from '../../../../core/constants/base-lists';
 import { weaponList } from '../../../../core/constants/item-types';
+import { restrictionList } from '../../../../core/constants/unit-restrictions';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import { Item } from '../../helpers/item';
 import { ItemUnits } from '../../models/item-context.model';
@@ -32,6 +33,8 @@ export class ItemAccess {
   readonly units = input<ItemUnits>({});
   /** do not name the unit a TMR / STMR belongs to (the page is already about that unit) */
   readonly hideUnit = input(false, { transform: booleanAttribute });
+  /** show only the sex and role that can equip the item (not where it comes from, nor unit-exclusive abilities) */
+  readonly exclusiveOnly = input(false, { transform: booleanAttribute });
   /** the access that the filters of the page remove: the matching accesses are crossed out */
   readonly accessToRemove = input<readonly string[]>([]);
 
@@ -43,8 +46,11 @@ export class ItemAccess {
   );
   protected readonly tmrUnit = computed(() => (this.hideUnit() ? undefined : this.unit('tmrUnit')));
   protected readonly stmrUnit = computed(() => (this.hideUnit() ? undefined : this.unit('stmrUnit')));
-  protected readonly sex = computed(() => readable(String(this.item()['exclusiveSex'])));
-  protected readonly roles = computed(() => readable(((this.item()['exclusiveRoles'] as string[]) ?? []).join(', ')));
+  /** the sex and the roles that can equip the item (the names of the `restriction-` icons) */
+  protected readonly restrictions = computed<string[]>(() => {
+    const { exclusiveSex, exclusiveRoles = [] } = this.item() as { exclusiveSex?: string; exclusiveRoles?: string[] };
+    return restrictionList.filter((value) => value === exclusiveSex || exclusiveRoles.includes(value));
+  });
   protected readonly conditions = computed(() =>
     ((this.item()['equipedConditions'] as string[] | undefined) ?? []).map((name) => ({
       name,

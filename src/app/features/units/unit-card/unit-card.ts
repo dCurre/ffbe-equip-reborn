@@ -1,5 +1,6 @@
 import { NgTemplateOutlet } from '@angular/common';
-import { Component, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
+import { roleList } from '../../../../core/constants/unit-restrictions';
 import { Button } from '../../../shared/components/button/button';
 import { Icon, SpriteName } from '../../../shared/components/icon/icon';
 import { ItemLine } from '../../../game/components/item-line/item-line';
@@ -60,6 +61,13 @@ export class UnitCard {
   readonly card = input.required<Card>();
   readonly tab = input.required<string>();
   readonly readOnly = input(false);
+  /** the roles the page filters by: the other roles of the unit are dimmed */
+  readonly searchedRoles = input<readonly string[]>([]);
+  protected readonly roles = computed(() =>
+    roleList
+      .filter((name) => this.card().unit.roles?.includes(name))
+      .map((name) => ({ name, dimmed: this.searchedRoles().length > 0 && !this.searchedRoles().includes(name) })),
+  );
   readonly add = output<void>();
   readonly remove = output<void>();
   readonly farmedTmr = output<void>();

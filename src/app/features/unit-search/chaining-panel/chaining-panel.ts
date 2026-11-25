@@ -2,9 +2,13 @@ import { Component, computed, model } from '@angular/core';
 import { chainFamilySkillName } from '../../../../core/constants/game-ids';
 import { Choice, ChoiceGroup } from '../../../shared/components/choice-group/choice-group';
 import { FilterHeading } from '../../../shared/components/filter-heading/filter-heading';
+import { iconInfo } from '../../../shared/components/icon/icon-map';
 import { Panel } from '../../../shared/components/panel/panel';
 import { SkillFilter } from '../unit-search-model';
 import { STRINGS } from '../../../strings/en';
+
+/** The width of the picture of a chaining family (they are 227 x 128). */
+const CHAIN_ICON_WIDTH = 56;
 
 /** Filters the units by the chaining family of their skills and how many times it is cast. */
 @Component({
@@ -28,8 +32,13 @@ export class ChainingPanel {
   protected readonly families: Choice[] = [
     ...Object.entries(chainFamilySkillName)
       .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-      .map(([value, name]) => ({ value, label: value, tooltip: `${value} - ${name}` })),
-    { value: 'chainTag', label: STRINGS.chainingPanel.chainByItself },
+      // the picture of the game, with its own tooltip; the families without one keep their letters
+      .map(([value, name]) =>
+        iconInfo(`chain-${value}`)
+          ? { value, width: CHAIN_ICON_WIDTH, tooltip: `${value} - ${name}` }
+          : { value, label: value, tooltip: `${value} - ${name}` },
+      ),
+    { value: 'chainTag', width: CHAIN_ICON_WIDTH, tooltip: STRINGS.chainingPanel.chainByItself },
   ];
   protected readonly multicastCounts = [
     { value: '1', label: STRINGS.chainingPanel.singleCast1Any },

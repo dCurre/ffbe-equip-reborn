@@ -2,9 +2,11 @@ import type { DataStorage } from '../data-storage.js';
 import { applyEnhancements } from '../item-combination.js';
 import { getPlaceHolder } from '../item-entry.js';
 import { ItemPool } from '../item-pool.js';
+import { trustUnitIds } from '../trust-units.js';
 import { adventurerIds } from '../../constants/game-ids.js';
 import { typeList, weaponList } from '../../constants/item-types.js';
 import { getSkillIds } from '../../formula/formula-queries.js';
+
 
 export function prepareData(storage: DataStorage, itemsToExclude, enemyStats, elementBuffs, formula) {
   storage.dataByType = {};
@@ -23,6 +25,8 @@ export function prepareData(storage: DataStorage, itemsToExclude, enemyStats, el
   var equipable: any = storage.unitBuild.getCurrentUnitEquip();
   var itemNumber: any = storage.data.length;
   var pinnedItemIds: any = [];
+  // the unit (or the unit its Japan version is of) and its other Brave Shift form: the ids of the TMR and STMR it can use
+  const trust = storage.unitBuild?.unit ? trustUnitIds(storage.unitBuild.unit) : { own: [], other: [] };
   if (storage.unitBuild.formula) {
     storage.skillIds = getSkillIds(storage.unitBuild.formula) || [];
   } else {
@@ -57,7 +61,7 @@ export function prepareData(storage: DataStorage, itemsToExclude, enemyStats, el
       storage.unitBuild != null &&
       storage.unitBuild.unit != null &&
       item.tmrUnit &&
-      item.tmrUnit == storage.unitBuild.unit.id
+      (trust.own.includes(item.tmrUnit) || (!storage.availableTmr && trust.other.includes(item.tmrUnit)))
     ) {
       if (
         storage.defaultWeaponEnhancement &&
@@ -75,7 +79,7 @@ export function prepareData(storage: DataStorage, itemsToExclude, enemyStats, el
       storage.unitBuild != null &&
       storage.unitBuild.unit != null &&
       item.stmrUnit &&
-      item.stmrUnit == storage.unitBuild.unit.id
+      (trust.own.includes(item.stmrUnit) || (!storage.availableStmr && trust.other.includes(item.stmrUnit)))
     ) {
       if (
         storage.defaultWeaponEnhancement &&

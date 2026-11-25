@@ -64,7 +64,7 @@ export interface ResultStats {
   extras: ExtraStat[];
   elementResists: ResistTotal[];
   ailmentResists: ResistTotal[];
-  killers: { name: string; physical: number; magical: number }[];
+  killers: SummedKiller[];
   damage: DamageLine[];
   damageTaken: number;
 }
@@ -84,14 +84,32 @@ const EXTRAS: { key: string; stat: string; label: string; title?: string; suffix
 ];
 
 /** The killers of the equipment, summed by race. */
-export function sumKillers(items: any[]): { name: string; physical: number; magical: number }[] {
-  const byName = new Map<string, { name: string; physical: number; magical: number }>();
+/** The killers of a race: the normal ones (capped at 300% by the damage) and the Limit Break ones (Stat Break, up to 50% on top). */
+export interface SummedKiller {
+  name: string;
+  physical: number;
+  magical: number;
+  limitPhysical: number;
+  limitMagical: number;
+}
+
+export function sumKillers(items: any[]): SummedKiller[] {
+  const byName = new Map<string, SummedKiller>();
+  const entryOf = (name: string): SummedKiller => {
+    const entry = byName.get(name) ?? { name, physical: 0, magical: 0, limitPhysical: 0, limitMagical: 0 };
+    byName.set(name, entry);
+    return entry;
+  };
   for (const item of items) {
     for (const killer of item?.killers ?? []) {
-      const entry = byName.get(killer.name) ?? { name: killer.name, physical: 0, magical: 0 };
+      const entry = entryOf(killer.name);
       entry.physical += killer.physical || 0;
       entry.magical += killer.magical || 0;
-      byName.set(killer.name, entry);
+    }
+    for (const killer of item?.limitKillers ?? []) {
+      const entry = entryOf(killer.name);
+      entry.limitPhysical = Math.min(50, entry.limitPhysical + (killer.physical || 0));
+      entry.limitMagical = Math.min(50, entry.limitMagical + (killer.magical || 0));
     }
   }
   return [...byName.values()];
@@ -123,7 +141,6 @@ export function resultStats(
   build: any,
   enemy: EnemyStats,
   variation: 'min' | 'avg' | 'max',
-  goalValue: any,
 ): ResultStats {
   const items = build.build;
   const involved: string[] = build.involvedStats ?? [];
@@ -203,9 +220,8 @@ export function resultStats(
 
   const damage: DamageLine[] = [];
   const skillName = singleSkillName(build.formula);
-  const goal =
-    goalValue ??
-    (build.formula ? calculateBuildValueWithFormula(items, build, enemy, build.formula, variation, false, true) : null);
+  // the goal is calculated as the search does (the same call): it follows every change of the items, and it is the value the search found
+  const goal = build.formula ? calculateBuildValueWithFormula(items, build, enemy, build.formula, variation) : null;
   const kinds: [DamageLine['kind'], string, boolean][] = [
     ['physical', 'physicalDamage', involved.includes('atk')],
     ['magical', 'magicalDamage', involved.includes('mag')],

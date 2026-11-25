@@ -49,6 +49,7 @@ export interface UnitSearchState {
   criteria: AllCriteria;
   types: string[];
   series: string[];
+  roles: string[];
   onlyOwned: boolean;
   fullyDisplayedUnits: string[];
 }
@@ -95,6 +96,7 @@ export const defaultState = (): UnitSearchState => ({
   criteria: defaultCriteria(),
   types: [],
   series: [],
+  roles: [],
   onlyOwned: false,
   fullyDisplayedUnits: [],
 });
@@ -176,6 +178,8 @@ export interface SkillUnit {
   name: string;
   braveShifted?: string;
   max_rarity: string;
+  /** the roles of the unit (a role the game does not name is null) */
+  roles?: (string | null)[];
   actives: any[];
   passives: any[];
   magics: any[];
@@ -388,6 +392,7 @@ export function filterUnits(state: UnitSearchState, context: SearchContext): Res
     if (state.maxRarity.length && !state.maxRarity.some((r) => (r === 'NV+' ? unit.nvPlus : r === unit.maxRarity))) continue;
     const full = context.units[unit.id];
     if (state.skillFilter.chainFamily !== 'none' && !matchesSkill(unit, full, state.skillFilter)) continue;
+    if (state.roles.length && !state.roles.some((role) => full.roles?.includes(role))) continue;
     if (state.types.length && !includeAll(unit.equip, state.types)) continue;
     if (
       !FILTER_ORDER.every((key) =>
@@ -407,6 +412,7 @@ export function hasSearch(state: UnitSearchState): boolean {
   return !!(
     state.searchText.length ||
     state.series.length ||
+    state.roles.length ||
     state.types.length ||
     state.baseRarity.length ||
     state.maxRarity.length ||
@@ -654,6 +660,7 @@ export function stateToHash(state: UnitSearchState): string {
   if (state.series.length) saved['series'] = { values: state.series };
   if (state.searchText.length) saved['searchText'] = state.searchText;
   if (state.types.length) saved['equipmentTypes'] = state.types;
+  if (state.roles.length) saved['roles'] = state.roles;
   if (state.baseRarity.length) saved['baseRarity'] = state.baseRarity;
   if (state.maxRarity.length) saved['maxRarity'] = state.maxRarity;
   if (state.skillFilter.chainFamily !== 'none') saved['skillFilter'] = state.skillFilter;
@@ -674,6 +681,7 @@ export function stateFromHash(hash: string): UnitSearchState {
   if (saved.baseRarity) state.baseRarity = saved.baseRarity.map(String);
   if (saved.maxRarity) state.maxRarity = saved.maxRarity.map(String);
   if (saved.equipmentTypes) state.types = saved.equipmentTypes;
+  if (saved.roles) state.roles = saved.roles;
   if (saved.fullyDisplayedUnits) state.fullyDisplayedUnits = saved.fullyDisplayedUnits;
   if (saved.series?.values) state.series = saved.series.values;
   for (const key of Object.keys(state.criteria) as CriteriaKey[]) {

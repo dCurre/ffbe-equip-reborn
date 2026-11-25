@@ -1,4 +1,6 @@
-@if (item().type === 'monster') {
+@if (exclusiveOnly()) {
+  <!-- only who can equip the item -->
+} @else if (item().type === 'monster') {
   <!-- the access of a monster is its races: the picture of the race, as the killers show it -->
   <div class="races">
     @for (race of item().access ?? []; track race) {
@@ -12,7 +14,7 @@
     </div>
   }
 }
-@if (tmrUnit(); as tmr) {
+@if (!exclusiveOnly() && tmrUnit(); as tmr) {
   <div class="unit">
     @if (tmr.unit; as unit) {
       <app-wiki-link [name]="unit.name" [page]="unit.wikiEntry ?? unit.name" />
@@ -21,7 +23,7 @@
     }
   </div>
 }
-@if (stmrUnit(); as stmr) {
+@if (!exclusiveOnly() && stmrUnit(); as stmr) {
   <div class="unit">
     @if (stmr.unit; as unit) {
       <app-wiki-link [name]="unit.name" />
@@ -30,16 +32,18 @@
     }
   </div>
 }
-@if (item()['exclusiveUnits']) {
+@if (!exclusiveOnly() && item()['exclusiveUnits']) {
   <div class="exclusive">{{ t.unitExclusiveAttributeS }}</div>
 }
-@if (item()['exclusiveSex']) {
-  <div class="exclusive">{{ sex() }} {{ t.only }}</div>
+@if (restrictions().length) {
+  <div class="exclusive">
+    @for (name of restrictions(); track name) {
+      <app-icon [name]="'restriction-' + name" height="24" />
+    }
+    {{ t.only }}
+  </div>
 }
-@if (item()['exclusiveRoles']) {
-  <div class="exclusive">{{ roles() }} {{ t.only }}</div>
-}
-@if (conditions().length) {
+@if (!exclusiveOnly() && conditions().length) {
   <div class="exclusive">
     {{ t.ifEquipedWith }}
     @for (condition of conditions(); track condition.name; let last = $last) {

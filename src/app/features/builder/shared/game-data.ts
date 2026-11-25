@@ -5,7 +5,11 @@ import type { Item } from '../../../game/helpers/item';
 /** The game data the builder works on, filled once when the page starts. */
 export class GameData {
   data: Item[] = [];
+  /** `data` without the items that only the Japan version has */
+  globalData: Item[] = [];
   enchantments: Record<string, any> = {};
-  /** the owned Espers when the user saved some, else the default ones */
+  /** every Esper: the owned ones (saved in the Esper page) first, then the default ones the user does not have */
   espers: any[] = [];
+  /** the ids of the Espers the user owns; null when the user saved none (the Espers are not told apart) */
+  ownedEsperIds: ReadonlySet<string> | null = null;
 }

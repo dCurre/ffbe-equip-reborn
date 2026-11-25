@@ -159,3 +159,14 @@ td.stat {
     display: none;
   }
 }
+
+.limit-break {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.limit-break .label {
+  font-size: 0.85em;
+  opacity: 0.7;
+}

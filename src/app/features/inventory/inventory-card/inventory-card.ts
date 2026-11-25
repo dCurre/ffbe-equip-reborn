@@ -1,6 +1,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { weaponList } from '../../../../core/constants/item-types';
+import { ItemAccess } from '../../../game/components/item-access/item-access';
 import { ItemSummary } from '../../../game/components/item-summary/item-summary';
 import { ItemEntry } from '../inventory-model';
 import { Button } from '../../../shared/components/button/button';
@@ -12,7 +13,7 @@ import { STRINGS } from '../../../strings/en';
 /** One item of the inventory: how many are owned, the buttons to change them, and what the tab adds (the STMR recipe). */
 @Component({
   selector: 'app-inventory-card',
-  imports: [NgTemplateOutlet, Button, ItemSummary, Icon],
+  imports: [NgTemplateOutlet, Button, ItemSummary, ItemAccess, Icon],
   templateUrl: './inventory-card.html',
   styleUrls: ['../inventory-item.css', './inventory-card.css'],
 })

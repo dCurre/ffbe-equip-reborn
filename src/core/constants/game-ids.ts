@@ -116,6 +116,25 @@ export const importBoardConversion = [
   [4, 4],
 ];
 
+/**
+ * The nodes of the outer ring of the board (the Galvanite nodes), which the game files do not have: a link of an Esper writes them
+ * after the bits of `importBoardConversion` (an old link, shorter, has none of them).
+ */
+export const importBoardOuter = [
+  [-1, 4],
+  [-3, 2],
+  [-4, 1],
+  [-5, -1],
+  [-5, -2],
+  [-5, -4],
+  [1, -4],
+  [3, -2],
+  [4, -1],
+  [5, 1],
+  [5, 2],
+  [5, 4],
+];
+
 export const categories = {
   '10000001': 'Fire',
   '10000002': 'Ice',

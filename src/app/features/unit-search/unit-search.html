@@ -30,6 +30,22 @@
             <app-panel>
               <app-filter-heading
                 panelHeading
+                [title]="t.role"
+                [clearable]="state().roles.length > 0"
+                (cleared)="patch({ roles: [] })"
+              />
+              <app-choice-group
+                pills
+                [choices]="roleChoices"
+                iconType="restriction"
+                [selected]="state().roles"
+                (selectedChange)="patch({ roles: [...$event] })"
+              />
+            </app-panel>
+
+            <app-panel>
+              <app-filter-heading
+                panelHeading
                 [title]="t.equipmentTypes"
                 [clearable]="state().types.length > 0"
                 (cleared)="patch({ types: [] })"

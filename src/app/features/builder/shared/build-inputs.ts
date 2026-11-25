@@ -116,6 +116,7 @@ export function readItemOptions(s: BuilderState, storage: DataStorage, inventory
   const source = s.source();
   storage.onlyUseOwnedItems = source === 'owned';
   storage.onlyUseShopRecipeItems = source === 'shop';
+  storage.excludeJapan = source === 'global';
   storage.itemInventory = inventory.status() === 'loaded' ? inventory.items() : null;
   storage.exludeEventEquipment = s.excludeEvent();
   storage.excludeTMR5 = s.excludeTmr5();

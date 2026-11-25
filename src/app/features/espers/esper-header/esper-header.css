@@ -51,6 +51,17 @@ input[type='number'] {
   height: 34px;
 }
 
+.limit-break {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.limit-break .label {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
 .other-stats {
   position: relative;
   padding-bottom: 15px;

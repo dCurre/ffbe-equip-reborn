@@ -1,4 +1,4 @@
-<app-modal [heading]="t.chooseAnItem" [wide]="true" [(open)]="open">
+<app-modal [heading]="heading()" [wide]="true" [(open)]="open">
   <div class="search-line">
     <input
       type="text"
@@ -58,6 +58,7 @@
           class="tr selectable"
           [class.enhanced]="isEnhanced(item)"
           [class.excluded]="isExcluded(item)"
+          [class.ofUnit]="isOfUnit(item)"
           (click)="click(item, $event)"
         >
           <div class="td flag">
@@ -84,7 +85,7 @@
               }
             </div>
           }
-          @if (behavior() === 'equip') {
+          @if (behavior() === 'equip' && canEnhance(item)) {
             <div class="td enchantment">
               <button
                 app-button

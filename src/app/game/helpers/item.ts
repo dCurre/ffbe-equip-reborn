@@ -302,15 +302,22 @@ export function filterItems(
   return result;
 }
 
-/** Sorts by the computed value, then by item type, then by name; the TMR / STMR of the unit come first. */
-export function sortItems(items: Item[], unitId?: string): Item[] {
+/**
+ * Sorts by the computed value, then by item type, then by name; the TMR / STMR and the Vision Card of the unit come first.
+ * `unitIds`: the unit and, after it, the other form of a Brave Shift unit (the form shares the TMR / STMR of the unit).
+ */
+export function sortItems(items: Item[], unitIds: string | readonly string[] = []): Item[] {
+  const ids = typeof unitIds === 'string' ? [unitIds] : unitIds;
+  // `tmrUnit` and `stmrUnit` are an id, `vc` the ids of the units of a Vision Card
+  const rank = (item: Item, field: string): number => {
+    const value: string[] = [item[field]].flat();
+    const index = ids.findIndex((id) => value.includes(id));
+    return index < 0 ? ids.length : index;
+  };
   return items.sort((a, b) => {
-    if (unitId) {
-      for (const field of ['tmrUnit', 'stmrUnit']) {
-        const aMatches = a[field] === unitId;
-        const bMatches = b[field] === unitId;
-        if (aMatches !== bMatches) return aMatches ? -1 : 1;
-      }
+    for (const field of ['tmrUnit', 'stmrUnit', 'vc']) {
+      const difference = rank(a, field) - rank(b, field);
+      if (difference) return difference;
     }
     if (b.calculatedValue === a.calculatedValue) {
       const typeA = typeListWithEsper.indexOf(a.type);

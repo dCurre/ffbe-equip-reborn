@@ -13,7 +13,8 @@ import {
 import { FormsModule } from '@angular/forms';
 import { areConditionOK, isApplicable } from '../../../../core/builder/item-conditions';
 import { baseStats } from '../../../../core/constants/base-lists';
-import { typeList } from '../../../../core/constants/item-types';
+import { trustUnitIds } from '../../../../core/builder/trust-units';
+import { typeList, weaponList } from '../../../../core/constants/item-types';
 import { filterItems, Item, searchTokens, sortItems } from '../../../game/helpers/item';
 import { ItemLine } from '../../../game/components/item-line/item-line';
 import { highlightText } from '../../../shared/helpers/highlight';
@@ -30,6 +31,10 @@ import { STRINGS } from '../../../strings/en';
 export type PickerBehavior = 'equip' | 'exclude' | 'include';
 
 const PAGE_SIZE = 40;
+
+/** A vision card without its level (`<card>`): what is owned of it at any level, not only at the level of the row. */
+const cardWithoutLevel = (item: Item): Item =>
+  item.type === 'visionCard' ? ({ id: item.id.split('-')[0], type: 'visionCard' } as Item) : item;
 
 /** What the picker needs to know about the item pool and the build being edited. */
 export interface PickerContext {
@@ -71,6 +76,11 @@ export class ItemPicker {
   readonly toggledInclude = output<string>();
   readonly enhanceItem = output<Item>();
 
+  /** the picker of the Esper and of the Vision Card slot say what they choose */
+  protected readonly heading = computed(() => {
+    const only = this.types().length === 1 ? this.types()[0] : '';
+    return only === 'esper' ? this.t.chooseAnEsper : only === 'visionCard' ? this.t.chooseAVisionCard : this.t.chooseAnItem;
+  });
   protected readonly text = signal('');
   protected readonly stat = signal('');
   protected readonly selectedTypes = linkedSignal<readonly string[], readonly string[]>({
@@ -86,6 +96,12 @@ export class ItemPicker {
   private readonly table = viewChild<ElementRef<HTMLElement>>('table');
   private readonly end = viewChild<ElementRef<HTMLElement>>('end');
   private readonly debounce = debouncer();
+
+  /** The unit and, after it, the other form of a Brave Shift unit: the form shares the TMR and the STMR of the unit. */
+  private readonly unitIds = computed(() => {
+    const { own, other } = trustUnitIds(this.context().build.unit);
+    return [...own, ...other];
+  });
 
   /** The items that can be chosen now, sorted. */
   protected readonly results = computed<Item[]>(() => {
@@ -117,7 +133,7 @@ export class ItemPicker {
     }
     const baseStat = baseStats.includes(stat) ? (build.baseValues[stat]?.total ?? 0) : 0;
     const owning = this.onlyOwned()
-      ? Object.fromEntries(candidates.filter((c) => owned(c)?.total).map((c) => [c.id, true]))
+      ? Object.fromEntries(candidates.filter((c) => owned(cardWithoutLevel(c))?.total).map((c) => [c.id, true]))
       : undefined;
     const found = filterItems(
       candidates,
@@ -131,7 +147,8 @@ export class ItemPicker {
       },
       { baseStat, percentageStat: false, staticStats: this.stat().includes('-flat') },
     );
-    return sortItems(found, unit.id);
+    // the other form of a Brave Shift unit has the same TMR and STMR
+    return sortItems(found, this.unitIds());
   });
 
   private readonly limit = linkedSignal<Item[], number>({ source: this.results, computation: () => PAGE_SIZE });
@@ -161,9 +178,9 @@ export class ItemPicker {
   }
 
   protected ownedText(item: Item): { text: string; notEnough: boolean } | null {
-    const numbers = this.context().owned(item);
+    const numbers = this.context().owned(cardWithoutLevel(item));
     if (!numbers) return null;
-    if (numbers.total <= 0) return { text: '', notEnough: false };
+    if (numbers.total <= 0) return { text: '0', notEnough: false };
     const different = numbers.available !== numbers.total;
     return {
       text: different ? `${numbers.available}/${numbers.total}` : String(numbers.available),
@@ -177,7 +194,9 @@ export class ItemPicker {
       const numbers = this.context().owned({ id, type: 'visionCard' } as Item);
       const state = numbers && numbers.total > 0 ? (numbers.available === 0 ? 'notEnough' : 'available') : '';
       return { level: i + 1, id, state } as { level: number; id: string; state: '' | 'available' | 'notEnough' };
-    });
+    })
+      // with the owned filter on, only the levels owned
+      .filter((level) => !this.onlyOwned() || level.state);
   }
 
   protected click(item: Item, event: MouseEvent): void {
@@ -185,13 +204,30 @@ export class ItemPicker {
     const behavior = this.behavior();
     if (behavior === 'exclude') this.toggledExclude.emit(item.id);
     else if (behavior === 'include') this.toggledInclude.emit(item.id);
-    else this.picked.emit({ item, enhancements: item['enhancements'] });
+    else {
+      // a card is picked at the highest level owned (a click on the other levels picks them)
+      const owned = item.type === 'visionCard' ? this.cardLevels(item).filter((l) => l.state).pop() : undefined;
+      if (owned) this.pickCard(item, owned, event);
+      else this.picked.emit({ item, enhancements: item['enhancements'] });
+    }
   }
 
   protected pickCard(item: Item, level: { id: string }, event: Event): void {
     event.stopPropagation();
     const card = this.context().items.find((i) => i.id === level.id) ?? item;
     this.picked.emit({ item: card });
+  }
+
+  /** Only the weapons have enhancements (as in the inventory). */
+  protected canEnhance(item: Item): boolean {
+    return weaponList.includes(item.type);
+  }
+
+  /** The TMR, the STMR or the Vision Card of the unit (or of its other form): the row is gilded. */
+  protected isOfUnit(item: Item): boolean {
+    return this.unitIds().some(
+      (id) => item['tmrUnit'] === id || item['stmrUnit'] === id || (item['vc'] as string[] | undefined)?.includes(id),
+    );
   }
 
   protected isEnhanced(item: Item): boolean {

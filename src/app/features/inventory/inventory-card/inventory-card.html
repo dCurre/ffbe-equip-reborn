@@ -107,4 +107,7 @@
     </span>
   }
   <app-item-summary [item]="line().item" [enchantments]="enchantments()" />
+  @if (line().item['exclusiveSex'] || line().item['exclusiveRoles']) {
+    <app-item-access [item]="line().item" exclusiveOnly />
+  }
 </ng-template>

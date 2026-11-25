@@ -99,4 +99,31 @@ describe('esper model', () => {
     expect(copy.level).toBe(12);
     expect(copy.selectedSkills).toContain('2_2');
   });
+
+  it('a link writes the outer ring after the nodes of the game files, and only when one is selected', () => {
+    const esper = newEsper(info, 1, board);
+    esper.selectedSkills = ['m1_m1'];
+    expect(encodeEsperLink(esper).split('|')[3]).toHaveLength(16);
+    esper.selectedSkills = ['m1_m1', '5_1', 'm5_m4'];
+    const link = encodeEsperLink(esper);
+    expect(link.split('|')[3]).toHaveLength(18);
+    expect(decodeEsperLink(link, [info])!.selectedSkills).toEqual(expect.arrayContaining(['m1_m1', '5_1', 'm5_m4']));
+  });
+
+  it('a Galvanite node adds its Stat Break killer to the Esper, and takes it away', () => {
+    const node = { position: [4, 4], cost: { SP: 350, Galvanite: 1 }, children: [], limitKillers: [{ name: 'bird', physical: 10, magical: 10 }] };
+    const withNode = { ...board, nodes: [...board.nodes, node] } as unknown as EsperBoard;
+    const esper = newEsper(info, 1, withNode);
+    toggleNode(withNode, esper, 4, 4);
+    expect(esper['limitKillers']).toEqual([{ name: 'bird', physical: 10, magical: 10 }]);
+    toggleNode(withNode, esper, 4, 4);
+    expect(esper['limitKillers']).toBeUndefined();
+  });
+
+  it('an old link without the outer ring still opens', () => {
+    const copy = decodeEsperLink('Test|1|30|fffffffffffffff8', [info])!;
+    // the center and the 60 nodes of the game files, no node of the outer ring
+    expect(copy.selectedSkills).toHaveLength(61);
+    expect(copy.selectedSkills).not.toContain('5_1');
+  });
 });

@@ -27,14 +27,20 @@ export class ItemActions {
   readonly pickerContext = computed<PickerContext>(() => {
     this.s.tick();
     return {
-      items: this.game.data,
+      items: this.s.source() === 'global' ? this.game.globalData : this.game.data,
       espers: this.game.espers,
       build: this.s.build(),
       units: this.s.units(),
       enchantments: this.game.enchantments,
       owned: (item) => {
-        if (this.inventory.status() !== 'loaded' || item.type === 'esper') return null;
+        if (this.inventory.status() !== 'loaded') return null;
+        if (item.type === 'esper') {
+          const ids = this.game.ownedEsperIds;
+          return ids ? { total: ids.has(item.id) ? 1 : 0, available: ids.has(item.id) ? 1 : 0 } : null;
+        }
         if (!item.id) return { total: 0, available: 0 };
+        // a card without its level (`<card>`) is what is owned at any level
+        if (item.type === 'visionCard' && !item.id.includes('-')) return this.dataStorage.getOwnedCardNumber(item.id);
         const { total, available } = this.dataStorage.getOwnedNumber(item);
         return { total, available };
       },

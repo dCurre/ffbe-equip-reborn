@@ -137,6 +137,11 @@ const statOf = (item: Item, stat: string): number =>
       ? parseInt(item.id)
       : (item[stat] ?? 0);
 
+/** Is the item limited to this sex or role (it can only be equipped by units that have it)? */
+export function isLimitedTo(item: Item, value: string): boolean {
+  return item['exclusiveSex'] === value || !!item['exclusiveRoles']?.includes(value);
+}
+
 /** Capital letters first, then letter by letter (not like `localeCompare`, which ignores the case first). */
 export function compareName(name1: string, name2: string): number {
   const length = Math.min(name1.length, name2.length);

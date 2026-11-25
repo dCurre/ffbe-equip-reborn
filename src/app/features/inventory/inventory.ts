@@ -38,6 +38,7 @@ import {
   exportCsv,
   exportJson,
   inventoryStats,
+  isLimitedTo,
   ItemEntry,
   removeItem,
   sortEntries,
@@ -46,6 +47,8 @@ import {
   toggleExcludedFromExpedition,
   farmTmr,
 } from './inventory-model';
+import { restrictionList } from '../../../core/constants/unit-restrictions';
+import { iconInfo } from '../../shared/components/icon/icon-map';
 import { ClearFilters } from '../../shared/components/clear-filters/clear-filters';
 import { Icon } from '../../shared/components/icon/icon';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
@@ -150,6 +153,8 @@ export class InventoryPage {
 
   /** the types to show on the tabs that list by type; none selected shows every type */
   protected readonly selectedTypes = signal<readonly string[]>([]);
+  /** the sexes and roles the items are limited to (an item matching any of them is shown) */
+  protected readonly selectedRestrictions = signal<readonly string[]>([]);
   /** the types to hide (a second click on a type button) */
   protected readonly excludedTypes = signal<readonly string[]>([]);
   /** the sort chosen on each tab (none: the default of the tab, shown as selected): a stat from the highest and off, the name ascending, descending and off */
@@ -246,9 +251,11 @@ export class InventoryPage {
     const tab = this.tab();
     if (tab === 'history' || tab === 'settings') return [];
     const text = this.search();
+    const restrictions = this.shownRestrictions();
     const lines = this.shownLines(this.tabLines())
       .filter((line) => !text || containsText(text, line.item))
-      .filter((line) => !this.ownedFilter() || line.ownedNumber);
+      .filter((line) => !this.ownedFilter() || line.ownedNumber)
+      .filter((line) => !restrictions.length || restrictions.some((value) => isLimitedTo(line.item, value)));
     const types = this.shownTypes();
     const hidden = this.shownExcluded();
     return sortEntries(
@@ -270,6 +277,23 @@ export class InventoryPage {
       .filter((type) => present.has(type))
       .map((value) => ({ value, tooltip: typeListLiterals[value as keyof typeof typeListLiterals] ?? value }));
   });
+  /** The sexes and roles some item of the tab is limited to, to choose from (they can hide an item from the Builder). */
+  protected readonly restrictionChoices = computed<Choice[]>(() => {
+    if (!['equipment', 'materia'].includes(this.tab())) return [];
+    const values = new Set<string>();
+    for (const { item } of this.tabLines()) {
+      if (item['exclusiveSex']) values.add(item['exclusiveSex']);
+      for (const role of item['exclusiveRoles'] ?? []) values.add(role);
+    }
+    // only the icon (`restriction-<value>`), with the tooltip of the table of icons, as the type buttons have theirs
+    return restrictionList
+      .filter((value) => values.has(value))
+      .map((value) => ({ value, tooltip: iconInfo(`restriction-${value}`)?.title }));
+  });
+  private readonly shownRestrictions = computed(() => {
+    const available = new Set(this.restrictionChoices().map((choice) => choice.value));
+    return this.selectedRestrictions().filter((value) => available.has(value));
+  });
   /** The type buttons in two rows: the weapons, then what protects (and the materia, the cards). */
   protected readonly weaponChoices = computed(() => this.typeChoices().filter((c) => weaponList.includes(c.value)));
   protected readonly defenseChoices = computed(() => this.typeChoices().filter((c) => !weaponList.includes(c.value)));
@@ -285,7 +309,11 @@ export class InventoryPage {
   /** how many of the filters are on: the types chosen or excluded, a sort */
   protected readonly activeFilters = computed(
     () =>
-      this.shownTypes().length + this.shownExcluded().length + (this.sort() ? 1 : 0) + (this.ownedFilter() ? 1 : 0),
+      this.shownTypes().length +
+      this.shownExcluded().length +
+      this.shownRestrictions().length +
+      (this.sort() ? 1 : 0) +
+      (this.ownedFilter() ? 1 : 0),
   );
   /** the "only owned" filter is on, on a tab it applies to */
   protected readonly ownedFilter = computed(() => this.onlyOwned() && ['equipment', 'materia'].includes(this.tab()));
@@ -444,6 +472,7 @@ export class InventoryPage {
   protected clearFilters(): void {
     this.selectedTypes.set([]);
     this.excludedTypes.set([]);
+    this.selectedRestrictions.set([]);
     this.onlyOwned.set(false);
     this.setSort(null);
   }

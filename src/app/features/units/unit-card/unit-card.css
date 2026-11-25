@@ -101,6 +101,14 @@
   -webkit-box-orient: vertical;
 }
 
+.role {
+  margin-right: 3px;
+}
+
+.role.dimmed {
+  opacity: 0.35;
+}
+
 .unit.notOwned .unit-name {
   color: var(--soft-text);
 }

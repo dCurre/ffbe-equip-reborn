@@ -66,5 +66,11 @@
   <div class="form-group other-stats" [class.invisible]="!current()">
     <app-resist-list [resist]="current()?.resist" [bonus]="resistBonus()" />
     <app-killer-list [killers]="current()?.killers" />
+    @if (current()?.limitKillers?.length) {
+      <div class="limit-break" [title]="t.limitBreakTitle">
+        <span class="label">{{ t.limitBreak }}</span>
+        <app-killer-list [killers]="current()?.limitKillers" />
+      </div>
+    }
   </div>
 </div>

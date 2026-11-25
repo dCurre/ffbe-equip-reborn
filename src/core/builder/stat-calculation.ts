@@ -165,11 +165,13 @@ export function calculateStatValue(itemAndPassives, stat, unitBuild, berserk = 0
   if (stat == 'chainMastery') {
     calculatedValue = calculatedValue / 100 + 4;
     const build = unitBuild['unitShift']['build'];
-    if (build[0] !== null && build[1] !== null) {
+    // two weapons: a shield in the left hand is not dual wielding
+    if (build[0] && build[1] && weaponList.includes(build[1].type)) {
       if (hasShiftItemWith(unitBuild, 'improvedDW')) {
         calculatedValue = calculatedValue + 2;
       }
-      if (hasShiftItemWith(unitBuild, 'improvedTDW')) {
+      // the passives of the unit count too (Protruding Horns of Ibara), not only the items (a Vision Card)
+      if (itemAndPassives.some((item) => item?.improvedTDW)) {
         calculatedValue = calculatedValue + 2;
       }
     }

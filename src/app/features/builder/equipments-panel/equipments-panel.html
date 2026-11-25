@@ -6,6 +6,7 @@
     <label class="line">
       <select [value]="s.source()" (change)="s.source.set($any($event.target).value)">
         <option value="all" [selected]="s.source() === 'all'">{{ t.allEquipments }}</option>
+        <option value="global" [selected]="s.source() === 'global'">{{ t.allEquipmentsGlobal }}</option>
         @if (inventory.status() === 'loaded') {
           <option value="owned" [selected]="s.source() === 'owned'">{{ t.onlyOwnedEquipments }}</option>
         }
@@ -23,7 +24,7 @@
         <app-icon name="help" />
       </button>
     </label>
-    @if (s.source() === 'all') {
+    @if (s.source() === 'all' || s.source() === 'global') {
       <app-checkbox [(checked)]="s.excludeEvent">{{ t.excludeEventEquipment }}</app-checkbox>
       <app-checkbox [(checked)]="s.excludePremium">{{ t.excludePremiumEquipment }}</app-checkbox>
       <app-checkbox [(checked)]="s.excludeTmr5">{{ t.exclude5Tmr }}</app-checkbox>
@@ -72,6 +73,12 @@
       <ul>
         <li>{{ t.allAvailableEquipmentUnless }}</li>
         <li>{{ t.espersAtMaximumRarity }}</li>
+      </ul>
+    </li>
+    <li>
+      {{ t.allEquipmentsGlobal2 }}
+      <ul>
+        <li>{{ t.onlyGlobalEquipment }}</li>
       </ul>
     </li>
     <li>

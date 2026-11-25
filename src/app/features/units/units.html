@@ -82,6 +82,8 @@
               </div>
               <span class="filter-label">{{ t.rarity }}</span>
               <app-choice-group pills iconType="crystal" [choices]="groupChoices()" [(selected)]="selectedGroups" />
+              <span class="filter-label">{{ t.role }}</span>
+              <app-choice-group pills iconType="restriction" [choices]="roleChoices" [(selected)]="selectedRoles" />
               <span class="filter-label">{{ t.exLevel }}</span>
               <app-choice-group pills iconType="ex" [choices]="exChoices" [(selected)]="selectedEx" />
               @if (tab() === 'alphabetical' || tab() === 'tmr') {
@@ -108,6 +110,7 @@
                     [card]="card"
                     [tab]="tab()"
                     [readOnly]="readOnly()"
+                    [searchedRoles]="selectedRoles()"
                     (add)="add(card.unit)"
                     (remove)="remove(card.unit)"
                     (farmedTmr)="farmedTmr(card.unit)"

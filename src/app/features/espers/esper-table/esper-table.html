@@ -40,7 +40,15 @@
                 </td>
               }
               <td class="resists"><app-resist-list [resist]="row.esper.resist" /></td>
-              <td class="killers"><app-killer-list [killers]="row.esper.killers" /></td>
+              <td class="killers">
+                <app-killer-list [killers]="row.esper.killers" />
+                @if (row.esper.limitKillers?.length) {
+                  <div class="limit-break" [title]="t.limitBreakTitle">
+                    <span class="label">{{ t.limitBreak }}</span>
+                    <app-killer-list [killers]="row.esper.limitKillers" />
+                  </div>
+                }
+              </td>
             </tr>
           }
         </tbody>

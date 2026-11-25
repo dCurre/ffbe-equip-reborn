@@ -19,6 +19,8 @@ export interface GameUnit {
   fragmentId?: string;
   wikiEntry?: string;
   equip: string[];
+  /** the roles of the unit (a role the game does not name is null) */
+  roles?: (string | null)[];
   /** Added from `releasedUnits.json`: how the unit is obtained (`event` = time limited). */
   summon_type?: string;
 }

@@ -3,7 +3,7 @@ import { DataStorage } from '../../../core/builder/data-storage';
 import { getEsperItem } from '../../../core/builder/item-conditions';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LinkStore } from '../../shared/services/link-store';
-import { Item } from '../../game/helpers/item';
+import { buildSearchString, Item } from '../../game/helpers/item';
 import { cardsAsItems, VisionCard } from '../../game/helpers/vision-cards';
 import { PageContent } from '../../layout/page-content/page-content';
 import { BusyOverlay } from '../../shared/components/busy-overlay/busy-overlay';
@@ -52,6 +52,13 @@ import { STRINGS } from '../../strings/en';
 /* eslint-disable @typescript-eslint/no-explicit-any -- the build data of the core is open */
 
 /** The picture of the unit chosen (`id`, with `-6` or `-7` for the forms): the one of its rarity (the old `onUnitChange`). */
+/** An Esper with the text the search of the item picker looks into. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- the Esper items of the core are open
+function searchable(esper: any, units: Record<string, BuilderUnit>): any {
+  esper.searchString = buildSearchString(esper, units);
+  return esper;
+}
+
 function unitIconId(id: string, unit: BuilderUnit): string {
   if (id.endsWith('-6')) return id.slice(0, -3) + '6';
   if (id.endsWith('-7')) return id.slice(0, -3) + '7';
@@ -300,9 +307,12 @@ export class Builder {
       this.staticData.get<any[]>('defaultBuilderEspers'),
     ]);
     this.game.data = [...data, ...cardsAsItems(cards)];
+    this.game.globalData = this.game.data.filter((item) => item['server'] !== 'JP');
+    // the search of the item picker looks into this text
+    for (const item of this.game.data) item.searchString = buildSearchString(item, units);
     this.game.enchantments = enchantments;
     this.s.units.set(units);
-    this.game.espers = espers.map((esper) => getEsperItem(esper));
+    this.game.espers = espers.map((esper) => searchable(getEsperItem(esper), units));
     this.dataStorage.setData(this.game.data);
     this.runner.init(this.s.workerCount(), enchantments);
     if (this.inventory.status() === 'loading') await this.inventory.load();
@@ -324,7 +334,12 @@ export class Builder {
         // old saves kept the ST Reflection Boost without the `all` level
         if (esper.esperStatsBonus && !esper.esperStatsBonus.all) esper.esperStatsBonus = { all: esper.esperStatsBonus };
       }
-      if (owned.length) this.game.espers = owned.map((esper) => getEsperItem(esper));
+      if (owned.length) {
+        const ownedItems = owned.map((esper) => searchable(getEsperItem(esper), this.s.units()));
+        this.game.ownedEsperIds = new Set(ownedItems.map((esper) => esper.id));
+        // the owned ones, with the progress of the user, and the default ones he does not have
+        this.game.espers = [...ownedItems, ...this.game.espers.filter((esper) => !this.game.ownedEsperIds!.has(esper.id))];
+      }
     } catch {
       // the default Espers stay
     }

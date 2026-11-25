@@ -1,5 +1,5 @@
 import { baseStats } from '../../../core/constants/base-lists';
-import { importBoardConversion } from '../../../core/constants/game-ids';
+import { importBoardConversion, importBoardOuter } from '../../../core/constants/game-ids';
 import { percentValues } from '../../../core/constants/stat-values';
 
 // The rules of the Esper training board: SP, stats, what a node gives and the shared link. No DOM, no Angular.
@@ -30,6 +30,8 @@ export type StatBonus = Record<Stat, number>;
 interface Effects {
   resist?: Resist[];
   killers?: Killer[];
+  /** the killers of the Galvanite nodes (Stat Break): a bucket of their own, capped at 50% per race, on top of the 300% of the killers */
+  limitKillers?: Killer[];
   esperStatsBonus?: { all: StatBonus };
   lbPerTurn?: { min: number; max?: number };
   lbFillRate?: number;
@@ -209,29 +211,31 @@ export const boardReach = (rarity: number): number => (rarity < 3 ? rarity + 1 :
 /** A node that is not part of the board of this rarity. */
 export const isOutsideBoard = (node: BoardNode, rarity: number): boolean => distance(...node.position) > boardReach(rarity);
 
-function addKillers(esper: OwnedEsper, killers: Killer[]): void {
-  esper.killers ??= [];
+type KillerField = 'killers' | 'limitKillers';
+
+function addKillers(esper: OwnedEsper, killers: Killer[], field: KillerField = 'killers'): void {
+  const list = (esper[field] ??= []);
   for (const { name, physical, magical } of killers) {
-    let data = esper.killers.find((k) => k.name === name);
-    if (!data) esper.killers.push((data = { name }));
+    let data = list.find((k) => k.name === name);
+    if (!data) list.push((data = { name }));
     if (physical) data.physical = (data.physical ?? 0) + physical;
     if (magical) data.magical = (data.magical ?? 0) + magical;
   }
 }
 
-function removeKillers(esper: OwnedEsper, killers: Killer[]): void {
+function removeKillers(esper: OwnedEsper, killers: Killer[], field: KillerField = 'killers'): void {
   for (const killer of killers) {
-    const index = esper.killers?.findIndex((k) => k.name === killer.name) ?? -1;
+    const index = esper[field]?.findIndex((k) => k.name === killer.name) ?? -1;
     if (index < 0) continue;
-    const data = esper.killers![index];
+    const data = esper[field]![index];
     for (const kind of ['physical', 'magical'] as const) {
       if (!killer[kind]) continue;
       data[kind] = (data[kind] ?? 0) - killer[kind];
       if (data[kind] === 0) delete data[kind];
     }
-    if (!data.physical && !data.magical) esper.killers!.splice(index, 1);
+    if (!data.physical && !data.magical) esper[field]!.splice(index, 1);
   }
-  if (esper.killers?.length === 0) delete esper.killers;
+  if (esper[field]?.length === 0) delete esper[field];
 }
 
 function addResist(esper: OwnedEsper, resist: Resist[]): void {
@@ -255,6 +259,7 @@ function removeResist(esper: OwnedEsper, resist: Resist[]): void {
 
 function addNodeEffects(esper: OwnedEsper, node: BoardNode): void {
   if (node.killers) addKillers(esper, node.killers);
+  if (node.limitKillers) addKillers(esper, node.limitKillers, 'limitKillers');
   if (node.resist) addResist(esper, node.resist);
   if (node.esperStatsBonus) {
     esper.esperStatsBonus ??= { all: { hp: 0, mp: 0, atk: 0, def: 0, mag: 0, spr: 0 } };
@@ -277,6 +282,7 @@ function addNodeEffects(esper: OwnedEsper, node: BoardNode): void {
 
 function removeNodeEffects(esper: OwnedEsper, node: BoardNode): void {
   if (node.killers) removeKillers(esper, node.killers);
+  if (node.limitKillers) removeKillers(esper, node.limitKillers, 'limitKillers');
   if (node.resist) removeResist(esper, node.resist);
   if (node.esperStatsBonus && esper.esperStatsBonus) {
     for (const stat of baseStats as Stat[]) esper.esperStatsBonus.all[stat] -= node.esperStatsBonus[stat];
@@ -393,18 +399,21 @@ const hex2bin = (hex: string): string =>
   [...hex].map((char) => parseInt(char, 16).toString(2).padStart(4, '0')).join('');
 
 export function encodeEsperLink(esper: OwnedEsper): string {
-  const board = importBoardConversion
-    .map(([x, y]) => positionString(x, y))
-    .map((position) => (position === '0_0' || esper.selectedSkills.includes(position) ? '1' : '0'))
-    .join('');
+  const bit = ([x, y]: number[]): string => {
+    const position = positionString(x, y);
+    return position === '0_0' || esper.selectedSkills.includes(position) ? '1' : '0';
+  };
+  // the outer ring goes after the nodes of the game files, up to the last one selected (a link without any stays as it was)
+  const outer = importBoardOuter.map(bit).join('').replace(/0+$/, '');
+  const board = importBoardConversion.map(bit).join('') + outer;
   return `${escapeName(esper.name)}|${esper.rarity}|${esper.level}|${bin2hex(board)}`;
 }
 
 /** The positions marked in the hex board of a link or of an imported file (the center is not a node). */
-export function decodeBoard(hex: string): string[] {
+export function decodeBoard(hex: string, withOuterRing = false): string[] {
   const positions: string[] = [];
   [...hex2bin(hex)].forEach((bit, index) => {
-    const coordinate = importBoardConversion[index];
+    const coordinate = importBoardConversion[index] ?? (withOuterRing ? importBoardOuter[index - importBoardConversion.length] : undefined);
     if (bit === '1' && coordinate) positions.push(positionString(coordinate[0], coordinate[1]));
   });
   return positions;
@@ -421,7 +430,7 @@ export function decodeEsperLink(text: string, espers: EsperInfo[]): OwnedEsper |
     name: esperName,
     rarity: parseInt(rarity),
     level: parseInt(level),
-    selectedSkills: decodeBoard(board ?? ''),
+    selectedSkills: decodeBoard(board ?? '', true),
   };
 }
 

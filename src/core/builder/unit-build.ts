@@ -561,17 +561,6 @@ export class UnitBuild {
     }
   }
 
-  hasDualWieldMastery() {
-    for (let index in this.unit.skills) {
-      if (!this.unit.skills[index].levelCondition || this.unit.skills[index].levelCondition <= this.level) {
-        if (this.unit.skills[index].improvedTDW) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
   get involvedStats() {
     if (!this.unitShift._involvedStats) {
       this.unitShift._involvedStats = [];

@@ -38,6 +38,11 @@ label {
 }
 
 
+/* what belongs to the unit (TMR, STMR, Vision Card): a light gold, not to cover the rows */
+.tr.ofUnit {
+  background-color: rgba(212, 175, 55, 0.16);
+}
+
 .tr.excluded {
   opacity: 0.4;
 }

@@ -14,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { ailmentList, elementList, killerList, racialMitigationList } from '../../../core/constants/base-lists';
 import { series } from '../../../core/constants/series';
+import { roleList } from '../../../core/constants/unit-restrictions';
+import { iconInfo } from '../../shared/components/icon/icon-map';
 import { typeList, typeListLiterals, weaponList } from '../../../core/constants/item-types';
 import { Item, searchTokens } from '../../game/helpers/item';
 import { cardsAsItems, VisionCard } from '../../game/helpers/vision-cards';
@@ -326,12 +328,17 @@ export class UnitSearch {
     value: String(ids),
     label,
   }));
+  /** only the icon (`restriction-<role>`), with its tooltip */
+  protected readonly roleChoices: Choice[] = roleList.map((value) => ({
+    value,
+    tooltip: iconInfo(`restriction-${value}`)?.title,
+  }));
   protected readonly loggedIn = computed(() => this.inventory.status() === 'loaded');
 
   // --- The tabs and the filters that are on ---
   protected readonly tab = signal<Group>('unit');
   protected readonly filters = computed<(ActiveFilter & { group: Group })[]>(() => {
-    const { baseRarity, maxRarity, types, series, skillFilter, criteria } = this.state();
+    const { baseRarity, maxRarity, types, series, roles, skillFilter, criteria } = this.state();
     const nameOf = (choices: Choice[], v: string): string => {
       const choice = choices.find((c) => c.value === v);
       return choice?.label ?? choice?.tooltip ?? v;
@@ -343,6 +350,7 @@ export class UnitSearch {
     if (maxRarity.length)
       list.push({ key: 'maxRarity', group: 'unit', label: `Max ${named(this.maxRarityChoices(), maxRarity)}` });
     if (types.length) list.push({ key: 'types', group: 'unit', label: named(this.typeChoices, types) });
+    if (roles.length) list.push({ key: 'roles', group: 'unit', label: named(this.roleChoices, roles) });
     if (series.length) list.push({ key: 'series', group: 'unit', label: named(this.seriesChoices, series) });
     if (skillFilter.chainFamily !== 'none') {
       const cast = skillFilter.multicastCount > 1 ? ` x${skillFilter.multicastCount}` : '';
@@ -491,7 +499,7 @@ export class UnitSearch {
     const panel = PANELS.find((p) => p.key === key);
     if (panel) this.clearPanel(panel);
     else if (key === 'chain') this.setSkillFilter(defaultSkillFilter());
-    else if (key === 'baseRarity' || key === 'maxRarity' || key === 'types' || key === 'series')
+    else if (key === 'baseRarity' || key === 'maxRarity' || key === 'types' || key === 'series' || key === 'roles')
       this.patch({ [key]: [] });
   }
 
@@ -501,6 +509,7 @@ export class UnitSearch {
       maxRarity: [],
       types: [],
       series: [],
+      roles: [],
       skillFilter: defaultSkillFilter(),
       criteria: defaultCriteria(),
     });

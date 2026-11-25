@@ -4,6 +4,16 @@
   </div>
   <div class="unitDescriptionLines">
     <span class="unitName"><app-wiki-link [name]="unit().name" /></span>
+    <span class="roles">
+      @for (role of roles(); track role.name) {
+        <app-icon
+          class="role"
+          [class.dimmed]="role.dimmed"
+          [name]="'restriction-' + role.name"
+          height="24"
+        />
+      }
+    </span>
     <div class="killers"><app-killer-list [killers]="killers()" [selected]="killerSelection()" /></div>
     <div class="elementalResistances">
       @for (resist of elementResists(); track resist.name) {

@@ -19,6 +19,15 @@
   font-weight: bold;
 }
 
+.role {
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+.role.dimmed {
+  opacity: 0.35;
+}
+
 .unitDescriptionLines {
   width: 100%;
 }
