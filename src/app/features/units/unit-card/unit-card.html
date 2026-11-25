@@ -25,8 +25,8 @@
         <app-icon class="role" [class.dimmed]="role.dimmed" [name]="'restriction-' + role.name" height="22" />
       }
     </div>
-    @if (card().rarity.text) {
-      <div class="rarity">{{ card().rarity.text }}</div>
+    @if (card().rarity.filled) {
+      <div class="rarity"><app-rarity-stars [rarity]="'' + card().rarity.filled" [max]="card().rarity.total" /></div>
     }
     <div class="counts">
       <span class="pill count nv" [class.has]="card().nv > 0">

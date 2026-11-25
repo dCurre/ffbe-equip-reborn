@@ -27,7 +27,7 @@
           @for (row of rows(); track row.info.name) {
             <tr>
               <td class="esper-desc" (click)="opened.emit(row.info.name)">
-                <app-icon [name]="sprite(row.info.name)" size="var(--esper-icon-size)" />
+                <app-icon [name]="icon(row.info.name, row.esper.rarity)" size="var(--esper-icon-size)" />
                 <div class="name">
                   {{ row.info.name }} <span class="rarity">{{ stars(row.esper.rarity) }}</span>
                 </div>

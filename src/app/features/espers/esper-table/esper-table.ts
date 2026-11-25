@@ -6,8 +6,9 @@ import { ResistList } from '../../../game/components/resist-list/resist-list';
 import { Alert } from '../../../shared/components/alert/alert';
 import { Icon } from '../../../shared/components/icon/icon';
 import { ServerContext } from '../../../shared/services/server-context';
-import { calculateSp, esperSprite, EsperInfo, OwnedEsper, Stat, statBonus, statValue } from '../esper-model';
+import { calculateSp, EsperInfo, OwnedEsper, Stat, statBonus, statValue } from '../esper-model';
 import { STRINGS } from '../../../strings/en';
+import { esperIcon } from '../../../game/helpers/esper-icon';
 
 export type Column = 'index' | 'level' | Stat | 'resists' | 'killers';
 
@@ -38,7 +39,7 @@ export class EsperTable {
   protected readonly serverContext = inject(ServerContext);
 
   protected readonly stats = baseStats as Stat[];
-  protected readonly sprite = esperSprite;
+  protected readonly icon = esperIcon;
 
   protected readonly bonus = statBonus;
   protected readonly value = statValue;

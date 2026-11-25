@@ -63,7 +63,7 @@
                 @for (row of [weaponChoices(), defenseChoices()]; track $index) {
                   @if (row.length) {
                     <app-choice-group
-                      pills
+                      ownSize
                       iconType="equipment"
                       [iconSize]="28"
                       [choices]="row"
@@ -78,7 +78,7 @@
             @if (restrictionChoices().length) {
               <span class="filter-label">{{ t.onlyFor }}</span>
               <app-choice-group
-                pills
+                ownSize
                 iconType="restriction"
                 [choices]="restrictionChoices()"
                 [(selected)]="selectedRestrictions"
@@ -87,8 +87,8 @@
             @if (showSort()) {
               <span class="filter-label">{{ t.sortBy }}</span>
               <app-choice-group
-                pills
                 [single]="true"
+                ownSize
                 iconType="stat"
                 [iconSize]="28"
                 [choices]="sortChoices()"

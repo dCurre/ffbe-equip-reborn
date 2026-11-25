@@ -313,6 +313,10 @@ export class Builder {
     this.game.enchantments = enchantments;
     this.s.units.set(units);
     this.game.espers = espers.map((esper) => searchable(getEsperItem(esper), units));
+    // the Global version: no Esper that only Japan has, and the older board of the others (`global` holds all its values)
+    this.game.globalEspers = espers
+      .filter((esper) => !esper.jpOnly)
+      .map((esper) => searchable(getEsperItem(esper.global ? { id: esper.id, name: esper.name, ...esper.global } : esper), units));
     this.dataStorage.setData(this.game.data);
     this.runner.init(this.s.workerCount(), enchantments);
     if (this.inventory.status() === 'loading') await this.inventory.load();
@@ -338,7 +342,12 @@ export class Builder {
         const ownedItems = owned.map((esper) => searchable(getEsperItem(esper), this.s.units()));
         this.game.ownedEsperIds = new Set(ownedItems.map((esper) => esper.id));
         // the owned ones, with the progress of the user, and the default ones he does not have
+        const japanOnly = new Set(this.game.espers.map((e) => e.id).filter((id) => !this.game.globalEspers.some((e) => e.id === id)));
         this.game.espers = [...ownedItems, ...this.game.espers.filter((esper) => !this.game.ownedEsperIds!.has(esper.id))];
+        this.game.globalEspers = [
+          ...ownedItems.filter((esper) => !japanOnly.has(esper.id)),
+          ...this.game.globalEspers.filter((esper) => !this.game.ownedEsperIds!.has(esper.id)),
+        ];
       }
     } catch {
       // the default Espers stay
@@ -369,7 +378,7 @@ export class Builder {
     readItemOptions(this.s, this.dataStorage, this.inventory);
     this.dataStorage.useElementConditionedMateria = this.s.useElementConditionedMateria();
     const espers: Record<string, any> = {};
-    for (const esper of this.game.espers) espers[esper.id] = esper;
+    for (const esper of this.game.espersFor(this.s.source())) espers[esper.id] = esper;
     try {
       this.runner.run(
         build,

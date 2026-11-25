@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- the unit data of a link is open */
 import { pictureId } from '../../../shared/helpers/unit-picture';
+import { esperPicture } from '../../../game/helpers/esper-icon';
 
 /** The picture of a team (the old `exportBuildAsImage.js`): one card per unit, a second one for its Brave Shifted form. */
 
@@ -277,7 +278,7 @@ async function drawItems(ctx: CanvasRenderingContext2D, unit: any, top: number):
       color: '#888888',
     });
   }
-  const picture = await loadImage(unit.esperId ? `img/espers/${unit.esperId}.jpg` : 'img/espers/ALL.png');
+  const picture = await loadImage(unit.esperId ? `img/espers/${esperPicture(unit.esperId, unit.esper?.rarity ?? 3)}.jpg` : 'img/espers/ALL.png');
   drawPicture(ctx, picture, x + 185, y + 155, 30, 30, 1, true);
   drawText(ctx, unit.esperId ? unit.esperId.replace('_', ' ') : 'No esper', x + 220, y + 170, {
     style: 'bold',

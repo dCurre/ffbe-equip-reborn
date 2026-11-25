@@ -13,7 +13,7 @@
           [title]="info.name + (owned()[info.name] ? ' (owned)' : ' (not owned)')"
           (click)="selected.emit(info.name)"
         >
-          <a><app-icon [name]="sprite(info.name)" size="40" /></a>
+          <a><app-icon [name]="icon(info.name, owned()[info.name]?.rarity ?? 1)" size="40" /></a>
         </li>
       }
     </ul>

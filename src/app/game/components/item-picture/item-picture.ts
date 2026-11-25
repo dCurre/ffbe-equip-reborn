@@ -1,5 +1,6 @@
 import { Component, computed, input } from '@angular/core';
-import { Item, escapeName } from '../../helpers/item';
+import { Item } from '../../helpers/item';
+import { esperIcon } from '../../helpers/esper-icon';
 import { Icon } from '../../../shared/components/icon/icon';
 import { STRINGS } from '../../../strings/en';
 
@@ -17,5 +18,6 @@ export class ItemPicture {
 
   protected readonly notStackable = computed(() => !!this.item().special?.includes('notStackable'));
   protected readonly twoHanded = computed(() => !!this.item().special?.includes('twoHanded'));
-  protected readonly esperName = computed(() => escapeName(this.item().name));
+  /** an Esper of the Builder without a rarity is at its maximum */
+  protected readonly icon = computed(() => esperIcon(this.item().name, this.item().rarity ?? 3));
 }

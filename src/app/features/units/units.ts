@@ -29,6 +29,9 @@ import { ClearFilters } from '../../shared/components/clear-filters/clear-filter
 import { Icon } from '../../shared/components/icon/icon';
 import { Button } from '../../shared/components/button/button';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
+import { releaseDate } from '../../game/helpers/release-date';
+import { RarityFilter } from '../../shared/components/rarity-filter/rarity-filter';
+import { RarityStars } from '../../shared/components/rarity-stars/rarity-stars';
 import { copyToClipboard } from '../../shared/helpers/clipboard';
 import { DropdownMenu, MenuItem } from '../../shared/components/dropdown-menu/dropdown-menu';
 import { roleList } from '../../../core/constants/unit-restrictions';
@@ -60,7 +63,6 @@ import {
   num,
   parseMoogles,
   baseCrystal,
-  rarityLabel,
   rarityParts,
   canRemove,
   maxTrust,
@@ -81,7 +83,7 @@ import { STRINGS } from '../../strings/en';
 /** The cards drawn at first, and each time the end of the list comes into view: the whole collection is a lot of cards. */
 const PAGE_SIZE = 60;
 /** The value of the NV+ choice of the rarity filter (it is no group: see `passesFilters`). */
-const NV_PLUS = 'nvPlus';
+const NV_PLUS = 'NV+';
 
 type Tab = 'rarity' | 'alphabetical' | 'tmr' | 'history';
 
@@ -115,6 +117,8 @@ interface ReleasedUnit {
     CollectionLayout,
     TabPanel,
     ChoiceGroup,
+    RarityFilter,
+    RarityStars,
     SearchBox,
     Button,
     ClearFilters,
@@ -267,9 +271,12 @@ export class Units {
     if (this.onlyOwned() && !(mine && (mine.number || mine.sevenStar || mine.nv))) return false;
     if (this.onlyOwned() && this.onlySevenStar() && !(unit.min_rarity !== 'NV' && mine?.sevenStar)) return false;
     if (this.onlyTimeLimited() && unit.summon_type !== 'event') return false;
-    const groups = this.selectedGroups();
-    // "NV+" is not a group of its own (the NV+ units are in the NV group): it picks them whatever their group
-    if (groups.length && !groups.includes(this.groupId(unit)) && !(groups.includes(NV_PLUS) && unit.nvPlus)) return false;
+    const bases = this.selectedBase();
+    if (bases.length && !bases.includes(String(unit.min_rarity))) return false;
+    // "NV+" is not a max of its own (the NV+ units have NV as max): it picks them
+    const maxes = this.selectedMax();
+    if (maxes.length && !maxes.includes(String(shownMaxRarity(unit))) && !(maxes.includes(NV_PLUS) && unit.nvPlus))
+      return false;
     if (this.selectedRoles().length && !this.selectedRoles().some((role) => unit.roles?.includes(role))) return false;
     // an EX level only exists on an NV copy you own
     if (this.selectedEx().length && !(mine?.nv && this.selectedEx().includes(String(mine.exRank ?? 0)))) return false;
@@ -281,33 +288,24 @@ export class Units {
     return `rarity-${unit.min_rarity}-of-${shownMaxRarity(unit)}`;
   }
 
-  /** The rarity groups to choose from (a filter): every group of the released units, whatever the other filters say. */
-  protected readonly selectedGroups = signal<readonly string[]>([]);
-  protected readonly groupChoices = computed<Choice[]>(() => {
-    const choices = new Map<string, Choice>();
-    for (const unit of sortByRarity(this.released())) {
-      const value = this.groupId(unit);
-      if (choices.has(value)) continue;
-      const max = shownMaxRarity(unit);
-      const { icon, text } = rarityParts(unit.min_rarity, max);
-      choices.set(
-        value,
-        icon
-          ? {
-              value,
-              icon: icon.replace('crystal-', ''),
-              label: text.trim() || undefined,
-              tooltip: unit.min_rarity === 'NV' ? 'NV units' : `NVA units, base ${unit.min_rarity}★`,
-            }
-          : {
-              value,
-              label: rarityLabel(unit.min_rarity, max),
-              tooltip: `Base ${unit.min_rarity}★, up to ${max}★`,
-            },
-      );
-    }
-    return [{ value: NV_PLUS, icon: 'NVPlus', width: 30, tooltip: 'NV+ units' }, ...choices.values()];
-  });
+  /** The base and the max rarities to choose from (two filters, like the Unit Search): the ones of the released units. */
+  protected readonly selectedBase = signal<readonly string[]>([]);
+  protected readonly selectedMax = signal<readonly string[]>([]);
+  protected readonly baseRarities = computed(() =>
+    this.rarities(this.released().map((unit) => String(unit.min_rarity))),
+  );
+  protected readonly maxRarities = computed(() =>
+    this.rarities([
+      ...this.released().map((unit) => String(shownMaxRarity(unit))),
+      ...(this.released().some((unit) => unit.nvPlus) ? [NV_PLUS] : []),
+    ]),
+  );
+
+  /** Some rarities in order (stars, NV, NV+), each once. */
+  private rarities(values: string[]): string[] {
+    const rank = (value: string): number => (value === NV_PLUS ? 9 : value === 'NV' ? 8 : Number(value));
+    return [...new Set(values)].sort((a, b) => rank(a) - rank(b));
+  }
 
   protected readonly groups = computed<Group[]>(() => {
     const tab = this.tab();
@@ -340,7 +338,8 @@ export class Units {
       this.onlySevenStar(),
       this.onlyTimeLimited(),
       this.onlyTmrMoogles(),
-      this.selectedGroups(),
+      this.selectedBase(),
+      this.selectedMax(),
       this.selectedEx(),
       this.selectedRoles(),
       this.selectedLetters(),
@@ -381,7 +380,7 @@ export class Units {
     afterRenderEffect(() => {
       this.visibleGroups();
       const results = this.results()?.nativeElement;
-      if (results) highlightText(results, this.tab() === 'history' ? [] : searchTokens(this.search().trim()));
+      if (results) highlightText(results, searchTokens(this.search().trim()));
     });
     this.start();
   }
@@ -411,7 +410,9 @@ export class Units {
       );
       this.items.set(items);
       this.gameDataReady.set(true);
-      this.staticData.get<HistoryEntry[]>('lastItemReleases').then((history) => this.history.set(history));
+      this.staticData
+        .get<HistoryEntry[]>('lastItemReleases')
+        .then((history) => this.history.set(history.map((entry) => ({ ...entry, date: releaseDate(entry.date) }))));
     } catch {
       this.toast.show(STRINGS.units.errorWhileLoadingThe, 'error');
       return;
@@ -489,13 +490,14 @@ export class Units {
 
   private historyGroups(): Group[] {
     const groups: Group[] = [];
+    const shown = new Set(this.visible().map((unit) => unit.id)); // the filters and the search
     for (const { date, sources } of this.history()) {
       const cards: Card[] = [];
       for (const source of sources) {
         if (source.type !== 'banner') continue;
         for (const id of source.units ?? []) {
           const card = this.cards().get(id);
-          if (card && this.passesFilters(card.unit)) cards.push(card);
+          if (card && shown.has(id)) cards.push(card);
         }
       }
       if (cards.length) groups.push({ id: date, title: date, cards });
@@ -563,7 +565,8 @@ export class Units {
   protected readonly activeFilters = computed(
     () =>
       [this.onlyOwned(), this.onlySevenStar(), this.onlyTimeLimited(), this.onlyTmrMoogles()].filter(Boolean).length +
-      this.selectedGroups().length +
+      this.selectedBase().length +
+      this.selectedMax().length +
       this.selectedEx().length +
       this.selectedRoles().length +
       this.selectedLetters().length,
@@ -574,7 +577,8 @@ export class Units {
     this.onlySevenStar.set(false);
     this.onlyTimeLimited.set(false);
     this.onlyTmrMoogles.set(false);
-    this.selectedGroups.set([]);
+    this.selectedBase.set([]);
+    this.selectedMax.set([]);
     this.selectedEx.set([]);
     this.selectedRoles.set([]);
     this.selectedLetters.set([]);

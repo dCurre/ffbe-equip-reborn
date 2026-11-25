@@ -152,6 +152,11 @@
   color: black;
 }
 
+/* the picture is bigger than the hexagon: only its middle shows, as the old sprite did */
+.center-icon {
+  flex-shrink: 0;
+}
+
 .hexagon .icon {
   width: 38px;
   border-radius: 5px;

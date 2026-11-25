@@ -11,20 +11,16 @@
                 [clearable]="state().baseRarity.length + state().maxRarity.length > 0"
                 (cleared)="patch({ baseRarity: [], maxRarity: [] })"
               />
-              <div class="line">
-                <span class="sub-title">{{ t.base }}</span><app-choice-group
-                  [choices]="baseRarityChoices()"
-                  [selected]="state().baseRarity"
-                  (selectedChange)="setRarity('baseRarity', $event)"
-                />
-              </div>
-              <div class="line">
-                <span class="sub-title">{{ t.max }}</span><app-choice-group
-                  [choices]="maxRarityChoices()"
-                  [selected]="state().maxRarity"
-                  (selectedChange)="setRarity('maxRarity', $event)"
-                />
-              </div>
+              <app-rarity-filter
+                [bases]="baseRarities"
+                [maxes]="maxRarities"
+                [baseLabel]="t.base"
+                [maxLabel]="t.max"
+                [base]="state().baseRarity"
+                (baseChange)="patch({ baseRarity: [...$event] })"
+                [max]="state().maxRarity"
+                (maxChange)="patch({ maxRarity: [...$event] })"
+              />
             </app-panel>
 
             <app-panel>
@@ -35,8 +31,8 @@
                 (cleared)="patch({ roles: [] })"
               />
               <app-choice-group
-                pills
                 [choices]="roleChoices"
+                ownSize
                 iconType="restriction"
                 [selected]="state().roles"
                 (selectedChange)="patch({ roles: [...$event] })"

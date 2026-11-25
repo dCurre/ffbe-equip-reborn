@@ -19,7 +19,6 @@ import {
   EsperBoard as Board,
   EsperInfo,
   boardReach,
-  esperSprite,
   findPathTo,
   isOutsideBoard,
   OwnedEsper,
@@ -29,6 +28,7 @@ import {
 import { NodeView, nodeView } from '../node-view';
 import { Button } from '../../../shared/components/button/button';
 import { STRINGS } from '../../../strings/en';
+import { esperIcon } from '../../../game/helpers/esper-icon';
 
 interface Cell {
   x: number;
@@ -83,7 +83,7 @@ export class EsperGrid {
   /** the picked nodes changed: the page saves them */
   readonly changed = output<void>();
 
-  protected readonly sprite = esperSprite;
+  protected readonly icon = esperIcon;
   protected readonly cellWidth = CELL_WIDTH;
   protected readonly cellHeight = CELL_HEIGHT;
   protected readonly hover = signal<ReadonlySet<string>>(new Set());

@@ -6,7 +6,6 @@ button {
   color: var(--color-link);
   background-color: transparent;
   border-style: dashed;
-  border-radius: 999px;
 }
 
 button:hover {

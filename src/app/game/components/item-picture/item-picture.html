@@ -7,7 +7,7 @@
 @if (item().icon) {
   <img [src]="'img/items/' + item().icon" class="icon" loading="lazy" alt="" />
 } @else if (item().type === 'esper') {
-  <app-icon [name]="'esper-' + esperName()" class="icon" size="64" />
+  <app-icon [name]="icon()" class="icon" size="64" />
 } @else if (item().type !== 'unavailable') {
   <app-icon [name]="'equipment-' + item().type" class="icon" size="64" />
 }

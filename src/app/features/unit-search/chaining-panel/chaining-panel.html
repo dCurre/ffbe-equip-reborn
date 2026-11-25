@@ -20,8 +20,9 @@
   </app-filter-heading>
   <div class="line">
     <app-choice-group
-      pills
+      ownSize
       iconType="chain"
+      [cellWidth]="cellWidth"
       [single]="true"
       [choices]="families"
       [selected]="family()"

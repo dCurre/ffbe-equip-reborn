@@ -23,7 +23,6 @@ import {
   encodeEsperLink,
   EsperBoard,
   EsperInfo,
-  esperSprite,
   LEVEL_RANGE,
   clampLevel,
   newEsper,

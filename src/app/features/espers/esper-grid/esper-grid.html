@@ -37,7 +37,7 @@
                 (mouseleave)="hoverNode(null)"
               >
                 @if (cell.isCenter) {
-                  <app-icon [name]="sprite(info().name)" class="center-icon" />
+                  <app-icon [name]="icon(info().name, esper.rarity)" class="center-icon" size="120" />
                 } @else if (cell.view; as view) {
                   <span class="icon-holder">
                     @if (view.icon) {

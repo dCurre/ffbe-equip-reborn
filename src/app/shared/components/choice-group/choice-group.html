@@ -4,11 +4,14 @@
     type="button"
     [active]="isSelected(choice.value)"
     [disabled]="choice.disabled"
+    [style.min-width.px]="cellWidth()"
     [title]="choice.tooltip ?? (choice.label === undefined ? null : choice.value)"
     (click)="toggle(choice.value)"
   >
-    @if (choice.icon !== undefined || choice.label === undefined) {
-      <app-icon [name]="iconId(choice)" [size]="iconSize() ?? (pills() ? undefined : 38)" [width]="choice.width" />
+    @if (choice.rarity) {
+      <app-rarity-stars [rarity]="choice.rarity" />
+    } @else if (choice.icon !== undefined || choice.label === undefined) {
+      <app-icon [name]="iconId(choice)" [size]="iconSize() ?? (ownSize() || choice.label !== undefined ? undefined : 38)" [width]="choice.width" />
     }
     @if (choice.label !== undefined) {
       {{ choice.label }}

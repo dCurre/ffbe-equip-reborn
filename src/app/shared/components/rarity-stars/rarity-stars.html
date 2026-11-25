@@ -1,0 +1,10 @@
+@if (max() !== undefined) {
+  @for (star of range(); track $index) {
+    <app-icon [name]="star" [size]="size()" title="" />
+  }
+} @else {
+  @if (isStar()) {
+    {{ rarity() }}
+  }
+  <app-icon [name]="icon()" [size]="isStar() && rarity() !== '7' ? size() : undefined" [width]="rarity() === 'NV+' ? 30 : undefined" title="" />
+}

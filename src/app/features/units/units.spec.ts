@@ -55,8 +55,15 @@ describe('Units page', () => {
   });
 
   it('shows the units by rarity, each under the heading of its rarity', () => {
-    const headings = [...page.querySelectorAll('.separator')].map((h) => h.textContent?.trim());
-    expect(headings).toEqual(['★★★★★☆☆', '★★★★☆☆', '★★★☆☆']);
+    // the stars of each heading: the filled ones of the base, then the empty ones up to the max
+    const headings = [...page.querySelectorAll('.separator')].map((h) =>
+      [...h.querySelectorAll('app-icon')].map((icon) => icon.getAttribute('data-icon')).join(' '),
+    );
+    expect(headings).toEqual([
+      'star-5 star-5 star-5 star-5 star-5 star-empty star-empty',
+      'star-4 star-4 star-4 star-4 star-empty star-empty',
+      'star-3 star-3 star-3 star-empty star-empty',
+    ]);
     expect(page.querySelectorAll('.unit').length).toBe(3);
     expect(page.querySelector('.unit.owned.sevenStars')?.textContent).toContain('Rain');
   });
@@ -130,7 +137,7 @@ describe('Units page', () => {
   it('shows the history of the banners by date', async () => {
     (page.querySelectorAll('.tabs li')[3] as HTMLElement).click();
     await settle();
-    expect(page.querySelector('.separator')?.textContent?.trim()).toBe('May 1st, 2024');
+    expect(page.querySelector('.separator')?.textContent?.trim()).toBe('2024 May 1st');
     expect(page.querySelectorAll('.unit').length).toBe(1);
   });
 });
@@ -153,7 +160,7 @@ describe('Units page rarity filter', () => {
     fixture.detectChanges();
     const page = fixture.nativeElement as HTMLElement;
     expect(page.querySelectorAll('.unit').length).toBe(2);
-    (fixture.componentInstance as unknown as { selectedGroups: { set(v: string[]): void } }).selectedGroups.set(['nvPlus']);
+    (fixture.componentInstance as unknown as { selectedMax: { set(v: string[]): void } }).selectedMax.set(['NV+']);
     fixture.detectChanges();
     const names = [...page.querySelectorAll('.unit .unit-name')].map((n) => n.textContent?.trim());
     expect(names).toEqual(['Plus NV']);

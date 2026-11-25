@@ -43,22 +43,18 @@ export const baseCrystal = (unit: GameUnit): SpriteName | null =>
     Number(unit.min_rarity) as 3 | 4 | 5
   ] ?? null;
 
-/** A rarity to draw: an NV / NVA crystal picture, then text (the stars). */
+/** A rarity to draw: an NV / NVA crystal picture, then the stars (`filled` of the base, up to `total` with empty ones). */
 export interface RarityParts {
   icon: SpriteName | null;
-  text: string;
+  filled: number;
+  total: number;
 }
 
 export function rarityParts(min: string | number, max: string | number): RarityParts {
-  if (min === 'NV') return { icon: 'crystal-NV', text: '' };
-  if (max === 'NV') return { icon: 'crystal-NVA', text: ' ' + '★'.repeat(Number(min)) }; // the base, as the stars of the other rarities
-  return { icon: null, text: rarityLabel(min, max) };
-}
-
-export function rarityLabel(min: string | number, max: string | number): string {
-  if (min === 'NV') return 'NV';
-  if (max === 'NV') return 'NVA';
-  return '★'.repeat(Number(min)) + '☆'.repeat(Math.max(0, Number(max) - Number(min)));
+  if (min === 'NV') return { icon: 'crystal-NV', filled: 0, total: 0 };
+  const base = Number(min);
+  if (max === 'NV') return { icon: 'crystal-NVA', filled: base, total: base }; // the base, as the stars of the other rarities
+  return { icon: null, filled: base, total: Math.max(base, Number(max)) };
 }
 
 /** The picture of a unit: its highest form (a 7* that is not owned as 7* shows the 6* picture). */

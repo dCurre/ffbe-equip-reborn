@@ -1,6 +1,7 @@
 import { booleanAttribute, Component, computed, input, model } from '@angular/core';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Button } from '../button/button';
+import { RarityStars } from '../rarity-stars/rarity-stars';
 
 export interface Choice {
   value: string;
@@ -9,6 +10,8 @@ export interface Choice {
   /** a text instead of a picture, or next to the picture when there is an `icon` too */
   label?: string;
   tooltip?: string;
+  /** a rarity of a unit (`"1"` … `"7"`, `"NV"`, `"NV+"`) drawn as stars or badge instead of a picture */
+  rarity?: string;
   /** the width of the picture when it is not the size of the others (the height follows) */
   width?: number;
   /** shown but not to choose (a value that no result could have with the others chosen) */
@@ -20,9 +23,8 @@ export interface Choice {
  * (`single`) or any number of them.
  */
 @Component({
-  imports: [Button, Icon],
+  imports: [Button, Icon, RarityStars],
   selector: 'app-choice-group',
-  host: { '[class.pills]': 'pills()' },
   templateUrl: './choice-group.html',
   styleUrl: './choice-group.css',
 })
@@ -30,10 +32,12 @@ export class ChoiceGroup {
   readonly choices = input.required<readonly Choice[]>();
   readonly iconType = input('');
   readonly single = input(false);
-  /** the size of the pictures (a number is in pixels): by default their own size in the pills, 38 in the joined bar */
+  /** the size of the pictures (a number is in pixels): by default 38 for a picture alone, its own size next to a text */
   readonly iconSize = input<number | string>();
-  /** separate round buttons, with the pictures at their own size, instead of one joined bar */
-  readonly pills = input(false, { transform: booleanAttribute });
+  /** the pictures at their own size when `iconSize` is not given (a role icon is not a square) */
+  readonly ownSize = input(false, { transform: booleanAttribute });
+  /** the least width of a button in pixels, so that the pictures and the texts of a group fill cells of the same width */
+  readonly cellWidth = input<number>();
   /** the values selected (for `single`, zero or one value) */
   readonly selected = model<readonly string[]>([]);
   /** a second click excludes the choice (crossed out in red) and a third clears it; `excluded` has the values excluded */

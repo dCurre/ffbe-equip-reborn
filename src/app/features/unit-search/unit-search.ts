@@ -27,6 +27,7 @@ import { debouncer } from '../../shared/helpers/search-input';
 import { SearchBox } from '../../shared/components/search-box/search-box';
 import { StaticData } from '../../shared/services/static-data';
 import { Choice, ChoiceGroup } from '../../shared/components/choice-group/choice-group';
+import { RarityFilter, rarityName } from '../../shared/components/rarity-filter/rarity-filter';
 import { Panel } from '../../shared/components/panel/panel';
 import { FilterHeading } from '../../shared/components/filter-heading/filter-heading';
 import { Checkbox } from '../../shared/components/checkbox/checkbox';
@@ -97,9 +98,6 @@ const GROUPS: { key: Group; title: string }[] = [
   { key: 'support', title: STRINGS.unitSearch.support },
 ];
 
-/** NV is above the stars */
-const rarityRank = (rarity: string): number => (rarity === 'NV+' ? 9 : rarity === 'NV' ? 8 : parseInt(rarity, 10));
-const rarityChoice = (value: string): Choice => ({ value, label: value.startsWith('NV') ? value : `${value}★` });
 const BASE_RARITIES = ['1', '2', '3', '4', '5', 'NV'];
 const MAX_RARITIES = ['2', '3', '4', '5', '6', '7', 'NV', 'NV+'];
 
@@ -283,6 +281,7 @@ const PANELS: PanelConfig[] = [
     ResultsHeading,
     Panel,
     ChoiceGroup,
+    RarityFilter,
     FormsModule,
   ],
   templateUrl: './unit-search.html',
@@ -312,15 +311,8 @@ export class UnitSearch {
   private readonly debounce = debouncer();
 
   protected readonly panels = PANELS;
-  /** the base and the max rarity of a unit go up together: a max under every base chosen (and a base over every max chosen) has no unit */
-  protected readonly baseRarityChoices = computed<Choice[]>(() => {
-    const top = Math.max(...this.state().maxRarity.map(rarityRank), 0);
-    return BASE_RARITIES.map((value) => ({ ...rarityChoice(value), disabled: top > 0 && rarityRank(value) > top }));
-  });
-  protected readonly maxRarityChoices = computed<Choice[]>(() => {
-    const bottom = Math.min(...this.state().baseRarity.map(rarityRank), Infinity);
-    return MAX_RARITIES.map((value) => ({ ...rarityChoice(value), disabled: rarityRank(value) < bottom }));
-  });
+  protected readonly baseRarities = BASE_RARITIES;
+  protected readonly maxRarities = MAX_RARITIES;
   protected readonly typeChoices: Choice[] = typeList
     .slice(0, typeList.length - 2)
     .map((value) => ({ value, tooltip: (typeListLiterals as Record<string, string>)[value] }));
@@ -346,9 +338,9 @@ export class UnitSearch {
     const named = (choices: Choice[], values: string[]): string => values.map((v) => nameOf(choices, v)).join(', ');
     const list: (ActiveFilter & { group: Group })[] = [];
     if (baseRarity.length)
-      list.push({ key: 'baseRarity', group: 'unit', label: `Base ${named(this.baseRarityChoices(), baseRarity)}` });
+      list.push({ key: 'baseRarity', group: 'unit', label: `Base ${baseRarity.map(rarityName).join(', ')}` });
     if (maxRarity.length)
-      list.push({ key: 'maxRarity', group: 'unit', label: `Max ${named(this.maxRarityChoices(), maxRarity)}` });
+      list.push({ key: 'maxRarity', group: 'unit', label: `Max ${maxRarity.map(rarityName).join(', ')}` });
     if (types.length) list.push({ key: 'types', group: 'unit', label: named(this.typeChoices, types) });
     if (roles.length) list.push({ key: 'roles', group: 'unit', label: named(this.roleChoices, roles) });
     if (series.length) list.push({ key: 'series', group: 'unit', label: named(this.seriesChoices, series) });
@@ -436,20 +428,6 @@ export class UnitSearch {
   }
 
   // --- Changing the filters ---
-
-  /** A rarity chosen takes off the ones of the other kind that no unit could have with it (see `baseRarityChoices`). */
-  protected setRarity(kind: 'baseRarity' | 'maxRarity', values: readonly string[]): void {
-    const chosen = [...values];
-    const { baseRarity, maxRarity } = this.state();
-    // nothing chosen takes nothing off the other kind
-    if (kind === 'baseRarity') {
-      const bottom = chosen.length ? Math.min(...chosen.map(rarityRank)) : 0;
-      this.patch({ baseRarity: chosen, maxRarity: maxRarity.filter((m) => rarityRank(m) >= bottom) });
-    } else {
-      const top = chosen.length ? Math.max(...chosen.map(rarityRank)) : Infinity;
-      this.patch({ maxRarity: chosen, baseRarity: baseRarity.filter((b) => rarityRank(b) <= top) });
-    }
-  }
 
   protected patch(change: Partial<UnitSearchState>): void {
     this.state.update((state) => ({ ...state, ...change }));

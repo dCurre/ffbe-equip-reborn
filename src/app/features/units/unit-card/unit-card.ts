@@ -5,6 +5,7 @@ import { Button } from '../../../shared/components/button/button';
 import { Icon, SpriteName } from '../../../shared/components/icon/icon';
 import { ItemLine } from '../../../game/components/item-line/item-line';
 import type { TrustItem } from '../unit-model';
+import { RarityStars } from '../../../shared/components/rarity-stars/rarity-stars';
 import { WikiLink } from '../../../shared/components/wiki-link/wiki-link';
 import type { GameUnit, RarityParts } from '../unit-model';
 import { STRINGS } from '../../../strings/en';
@@ -52,7 +53,7 @@ export interface Card {
 /** One unit of the collection: how many are owned, the TMR / STMR counters, and the buttons that appear on hover. */
 @Component({
   selector: 'app-unit-card',
-  imports: [NgTemplateOutlet, Button, Icon, ItemLine, WikiLink],
+  imports: [NgTemplateOutlet, Button, Icon, ItemLine, RarityStars, WikiLink],
   templateUrl: './unit-card.html',
   styleUrl: './unit-card.css',
 })

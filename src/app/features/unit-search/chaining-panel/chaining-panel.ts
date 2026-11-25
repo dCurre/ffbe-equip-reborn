@@ -9,6 +9,8 @@ import { STRINGS } from '../../../strings/en';
 
 /** The width of the picture of a chaining family (they are 227 x 128). */
 const CHAIN_ICON_WIDTH = 56;
+/** the picture, the padding and the border of a button: the letters (BP, TS) fill a cell of the same width */
+const CHAIN_CELL_WIDTH = CHAIN_ICON_WIDTH + 14;
 
 /** Filters the units by the chaining family of their skills and how many times it is cast. */
 @Component({
@@ -29,6 +31,7 @@ export class ChainingPanel {
     { label: STRINGS.chainingPanel.st, value: 'ST' },
     { label: STRINGS.chainingPanel.aoe, value: 'AOE' },
   ];
+  protected readonly cellWidth = CHAIN_CELL_WIDTH;
   protected readonly families: Choice[] = [
     ...Object.entries(chainFamilySkillName)
       .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))

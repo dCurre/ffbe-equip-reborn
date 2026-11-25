@@ -1,7 +1,8 @@
 import { Component, input, output } from '@angular/core';
-import { esperSprite, EsperInfo, OwnedEsper } from '../esper-model';
+import { EsperInfo, OwnedEsper } from '../esper-model';
 import { Icon } from '../../../shared/components/icon/icon';
 import { STRINGS } from '../../../strings/en';
+import { esperIcon } from '../../../game/helpers/esper-icon';
 
 /** One tab per Esper, with the picture of the Esper (dimmed when it is not owned), and the tab of the stats of all of them. */
 @Component({
@@ -17,5 +18,5 @@ export class EsperTabs {
   readonly tab = input.required<string>();
   readonly selected = output<string>();
 
-  protected readonly sprite = esperSprite;
+  protected readonly icon = esperIcon;
 }

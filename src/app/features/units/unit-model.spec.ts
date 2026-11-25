@@ -10,7 +10,6 @@ import {
   filterByName,
   GameUnit,
   parseMoogles,
-  rarityLabel,
   rarityParts,
   canRemove,
 removeOne,
@@ -30,10 +29,9 @@ const unit = (id: string, min: string, max: string, extra: Partial<GameUnit> = {
 
 describe('unit model', () => {
   it('writes the rarity of a unit', () => {
-    expect(rarityLabel('3', '5')).toBe('★★★☆☆');
-    expect(rarityLabel('NV', 'NV')).toBe('NV');
-    expect(rarityLabel('5', 'NV')).toBe('NVA');
-    expect(rarityParts('4', 'NV')).toEqual({ icon: 'crystal-NVA', text: ' ★★★★' });
+    expect(rarityParts('3', '5')).toEqual({ icon: null, filled: 3, total: 5 });
+    expect(rarityParts('NV', 'NV')).toEqual({ icon: 'crystal-NV', filled: 0, total: 0 });
+    expect(rarityParts('4', 'NV')).toEqual({ icon: 'crystal-NVA', filled: 4, total: 4 });
   });
 
   it('shows the 6* picture of a 7* unit that is not awakened', () => {

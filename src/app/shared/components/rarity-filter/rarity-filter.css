@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  margin: 4px;
+  font-weight: normal;
+}
+
+.label {
+  width: 50px;
+  margin-right: 5px;
+}
+
+/* in the grid of a filter panel the labels and the buttons are cells of the grid; the label looks like the other headings */
+:host(.heading),
+:host(.heading) .line {
+  display: contents;
+}
+
+:host(.heading) .label {
+  width: auto;
+  margin: 0;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: var(--soft-text);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

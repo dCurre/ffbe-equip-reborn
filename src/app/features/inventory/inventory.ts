@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { typeList, typeListLiterals, weaponList } from '../../../core/constants/item-types';
 import { computeFarmableStmr } from '../../../core/builder/item-entry';
 import { Item, containsText, buildSearchString } from '../../game/helpers/item';
+import { releaseDate } from '../../game/helpers/release-date';
 import { VisionCard } from '../../game/helpers/vision-cards';
 import { PageContent } from '../../layout/page-content/page-content';
 import { SiteFooter } from '../../layout/site-footer/site-footer';
@@ -127,7 +128,9 @@ export class InventoryPage {
   protected readonly tab = signal<Tab>('equipment');
   /** the search is the same on every tab (the box is only hidden on the others) */
   protected readonly search = signal('');
-  protected readonly searchable = computed(() => ['equipment', 'materia', 'farmableStmr'].includes(this.tab()));
+  protected readonly searchable = computed(() =>
+    ['equipment', 'materia', 'farmableStmr', 'history'].includes(this.tab()),
+  );
   /** on the equipment and materia tabs: only what the user owns */
   protected readonly onlyOwned = signal(false);
   protected readonly stmrMoogle = signal(0);
@@ -370,20 +373,26 @@ export class InventoryPage {
       for (const event of item['eventNames'] ?? []) byEvent.set(event, [...(byEvent.get(event) ?? []), line]);
       byId.set(item.id, line);
     }
-    return this.releases().map((release) => ({
-      date: release.date,
-      sources: release.sources.map((source) => {
-        let items: (ItemEntry | undefined)[] = [];
-        let title = source.name ?? '';
-        if (source.type === 'banner') {
-          const names = (source.units ?? []).map((id) => this.units()[id]?.name ?? id);
-          title = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names.join('');
-          items = (source.units ?? []).flatMap((id) => [tmr.get(id), stmr.get(id)]);
-        } else if (source.type === 'event') items = byEvent.get(source.name ?? '') ?? [];
-        else if (source.type === 'storyPart') items = (source.ids ?? []).map((id) => byId.get(id));
-        return { title, items: items.filter((i): i is ItemEntry => !!i) };
-      }),
-    }));
+    const text = this.search();
+    return this.releases()
+      .map((release) => ({
+        date: release.date,
+        sources: release.sources
+          .map((source) => {
+            let items: (ItemEntry | undefined)[] = [];
+            let title = source.name ?? '';
+            if (source.type === 'banner') {
+              const names = (source.units ?? []).map((id) => this.units()[id]?.name ?? id);
+              title =
+                names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}` : names.join('');
+              items = (source.units ?? []).flatMap((id) => [tmr.get(id), stmr.get(id)]);
+            } else if (source.type === 'event') items = byEvent.get(source.name ?? '') ?? [];
+            else if (source.type === 'storyPart') items = (source.ids ?? []).map((id) => byId.get(id));
+            return { title, items: items.filter((i): i is ItemEntry => !!i && (!text || containsText(text, i.item))) };
+          })
+          .filter((source) => !text || source.items.length), // a search keeps only what has a match
+      }))
+      .filter((release) => !text || release.sources.length);
   });
 
   // --- Dialogs ---
@@ -443,7 +452,7 @@ export class InventoryPage {
       this.units.set(units);
       this.cards.set(cardList);
       this.enchantments.set(enchantments);
-      this.releases.set(releases);
+      this.releases.set(releases.map((release) => ({ ...release, date: releaseDate(release.date) })));
       this.dataReady.set(true);
     } catch {
       this.toast.show(STRINGS.inventory.errorWhileLoadingThe, 'error');

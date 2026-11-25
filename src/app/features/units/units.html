@@ -23,14 +23,12 @@
             />
           }
           <div class="controls">
-            @if (tab() !== 'history') {
-              <app-search-box
-                #searchBox
-                class="search-box"
-                [placeholder]="placeholder()"
-                (search)="search.set($event)"
-              />
-            }
+            <app-search-box
+              #searchBox
+              class="search-box"
+              [placeholder]="placeholder()"
+              (search)="search.set($event)"
+            />
             <div class="filter-panel">
               <span class="filter-label">{{ t.show }}</span>
               <div class="chips">
@@ -80,16 +78,22 @@
                   <app-icon name="tmr-moogle" height="16" title="" />{{ t.tmrMoogles }}
                 </button>
               </div>
-              <span class="filter-label">{{ t.rarity }}</span>
-              <app-choice-group pills iconType="crystal" [choices]="groupChoices()" [(selected)]="selectedGroups" />
+              <app-rarity-filter
+                heading
+                [bases]="baseRarities()"
+                [maxes]="maxRarities()"
+                [baseLabel]="t.base"
+                [maxLabel]="t.max"
+                [(base)]="selectedBase"
+                [(max)]="selectedMax"
+              />
               <span class="filter-label">{{ t.role }}</span>
-              <app-choice-group pills iconType="restriction" [choices]="roleChoices" [(selected)]="selectedRoles" />
+              <app-choice-group ownSize iconType="restriction" [choices]="roleChoices" [(selected)]="selectedRoles" />
               <span class="filter-label">{{ t.exLevel }}</span>
-              <app-choice-group pills iconType="ex" [choices]="exChoices" [(selected)]="selectedEx" />
+              <app-choice-group ownSize iconType="ex" [choices]="exChoices" [(selected)]="selectedEx" />
               @if (tab() === 'alphabetical' || tab() === 'tmr') {
                 <span class="filter-label">{{ t.letter }}</span>
                 <app-choice-group
-                  pills
                   [choices]="letterChoices()"
                   [selected]="selectedLetters()"
                   (selectedChange)="pickLetter($event)"
@@ -157,7 +161,9 @@
       <!-- the crystals of the sheet are 22x13 (NV) and 28x13 (NVA): twice their size to match the heading -->
       <app-icon [name]="group.rarity.icon" [width]="group.rarity.icon === 'crystal-NVA' ? 56 : 44" height="26" />
     }
-    {{ group.rarity.text }}
+    @if (group.rarity.filled) {
+      <app-rarity-stars [rarity]="'' + group.rarity.filled" [max]="group.rarity.total" [size]="26" />
+    }
   } @else {
     {{ group.title }}
   }

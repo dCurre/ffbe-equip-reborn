@@ -1,0 +1,8 @@
+<div class="line">
+  <span class="label">{{ baseLabel() }}</span>
+  <app-choice-group [choices]="baseChoices()" [selected]="base()" (selectedChange)="setBase($event)" />
+</div>
+<div class="line">
+  <span class="label">{{ maxLabel() }}</span>
+  <app-choice-group [choices]="maxChoices()" [selected]="max()" (selectedChange)="setMax($event)" />
+</div>
