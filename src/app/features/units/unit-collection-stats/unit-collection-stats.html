@@ -16,3 +16,27 @@
     </table>
   </div>
 }
+<!-- on a phone: one table, a row for each rarity and a column for each group -->
+<table class="compact">
+  <thead>
+    <tr>
+      <th class="rarity-head">{{ rarityLabel() }}</th>
+      @for (group of groups(); track group.key) {
+        <th [title]="group.title">{{ group.short ?? group.title }}</th>
+      }
+    </tr>
+  </thead>
+  <tbody>
+    @for (row of rows(); track row.key) {
+      <tr>
+        <td class="crystal"><app-icon [name]="row.crystal" [title]="row.title" /></td>
+        @for (group of groups(); track group.key) {
+          <td class="cell">
+            <span class="total">{{ counts()[group.key][row.key].different }} / {{ counts()[group.key][row.key].total }}</span>
+            <span class="number">({{ counts()[group.key][row.key].number }})</span>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

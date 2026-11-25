@@ -472,7 +472,10 @@ export const ICONS = {
   'tmr-farmed': { kind: 'image', src: 'img/units/unit_ills_904000105.png', title: 'TMR' },
   'stmr-farmed': { kind: 'image', src: 'img/units/unit_ills_906000105.png', title: 'STMR' },
   awaken: { kind: 'image', src: 'img/icons/crystals/sevenStarCrystal.png', title: 'Awaken' },
+  kofi: { kind: 'image', src: 'img/icons/kofi.png', title: 'Ko-fi' },
   'ex-level': { kind: 'image', src: 'img/icons/exLevel.png', title: 'EX level' },
+  'ex-star': { kind: 'image', src: 'img/icons/ex/unit_list_exawakeningstar.png', title: 'EX level reached' },
+  'ex-star-empty': { kind: 'image', src: 'img/icons/ex/unit_exawakeningstar_frame.png', title: 'EX level not reached' },
   exclude: { kind: 'image', src: 'img/icons/excludeExpedition.png', title: 'Exclude from expeditions' },
 } as const satisfies Record<string, IconInfo>;
 

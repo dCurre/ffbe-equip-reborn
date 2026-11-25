@@ -13,14 +13,6 @@
 
       <app-tab-panel [tabs]="tabs" [active]="tab()" (selected)="showTab($event)">
         <div corner class="sort-label">{{ sortLabel() }}</div>
-        @if (activeFilters() > 0 && (showSort() || (byType() && typeChoices().length > 1))) {
-          <app-clear-filters
-            corner
-            [count]="activeFilters()"
-            [title]="t.showEveryItemEvery"
-            (cleared)="clearFilters()"
-          />
-        }
         <div class="search-header">
           <app-search-box
             #searchBox
@@ -29,6 +21,14 @@
             [placeholder]="t.enterItemNameOr"
             (search)="search.set($event)"
           />
+          @if (activeFilters() > 0 && (showSort() || (byType() && typeChoices().length > 1))) {
+            <app-clear-filters
+              class="clear"
+              [count]="activeFilters()"
+              [title]="t.showEveryItemEvery"
+              (cleared)="clearFilters()"
+            />
+          }
           @if (tab() === 'equipment' || tab() === 'materia') {
             <app-checkbox class="only-owned" [(checked)]="onlyOwned">{{ t.onlyOwned }}</app-checkbox>
           }

@@ -3,7 +3,13 @@
 
   @if (showCollection()) {
     <app-collection-layout [(collapsed)]="sidebarCollapsed" [narrow]="true" [hideActions]="readOnly()">
-      <app-unit-collection-stats stats [counts]="stats()" [groups]="statGroups" [rows]="statRows" />
+      <app-unit-collection-stats
+        stats
+        [counts]="stats()"
+        [groups]="statGroups"
+        [rows]="statRows"
+        [rarityLabel]="t.rarityShort"
+      />
 
       <div actions>
         <app-dropdown-menu [label]="t.shareUnitCollection" [items]="exportItems" />
@@ -14,21 +20,22 @@
 
       <div [class.read-only]="readOnly()">
         <app-tab-panel [tabs]="tabs" [active]="tab()" (selected)="showTab($event)">
-          @if (activeFilters() > 0) {
-            <app-clear-filters
-              corner
-              [count]="activeFilters()"
-              [title]="t.turnOffEveryFilter"
-              (cleared)="clearFilters()"
-            />
-          }
           <div class="controls">
-            <app-search-box
-              #searchBox
-              class="search-box"
-              [placeholder]="placeholder()"
-              (search)="search.set($event)"
-            />
+            <div class="search-row">
+              <app-search-box
+                #searchBox
+                class="search-box"
+                [placeholder]="placeholder()"
+                (search)="search.set($event)"
+              />
+              @if (activeFilters() > 0) {
+                <app-clear-filters
+                  [count]="activeFilters()"
+                  [title]="t.turnOffEveryFilter"
+                  (cleared)="clearFilters()"
+                />
+              }
+            </div>
             <div class="filter-panel">
               <span class="filter-label">{{ t.show }}</span>
               <div class="chips">
@@ -90,7 +97,7 @@
               <span class="filter-label">{{ t.role }}</span>
               <app-choice-group ownSize iconType="restriction" [choices]="roleChoices" [(selected)]="selectedRoles" />
               <span class="filter-label">{{ t.exLevel }}</span>
-              <app-choice-group ownSize iconType="ex" [choices]="exChoices" [(selected)]="selectedEx" />
+              <app-choice-group [choices]="exChoices" [(selected)]="selectedEx" />
               @if (tab() === 'alphabetical' || tab() === 'tmr') {
                 <span class="filter-label">{{ t.letter }}</span>
                 <app-choice-group
@@ -121,6 +128,7 @@
                     (farmedStmr)="askFarmedStmr(card.unit)"
                     (awaken)="askAwaken(card.unit)"
                     (raiseEx)="raiseEx(card.unit)"
+                    (exCopy)="$event.delta > 0 ? add(card.unit, $event.level) : remove(card.unit, $event.level)"
                     (edit)="editModal().show(card.unit)"
                   />
                 }

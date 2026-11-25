@@ -10,6 +10,8 @@
   >
     @if (choice.rarity) {
       <app-rarity-stars [rarity]="choice.rarity" />
+    } @else if (choice.exLevel !== undefined) {
+      <app-ex-level [level]="choice.exLevel" />
     } @else if (choice.icon !== undefined || choice.label === undefined) {
       <app-icon [name]="iconId(choice)" [size]="iconSize() ?? (ownSize() || choice.label !== undefined ? undefined : 38)" [width]="choice.width" />
     }

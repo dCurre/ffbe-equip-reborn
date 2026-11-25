@@ -263,6 +263,10 @@ export const STRINGS = {
     foundAProblemOr: 'Found a problem or have an idea? Open an issue on GitHub (a free GitHub account is needed):',
     reportABug: 'Report a bug',
     suggestAnImprovement: 'Suggest an improvement',
+    supportTheSite: 'Support the site',
+    theSiteIsFree:
+      'FFBE Equip Reborn is a free, community-focused fan project. Contributions on Ko-fi help the site cover its running costs and move to a dedicated domain, and they support ongoing development and data updates. Thank you for your support.',
+    supportOnKoFi: 'Support on Ko-fi',
   },
   credits: {
     builtOn: 'Built on',
@@ -545,6 +549,8 @@ export const STRINGS = {
     if: COMMON.if,
   },
   esperHeader: {
+    stats: 'Stats',
+    resistsAndKillers: 'Resists and killers',
     name: 'Name',
     rarity: COMMON.rarity,
     notOwned: 'Not owned',
@@ -964,9 +970,8 @@ export const STRINGS = {
   },
   unitCard: {
     timeLimitedUnit: 'Time limited unit',
-    nvCopiesOwned: 'NV copies owned',
-    n7CopiesOwned: '7★ copies owned',
-    copiesOwnedNot7: 'Copies owned (not 7★)',
+    copiesOwned: 'copies owned',
+    exPillHelp: 'Click to add a copy at this EX level, hold or right-click to remove one',
     tmrMooglesOwned: COMMON.tmrMooglesOwned,
     stmrFarmedClickHere:
       'STMR Farmed ! Click here to indicate you farmed this STMR. It will add 1 of this STMR to your inventory',
@@ -980,9 +985,7 @@ export const STRINGS = {
   },
   unitEditModal: {
     enterValuesOfTmr: 'Enter values of tmr moogles, separated by comma',
-    nvOwned: 'NV owned',
-    n7Owned: '7* owned',
-    n6OrUnderOwned: '6* or under owned',
+    copiesOwned: 'copies owned',
     tmrOwned: 'TMR owned',
     stmrOwned: 'STMR owned',
     fragmentsOwned: 'Fragments owned',
@@ -1135,6 +1138,9 @@ export const STRINGS = {
     allUnits: 'All units',
     notLimitedUnits: 'Not-limited units',
     timeLimitedUnits: 'Time-limited units',
+    rarityShort: 'Rar.',
+    notLimitedShort: 'Not-lim.',
+    timeLimitedShort: 'Time-lim.',
     errorWhileLoadingThe: 'Error while loading the unit data',
     errorNoDataFound: 'Error : no data found',
     copiedToTheClipboard: 'Copied to the clipboard',

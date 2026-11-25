@@ -62,7 +62,9 @@ import {
   isNVA,
   num,
   parseMoogles,
-  baseCrystal,
+  copiesByRarity,
+  exCounts,
+  raiseEx,
   rarityParts,
   canRemove,
   maxTrust,
@@ -177,8 +179,7 @@ export class Units {
   }));
   protected readonly exChoices: Choice[] = ['0', '1', '2', '3'].map((value) => ({
     value,
-    icon: 'level',
-    label: value,
+    exLevel: Number(value),
     tooltip: `EX level ${value}`,
   }));
   protected readonly sidebarCollapsed = signal(window.innerWidth < 990);
@@ -245,8 +246,8 @@ export class Units {
   ] as const;
   protected readonly statGroups = [
     { key: 'all', title: STRINGS.units.allUnits },
-    { key: 'notLimited', title: STRINGS.units.notLimitedUnits },
-    { key: 'timeLimited', title: STRINGS.units.timeLimitedUnits },
+    { key: 'notLimited', title: STRINGS.units.notLimitedUnits, short: STRINGS.units.notLimitedShort },
+    { key: 'timeLimited', title: STRINGS.units.timeLimitedUnits, short: STRINGS.units.timeLimitedShort },
   ] as const;
 
   protected readonly placeholder = computed(() => (this.tab() === 'tmr' ? 'Enter TMR name' : 'Enter unit name'));
@@ -279,7 +280,8 @@ export class Units {
       return false;
     if (this.selectedRoles().length && !this.selectedRoles().some((role) => unit.roles?.includes(role))) return false;
     // an EX level only exists on an NV copy you own
-    if (this.selectedEx().length && !(mine?.nv && this.selectedEx().includes(String(mine.exRank ?? 0)))) return false;
+    // an EX level is on if one of the NV copies is at it
+    if (this.selectedEx().length && !(mine?.nv && this.selectedEx().some((level) => exCounts(mine)[Number(level)] > 0))) return false;
     return !this.onlyTmrMoogles() || !!mine?.tmrMoogles?.length;
   }
 
@@ -537,12 +539,9 @@ export class Units {
       timeLimited: unit.summon_type === 'event',
       name: unit.name,
       nv: owned?.nv ?? 0,
-      exRank: owned?.exRank ?? 0,
       hasEx: unit.max_rarity === 'NV',
-      canRaiseEx: unit.max_rarity === 'NV' && (owned?.nv ?? 0) > 0 && (owned?.exRank ?? 0) < 3,
-      sevenStar: owned?.sevenStar ?? 0,
-      base: owned?.number ?? 0,
-      crystal: baseCrystal(unit),
+      canRaiseEx: unit.max_rarity === 'NV' && !!owned?.nv && exCounts(owned)[3] < owned.nv,
+      copies: copiesByRarity(unit, owned),
       moogles: owned?.tmrMoogles ?? [],
       fragments: unit.fragmentId ? (this.inventory.consumables()[unit.fragmentId] ?? 0) : 0,
       tmr: trust(tmr, farmed.tmr[unit.id] ?? 0, owned?.farmable ?? 0),
@@ -595,15 +594,15 @@ export class Units {
     this.inventory.changed('itemInventory', 'units', 'consumables');
   }
 
-  protected add(unit: GameUnit): void {
+  protected add(unit: GameUnit, exLevel?: number): void {
     if (this.readOnly()) return;
-    addOne(this.inventory.units(), unit, this.farmed().tmr, this.farmed().stmr);
+    addOne(this.inventory.units(), unit, this.farmed().tmr, this.farmed().stmr, exLevel);
     this.changed();
   }
 
-  protected remove(unit: GameUnit): void {
+  protected remove(unit: GameUnit, exLevel?: number): void {
     if (this.readOnly()) return;
-    removeOne(this.inventory.units(), unit, this.farmed().tmr, this.farmed().stmr);
+    removeOne(this.inventory.units(), unit, this.farmed().tmr, this.farmed().stmr, exLevel);
     // the TMR / STMR cannot be more than the copies left: all gone when the unit is
     const mine = this.inventory.units()[unit.id];
     const max = mine
@@ -623,8 +622,8 @@ export class Units {
 
   protected raiseEx(unit: GameUnit): void {
     const mine = this.inventory.units()[unit.id];
-    if (this.readOnly() || !mine || (mine.exRank ?? 0) >= 3) return;
-    mine.exRank = (mine.exRank ?? 0) + 1;
+    if (this.readOnly() || !mine || !(mine.nv && exCounts(mine)[3] < mine.nv)) return;
+    raiseEx(mine);
     this.changed();
   }
 
@@ -654,7 +653,7 @@ export class Units {
     const mine = this.inventory.units()[unit.id];
     if (this.readOnly() || !mine || mine.number < 1 || unit.max_rarity !== '7') return;
     if (mine.number === 1) {
-      awaken(mine, 1);
+      awaken(mine, unit, 1);
       this.changed();
     } else {
       this.awakenUnit.set(unit);
@@ -663,7 +662,7 @@ export class Units {
   }
 
   protected awakenWith(copies: 1 | 2): void {
-    awaken(this.inventory.units()[this.awakenUnit()!.id], copies);
+    awaken(this.inventory.units()[this.awakenUnit()!.id], this.awakenUnit()!, copies);
     this.awakenOpen.set(false);
     this.changed();
   }

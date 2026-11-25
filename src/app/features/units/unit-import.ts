@@ -125,12 +125,19 @@ export function importUnits(
       if (nva || units[base]?.min_rarity === 'NV') {
         mine.nv = (mine.nv ?? 0) + 1;
         if ((unit.stmr ?? 1000) < 1000) mine.farmableStmr!++;
-        mine.exRank = Math.max(mine.exRank, unit.exRank ?? 0); // the highest awakened EX level
+        const ex = Math.min(3, Math.max(0, unit.exRank ?? 0)); // the EX level of each awakened copy
+        mine.exCopies ??= [0, 0, 0, 0];
+        mine.exCopies[ex]++;
+        mine.exRank = Math.max(mine.exRank, ex);
       } else if (unit.id.endsWith('7')) {
         mine.sevenStar!++;
         if ((unit.stmr ?? 1000) < 1000) mine.farmableStmr!++;
       } else {
         mine.number++;
+        // the id ends with the rarity of the copy: the breakdown of the base copies
+        const rarity = unit.id.slice(-1);
+        mine.base ??= {};
+        mine.base[rarity] = (mine.base[rarity] ?? 0) + 1;
       }
     }
   }

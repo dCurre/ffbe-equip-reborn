@@ -1,13 +1,13 @@
 <app-modal [heading]="'Edit ' + (unit()?.name ?? '')" confirmLabel="Save" [(open)]="open" (confirmed)="save()">
   <form class="edit-form" (submit)="$event.preventDefault(); save()">
-    @if (canEdit('nv')) {
-      <label>{{ t.nvOwned }} <input type="number" min="0" name="nv" [(ngModel)]="edit.nv" /></label>
-    }
-    @if (canEdit('sevenStar')) {
-      <label>{{ t.n7Owned }} <input type="number" min="0" name="sevenStar" [(ngModel)]="edit.sevenStar" /></label>
-    }
-    @if (canEdit('number')) {
-      <label>{{ t.n6OrUnderOwned }} <input type="number" min="0" name="number" [(ngModel)]="edit.number" /></label>
+    @for (copy of rarities; track copy.key) {
+      <label>
+        <app-rarity-stars [rarity]="copy.rarity" />@if (copy.ex !== undefined) {
+          <app-ex-level [level]="copy.ex" />
+        }
+        {{ t.copiesOwned }}
+        <input type="number" min="0" [name]="'copies-' + copy.key" [(ngModel)]="copies[copy.key]" />
+      </label>
     }
     @if (canEdit('tmr')) {
       <label>
@@ -25,7 +25,6 @@
       <label
         >{{ t.fragmentsOwned }} <input type="number" min="0" step="5" name="fragments" [(ngModel)]="edit.fragments"
       /></label>
-      <label>{{ t.exLevel }} <input type="number" min="0" max="3" name="exRank" [(ngModel)]="edit.exRank" /></label>
     }
     @if (canEdit('moogles')) {
       <label class="stacked">

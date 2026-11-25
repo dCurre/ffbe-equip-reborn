@@ -11,6 +11,9 @@ import type { CollectionStats } from '../unit-model';
 })
 export class UnitCollectionStats {
   readonly counts = input.required<CollectionStats>();
-  readonly groups = input.required<readonly { key: keyof CollectionStats; title: string }[]>();
+  /** `short` is the title on a phone, where the groups are the columns of a table */
+  readonly groups = input.required<readonly { key: keyof CollectionStats; title: string; short?: string }[]>();
+  /** the title of the column of the rarities on a phone */
+  readonly rarityLabel = input('');
   readonly rows = input.required<readonly { key: string; crystal: SpriteName; title: string }[]>();
 }

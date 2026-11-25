@@ -77,7 +77,7 @@ describe('Units page', () => {
   it('shows the TMR still to farm and the buttons to change the collection', () => {
     const rain = page.querySelector('.unit.owned') as HTMLElement;
     expect(rain.querySelector('.trust-counter.tmr')?.textContent?.replace(/\s+/g, '')).toBe('TMR0/1');
-    expect(rain.querySelector('.actions .edit')).not.toBeNull();
+    expect(rain.querySelector('.edit')).not.toBeNull();
   });
 
   it('adds a copy of a unit and marks the inventory to be saved', async () => {
@@ -100,9 +100,9 @@ describe('Units page', () => {
     };
     const write = vi.spyOn(TestBed.inject(UserData), 'write').mockResolvedValue();
     const changed = vi.spyOn(inventory, 'changed');
-    (page.querySelector('.unit.owned .actions .edit') as HTMLElement).click();
+    (page.querySelector('.unit.owned .edit') as HTMLElement).click();
     await settle();
-    const field = page.querySelector('app-unit-edit-modal input[name="number"]') as HTMLInputElement;
+    const field = page.querySelector('app-unit-edit-modal input[type="number"]') as HTMLInputElement;
     field.value = '2';
     field.dispatchEvent(new Event('input'));
     await settle();

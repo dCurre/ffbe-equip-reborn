@@ -48,6 +48,16 @@
   display: none;
 }
 
+/* the Clear button at the right of the search box (alone at the right when the box is hidden) */
+.clear {
+  align-self: center;
+  margin: 10px 0 10px 8px;
+}
+
+.search-box[hidden] + .clear {
+  margin-left: auto;
+}
+
 .stmr-moogle {
   display: flex;
   flex: 1;

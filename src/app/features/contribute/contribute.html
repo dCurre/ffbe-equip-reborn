@@ -7,6 +7,10 @@
         <app-icon name="thumbs-up" /> {{ t.suggestAnImprovement }}
       </button>
     </app-panel>
+    <app-panel [heading]="t.supportTheSite">
+      <p>{{ t.theSiteIsFree }}</p>
+      <a app-button [href]="koFiUrl" target="_blank" rel="noreferrer"><app-icon name="kofi" height="20" /> {{ t.supportOnKoFi }}</a>
+    </app-panel>
     <app-site-footer />
   </app-page-column>
 </app-page-content>

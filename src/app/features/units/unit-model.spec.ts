@@ -3,6 +3,9 @@ import { importUnits, isUnitFile } from './unit-import';
 import {
   addOne,
   applyEdit,
+  copiesByRarity,
+  exCounts,
+  raiseEx,
   initialOf,
   maxTrust,
   awaken,
@@ -28,6 +31,56 @@ const unit = (id: string, min: string, max: string, extra: Partial<GameUnit> = {
 });
 
 describe('unit model', () => {
+  it('keeps the EX level of each NV copy: raising goes from the lowest, removing takes the lowest', () => {
+    const nv = unit('9', 'NV', 'NV');
+    const owned: OwnedUnits = { '9': { number: 0, farmable: 0, nv: 3, exCopies: [1, 1, 1, 0], exRank: 2 } };
+    expect(copiesByRarity(nv, owned['9']).map((copy) => copy.count)).toEqual([1, 1, 1, 0]);
+    raiseEx(owned['9']); // the EX0 copy goes to EX1
+    expect(owned['9'].exCopies).toEqual([0, 2, 1, 0]);
+    removeOne(owned, nv, {}, {});
+    expect(owned['9'].exCopies).toEqual([0, 1, 1, 0]);
+    addOne(owned, nv, {}, {}, 3); // a tap on the EX3 pill: one more copy at EX3, the others stay where they are
+    expect(owned['9'].exCopies).toEqual([0, 1, 1, 1]);
+    expect(owned['9'].nv).toBe(3);
+    removeOne(owned, nv, {}, {}, 0); // a long press on the EX0 pill: there is no copy there, nothing happens
+    expect(owned['9'].exCopies).toEqual([0, 1, 1, 1]);
+    removeOne(owned, nv, {}, {}, 2); // a long press on the EX2 pill
+    expect(owned['9'].exCopies).toEqual([0, 1, 0, 1]);
+    expect(owned['9'].exRank).toBe(3);
+    // older data knew only the highest EX level: one copy is there, the others are at EX0
+    expect(exCounts({ number: 0, farmable: 0, nv: 3, exRank: 2 })).toEqual([2, 0, 1, 0]);
+  });
+
+  it('counts the copies at each rarity of a unit', () => {
+    const five = unit('5', '5', '7');
+    // an import or an edit keeps the breakdown; with none, the base copies count on the lowest rarity
+    expect(copiesByRarity(five, { number: 3, farmable: 0, sevenStar: 1, base: { 5: 1, 6: 2 } })).toEqual([
+      { rarity: '5', count: 1 },
+      { rarity: '6', count: 2 },
+      { rarity: '7', count: 1 },
+    ]);
+    expect(copiesByRarity(five, { number: 2, farmable: 0 })[0]).toEqual({ rarity: '5', count: 2 });
+    // a breakdown that does not add up to `number` (a fusion left it out of date) is ignored
+    expect(copiesByRarity(five, { number: 2, farmable: 0, base: { 5: 1, 6: 2 } })[0]).toEqual({ rarity: '5', count: 2 });
+  });
+
+  it('counts how many of the NV copies are NV+ and keeps that within the copies left', () => {
+    const plus = unit('8', 'NV', 'NV', { nvPlus: true });
+    const owned: Record<string, OwnedUnit> = { '8': { number: 0, farmable: 4, farmableStmr: 4, nv: 4, nvPlus: 1 } };
+    expect(copiesByRarity(plus, owned['8']).map((copy) => [copy.ex, copy.rarity, copy.count])).toEqual([
+      [0, 'NV', 4], // all the NV copies are at EX0 (no EX data); NV+ is how many of them are NV+
+      [1, 'NV', 0],
+      [2, 'NV', 0],
+      [3, 'NV', 0],
+      [undefined, 'NV+', 1],
+    ]);
+    removeOne(owned, plus, {}, {});
+    removeOne(owned, plus, {}, {});
+    removeOne(owned, plus, {}, {});
+    expect(copiesByRarity(plus, owned['8']).at(-1)).toEqual({ rarity: 'NV+', count: 1 });
+    expect(owned['8'].nv).toBe(1);
+  });
+
   it('writes the rarity of a unit', () => {
     expect(rarityParts('3', '5')).toEqual({ icon: null, filled: 3, total: 5 });
     expect(rarityParts('NV', 'NV')).toEqual({ icon: 'crystal-NV', filled: 0, total: 0 });
@@ -94,7 +147,7 @@ describe('unit model', () => {
     const owned: OwnedUnits = {};
     const seven = unit('7', '5', '7');
     addOne(owned, seven, {}, {});
-    expect(owned['7']).toEqual({ number: 1, farmable: 1, farmableStmr: 0 });
+    expect(owned['7']).toEqual({ number: 1, farmable: 1, farmableStmr: 0, base: { 5: 1 } });
     addOne(owned, seven, { '7': 2 }, {});
     expect(owned['7'].farmable).toBe(1); // two farmed TMR cover two copies
     addOne(owned, seven, { '7': 2 }, {});
@@ -104,7 +157,7 @@ describe('unit model', () => {
   it('adds an NV unit with its NV count', () => {
     const owned: OwnedUnits = {};
     addOne(owned, unit('9', 'NV', 'NV'), {}, {});
-    expect(owned['9']).toEqual({ number: 0, farmable: 1, farmableStmr: 1, nv: 1 });
+    expect(owned['9']).toEqual({ number: 0, farmable: 1, farmableStmr: 1, nv: 1, exCopies: [1, 0, 0, 0], exRank: 0 });
   });
 
   it('counts an NV copy even when its STMR is already farmed', () => {
@@ -120,7 +173,7 @@ describe('unit model', () => {
     addOne(owned, seven, {}, {});
     addOne(owned, seven, {}, {});
     removeOne(owned, seven, {}, {});
-    expect(owned['7']).toEqual({ number: 1, farmable: 1, farmableStmr: 0 });
+    expect(owned['7']).toEqual({ number: 1, farmable: 1, farmableStmr: 0, base: { 5: 1 } });
     removeOne(owned, seven, { '7': 0 }, {});
     expect(owned['7']).toBeUndefined(); // nothing left
     removeOne(owned, seven, {}, {}); // no copy: nothing happens
@@ -141,14 +194,15 @@ describe('unit model', () => {
     addOne(owned, nv, {}, {});
     addOne(owned, nv, {}, {});
     removeOne(owned, nv, {}, {});
-    expect(owned['9']).toEqual({ number: 0, farmable: 1, farmableStmr: 1, nv: 1 });
+    expect(owned['9']).toEqual({ number: 0, farmable: 1, farmableStmr: 1, nv: 1, exCopies: [1, 0, 0, 0], exRank: 0 });
   });
 
   it('awakens with two copies or with one and a prism', () => {
     const mine: OwnedUnit = { number: 3, farmable: 0 };
-    awaken(mine, 2);
-    expect(mine).toEqual({ number: 1, farmable: 0, sevenStar: 1, farmableStmr: 1 });
-    awaken(mine, 1);
+    const five = unit('100000105', '5', '7');
+    awaken(mine, five, 2);
+    expect(mine).toEqual({ number: 1, farmable: 0, sevenStar: 1, farmableStmr: 1, base: { 5: 1 } });
+    awaken(mine, five, 1);
     expect(mine.number).toBe(0);
     expect(mine.sevenStar).toBe(2);
   });
@@ -175,15 +229,17 @@ describe('unit model', () => {
     const seven = unit('7', '5', '7');
     const edit = {
       number: 1,
+      base: { 5: 1 },
       sevenStar: 2,
       nv: 0,
-      exRank: '',
+      nvPlus: 0,
+      ex: [0, 0, 0, 0],
       fragments: 0,
       tmrMoogles: '',
     };
     applyEdit(owned, seven, edit, [50], { tmr: 2, stmr: 1 });
     // to farm: the copies (1 + 2 per 7*) and the awakened ones, minus what is farmed
-    expect(owned['7']).toEqual({ number: 1, farmable: 3, sevenStar: 2, farmableStmr: 1, tmrMoogles: [50] });
+    expect(owned['7']).toEqual({ number: 1, farmable: 3, sevenStar: 2, farmableStmr: 1, tmrMoogles: [50], base: { 5: 1 } });
     expect(maxTrust(seven, edit)).toEqual({ tmr: 5, stmr: 2 });
     applyEdit(owned, seven, { ...edit, number: 0, sevenStar: 0 }, []);
     expect(owned['7']).toBeUndefined();
@@ -198,14 +254,17 @@ describe('unit model', () => {
     const nv = unit('9', 'NV', 'NV');
     const edit = {
       number: 0,
+      base: {},
       sevenStar: 0,
       nv: 1,
-      exRank: '9',
+      nvPlus: 0,
+      ex: [0, 0, 0, 1],
       fragments: 0,
       tmrMoogles: '',
     };
     applyEdit(owned, nv, edit, []);
     expect(owned['9'].exRank).toBe(3);
+    expect(owned['9'].exCopies).toEqual([0, 0, 0, 1]);
   });
 });
 
@@ -240,6 +299,7 @@ describe('unit import', () => {
     );
     expect(owned['100000107']).toMatchObject({
       number: 2,
+      base: { 5: 1, 6: 1 }, // the rarity of each base copy
       sevenStar: 1,
       farmable: 3,
       farmableStmr: 1,

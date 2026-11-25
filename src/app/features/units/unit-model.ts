@@ -37,12 +37,6 @@ export const isNVA = (unit: GameUnit): boolean => unit.max_rarity === 'NV' && un
 /** The max rarity shown: a 7* that is not released yet counts as a 6*. */
 export const shownMaxRarity = (unit: GameUnit): string | number => (unit.unreleased7Star ? 6 : unit.max_rarity);
 
-/** The crystal of a unit by its base rarity. */
-export const baseCrystal = (unit: GameUnit): SpriteName | null =>
-  ({ 3: 'crystal-blueCrystal', 4: 'crystal-goldCrystal', 5: 'crystal-rainbowCrystal' } as const)[
-    Number(unit.min_rarity) as 3 | 4 | 5
-  ] ?? null;
-
 /** A rarity to draw: an NV / NVA crystal picture, then the stars (`filled` of the base, up to `total` with empty ones). */
 export interface RarityParts {
   icon: SpriteName | null;
@@ -187,24 +181,40 @@ export function collectionStats(units: readonly GameUnit[], owned: OwnedUnits): 
 
 // --- Edits of the owned units (each one changes `owned` in place and returns nothing) ---
 
-/** One more copy of a unit: the TMR (and the NV STMR) of the extra copy can still be farmed unless already farmed. */
+/**
+ * One more copy of a unit: the TMR (and the NV STMR) of the extra copy can still be farmed unless already farmed. With an
+ * `exLevel` the copy is an NV one at that EX level (the pill of that level), whatever the base of the unit.
+ */
 export function addOne(
   owned: OwnedUnits,
   unit: GameUnit,
   farmedTmr: Readonly<Record<string, number>>,
   farmedStmr: Readonly<Record<string, number>>,
+  exLevel?: number,
 ): void {
   const showStmr = String(unit.max_rarity) === '7' || unit.max_rarity === 'NV';
-  const nv = unit.min_rarity === 'NV';
+  const nvUnit = unit.min_rarity === 'NV';
+  const nv = nvUnit || exLevel !== undefined; // an NV copy
   owned[unit.id] ??= showStmr
     ? { number: 0, farmable: 0, farmableStmr: 0, ...(nv ? { nv: 0 } : {}) }
     : { number: 0, farmable: 0 };
   const mine = owned[unit.id];
   // the copies of an NV unit live in `nv` only (like in an import); `number` stays 0
-  if (nv) mine.nv = (mine.nv ?? 0) + 1;
-  else mine.number += 1;
+  if (nv) {
+    const counts = [...exCounts(mine)];
+    counts[exLevel ?? 0]++; // a new copy is at EX0 unless the pill of a level asked for it
+    mine.nv = (mine.nv ?? 0) + 1;
+    setExCounts(mine, counts);
+  } else {
+    mine.base = { ...baseCopies(unit, mine) };
+    mine.number += 1;
+    mine.base[String(unit.min_rarity)] = (mine.base[String(unit.min_rarity)] ?? 0) + 1;
+  }
   const count = (nv ? mine.nv! : mine.number) + (mine.sevenStar ?? 0) * 2;
-  if (!farmedTmr[unit.id] || farmedTmr[unit.id] < count) mine.farmable += 1;
+  // the NV copy of a unit that was not born NV comes from copies already counted: no new TMR to farm
+  if (nvUnit || !nv) {
+    if (!farmedTmr[unit.id] || farmedTmr[unit.id] < count) mine.farmable += 1;
+  }
   if (nv && (!farmedStmr[unit.id] || farmedStmr[unit.id] < count)) mine.farmableStmr = (mine.farmableStmr ?? 0) + 1;
 }
 
@@ -214,21 +224,32 @@ export const canRemove = (unit: GameUnit, mine: OwnedUnit | undefined): boolean 
 
 /**
  * One copy less (the reverse of `addOne`): the TMR / STMR still to farm cannot be more than the copies left minus the ones
- * already farmed. The unit leaves the collection when nothing is left.
+ * already farmed. The unit leaves the collection when nothing is left. With an `exLevel` it is an NV copy of that EX level
+ * that goes (nothing happens when there is none).
  */
 export function removeOne(
   owned: OwnedUnits,
   unit: GameUnit,
   farmedTmr: Readonly<Record<string, number>>,
   farmedStmr: Readonly<Record<string, number>>,
+  exLevel?: number,
 ): void {
   const mine = owned[unit.id];
-  if (!mine || !canRemove(unit, mine)) return;
-  const nv = unit.min_rarity === 'NV';
+  if (!mine) return;
+  const nvUnit = unit.min_rarity === 'NV';
+  const nv = nvUnit || exLevel !== undefined;
+  if (exLevel !== undefined ? !(exCounts(mine)[exLevel] > 0) : !canRemove(unit, mine)) return;
   if (nv) {
+    const counts = [...exCounts(mine)];
+    counts[exLevel ?? counts.findIndex((n) => n > 0)]--; // without a level, the copy with the lowest EX level
     mine.nv! -= 1;
-    mine.number = 0; // an NV unit never keeps base copies
-  } else mine.number -= 1;
+    setExCounts(mine, counts);
+    if (mine.nvPlus) mine.nvPlus = Math.min(mine.nvPlus, mine.nv!); // a copy removed is a plain NV one first
+    if (nvUnit) mine.number = 0; // an NV unit never keeps base copies
+  } else {
+    takeBaseCopies(mine, unit, 1);
+    mine.number -= 1;
+  }
   const count = (nv ? mine.nv! : mine.number) + (mine.sevenStar ?? 0) * 2;
   mine.farmable = Math.min(mine.farmable, Math.max(0, count - (farmedTmr[unit.id] ?? 0)));
   if (nv) mine.farmableStmr = Math.min(mine.farmableStmr ?? 0, Math.max(0, count - (farmedStmr[unit.id] ?? 0)));
@@ -238,7 +259,8 @@ export function removeOne(
 }
 
 /** How a 7* unit can be awakened: with two copies, or with one copy and a prism. */
-export function awaken(mine: OwnedUnit, copiesUsed: 1 | 2): void {
+export function awaken(mine: OwnedUnit, unit: GameUnit, copiesUsed: 1 | 2): void {
+  takeBaseCopies(mine, unit, copiesUsed);
   mine.number -= copiesUsed;
   mine.sevenStar = (mine.sevenStar ?? 0) + 1;
   mine.farmableStmr = (mine.farmableStmr ?? 0) + 1;
@@ -274,12 +296,100 @@ export function useStmrSource(mine: OwnedUnit, source: StmrSource): void {
   }
 }
 
+/** The copies of a unit owned at one rarity (`"1"` … `"7"`, `"NV"` or `"NV+"`). */
+export interface RarityCopies {
+  rarity: string;
+  count: number;
+  /** the EX level of the NV copies counted (an NV copy has its own EX level) */
+  ex?: number;
+}
+
+/** The key of a count: the rarity, and the EX level for the NV copies. */
+export const copyKey = (copy: RarityCopies): string => (copy.ex === undefined ? copy.rarity : `${copy.rarity}-EX${copy.ex}`);
+
+/**
+ * The base copies by rarity. The breakdown of an import or an edit is kept while it adds up to `number`; a button that changes
+ * `number` without it (a fusion) leaves it out of date, and then all the copies count on the lowest rarity of the unit.
+ */
+function baseCopies(unit: GameUnit, mine: OwnedUnit | undefined): Record<string, number> {
+  const kept = mine?.base;
+  if (kept && Object.values(kept).reduce((sum, n) => sum + n, 0) === mine.number) return kept;
+  return mine?.number ? { [String(unit.min_rarity)]: mine.number } : {};
+}
+
+/**
+ * The NV copies at each EX level (EX0 to EX3). The breakdown is kept while it adds up to `nv`; else one copy is at the highest
+ * EX level (the only one the older data knew) and the others at EX0.
+ */
+export function exCounts(mine: OwnedUnit | undefined): number[] {
+  const nv = mine?.nv ?? 0;
+  const kept = mine?.exCopies;
+  if (kept && kept.length === 4 && kept.reduce((sum, n) => sum + n, 0) === nv) return kept;
+  const counts = [0, 0, 0, 0];
+  if (nv > 0) {
+    counts[Math.min(3, mine?.exRank ?? 0)] = 1;
+    counts[0] += nv - 1;
+  }
+  return counts;
+}
+
+/** Writes the EX breakdown of the NV copies, and the highest EX level that follows from it. */
+function setExCounts(mine: OwnedUnit, counts: number[]): void {
+  mine.exCopies = counts;
+  mine.exRank = counts.reduce((top, n, level) => (n > 0 ? level : top), 0);
+}
+
+/** One NV copy goes up one EX level: the lowest one that is not at EX3 yet. */
+export function raiseEx(mine: OwnedUnit): void {
+  const counts = [...exCounts(mine)];
+  const from = counts.findIndex((n, level) => level < 3 && n > 0);
+  if (from < 0) return;
+  counts[from]--;
+  counts[from + 1]++;
+  setExCounts(mine, counts);
+}
+
+/** The copies of a unit by each rarity it can have, from the base to NV (NV+ only for the units that have it). */
+export function copiesByRarity(unit: GameUnit, mine: OwnedUnit | undefined): RarityCopies[] {
+  const max = String(unit.max_rarity);
+  const list: RarityCopies[] = [];
+  if (unit.min_rarity !== 'NV') {
+    const base = baseCopies(unit, mine);
+    const top = max === 'NV' ? 6 : Math.min(6, Number(shownMaxRarity(unit)));
+    for (let rarity = Number(unit.min_rarity); rarity <= top; rarity++) list.push({ rarity: String(rarity), count: base[rarity] ?? 0 });
+    if (max === 'NV' || (max === '7' && !unit.unreleased7Star)) list.push({ rarity: '7', count: mine?.sevenStar ?? 0 });
+  }
+  if (max === 'NV') {
+    exCounts(mine).forEach((count, ex) => list.push({ rarity: 'NV', count, ex }));
+    if (unit.nvPlus) list.push({ rarity: 'NV+', count: Math.min(mine?.nvPlus ?? 0, mine?.nv ?? 0) });
+  }
+  return list;
+}
+
+/** Takes `count` copies off the base ones, the lowest rarity first, keeping the breakdown in step with `number`. */
+function takeBaseCopies(mine: OwnedUnit, unit: GameUnit, count: number): void {
+  const base = { ...baseCopies(unit, mine) };
+  for (const rarity of Object.keys(base).sort()) {
+    const taken = Math.min(base[rarity], count);
+    base[rarity] -= taken;
+    count -= taken;
+  }
+  const left = Object.entries(base).filter(([, n]) => n > 0);
+  if (left.length) mine.base = Object.fromEntries(left);
+  else delete mine.base;
+}
+
 /** What the edit dialog holds; empty, invalid or negative numbers count as 0. */
 export interface UnitEdit {
   number: number;
+  /** the base copies by rarity: its sum is `number` */
+  base: Record<string, number>;
   sevenStar: number;
   nv: number;
-  exRank: string;
+  /** how many of the `nv` copies are NV+ */
+  nvPlus: number;
+  /** the NV copies at EX0 to EX3: its sum is `nv` */
+  ex: number[];
   fragments: number;
   tmrMoogles: string;
 }
@@ -321,10 +431,17 @@ export function applyEdit(
   const mine = (owned[unit.id] ??= { number: 0, farmable: 0, sevenStar: 0, farmableStmr: 0 });
   const max = String(unit.max_rarity);
   mine.number = unit.min_rarity === 'NV' ? 0 : edit.number; // an NV unit has its copies in `nv` only
+  if (mine.number) mine.base = edit.base;
+  else delete mine.base;
   if (max === 'NV') {
     mine.nv = edit.nv;
-    const exRank = edit.exRank.trim();
-    mine.exRank = exRank ? Math.max(0, Math.min(3, num(exRank))) : undefined;
+    if (unit.nvPlus && edit.nvPlus) mine.nvPlus = Math.min(edit.nvPlus, edit.nv);
+    else delete mine.nvPlus;
+    if (edit.nv) setExCounts(mine, edit.ex);
+    else {
+      delete mine.exCopies;
+      delete mine.exRank;
+    }
   }
   if (max === '7' || (max === 'NV' && unit.min_rarity !== 'NV')) mine.sevenStar = edit.sevenStar;
   const nvUnit = unit.min_rarity === 'NV';

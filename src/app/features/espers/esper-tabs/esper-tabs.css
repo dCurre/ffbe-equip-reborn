@@ -1,9 +1,15 @@
 .tabs-wrapper {
   display: flex;
   width: 100%;
-  max-width: 1300px;
+  max-width: 80%; /* the width of the table under the tabs (esper-table.css) */
   margin: 0 auto;
   overflow: hidden;
+}
+
+@media (max-width: 1200px) {
+  .tabs-wrapper {
+    max-width: none;
+  }
 }
 
 /* the tab of all the Esper stays out of the scroll */
@@ -13,25 +19,21 @@
   min-width: 0;
 }
 
-.scroller::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  z-index: 1;
-  width: 50px;
-  height: 100%;
-  pointer-events: none;
-  right: 0;
-  background: linear-gradient(to left, var(--color-background), rgba(248, 247, 238, 0));
-}
-
 .tabs {
   display: flex;
-  justify-content: space-between;
   margin: 0;
   overflow: auto hidden;
   scroll-behavior: smooth;
   border-bottom: 1px solid var(--color-tab-border);
+}
+
+/* a shade at the edge that has more tabs behind it, only while the list scrolls (it is not there when every Esper fits) */
+.scroller .tabs {
+  background:
+    linear-gradient(to right, var(--color-background) 30%, transparent) left center / 40px 100% no-repeat local,
+    linear-gradient(to left, var(--color-background) 30%, transparent) right center / 40px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.5), transparent) left center / 14px 100% no-repeat scroll,
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.5), transparent) right center / 14px 100% no-repeat scroll;
 }
 
 .tabs.all {
@@ -40,10 +42,6 @@
 
 .tabs li {
   cursor: pointer;
-}
-
-.scroller li:last-child {
-  padding-right: 30px;
 }
 
 .tabs a {

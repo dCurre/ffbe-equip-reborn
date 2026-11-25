@@ -69,19 +69,31 @@
   letter-spacing: 0.06em;
 }
 
-.chips {
+.search-row {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
 }
 
-/* a filter is a button that is pressed or not */
+.search-row .search-box {
+  flex: 1;
+  min-width: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* a filter is a button that is pressed or not, joined to the next ones like the buttons of the groups below */
 .chip {
   display: inline-flex;
   gap: 5px;
   align-items: center;
   padding: 3px 11px;
+  margin: 0 0 -1px -1px;
+  border-radius: 0;
 }
 
 .results {

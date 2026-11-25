@@ -415,7 +415,14 @@ select {
     font-size: 1em;
   }
 
-  .inventory .status span {
+  /* a small phone: the counts stay, in two lines, and the "Inventory loaded" label goes (it was hiding the counts too) */
+  .inventory .status .loaded-label {
     display: none;
+  }
+
+  .inventory .counts {
+    flex-direction: column;
+    gap: 0;
+    line-height: 1.25;
   }
 }

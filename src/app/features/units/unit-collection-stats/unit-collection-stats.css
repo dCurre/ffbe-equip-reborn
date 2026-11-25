@@ -43,35 +43,63 @@ td {
   color: var(--soft-text);
 }
 
-/* the sidebar (a component) stacks above the content on a phone */
+.compact {
+  display: none;
+}
+
+/* the sidebar (a component) stacks above the content on a phone: one table, the groups are its columns */
 @media (max-width: 991px) {
   :host {
-    flex-direction: row;
     margin-top: 0;
     margin-bottom: 20px;
   }
 
   .stats-group {
-    width: auto;
-    max-width: none;
-    padding: 0 4px;
+    display: none;
   }
 
-  h4 {
-    margin-top: 0;
-  }
-}
-
-@media (max-width: 550px) {
-  :host {
-    font-size: 0.75em;
-  }
-
-  table {
-    max-width: 120px;
+  /* straight on the page, no card: the groups are the columns, a line between the rarities */
+  .compact {
+    display: table;
+    width: 100%;
+    max-width: 480px;
+    border-collapse: separate;
+    border-spacing: 0;
   }
 
-  .crystal {
-    width: 22px;
+  .compact th {
+    padding: 12px 6px;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .compact .rarity-head {
+    font-weight: normal;
+    color: var(--soft-text);
+  }
+
+  .compact td {
+    padding: 10px 6px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .compact .crystal {
+    width: 56px;
+    padding: 10px 6px;
+  }
+
+  .compact .cell {
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .compact .total {
+    display: block;
+    font-weight: bold;
+  }
+
+  .compact .number {
+    display: block;
   }
 }

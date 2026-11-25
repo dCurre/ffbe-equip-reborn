@@ -1,6 +1,7 @@
 import { booleanAttribute, Component, computed, input, model } from '@angular/core';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Button } from '../button/button';
+import { ExLevel } from '../ex-level/ex-level';
 import { RarityStars } from '../rarity-stars/rarity-stars';
 
 export interface Choice {
@@ -12,6 +13,8 @@ export interface Choice {
   tooltip?: string;
   /** a rarity of a unit (`"1"` … `"7"`, `"NV"`, `"NV+"`) drawn as stars or badge instead of a picture */
   rarity?: string;
+  /** an EX level (0 to 3) drawn as slots, the ones reached filled */
+  exLevel?: number;
   /** the width of the picture when it is not the size of the others (the height follows) */
   width?: number;
   /** shown but not to choose (a value that no result could have with the others chosen) */
@@ -23,7 +26,7 @@ export interface Choice {
  * (`single`) or any number of them.
  */
 @Component({
-  imports: [Button, Icon, RarityStars],
+  imports: [Button, ExLevel, Icon, RarityStars],
   selector: 'app-choice-group',
   templateUrl: './choice-group.html',
   styleUrl: './choice-group.css',

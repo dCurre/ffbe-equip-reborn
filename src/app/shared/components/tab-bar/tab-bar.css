@@ -20,6 +20,14 @@ a {
   border-radius: 4px 4px 0 0;
 }
 
+/* a phone: narrower tabs, so that five picture tabs (Inventory) fit the width of the page */
+@media (max-width: 480px) {
+  a {
+    margin-right: 1px;
+    padding: 5px 4px;
+  }
+}
+
 /* a tab with a title only is text, not a link: the color of the page */
 a {
   color: var(--color-text);

@@ -3,13 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { Inventory, OwnedUnit } from '../../../shared/services/inventory';
 import { Alert } from '../../../shared/components/alert/alert';
 import { Modal } from '../../../shared/components/modal/modal';
-import { applyEdit, GameUnit, maxTrust, num, parseMoogles, UnitEdit } from '../unit-model';
+import { ExLevel } from '../../../shared/components/ex-level/ex-level';
+import { RarityStars } from '../../../shared/components/rarity-stars/rarity-stars';
+import { applyEdit, copiesByRarity, copyKey, GameUnit, maxTrust, num, parseMoogles, RarityCopies, UnitEdit } from '../unit-model';
 import { STRINGS } from '../../../strings/en';
 
 /** Edits what the user owns of one unit: the copies, the TMR / STMR owned, the NV extras and the TMR moogles. */
 @Component({
   selector: 'app-unit-edit-modal',
-  imports: [Alert, FormsModule, Modal],
+  imports: [Alert, ExLevel, FormsModule, Modal, RarityStars],
   templateUrl: './unit-edit-modal.html',
   styleUrl: './unit-edit-modal.css',
 })
@@ -26,6 +28,9 @@ export class UnitEditModal {
   protected readonly open = signal(false);
   protected readonly error = signal('');
   protected edit: UnitEdit = emptyEdit();
+  /** the rarities of the unit and the copies owned at each one (the fields of the dialog) */
+  protected rarities: (RarityCopies & { key: string })[] = [];
+  protected copies: Record<string, number> = {};
   /** the TMR / STMR of the unit in the inventory */
   protected owned = { tmr: 0, stmr: 0 };
 
@@ -36,11 +41,16 @@ export class UnitEditModal {
       stmr: this.inventory.count(this.stmr()[unit.id]?.id ?? ''),
     };
     const mine: Partial<OwnedUnit> = this.inventory.units()[unit.id] ?? {};
+    const byRarity = copiesByRarity(unit, this.inventory.units()[unit.id]);
+    this.rarities = byRarity.map((copy) => ({ ...copy, key: copyKey(copy) }));
+    this.copies = Object.fromEntries(this.rarities.map((copy) => [copy.key, copy.count]));
     this.edit = {
       number: mine.number ?? 0,
+      base: {},
       sevenStar: mine.sevenStar ?? 0,
       nv: mine.nv ?? 0,
-      exRank: String(mine.exRank ?? 0),
+      nvPlus: mine.nvPlus ?? 0,
+      ex: [0, 0, 0, 0],
       fragments: unit.fragmentId ? (this.inventory.consumables()[unit.fragmentId] ?? 0) : 0,
       tmrMoogles: (mine.tmrMoogles ?? []).join(', '),
     };
@@ -58,12 +68,8 @@ export class UnitEditModal {
     }
     const values: UnitEdit = {
       ...this.edit,
-      number: num(this.edit.number),
-      sevenStar: num(this.edit.sevenStar),
-      nv: num(this.edit.nv),
+      ...this.copiesEdit(),
       fragments: num(this.edit.fragments),
-      // a number input gives a number (or null when emptied), not the text the field started with
-      exRank: String(this.edit.exRank ?? ''),
     };
     const max = maxTrust(unit, values);
     const farmed = {
@@ -86,11 +92,24 @@ export class UnitEditModal {
 
   /** The most TMR / STMR the unit can have with the copies typed so far. */
   protected max(): { tmr: number; stmr: number } {
-    return maxTrust(this.unit()!, {
-      number: num(this.edit.number),
-      sevenStar: num(this.edit.sevenStar),
-      nv: num(this.edit.nv),
-    });
+    return maxTrust(this.unit()!, this.copiesEdit());
+  }
+
+  /** The copies typed at each rarity as the counts the inventory keeps. */
+  private copiesEdit(): Pick<UnitEdit, 'number' | 'base' | 'sevenStar' | 'nv' | 'nvPlus' | 'ex'> {
+    const base: Record<string, number> = {};
+    const ex = [0, 0, 0, 0];
+    let number = 0;
+    for (const { rarity, key, ex: level } of this.rarities) {
+      const count = num(this.copies[key] ?? 0);
+      if (level !== undefined) ex[level] = count;
+      else if (count && rarity !== '7' && rarity !== 'NV+') {
+        base[rarity] = count;
+        number += count;
+      }
+    }
+    const nv = ex.reduce((sum, n) => sum + n, 0);
+    return { number, base, sevenStar: num(this.copies['7'] ?? 0), nv, nvPlus: Math.min(num(this.copies['NV+'] ?? 0), nv), ex };
   }
 
   /** Which fields the dialog shows. */
@@ -119,5 +138,5 @@ export class UnitEditModal {
 }
 
 function emptyEdit(): UnitEdit {
-  return { number: 0, sevenStar: 0, nv: 0, exRank: '', fragments: 0, tmrMoogles: '' };
+  return { number: 0, base: {}, sevenStar: 0, nv: 0, nvPlus: 0, ex: [0, 0, 0, 0], fragments: 0, tmrMoogles: '' };
 }

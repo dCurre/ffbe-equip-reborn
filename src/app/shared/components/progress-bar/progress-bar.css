@@ -10,6 +10,10 @@
   overflow: hidden;
 }
 
+.progress.compact {
+  height: 8px;
+}
+
 .progress-bar {
   height: 100%;
   background-color: #4caf50;
@@ -18,6 +22,10 @@
 
 .progress-bar.finished {
   background-color: skyblue;
+}
+
+.progress-bar.over {
+  background-color: #d32f2f;
 }
 
 .progress-text {

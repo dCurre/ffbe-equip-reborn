@@ -12,6 +12,13 @@ export interface OwnedUnit {
   sevenStar?: number;
   farmableStmr?: number;
   nv?: number;
+  /** the base copies by exact rarity ("1" … "6"); valid only while it adds up to `number` (see `copiesByRarity`) */
+  base?: Record<string, number>;
+  /** how many of the `nv` copies are NV+ */
+  nvPlus?: number;
+  /** the NV copies at each EX level (EX0 to EX3); valid only while it adds up to `nv` (see `exCounts`) */
+  exCopies?: number[];
+  /** the highest EX level of the NV copies */
   exRank?: number;
   tmrMoogles?: number[];
 }

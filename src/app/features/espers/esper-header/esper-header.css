@@ -51,6 +51,11 @@ input[type='number'] {
   height: 34px;
 }
 
+.sp {
+  padding: 6px 0 4px;
+  text-align: center;
+}
+
 .limit-break {
   display: flex;
   gap: 6px;
@@ -64,6 +69,94 @@ input[type='number'] {
 
 .other-stats {
   position: relative;
-  padding-bottom: 15px;
-  padding-left: 40px;
+}
+
+/* a phone or a narrow screen: no boxes, the groups are as they were before the panels (the name is a line of the first group) */
+@media (max-width: 1339px) {
+  app-panel {
+    margin: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  app-panel ::ng-deep .heading {
+    display: none;
+  }
+
+  app-panel ::ng-deep .body {
+    padding: 0;
+  }
+
+  .other-stats {
+    padding-bottom: 15px;
+    padding-left: 40px;
+  }
+}
+
+/* a desktop screen: the panels (`app-panel`) one over the other, in the column at the left of the board */
+@media (min-width: 1340px) {
+  :host {
+    display: block;
+  }
+
+  /* the name is the title of the first panel */
+  .name-line {
+    display: none;
+  }
+
+  /* an Esper that is not owned has no stats nor resists to show: the box is only its name and the rarity to choose */
+  .stats.invisible,
+  .other-stats.invisible {
+    display: none;
+  }
+
+  .esper-header {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    min-height: 0;
+    margin-top: 0;
+    padding-right: 0;
+  }
+
+  .esper-choice,
+  .stats,
+  .other-stats {
+    min-width: 0;
+  }
+
+  .stats-list {
+    flex-direction: column;
+  }
+
+  /* the panels are sections of one box, not boxes inside a box (as the filters of Unit Search): one border and corners for all */
+  .esper-header {
+    overflow: hidden;
+    background-color: var(--color-panel);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-panel);
+  }
+
+  app-panel {
+    margin-bottom: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .esper-header ::ng-deep .heading {
+    border-top: 1px solid var(--color-border);
+    border-radius: 0;
+  }
+
+  .esper-header > :first-child ::ng-deep .heading {
+    border-top: 0;
+  }
+
+  .form-label {
+    min-width: 60px;
+    text-align: left;
+  }
 }

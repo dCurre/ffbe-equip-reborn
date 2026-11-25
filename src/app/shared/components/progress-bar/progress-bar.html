@@ -1,4 +1,6 @@
-<div class="progress" role="progressbar" [attr.aria-label]="label()" [attr.aria-valuenow]="value()">
-  <div class="progress-bar" [class.finished]="finished()" [style.width.%]="value()"></div>
-  <span class="progress-text">{{ value() }}%</span>
+<div class="progress" [class.compact]="compact()" role="progressbar" [attr.aria-label]="label()" [attr.aria-valuenow]="value()">
+  <div class="progress-bar" [class.finished]="finished()" [class.over]="over()" [style.width.%]="value()"></div>
+  @if (!compact()) {
+    <span class="progress-text">{{ value() }}%</span>
+  }
 </div>

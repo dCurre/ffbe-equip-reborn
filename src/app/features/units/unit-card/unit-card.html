@@ -1,4 +1,9 @@
 <div [class]="'unit ' + card().classes">
+  @if (!readOnly()) {
+    <button app-button type="button" class="action-button edit" [title]="t.editUnitValues" (click)="edit.emit()">
+      <app-icon name="edit" />
+    </button>
+  }
   <div class="avatar">
     <img class="unit-image" [src]="card().image" loading="lazy" width="56" height="56" alt="" />
     @if (card().rarity.icon) {
@@ -29,26 +34,30 @@
       <div class="rarity"><app-rarity-stars [rarity]="'' + card().rarity.filled" [max]="card().rarity.total" /></div>
     }
     <div class="counts">
-      <span class="pill count nv" [class.has]="card().nv > 0">
-        <app-icon name="crystal-NV" [title]="t.nvCopiesOwned" />{{ card().nv }}
-      </span>
-      <span class="pill count seven-star-count" [class.has]="card().sevenStar > 0">
-        <app-icon name="crystal-sevenStarCrystal" [title]="t.n7CopiesOwned" />{{ card().sevenStar }}
-      </span>
-      <span class="pill count base" [class.has]="card().base > 0">
-        @if (card().crystal) {
-          <app-icon [name]="card().crystal!" [title]="t.copiesOwnedNot7" />
+      @for (copy of card().copies; track copy.rarity + copy.ex) {
+        @if (copy.ex !== undefined && !readOnly()) {
+          <button
+            type="button"
+            class="pill count ex-pill"
+            [class.has]="copy.count > 0"
+            [title]="copy.count + ' ' + t.copiesOwned + '. ' + t.exPillHelp"
+            (click)="tap(copy.ex)"
+            (pointerdown)="pressStart(copy.ex)"
+            (pointerup)="pressEnd()"
+            (pointerleave)="pressEnd()"
+            (pointercancel)="pressEnd()"
+            (contextmenu)="secondary($event, copy.ex)"
+          >
+            <ng-container *ngTemplateOutlet="copyBody; context: { copy: copy }" />
+          </button>
+        } @else {
+          <span class="pill count" [class.has]="copy.count > 0" [title]="copy.count + ' ' + t.copiesOwned">
+            <ng-container *ngTemplateOutlet="copyBody; context: { copy: copy }" />
+          </span>
         }
-        {{ card().base }}
-      </span>
+      }
       <span class="pill count moogles has" [title]="card().moogles.length ? card().moogles.join('%, ') + '%' : ''">
         <app-icon name="tmr-moogle" [title]="t.tmrMooglesOwned" height="20" />{{ card().moogles.length }}
-      </span>
-      <span class="pill count fragments" [class.has]="card().fragments! > 0" [title]="card().fragments + ' fragments'">
-        <app-icon name="fragment" height="20" />{{ card().fragments }}
-      </span>
-      <span class="pill count ex" [class.has]="card().exRank > 0" title="EX level (0 to 3)">
-        <app-icon name="ex-level" />{{ card().exRank }}
       </span>
     </div>
     @if (!readOnly()) {
@@ -73,30 +82,6 @@
             <app-icon name="add" />
           </button>
         </span>
-        @if (card().canStmr) {
-          <button
-            app-button
-            type="button"
-            class="farm-button"
-            [class.ready]="card().farmableStmr"
-            [disabled]="!card().farmableStmr"
-            [title]="t.stmrFarmedClickHere"
-            (click)="farmedStmr.emit()"
-          >
-            <app-icon name="stmr-farmed" height="18" />{{ t.stmr }}
-          </button>
-        }
-        <button
-          app-button
-          type="button"
-          class="farm-button"
-          [class.ready]="card().farmable"
-          [disabled]="!card().farmable"
-          [title]="t.tmrFarmedClickHere"
-          (click)="farmedTmr.emit()"
-        >
-          <app-icon name="tmr-farmed" height="18" />{{ t.tmr }}
-        </button>
         @if (card().hasEx) {
           <button
             app-button
@@ -114,9 +99,6 @@
             <app-icon name="awaken" height="18" />
           </button>
         }
-        <button app-button type="button" class="action-button edit" [title]="t.editUnitValues" (click)="edit.emit()">
-          <app-icon name="edit" />
-        </button>
       </div>
     }
   </div>
@@ -130,6 +112,7 @@
           "
         />
       }
+      <ng-container *ngTemplateOutlet="fragments" />
       @if (card().tmr; as tmr) {
         <ng-container
           *ngTemplateOutlet="
@@ -138,60 +121,83 @@
           "
         />
       }
-    } @else if (card().tmr; as tmr) {
-      <ng-container
-        *ngTemplateOutlet="
-          counter;
-          context: {
-            which: 'stmr',
-            label: 'STMR',
-            text: (card().stmr?.farmed ?? 0) + '/' + (card().stmr?.total ?? 0),
-            item: card().stmr?.item,
-            state: state(card().stmr),
-          }
-        "
-      />
-      <ng-container
-        *ngTemplateOutlet="
-          counter;
-          context: {
-            which: 'tmr',
-            label: 'TMR',
-            text: tmr.farmed + '/' + tmr.total,
-            item: tmr.item,
-            state: state(tmr),
-          }
-        "
-      />
+    } @else {
+      @if (card().tmr; as tmr) {
+        <ng-container
+          *ngTemplateOutlet="
+            counter;
+            context: {
+              which: 'stmr',
+              label: 'STMR',
+              text: (card().stmr?.farmed ?? 0) + '/' + (card().stmr?.total ?? 0),
+              item: card().stmr?.item,
+              state: state(card().stmr),
+            }
+          "
+        />
+      }
+      <ng-container *ngTemplateOutlet="fragments" />
+      @if (card().tmr; as tmr) {
+        <ng-container
+          *ngTemplateOutlet="
+            counter;
+            context: {
+              which: 'tmr',
+              label: 'TMR',
+              text: tmr.farmed + '/' + tmr.total,
+              item: tmr.item,
+              state: state(tmr),
+            }
+          "
+        />
+      }
     }
   </div>
 </div>
-<!-- A TMR / STMR counter; the item line is drawn only while the pointer is on its "?" -->
+<!-- the rarity of a count of copies, with the EX level of the NV ones, and the number -->
+<ng-template #copyBody let-copy="copy">
+  <app-rarity-stars [rarity]="copy.rarity" />@if (copy.ex !== undefined) {
+    <app-ex-level [level]="copy.ex" />
+  }&times;{{ copy.count }}
+</ng-template>
+<!-- the fragments of an NV unit: between the STMR and the TMR -->
+<ng-template #fragments>
+  <span class="pill count fragments" [class.has]="card().fragments! > 0" [title]="card().fragments + ' fragments'">
+    <app-icon name="fragment" height="20" />{{ card().fragments }}
+  </span>
+</ng-template>
+<!-- A TMR / STMR counter; the item line is drawn only while the pointer is on it -->
 <ng-template #counter let-which="which" let-label="label" let-text="text" let-item="item" let-state="state">
   <div [class]="which + ' trust-counter'">
-    @if (item) {
-      <span
-        class="trust-help"
-        tabindex="0"
-        [attr.aria-label]="'Show the ' + label"
-        (mouseenter)="tip.set(which)"
-        (mouseleave)="tip.set(null)"
-        (click)="tip.set(which)"
-        (focus)="tip.set(which)"
+    <span class="trust-label">
+      <!-- the pill marks the TMR / STMR as farmed (a click, while one is left) and draws its item line while the mouse is on it; on a touch screen a long press draws the line and a tap marks it -->
+      <button
+        type="button"
+        class="pill trust-pill"
+        [class]="state"
+        [class.ready]="which === 'tmr' ? card().farmable : card().farmableStmr"
+        [attr.aria-label]="which === 'tmr' ? t.tmrFarmedClickHere : t.stmrFarmedClickHere"
+        (pointerenter)="hover(which, $event)"
+        (pointerleave)="leave($event)"
+        (pointerdown)="tipPress(which, $event)"
+        (pointerup)="tipRelease()"
+        (pointercancel)="tipRelease()"
+        (contextmenu)="noMenu($event)"
+        (click)="farm(which)"
+        (focus)="focusTip(which, $event)"
         (blur)="tip.set(null)"
       >
-        <app-icon name="help" />
-        @if (tip() === which) {
-          <div class="items trust-tip">
-            <div class="tbody">
-              <app-item-line class="tr" [item]="item" hideUnit />
-            </div>
+        <app-icon [name]="which + '-farmed'" height="16" />
+        <span class="trust-name">{{ label }}</span> {{ text }}
+      </button>
+      <!-- beside the button, not inside it: the button is dimmed when there is nothing to farm, the item line is not -->
+      @if (item && tip() === which) {
+        <div class="items trust-tip">
+          <div class="tbody">
+            <app-item-line class="tr" [item]="item" hideUnit />
           </div>
-        }
-      </span>
-    }
-    <span class="trust-label">
-      {{ label }} <span class="pill" [class]="state">{{ text }}</span>
+        </div>
+      }
     </span>
   </div>
 </ng-template>

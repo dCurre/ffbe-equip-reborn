@@ -5,6 +5,12 @@
   container-type: inline-size;
 }
 
+/* the card with an item line open is over the cards that come after it (the container above makes each card a layer of its own) */
+:host(:has(.trust-tip)) {
+  position: relative;
+  z-index: 10;
+}
+
 .unit {
   position: relative;
   display: grid;
@@ -91,8 +97,10 @@
   min-width: 0;
 }
 
+/* the name keeps clear of the edit button on the corner */
 .unit-name {
   display: -webkit-box;
+  padding-right: 34px;
   overflow: hidden;
   font-weight: bold;
   line-height: 1.25;
@@ -137,6 +145,15 @@
   border-radius: 999px;
 }
 
+.ex-pill {
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
 .pill.has {
   color: #fff;
   background-color: var(--unit-pill-owned);
@@ -162,35 +179,23 @@
   align-items: center;
 }
 
-.count.nv,
-.count.seven-star-count,
 .count.moogles,
-.count.fragments,
-.count.ex {
+.count.fragments {
   display: none;
 }
 
-.sevenStars .count.seven-star-count,
-.NV .count.nv,
-.NVA .count.nv,
 .tmrMoogles .count.moogles,
 .NV .count.fragments,
-.NVA .count.fragments,
-.NV .count.ex,
-.NVA .count.ex {
+.NVA .count.fragments {
   display: inline-flex;
 }
 
-.NV .count.base {
-  display: none;
-}
-
 .count.moogles,
-.count.fragments,
-.count.ex {
+.count.fragments {
   cursor: help;
 }
 
+/* the STMR, the fragments of an NV unit and the TMR; the narrow card puts them in a row (see the container query) */
 .progress {
   display: flex;
   flex-direction: column;
@@ -198,32 +203,61 @@
   min-width: 0;
 }
 
+.progress .count.fragments {
+  align-self: center;
+}
+
+/* the edit button on the top right corner of the card, over the name's line */
+.edit {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+}
+
+
 .trust-counter {
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   white-space: nowrap;
 }
 
+/* the label and the number are one pill: the counter takes only the room it needs */
 .trust-label {
-  display: flex;
-  flex: 1;
-  gap: 8px;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
 }
 
-.trust-help {
+.trust-name {
+  font-weight: normal;
+}
+
+.trust-label .pill {
   position: relative;
-  display: inline-flex;
-  margin-right: 4px;
-  color: var(--color-link);
   cursor: help;
 }
 
-.trust-counter.stmr .trust-label,
-.trust-counter.tmr .trust-label {
+/* the TMR / STMR button: square like the other buttons of the card (the pill states partial and complete keep their colors) */
+.trust-pill {
+  gap: 4px;
+  height: 26px;
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--unit-action-text);
+  background-color: var(--unit-action-background);
+  border-color: var(--unit-action-border);
+  border-radius: 6px;
+}
+
+/* a TMR / STMR that can be marked as farmed */
+.trust-pill.ready {
+  cursor: pointer;
+}
+
+.trust-counter.stmr .trust-pill,
+.trust-counter.tmr .trust-pill {
   opacity: 0.45;
 }
 
@@ -231,8 +265,8 @@
   display: none;
 }
 
-.sevenStars .trust-counter.stmr .trust-label,
-.owned .trust-counter.tmr .trust-label {
+.sevenStars .trust-counter.stmr .trust-pill,
+.owned .trust-counter.tmr .trust-pill {
   opacity: 1;
 }
 
@@ -250,7 +284,6 @@
 }
 
 .stepper button,
-.farm-button,
 .action-button {
   display: inline-flex;
   gap: 4px;
@@ -286,13 +319,6 @@
   padding: 0;
 }
 
-/* a TMR / STMR that can be marked as farmed */
-.farm-button.ready {
-  color: var(--unit-partial-text);
-  background-color: var(--unit-partial-bg);
-  border-color: var(--unit-partial);
-}
-
 .unit.notOwned .actions {
   opacity: 0.7;
 }
@@ -310,12 +336,26 @@
     height: 48px;
   }
 
+  /* three cells so that the fragments are in the middle between the STMR and the TMR, whichever of them is missing */
   .progress {
+    display: grid;
     grid-column: 1 / -1;
-    flex-direction: row;
-    justify-content: space-between;
+    grid-template-columns: 1fr auto 1fr;
     padding-top: 8px;
     border-top: 1px solid var(--unit-border-soft);
+  }
+
+  .progress .trust-counter.stmr {
+    grid-column: 1;
+  }
+
+  .progress .count.fragments {
+    grid-column: 2;
+  }
+
+  .progress .trust-counter.tmr {
+    grid-column: 3;
+    justify-self: end;
   }
 
   .trust-counter {
@@ -339,7 +379,7 @@
   }
 }
 
-/* the item line of a TMR / STMR, under the "?" while the pointer is on it */
+/* the item line of a TMR / STMR, under its pill while the pointer is on it */
 .trust-tip {
   position: absolute;
   top: 100%;

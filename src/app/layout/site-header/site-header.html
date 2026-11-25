@@ -44,7 +44,7 @@
       <div class="status">
         @switch (inventory.status()) {
           @case ('loaded') {
-            <span>{{ t.inventoryLoaded }}</span>
+            <span class="loaded-label">{{ t.inventoryLoaded }}</span>
             <div class="counts">
               <span>{{ inventory.unitCount() }} {{ t.units }}</span>
               <span>{{ inventory.itemCount() }} {{ t.items }}</span>

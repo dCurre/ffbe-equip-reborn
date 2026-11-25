@@ -1,9 +1,17 @@
 footer {
   margin: 15px 0;
+  text-align: center;
+}
+
+/* the links wrap on a narrow screen: the template has no spaces between the links, so the browser has no place to break the line */
+footer div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  justify-content: center;
 }
 
 footer a {
-  margin-left: 10px;
   font-size: 0.9em;
   white-space: nowrap;
 }

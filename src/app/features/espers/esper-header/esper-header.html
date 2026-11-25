@@ -1,76 +1,80 @@
 <div class="esper-header">
-  <div class="form-group esper-choice">
-    <div class="form-line">
-      <span class="form-label">{{ t.name }}</span><span class="form-value">{{ info().name }}</span>
-    </div>
-    <div class="form-line">
-      <label class="form-label" for="esperStar">{{ t.rarity }}</label>
-      <select id="esperStar" (change)="rarityChange.emit($any($event.target).value)">
-        @if (logged()) {
-          <option value="notOwned" [selected]="!current()">{{ t.notOwned }}</option>
-        }
-        @for (rarity of rarities(); track rarity) {
-          <option [value]="rarity" [selected]="current()?.rarity === rarity">{{ rarity }} ★</option>
-        }
-      </select>
-    </div>
-    @if (current(); as esper) {
-      <div class="form-line">
-        <label class="form-label" for="level">{{ t.level }}</label>
-        <input
-          id="level"
-          type="number"
-          [min]="levelRange[esper.rarity].min"
-          [max]="levelRange[esper.rarity].max"
-          [value]="esper.level"
-          (input)="levelInput.emit($event)"
-          (change)="levelInput.emit($event)"
-        />
+  <app-panel class="esper-choice" [heading]="info().name">
+    <div class="form-group">
+      <div class="form-line name-line">
+        <span class="form-label">{{ t.name }}</span><span class="form-value">{{ info().name }}</span>
       </div>
       <div class="form-line">
-        <span class="form-label">{{ t.sp }}</span>
-        <span #spLabel class="form-value" [class.error]="sp()!.used > sp()!.available">
-          {{ sp()!.used }} / {{ sp()!.available }}
-        </span>
+        <label class="form-label" for="esperStar">{{ t.rarity }}</label>
+        <select id="esperStar" (change)="rarityChange.emit($any($event.target).value)">
+          @if (logged()) {
+            <option value="notOwned" [selected]="!current()">{{ t.notOwned }}</option>
+          }
+          @for (rarity of rarities(); track rarity) {
+            <option [value]="rarity" [selected]="current()?.rarity === rarity">{{ rarity }} ★</option>
+          }
+        </select>
       </div>
-    }
-  </div>
-  <div class="form-line stats" [class.invisible]="!current()">
-    @for (group of statGroups; track group[0]) {
-      <div class="form-group">
-        @for (stat of group; track stat) {
-          <div class="form-line">
-            <span class="form-label">{{ stat.toUpperCase() }}</span>
-            <span class="form-value">
-              @if (current(); as esper) {
-                {{ value(esper, stat) }}
-                <span
-                  class="bonus"
-                  [title]="
-                    'Gives a bonus of +' +
-                    bonus(esper, stat) +
-                    ' ' +
-                    stat.toUpperCase() +
-                    ' to unit equipped with this Esper'
-                  "
-                >
-                  (+{{ bonus(esper, stat) }})
-                </span>
-              }
-            </span>
-          </div>
-        }
-      </div>
-    }
-  </div>
-  <div class="form-group other-stats" [class.invisible]="!current()">
-    <app-resist-list [resist]="current()?.resist" [bonus]="resistBonus()" />
-    <app-killer-list [killers]="current()?.killers" />
-    @if (current()?.limitKillers?.length) {
-      <div class="limit-break" [title]="t.limitBreakTitle">
-        <span class="label">{{ t.limitBreak }}</span>
-        <app-killer-list [killers]="current()?.limitKillers" />
-      </div>
-    }
-  </div>
+      @if (current(); as esper) {
+        <div class="form-line">
+          <label class="form-label" for="level">{{ t.level }}</label>
+          <input
+            id="level"
+            type="number"
+            [min]="levelRange[esper.rarity].min"
+            [max]="levelRange[esper.rarity].max"
+            [value]="esper.level"
+            (input)="levelInput.emit($event)"
+            (change)="levelInput.emit($event)"
+          />
+        </div>
+        <div #spLabel class="sp" [class.error]="sp()!.used > sp()!.available">
+          {{ t.sp }} {{ sp()!.used }} / {{ sp()!.available }}
+        </div>
+        <app-progress-bar compact [value]="spPercent()" [over]="sp()!.used > sp()!.available" [label]="t.sp" />
+      }
+    </div>
+  </app-panel>
+  <app-panel class="stats" [class.invisible]="!current()" [heading]="t.stats">
+    <div class="form-line stats-list">
+      @for (group of statGroups; track group[0]) {
+        <div class="form-group">
+          @for (stat of group; track stat) {
+            <div class="form-line">
+              <span class="form-label">{{ stat.toUpperCase() }}</span>
+              <span class="form-value">
+                @if (current(); as esper) {
+                  {{ value(esper, stat) }}
+                  <span
+                    class="bonus"
+                    [title]="
+                      'Gives a bonus of +' +
+                      bonus(esper, stat) +
+                      ' ' +
+                      stat.toUpperCase() +
+                      ' to unit equipped with this Esper'
+                    "
+                  >
+                    (+{{ bonus(esper, stat) }})
+                  </span>
+                }
+              </span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </app-panel>
+  <app-panel class="other-stats" [class.invisible]="!current()" [heading]="t.resistsAndKillers">
+    <div class="form-group">
+      <app-resist-list [resist]="current()?.resist" [bonus]="resistBonus()" />
+      <app-killer-list [killers]="current()?.killers" />
+      @if (current()?.limitKillers?.length) {
+        <div class="limit-break" [title]="t.limitBreakTitle">
+          <span class="label">{{ t.limitBreak }}</span>
+          <app-killer-list [killers]="current()?.limitKillers" />
+        </div>
+      }
+    </div>
+  </app-panel>
 </div>
