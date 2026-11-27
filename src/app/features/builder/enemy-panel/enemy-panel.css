@@ -3,12 +3,12 @@
   gap: 10px;
 }
 
-.to-bestiary {
+.to-events {
   align-self: flex-start;
 }
 /* a link that looks like a button: no link colour or underline over it */
-.to-bestiary:hover,
-.to-bestiary:focus {
+.to-events:hover,
+.to-events:focus {
   color: var(--color-button-text);
   text-decoration: none;
 }

@@ -19,6 +19,8 @@ export interface TabItem<T extends string> {
   kind?: 'stmr' | 'small';
   /** a number written small after the title */
   count?: number;
+  /** a check before the title, with what it means */
+  done?: string;
 }
 
 /** The tabs of the filter groups, each title followed by the number of filters that are on in that group. */

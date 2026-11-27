@@ -8,7 +8,7 @@ import {
 const isBuilder = (route: ActivatedRouteSnapshot): boolean => route.routeConfig?.path === 'builder';
 
 /**
- * The Builder stays alive while the user looks for an enemy in the Bestiary, so that the build is still there on the way
+ * The Builder stays alive while the user looks for an enemy in the Events page, so that the build is still there on the way
  * back. Any other page ends it: the next visit starts a new one, as always.
  */
 export class KeepBuilder extends BaseRouteReuseStrategy {
@@ -26,7 +26,7 @@ export class KeepBuilder extends BaseRouteReuseStrategy {
   /** The router asks this for every page it opens, after the page left is stored. */
   override shouldAttach(route: ActivatedRouteSnapshot): boolean {
     if (isBuilder(route)) return !!this.kept;
-    if (this.kept && route.routeConfig?.path !== 'bestiary') {
+    if (this.kept && route.routeConfig?.path !== 'events') {
       destroyDetachedRouteHandle(this.kept);
       this.kept = null;
     }

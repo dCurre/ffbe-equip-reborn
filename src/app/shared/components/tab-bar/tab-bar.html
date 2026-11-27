@@ -15,6 +15,9 @@
         } @else if (tab.image) {
           <img [src]="tab.image" alt="" />
         } @else {
+          @if (tab.done) {
+            <app-icon class="done" name="check" role="img" [title]="tab.done" [attr.aria-label]="tab.done" />
+          }
           {{ tab.title }}
           @if (tab.count !== undefined) {
             <span class="count">({{ tab.count }})</span>

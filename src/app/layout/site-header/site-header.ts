@@ -35,7 +35,7 @@ const MENU = [
   { path: '/builder', label: STRINGS.siteHeader.unitBuilder },
   { path: '/encyclopedia', label: STRINGS.siteHeader.encyclopedia },
   { path: '/unitSearch', label: STRINGS.siteHeader.unitSearch },
-  { path: '/bestiary', label: STRINGS.siteHeader.bestiary },
+  { path: '/events', label: STRINGS.siteHeader.events },
   { path: '/inventory', label: STRINGS.siteHeader.myInventory },
   { path: '/units', label: STRINGS.siteHeader.myUnits },
   { path: '/espers', label: STRINGS.siteHeader.myEspers },

@@ -12,6 +12,7 @@ interface SaveUnit {
 /** What the site reads of a full save: the personal data (`identity`) and the rest are never read. */
 export interface GameSave {
   roster: SaveUnit[];
+  progress?: { cleared_missions?: unknown };
   beasts?: { esper_id: string; rarity: number; level: number; board: string }[];
   vision_cards?: { vc_id: string; level: number }[];
   inventory?: { equipment?: { item_id: number; count: number }[]; items?: { item_type: number; item_id: number; count: number }[] };
@@ -46,6 +47,12 @@ export const consumablesFromSaveFile = (save: GameSave): { itemId: string; itemQ
 /** The Espers of the save in the format of the Esper file (the board is the same hex string). */
 export const espersFromSave = (save: GameSave): ImportedEsper[] =>
   (save.beasts ?? []).map((e) => ({ id: e.esper_id, rarity: e.rarity, level: e.level, board: e.board }));
+
+/** The ids of the stages the save has cleared (all of them: the Events page marks the ones it lists). */
+export const clearedFromSave = (save: GameSave): number[] => {
+  const cleared = save.progress?.cleared_missions;
+  return (Array.isArray(cleared) ? cleared : []).map(Number).filter((id) => Number.isInteger(id) && id > 0);
+};
 
 /**
  * The equipment, materia and vision cards of the save in the format of the inventory file (what is equipped on a unit is

@@ -36,7 +36,17 @@ English: `F_TEXT_MONSTER_NAME` of packs `content-003` and `kira-event` (key `MST
 - Plan used: curated entries win (they follow the wiki), the Espers 100s and Brina MAG come from the row, the rest of the game rows are added with their event.
 
 ## Names in other languages
-No page shows `monstersAll*.json` since the Builder sends to the Bestiary: `tools/bestiary` reads `monstersAll.json` (absorbs, the permanent trials). The translations are unused. `public/ALL/monstersAll_<fr|de|es|ko|zh>.json`: one array per language, same order and length as `monstersAll.json`, `""` where the English name stays. Built from `aEnigmatic/ffbe-gl-strings` `MST_MONSTER_NAME.json` (value order en, zh, ko, fr, de, es, id) looked up by the part row id of each entry, then by its 7-digit group id; control characters are stripped. Keep the id of each entry while building (a curated boss uses the id of its matched game row; the ones without a row, e.g. Antenolla A-D, stay English). The page loads the file of its language with `StaticData.get('monstersAll', true)`.
+No page shows `monstersAll*.json` since the Builder sends to the Events page: `tools/events` reads `monstersAll.json` (absorbs, the permanent trials). The translations are unused. `public/ALL/monstersAll_<fr|de|es|ko|zh>.json`: one array per language, same order and length as `monstersAll.json`, `""` where the English name stays. Built from `aEnigmatic/ffbe-gl-strings` `MST_MONSTER_NAME.json` (value order en, zh, ko, fr, de, es, id) looked up by the part row id of each entry, then by its 7-digit group id; control characters are stripped. Keep the id of each entry while building (a curated boss uses the id of its matched game row; the ones without a row, e.g. Antenolla A-D, stay English). The page loads the file of its language with `StaticData.get('monstersAll', true)`.
 
 ## Fields of `monstersAll.json` today (edited by hand, no generator in the repo)
 Besides name, stats, `races`, `hp`/`mp`, `category` (curated rows): each row has `locations` (one object per dungeon where the boss appears: `tab`, `trial`, `dungeon`, `dungeonPage`, `release`; the Builder list shows the boss in each) and `traits` (absorb, resist, weak, statusResist, break, immune, vulnerable, notes, ready for icons). The raw `resist`, `absorb`, `breakability` and `special` fields no longer exist in the file.
+
+## Battles of a mission
+
+`F_MISSION_PHASE_MST` col 1 = battle number, col 2 = `2` for a battle (else a script), col 8 = pool. The Japan split is used only when its number of battles equals `wave_count` of aEnigmatic `missions.json` (Global); a few datamine gists list "1. Wave" with monster ids (Global).
+
+Other sources, checked 2026-11:
+- Elvlin `event_battles.json`: mission -> mission of the Japan tables with the same name (`basis`). Used for stages with no monster when the battle count matches (147). `shared_item_world_floor` is only an assumption of Elvlin: not used (143 stages).
+- Elvlin `event_encounters.json`: `preserved_formation_source` = order kept from game files, used. Without it the order of the rebuilt battles is made up by Elvlin (wiki rosters): not used.
+- Wiki `Battle Infobox`: `battle` = count, `boss` = the last battle, `monster` = pool of the earlier ones; no order among them (only 17 pages have "Wave N" headings).
+- Nothing more about battles: Elvlin `responses.json` / `mission_battle_rows.json` (a few missions), TBMonkey tables (same as Elvlin).

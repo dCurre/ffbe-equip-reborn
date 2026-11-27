@@ -110,8 +110,8 @@ export const STRINGS = {
     itemEncyclopedia: 'Item Encyclopedia',
     ffbeEquipRebornUnit: 'FFBE Equip Reborn - Unit Search',
     unitSearch: PAGES.unitSearch,
-    ffbeEquipRebornBestiary: 'FFBE Equip Reborn : Bestiary',
-    bestiary: 'Bestiary',
+    ffbeEquipRebornEvents: 'FFBE Equip Reborn : Events',
+    events: 'Events',
     ffbeEquipRebornInventory: 'FFBE Equip Reborn : Inventory',
     inventory: PAGES.inventory,
     ffbeEquipRebornUnits: 'FFBE Equip Reborn : Units',
@@ -127,7 +127,7 @@ export const STRINGS = {
     ffbeEquipRebornPrivacy: 'FFBE Equip Reborn - Privacy Policy',
     pageNotFound: 'Page not found',
   },
-  bestiary: {
+  events: {
     searchEvent: 'Search an event, a stage or a monster',
     useWithoutStats: 'Use in Builder: some stats are not published, they stay empty',
     useInBuilder: 'Use in Builder',
@@ -137,11 +137,14 @@ export const STRINGS = {
     monsters: 'Monsters',
     allTypes: 'All types',
     allSeries: 'All series',
-    events: 'events',
     name: 'Event',
     date: 'Release (Global)',
     type: 'Type',
     missions: 'Stages',
+    quests: 'Quests',
+    completed: 'Completed',
+    errorWhileLoadingCompleted: 'Error while loading your completed stages',
+    reruns: 'Released again',
     dungeon: 'Dungeon',
     mission: 'Stage',
     loadingEvents: 'Loading the events…',
@@ -156,6 +159,12 @@ export const STRINGS = {
     loadingMonsters: 'Loading the monsters…',
     noMonsters: 'No monster is known for this stage.',
     monster: 'Monster',
+    battle: 'Battle',
+    of: 'of',
+    battles: 'Battles',
+    fromThese: 'from these',
+    battleNotKnown: 'Battle not known',
+    battlesNotSplit: 'battles in this stage: which monsters are in each one is not known.',
     races: 'Races',
     resistances: 'Resistances',
     sources: {
@@ -481,7 +490,7 @@ export const STRINGS = {
       'The equipment, materia and vision cards you own: for My inventory and the "Only owned" builds.',
     fullSave: 'Full save',
     saveOfFfbeOffline:
-      'Save of FFBE Offline (the full export of the game): the unit collection, the consumables, the inventory and the Espers are read from it.',
+      'Save of FFBE Offline (the full export of the game): the unit collection, the consumables, the inventory, the Espers and the completed stages are read from it.',
     espers: PAGES.espers,
     theEspersYouOwn: 'The Espers you own, with their rarity, level and board.',
     theFileIsEmpty: 'The file is empty: there is nothing to import',
@@ -493,6 +502,8 @@ export const STRINGS = {
     savingYourConsumables: 'Saving your consumables',
     savingYourInventory: 'Saving your inventory',
     savingYourEspers: 'Saving your Espers',
+    completedStages: 'Completed stages',
+    savingYourCompletedStages: 'Saving your completed stages',
   },
   driveErrors: {
     yourGoogleSessionHas:
@@ -545,7 +556,7 @@ export const STRINGS = {
     buff: COMMON.buff,
     imperil: 'imperil',
     monster: COMMON.monster,
-    chooseInTheBestiary: 'Choose in the Bestiary',
+    chooseAnEnemyInEvents: 'Choose an enemy in Events',
     youEnteredNegativeBreaks:
       'You entered negative breaks or imperils. Break and imperil usually are positive numbers. You are currently buffing the enemy',
   },
@@ -615,13 +626,15 @@ export const STRINGS = {
     level: COMMON.level,
     sp: COMMON.sp,
     limitBreak: 'Limit Break',
-    limitBreakTitle: 'Killers of the Galvanite nodes (Stat Break): up to 50% a race, on top of the 300% of the other killers',
+    limitBreakTitle:
+      'Killers of the Galvanite nodes (Stat Break): up to 50% a race, on top of the 300% of the other killers',
   },
   esperTable: {
     importEspers: 'Import Espers',
     youDonTOwn: "You don't own any espers yet...",
     limitBreak: 'Limit Break',
-    limitBreakTitle: 'Killers of the Galvanite nodes (Stat Break): up to 50% a race, on top of the 300% of the other killers',
+    limitBreakTitle:
+      'Killers of the Galvanite nodes (Stat Break): up to 50% a race, on top of the 300% of the other killers',
   },
   esperTabs: {
     statsOnAllEspers: 'Stats on all espers',
@@ -953,7 +966,7 @@ export const STRINGS = {
     linkCopiedToYour: 'Link copied to your clipboard.',
   },
   siteHeader: {
-    bestiary: 'Bestiary',
+    events: 'Events',
     language: 'Language',
     server: 'Server',
     inventory: PAGES.inventory,

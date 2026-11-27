@@ -6,7 +6,7 @@ const STATS = ['atk', 'def', 'mag', 'spr'] as const;
 /** The buffs of the enemy, in percent. */
 export type EnemyBuffs = Partial<Record<(typeof STATS)[number], number>>;
 
-/** A monster as the Builder takes it from the Bestiary. */
+/** A monster as the Builder takes it from the Events page. */
 export interface Enemy {
   name: string;
   atk?: number | null;

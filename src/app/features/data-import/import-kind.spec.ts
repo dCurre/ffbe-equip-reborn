@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { detectImportKind } from './import-kind';
-import { consumablesFromSaveFile, espersFromSave, itemsFromSave, unitsFromSave } from './save-import';
+import {
+  clearedFromSave,
+  consumablesFromSaveFile,
+  espersFromSave,
+  itemsFromSave,
+  unitsFromSave,
+} from './save-import';
 
 describe('detectImportKind', () => {
   it('knows each kind of file of the game', () => {
@@ -39,6 +45,8 @@ describe('detectImportKind', () => {
       { id: '100000501', count: 1, level: 3 },
     ]);
     expect(consumablesFromSaveFile(save)).toEqual([{ itemId: '290050100', itemQty: '142' }]);
+    expect(clearedFromSave(save)).toEqual([]);
+    expect(clearedFromSave({ ...save, progress: { cleared_missions: ['8991101', 'x', null] } })).toEqual([8991101]);
   });
 
   it('tells an empty list and what is not a list of the game', () => {

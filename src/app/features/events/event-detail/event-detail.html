@@ -1,0 +1,59 @@
+<div class="head">
+  @if (dungeon()?.banner ?? event().banner; as banner) {
+    <img class="banner" [src]="'img/events/' + banner" alt="" width="160" height="60" />
+  }
+  <div class="about">
+    @if (dungeon(); as current) {
+      @if (dungeonTabs().length > 1) {
+        <strong>{{ current.name }}</strong>
+        <span class="facts">
+          @if (current.date) {
+            <span>{{ current.date }}</span>
+          }
+          @if (current.page) {
+            <app-wiki-link [name]="t.openWiki" [page]="current.page" />
+          }
+        </span>
+      }
+    }
+    @if (dungeonTabs().length <= 1 && event().page !== '') {
+      <app-wiki-link [name]="t.openWiki" [page]="event().page ?? event().name" />
+    }
+    @if (event().reruns; as dates) {
+      <span class="facts">{{ t.reruns }}: {{ dates.join(', ') }}</span>
+    }
+  </div>
+  <button app-button variant="flat" type="button" class="close" [attr.aria-label]="t.close" (click)="closed.emit()">
+    <app-icon name="remove" />
+  </button>
+</div>
+
+@if (dungeon(); as current) {
+  @if (dungeonTabs().length > 1) {
+    <div class="bar">
+      <app-tab-bar
+        flat
+        scrollable
+        [tabs]="dungeonTabs()"
+        [active]="'' + current.missions[0].id"
+        (selected)="open($event)"
+      />
+    </div>
+  }
+
+  <div class="bar">
+    <app-tab-bar flat scrollable [tabs]="stageTabs()" [active]="'' + mission()?.id" (selected)="open($event)" />
+  </div>
+
+  @if (mission(); as stage) {
+    @if (monsters.error()) {
+      <p class="message">{{ t.errorWhileLoadingMonsters }}</p>
+    } @else if (monsters.hasValue()) {
+      <app-mission-monsters [data]="monsters.value()" [mission]="stage.id" />
+    } @else {
+      <p class="message">{{ t.loadingMonsters }}</p>
+    }
+  }
+} @else {
+  <p class="message">{{ t.noDungeon }}</p>
+}

@@ -25,7 +25,14 @@ import { Enchantments, ImportedItem, importInventory } from '../inventory/invent
 import { consumablesFromFile, ImportedUnit, importUnits } from '../units/unit-import';
 import { GameUnit, TrustItem } from '../units/unit-model';
 import { detectImportKind, ImportKind } from './import-kind';
-import { consumablesFromSaveFile, espersFromSave, GameSave, itemsFromSave, unitsFromSave } from './save-import';
+import {
+  clearedFromSave,
+  consumablesFromSaveFile,
+  espersFromSave,
+  GameSave,
+  itemsFromSave,
+  unitsFromSave,
+} from './save-import';
 import { STRINGS } from '../../strings/en';
 
 interface KindInfo {
@@ -64,7 +71,7 @@ const KINDS: Record<ImportKind, KindInfo> = {
     heading: STRINGS.dataImport.fullSave,
     text: STRINGS.dataImport.saveOfFfbeOffline,
     warning:
-      'It will override your unit collection, consumables, inventory and Espers (if the save has any) on FFBE Equip Reborn',
+      'It will override your unit collection, consumables, inventory, Espers and completed stages (if the save has any) on FFBE Equip Reborn',
   },
   espers: {
     heading: STRINGS.dataImport.espers,
@@ -124,6 +131,7 @@ export class DataImport {
   private pendingConsumables: Record<string, number> | null = null;
   private pendingInventory: ReturnType<typeof importInventory>['inventory'] | null = null;
   private pendingEspers: ImportedEsper[] | null = null;
+  private pendingCleared: number[] | null = null;
 
   private async loadGameData(kind: ImportKind): Promise<void> {
     if ((kind === 'units' || kind === 'save') && !this.units) {
@@ -174,6 +182,7 @@ export class DataImport {
   protected cancel(): void {
     this.kind.set(null);
     this.pendingUnits = this.pendingConsumables = this.pendingInventory = this.pendingEspers = null;
+    this.pendingCleared = null;
     this.recap.set([]);
     this.done.set(false);
   }
@@ -220,6 +229,9 @@ export class DataImport {
         const consumables = consumablesFromSaveFile(save);
         this.pendingConsumables = consumablesFromFile(consumables);
         recap.push({ label: STRINGS.dataImport.consumables, found: consumables.length, ignored: 0, source: 'inventory' });
+        this.pendingCleared = clearedFromSave(save);
+        const stages = this.pendingCleared.length;
+        recap.push({ label: STRINGS.dataImport.completedStages, found: stages, ignored: 0, source: 'progress' });
         break;
       }
       case 'consumables':
@@ -278,6 +290,13 @@ export class DataImport {
       steps.push({
         text: STRINGS.dataImport.savingYourEspers,
         work: () => this.userData.write('espers', importEspers(pendingEspers, this.espers, this.boards)),
+      });
+    }
+    const cleared = this.pendingCleared;
+    if (all && cleared?.length) {
+      steps.push({
+        text: STRINGS.dataImport.savingYourCompletedStages,
+        work: () => this.userData.write('clearedMissions', cleared),
       });
     }
     return steps;

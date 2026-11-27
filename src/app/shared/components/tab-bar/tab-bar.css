@@ -94,6 +94,11 @@ li:focus-visible {
   outline-offset: -2px;
 }
 
+.done {
+  margin-right: 3px;
+  color: var(--color-buff);
+}
+
 .count {
   margin-left: 3px;
   font-size: 0.85em;

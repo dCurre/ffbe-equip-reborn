@@ -15,5 +15,5 @@ public/ALL/unit/
 /dist
 /.angular/cache
 
-# Downloads of the Bestiary scripts (tools/bestiary)
+# Downloads of the Events scripts (tools/events)
 /.cache

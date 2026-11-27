@@ -17,12 +17,12 @@ class Build implements OnDestroy {
 }
 
 describe('KeepBuilder', () => {
-  it('keeps the Builder through the Bestiary and ends it on any other page', async () => {
+  it('keeps the Builder through the Events page and ends it on any other page', async () => {
     TestBed.configureTestingModule({
       providers: [
         provideRouter([
           { path: 'builder', component: Build },
-          { path: 'bestiary', component: Page },
+          { path: 'events', component: Page },
           { path: 'units', component: Page },
         ]),
         { provide: RouteReuseStrategy, useClass: KeepBuilder },
@@ -31,12 +31,12 @@ describe('KeepBuilder', () => {
     const harness = await RouterTestingHarness.create();
     const build = await harness.navigateByUrl('/builder', Build);
 
-    await harness.navigateByUrl('/bestiary');
-    await harness.navigateByUrl('/bestiary?event=a');
+    await harness.navigateByUrl('/events');
+    await harness.navigateByUrl('/events?event=a');
     expect(await harness.navigateByUrl('/builder', Build)).toBe(build);
     expect(ended).toBe(0);
 
-    await harness.navigateByUrl('/bestiary');
+    await harness.navigateByUrl('/events');
     await harness.navigateByUrl('/units');
     expect(ended).toBe(1);
     const next = await harness.navigateByUrl('/builder', Build);
@@ -44,7 +44,7 @@ describe('KeepBuilder', () => {
 
     await harness.navigateByUrl('/units');
     expect(ended).toBe(2);
-    await harness.navigateByUrl('/bestiary');
+    await harness.navigateByUrl('/events');
     expect(await harness.navigateByUrl('/builder', Build)).not.toBe(next);
   });
 });

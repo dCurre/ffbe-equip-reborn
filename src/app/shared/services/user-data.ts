@@ -3,7 +3,7 @@ import { GoogleDrive } from './google-drive';
 import { ServerContext } from './server-context';
 
 /** The files of the user's data in the Drive app folder; the file name is `<table>_<server>.json`, as on the old site. */
-export type UserTable = 'itemInventory' | 'units' | 'espers' | 'consumables' | 'savedTeams' | 'settings';
+export type UserTable = 'itemInventory' | 'units' | 'espers' | 'consumables' | 'savedTeams' | 'settings' | 'clearedMissions';
 
 /** The user's inventory, units, espers and consumables, one set per game server. */
 @Injectable({ providedIn: 'root' })

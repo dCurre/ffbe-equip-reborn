@@ -299,14 +299,14 @@ export class Builder {
 
   constructor() {
     this.start();
-    // the Builder stays alive behind the Bestiary (`KeepBuilder`): a monster chosen there arrives when it is shown again
+    // the Builder stays alive behind the Events page (`KeepBuilder`): a monster chosen there arrives when it is shown again
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
         takeUntilDestroyed(),
       )
       .subscribe(() => {
-        if (this.ready()) this.useBestiaryMonster();
+        if (this.ready()) this.useChosenMonster();
       });
   }
 
@@ -340,11 +340,11 @@ export class Builder {
     this.ready.set(true);
     await this.sharing.loadFromFragment(() => this.addTab()?.sharing ?? null);
     this.active.set(0);
-    this.useBestiaryMonster();
+    this.useChosenMonster();
   }
 
-  /** A monster chosen in the Bestiary arrives with the navigation: it becomes the enemy of the open tab. */
-  private useBestiaryMonster(): void {
+  /** A monster chosen in the Events page arrives with the navigation: it becomes the enemy of the open tab. */
+  private useChosenMonster(): void {
     const enemy = history.state?.enemy as (Enemy & { source: string; buffs?: EnemyBuffs }) | undefined;
     if (!enemy) return;
     // used once: coming back to this page of the history must not undo what was changed since
