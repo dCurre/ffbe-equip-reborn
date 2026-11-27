@@ -2,6 +2,7 @@
 // usage: node zipget.cjs <packId> "<entry path in the zip>" <output file> [list]
 //   node zipget.cjs kira-event static/text_decoded/F_TEXT_MONSTER_NAME.ndjson out.ndjson
 //   node zipget.cjs data-001 x x list      -> prints every entry name and size of the pack
+//   node zipget.cjs data-001 @files.json x  -> many files, reading the directory once: [{ "entry": ..., "out": ... }]
 // Notes: github needs an explicit range (`-r from-to`); a suffix range gives 501. Works with zip64 (central directory only).
 const { execFileSync } = require('child_process');
 const fs = require('fs');
@@ -25,14 +26,19 @@ if (loc >= 0 && (cdOff === 0xffffffff || cdSize === 0xffffffff)) {
   cdOff = Number(tail.readBigUInt64LE(zoff + 48));
 }
 const cd = range(pack.url, cdOff, cdOff + cdSize - 1);
-let o = 0, found = null;
+// entry path -> output file
+const wanted = new Map(
+  entry.startsWith('@') ? JSON.parse(fs.readFileSync(entry.slice(1), 'utf8')).map((f) => [f.entry, f.out]) : [[entry, out]],
+);
+let o = 0;
+const found = [];
 while (o + 46 <= cd.length && cd.readUInt32LE(o) === 0x02014b50) {
   const n = cd.readUInt16LE(o + 28), m = cd.readUInt16LE(o + 30), k = cd.readUInt16LE(o + 32);
   const name = cd.slice(o + 46, o + 46 + n).toString('utf8');
   let csize = cd.readUInt32LE(o + 20), offset = cd.readUInt32LE(o + 42);
   const usize = cd.readUInt32LE(o + 24);
   if (mode === 'list') console.log(name, usize);
-  else if (name === entry) {
+  else if (wanted.has(name)) {
     const extra = cd.slice(o + 46 + n, o + 46 + n + m);
     if (csize === 0xffffffff || offset === 0xffffffff || usize === 0xffffffff) {
       for (let q = 0; q + 4 <= extra.length; q += 4 + extra.readUInt16LE(q + 2)) {
@@ -43,15 +49,17 @@ while (o + 46 <= cd.length && cd.readUInt32LE(o) === 0x02014b50) {
         if (offset === 0xffffffff) offset = Number(extra.readBigUInt64LE(p));
       }
     }
-    found = { method: cd.readUInt16LE(o + 10), csize, offset };
-    break;
+    found.push({ out: wanted.get(name), method: cd.readUInt16LE(o + 10), csize, offset });
+    if (found.length === wanted.size) break;
   }
   o += 46 + n + m + k;
 }
 if (mode === 'list') process.exit(0);
-if (!found) { console.log('entry not found'); process.exit(1); }
-const head = range(pack.url, found.offset, found.offset + 29);
-const start = found.offset + 30 + head.readUInt16LE(26) + head.readUInt16LE(28);
-const raw = range(pack.url, start, start + found.csize - 1);
-fs.writeFileSync(out, found.method === 8 ? zlib.inflateRawSync(raw) : raw);
-console.log('saved', out, fs.statSync(out).size, 'bytes (compressed', found.csize + ')');
+if (found.length < wanted.size) { console.log(`entry not found (${wanted.size - found.length})`); process.exit(1); }
+for (const file of found) {
+  const head = range(pack.url, file.offset, file.offset + 29);
+  const start = file.offset + 30 + head.readUInt16LE(26) + head.readUInt16LE(28);
+  const raw = range(pack.url, start, start + file.csize - 1);
+  fs.writeFileSync(file.out, file.method === 8 ? zlib.inflateRawSync(raw) : raw);
+  console.log('saved', file.out, fs.statSync(file.out).size, 'bytes (compressed', file.csize + ')');
+}

@@ -1,7 +1,9 @@
 import { afterNextRender, Component, computed, inject, Injector, signal, viewChild } from '@angular/core';
 import { DataStorage } from '../../../core/builder/data-storage';
 import { getEsperItem } from '../../../core/builder/item-conditions';
-import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs';
 import { LinkStore } from '../../shared/services/link-store';
 import { buildSearchString, Item } from '../../game/helpers/item';
 import { cardsAsItems, VisionCard } from '../../game/helpers/vision-cards';
@@ -25,6 +27,7 @@ import { ShareLinkModal } from '../../shared/components/share-link-modal/share-l
 import { TextExportModal } from '../../shared/components/text-export-modal/text-export-modal';
 import { ImageExportModal } from './image-export-modal/image-export-modal';
 import { ItemPicker } from './item-picker/item-picker';
+import { Enemy, EnemyBuffs, setEnemy } from './shared/enemy';
 import { OptimizerRunner, RunCallbacks } from './shared/optimizer-runner';
 import { ParamChallenge } from './shared/param-challenge';
 import { ChallengePanel } from './challenge-panel/challenge-panel';
@@ -296,6 +299,15 @@ export class Builder {
 
   constructor() {
     this.start();
+    // the Builder stays alive behind the Bestiary (`KeepBuilder`): a monster chosen there arrives when it is shown again
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(),
+      )
+      .subscribe(() => {
+        if (this.ready()) this.useBestiaryMonster();
+      });
   }
 
   private async start(): Promise<void> {
@@ -328,6 +340,22 @@ export class Builder {
     this.ready.set(true);
     await this.sharing.loadFromFragment(() => this.addTab()?.sharing ?? null);
     this.active.set(0);
+    this.useBestiaryMonster();
+  }
+
+  /** A monster chosen in the Bestiary arrives with the navigation: it becomes the enemy of the open tab. */
+  private useBestiaryMonster(): void {
+    const enemy = history.state?.enemy as (Enemy & { source: string; buffs?: EnemyBuffs }) | undefined;
+    if (!enemy) return;
+    // used once: coming back to this page of the history must not undo what was changed since
+    history.replaceState({ ...history.state, enemy: undefined }, '');
+    // the wiki does not say which stats can be broken
+    setEnemy(this.s, enemy, enemy.buffs ?? {}, enemy.source === 'wiki' || enemy.source === 'wikiResists');
+    this.settingsTab.set('monster');
+    const set = `${STRINGS.builder.enemySet} ${enemy.name}`;
+    if ([enemy.atk, enemy.def, enemy.mag, enemy.spr].includes(null))
+      this.toast.show(`${set}. ${STRINGS.builder.statsNotPublished}`, 'warn');
+    else this.toast.show(set, 'success');
   }
 
   /** With owned Espers saved in the Esper page, those are the ones the builder uses instead of the default ones. */

@@ -11,7 +11,7 @@ import { Theme } from '../../shared/services/theme';
 import { STRINGS } from '../../strings/en';
 
 export type BannerName =
-  'Sakura' | 'Lasswell' | 'Jake' | 'Rain' | 'Nichol' | 'Lid' | 'Fina' | 'MogChocobo' | 'Charlotte';
+  'Sakura' | 'Lasswell' | 'Jake' | 'Rain' | 'Nichol' | 'Lid' | 'Fina' | 'MogChocobo' | 'Charlotte' | 'Sol';
 
 /** Left padding of the title (px) so it clears the character picture: wide screens, up to 991px, up to 768px. */
 const BANNER_PADDING: Record<BannerName, [number, number, number]> = {
@@ -24,6 +24,7 @@ const BANNER_PADDING: Record<BannerName, [number, number, number]> = {
   Fina: [330, 270, 240],
   MogChocobo: [310, 270, 240],
   Charlotte: [330, 270, 240],
+  Sol: [250, 210, 185],
 };
 
 /** Vertical position of each flag in the `img/icons/languages.png` sprite (16px tall flags). */
@@ -34,6 +35,7 @@ const MENU = [
   { path: '/builder', label: STRINGS.siteHeader.unitBuilder },
   { path: '/encyclopedia', label: STRINGS.siteHeader.encyclopedia },
   { path: '/unitSearch', label: STRINGS.siteHeader.unitSearch },
+  { path: '/bestiary', label: STRINGS.siteHeader.bestiary },
   { path: '/inventory', label: STRINGS.siteHeader.myInventory },
   { path: '/units', label: STRINGS.siteHeader.myUnits },
   { path: '/espers', label: STRINGS.siteHeader.myEspers },

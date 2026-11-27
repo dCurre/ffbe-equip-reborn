@@ -1,0 +1,85 @@
+@if (monsters().length) {
+  <div class="items" role="table">
+    <div class="thead" role="rowgroup">
+      <div class="tr" role="row">
+        <div class="td th" role="columnheader">{{ t.monster }}</div>
+        <div class="td th number" role="columnheader">HP</div>
+        @for (stat of stats; track stat) {
+          <div class="td th number" role="columnheader">{{ stat.toUpperCase() }}</div>
+        }
+        <div class="td th" role="columnheader">{{ t.races }}</div>
+        <div class="td th" role="columnheader">{{ t.resistances }}</div>
+      </div>
+    </div>
+    <div class="tbody" role="rowgroup">
+      @for (monster of monsters(); track monster.key) {
+        <div class="tr" role="row">
+          <div class="td" role="cell">
+            <div class="monster">
+              @if (monster.icon) {
+                <img
+                  class="portrait"
+                  [src]="'img/monsters/' + monster.icon + '.webp'"
+                  alt=""
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                  decoding="async"
+                />
+              } @else {
+                <span class="portrait none"><app-icon name="monster" size="24" /></span>
+              }
+              <div class="who">
+                <span class="name">{{ monster.name }}</span>
+                <span class="source" [title]="t.sources[monster.source]">
+                  @if (monster.source === 'wikiResists' || monster.source === 'unknown') {
+                    <app-icon name="alert" />
+                  }
+                  {{ t.shortSources[monster.source] }}
+                </span>
+              </div>
+              @if (monster.enemy) {
+                <a
+                  app-button
+                  small
+                  class="to-builder"
+                  routerLink="/builder"
+                  [queryParams]="serverContext.linkParams()"
+                  [state]="{ enemy: monster.enemy }"
+                  [title]="monster.statsMissing ? t.useWithoutStats : t.useInBuilder"
+                  [attr.aria-label]="(monster.statsMissing ? t.useWithoutStats : t.useInBuilder) + ': ' + monster.name"
+                >
+                  <app-icon name="monster" /> {{ t.builder }}
+                </a>
+              }
+            </div>
+          </div>
+          <div class="td number" role="cell" data-label="HP">{{ monster.health }}</div>
+          @for (value of monster.values; track value.stat) {
+            <div class="td number" role="cell" [attr.data-label]="value.stat.toUpperCase()">
+              {{ value.base }}
+              @if (value.buff) {
+                <div class="buff" [title]="t.passiveBuff + (value.total ? ': ' + value.total : '')">
+                  <app-icon name="arrow-up" /> {{ value.buff }}%
+                </div>
+                @if (value.total) {
+                  <div class="total">= {{ value.total }}</div>
+                }
+              }
+            </div>
+          }
+          <div class="td" role="cell">
+            <div class="races">
+              @for (race of monster.races; track race) {
+                <app-icon [name]="'killer-physical-' + race" [title]="race" size="20" />
+              }
+            </div>
+          </div>
+          <app-monster-traits compact role="cell" [traits]="monster.traits" />
+        </div>
+      }
+    </div>
+  </div>
+} @else {
+  <p class="empty">{{ t.noMonsters }}</p>
+}

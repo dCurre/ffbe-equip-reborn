@@ -1,6 +1,14 @@
-<ul class="tabs">
-  @for (tab of tabs(); track tab.key) {
-    <li [class.active]="tab.key === active()" [title]="tab.title" (click)="selected.emit(tab.key)">
+<ul class="tabs" role="tablist">
+  @for (tab of tabs(); track tab.key; let index = $index) {
+    <li
+      role="tab"
+      [attr.tabindex]="tab.key === focusable() ? 0 : -1"
+      [attr.aria-selected]="tab.key === active()"
+      [class.active]="tab.key === active()"
+      [title]="tab.title"
+      (click)="selected.emit(tab.key)"
+      (keydown)="onKey($event, index)"
+    >
       <a [class]="tab.kind ? tab.kind + '-tab' : ''">
         @if (tab.icon) {
           <app-icon [name]="'tab-' + tab.icon" size="50" />
@@ -8,6 +16,9 @@
           <img [src]="tab.image" alt="" />
         } @else {
           {{ tab.title }}
+          @if (tab.count !== undefined) {
+            <span class="count">({{ tab.count }})</span>
+          }
         }
       </a>
     </li>

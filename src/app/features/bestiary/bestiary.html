@@ -1,0 +1,6 @@
+<app-page-content>
+  @if (failed()) {
+    <app-alert kind="danger"><app-icon name="alert" /> {{ t.errorWhileLoading }}</app-alert>
+  }
+  <app-event-table [events]="events()" [loading]="loading()" [opened]="opened()" [stage]="stage()" />
+</app-page-content>

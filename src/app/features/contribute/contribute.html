@@ -1,15 +1,26 @@
 <app-page-content>
   <app-page-column [half]="true">
-    <app-panel [heading]="t.helpImproveFfbeEquip">
+    <app-panel>
+      <h2 panelHeading>{{ t.helpImproveFfbeEquip }}</h2>
       <p>{{ t.foundAProblemOr }}</p>
-      <button app-button (click)="openIssue('bug_report.yml')"><app-icon name="alert" /> {{ t.reportABug }}</button>
-      <button app-button (click)="openIssue('suggestion.yml')">
-        <app-icon name="thumbs-up" /> {{ t.suggestAnImprovement }}
-      </button>
+      <div class="actions">
+        <a app-button [href]="bugUrl" target="_blank" rel="noreferrer">
+          <app-icon name="alert" /> {{ t.reportABug }} <app-icon name="new-window" />
+        </a>
+        <a app-button [href]="suggestionUrl" target="_blank" rel="noreferrer">
+          <app-icon name="thumbs-up" /> {{ t.suggestAnImprovement }} <app-icon name="new-window" />
+        </a>
+      </div>
     </app-panel>
-    <app-panel [heading]="t.supportTheSite">
+    <app-panel>
+      <h2 panelHeading>{{ t.supportTheSite }}</h2>
       <p>{{ t.theSiteIsFree }}</p>
-      <a app-button [href]="koFiUrl" target="_blank" rel="noreferrer"><app-icon name="kofi" height="20" /> {{ t.supportOnKoFi }}</a>
+      <div class="actions">
+        <a app-button [href]="koFiUrl" target="_blank" rel="noreferrer">
+          <!-- decorative: the text beside it says Ko-fi -->
+          <app-icon name="kofi" height="20" title="" /> {{ t.supportOnKoFi }} <app-icon name="new-window" />
+        </a>
+      </div>
     </app-panel>
     <app-site-footer />
   </app-page-column>

@@ -48,6 +48,12 @@ export const routes: Routes = [
     data: { header: STRINGS.appRoutes.unitSearch, banner: 'Lasswell' },
   },
   {
+    path: 'bestiary',
+    loadComponent: () => import('./features/bestiary/bestiary').then((m) => m.Bestiary),
+    title: STRINGS.appRoutes.ffbeEquipRebornBestiary,
+    data: { header: STRINGS.appRoutes.bestiary, banner: 'Sol' },
+  },
+  {
     path: 'inventory',
     loadComponent: () => import('./features/inventory/inventory').then((m) => m.InventoryPage),
     title: STRINGS.appRoutes.ffbeEquipRebornInventory,

@@ -15,6 +15,8 @@
   --modal-padding: 15px;
   --modal-backdrop-opacity: 0.5;
   --color-accent: #2a9fd6;
+  /* a value raised by a passive */
+  --color-buff: #1b7a1b;
   --color-scrollbar-track: #ffffff;
   --color-scrollbar-thumb: #2a9fd6;
 
@@ -71,6 +73,7 @@
   --color-text: #dddddd;
   --color-link: #2a9fd6;
   --color-link-hover: #2a9fd6;
+  --color-buff: #5fd35f;
   --color-border: #464545;
   --color-panel: #303030;
   --color-panel-heading: #464545;
@@ -227,6 +230,23 @@ input[type='checkbox']:checked {
 .items.results {
   max-height: 55vh;
   overflow-y: auto;
+}
+/* the lists with a header (monsters, events): it stays on top while the rows scroll */
+.items .thead {
+  display: table-header-group;
+}
+.items .th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  font-weight: bold;
+  background-color: var(--color-menu-background);
+}
+/* the rows are wider than a phone: the list scrolls both ways (the cells make their own table) */
+.items.results.headed {
+  display: block;
+  max-width: 100%;
+  overflow: auto;
 }
 .items .tr.selectable {
   cursor: pointer;

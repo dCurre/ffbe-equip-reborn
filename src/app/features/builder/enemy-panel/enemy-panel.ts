@@ -1,4 +1,5 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { elementList } from '../../../../core/constants/base-lists';
 import { Choice, ChoiceGroup } from '../../../shared/components/choice-group/choice-group';
 import { Icon } from '../../../shared/components/icon/icon';
@@ -8,10 +9,10 @@ import { Panel } from '../../../shared/components/panel/panel';
 import { enemy } from '../shared/build-inputs';
 import { fieldTone } from '../shared/field-tone';
 import { MonsterAttack } from '../monster-attack/monster-attack';
-import { MonsterList } from '../monster-list/monster-list';
 import { StatePanel } from '../shared/state-panel';
 import { WeaponImperils } from '../weapon-imperils/weapon-imperils';
 import { Button } from '../../../shared/components/button/button';
+import { ServerContext } from '../../../shared/services/server-context';
 import { STRINGS } from '../../../strings/en';
 
 const RACES = [
@@ -33,12 +34,13 @@ const ucFirst = (text: string): string => text.charAt(0).toUpperCase() + text.sl
 /** The stats, races, resistances and imperils of the enemy. */
 @Component({
   selector: 'app-enemy-panel',
-  imports: [Panel, ChoiceGroup, Icon, InputGroup, NumberField, MonsterList, WeaponImperils, MonsterAttack, Button],
+  imports: [Panel, ChoiceGroup, Icon, InputGroup, NumberField, WeaponImperils, MonsterAttack, Button, RouterLink],
   templateUrl: './enemy-panel.html',
   styleUrls: ['../shared/form-common.css', './enemy-panel.css'],
 })
 export class EnemyPanel extends StatePanel {
   protected readonly t = STRINGS.enemyPanel;
+  protected readonly serverContext = inject(ServerContext);
   protected readonly stats = ['atk', 'def', 'mag', 'spr'];
   protected readonly elements = elementList;
   protected readonly raceChoices: Choice[] = RACES.map((value) => ({ value, label: ucFirst(value) }));

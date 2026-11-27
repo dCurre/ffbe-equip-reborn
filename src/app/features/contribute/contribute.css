@@ -1,11 +1,44 @@
-a,
-button {
-  margin: 0 5px 5px 0;
+/* the half column in the middle of the page */
+app-page-column {
+  margin: 0 auto;
 }
 
-/* the Ko-fi picture is not a glyph of the text: it is centered on the line of the button */
+/* the titles of the panels are headings, with the look of a panel title */
+h2 {
+  margin: 0;
+  font-size: inherit;
+  font-weight: normal;
+  line-height: inherit;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* the pictures are centred on the line of the text */
 a {
   display: inline-flex;
   gap: 6px;
   align-items: center;
+}
+
+/* links that look like buttons: no link colour or underline over them */
+a:hover,
+a:focus {
+  color: var(--color-button-text);
+  text-decoration: none;
+}
+
+/* a phone: one under the other, as wide as the panel, tall enough for a finger */
+@media (max-width: 600px) {
+  .actions {
+    flex-direction: column;
+  }
+
+  a {
+    justify-content: center;
+    min-height: 44px;
+  }
 }

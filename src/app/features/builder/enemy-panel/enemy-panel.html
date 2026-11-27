@@ -3,7 +3,9 @@
     <span>{{ t.monster }}</span>
   </div>
   <div class="enemy">
-    <app-monster-list class="monster-list" [state]="s" />
+    <a app-button small class="to-bestiary" routerLink="/bestiary" [queryParams]="serverContext.linkParams()">
+      <app-icon name="monster" /> {{ t.chooseInTheBestiary }}
+    </a>
     @if (negativeValues()) {
       <div class="warning"><app-icon name="alert" /> {{ t.youEnteredNegativeBreaks }}</div>
     }
