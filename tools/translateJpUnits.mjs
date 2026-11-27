@@ -3,7 +3,8 @@
 // `versionOf`: the Global unit of the same character, under another id in Japan (written as `variantOf`).
 // `ownUnit`: Japan gave this id to another character: the items with a Japanese name that name it as TMR / STMR are of
 // the `jp-<id>` entry, whose pictures are `img/units/unit_*_jp-<id>.png`.
-// It also sends the Brave Shift of every `jp-` unit back to the `jp-` base (as tools/mergeServers.js now does).
+// It also sends the Brave Shift of every `jp-` unit back to the `jp-` base (as tools/mergeServers.js now does), and keeps
+// one copy of the `enhancements` of the Japan units: their old converter read the passives twice and listed each twice.
 //
 // Run it with `node tools/translateJpUnits.mjs`, also after tools/mergeServers.js; it is safe to run again.
 
@@ -17,6 +18,15 @@ const TAG = ' [JP]';
 const map = JSON.parse(fs.readFileSync(path.join(here, 'jpUnitNames.json'), 'utf8'));
 const JAPANESE = /[぀-ヺー-ヿ一-鿿]/; // kana and kanji
 const KANA = /[぀-ヺー-ヿ]/; // U+30FB (・) is also in the Chinese names
+const GL_ID_WITH_JP_DATA = '202001627'; // not marked as a Japan unit, but its data is
+
+// cut only a list that is the same block twice, so a second run changes nothing
+const keepOneCopy = (unit) => {
+    const list = unit?.enhancements;
+    if (!list || list.length % 2) return;
+    const half = list.length / 2;
+    if (JSON.stringify(list.slice(0, half)) === JSON.stringify(list.slice(half))) unit.enhancements = list.slice(0, half);
+};
 
 for (const file of fs.readdirSync(ALL).filter((name) => /^(units(With(Skill|Passives))?(_\w\w)?|releasedUnits)\.json$/.test(name))) {
     const units = JSON.parse(fs.readFileSync(path.join(ALL, file), 'utf8'));
@@ -36,6 +46,7 @@ for (const file of fs.readdirSync(ALL).filter((name) => /^(units(With(Skill|Pass
     }
     for (const [id, unit] of Object.entries(units)) {
         if (id.startsWith('jp-') && units['jp-' + unit.braveShifted]) unit.braveShifted = 'jp-' + unit.braveShifted;
+        if (unit.server === 'JP' || id === GL_ID_WITH_JP_DATA) [unit, unit['6_form'], unit['7_form']].forEach(keepOneCopy);
     }
     fs.writeFileSync(path.join(ALL, file), JSON.stringify(units));
     console.log('written', file);

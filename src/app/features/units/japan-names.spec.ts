@@ -47,6 +47,16 @@ describe('the units of the Japan version', () => {
     expect(isApplicable({ exclusiveUnits: ['401014607'] }, units['jp-401014607'])).toBe(false);
   });
 
+  it('lists each enhancement of a Japan unit once, with the bonus of the Global one', () => {
+    const passives: Record<string, { enhancements?: { levels: unknown[] }[] }> = JSON.parse(
+      readFileSync('public/ALL/unitsWithPassives.json', 'utf8'),
+    );
+    expect(passives['jp-249000507'].enhancements?.map((e) => e.levels)).toEqual(
+      passives['249000507'].enhancements?.map((e) => e.levels),
+    );
+    expect(passives['jp-401014207'].enhancements?.length).toBe(1);
+  });
+
   it('links a Brave Shift with a name of its own to the page of its base unit', () => {
     expect(wikiUrl(units['jp-249000517'].wikiEntry!)).toBe(
       'https://exvius.fandom.com/wiki/Berserker_Rikku/JP#Brave_Shift',
