@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 /** Shared links (builds, unit collections) live in the Cloudflare Worker of `/worker`, which maps a short id to the data. */
-export const LINK_STORE_URL = 'https://ffbe-equip-reborn.ffbe-equip-reborn.workers.dev';
+export const LINK_STORE_URL = 'https://api.ffbeequipreborn.com';
 
 const LINK_ID = /^[A-Za-z0-9]{10}$/;
 /** Ids of the links made by FFBE Equip Next (Firebase): that data is lost. */

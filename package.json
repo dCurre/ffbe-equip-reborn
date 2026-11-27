@@ -31,7 +31,7 @@
   "bugs": {
     "url": "https://github.com/dCurre/ffbe-equip-reborn/issues"
   },
-  "homepage": "https://dcurre.github.io/ffbe-equip-reborn/",
+  "homepage": "https://ffbeequipreborn.com/",
   "dependencies": {
     "@angular/common": "^22.3.0",
     "@angular/compiler": "^22.3.0",

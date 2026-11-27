@@ -875,7 +875,7 @@ export const STRINGS = {
     contact: 'Contact',
     backToFfbeEquip: '← Back to FFBE Equip Reborn',
     ffbeEquipReborn: 'FFBE Equip Reborn (',
-    httpsDcurreGithubIo: 'https://dcurre.github.io/ffbe-equip-reborn/',
+    siteUrl: 'https://ffbeequipreborn.com/',
     isAFreeUnofficial: ') is a free, unofficial fan tool for Final Fantasy Brave Exvius, maintained by',
     dcurre: 'dCurre',
     itIsAStatic:

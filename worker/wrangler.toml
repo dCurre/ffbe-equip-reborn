@@ -2,7 +2,11 @@ name = "ffbe-equip-reborn"
 main = "index.js"
 compatibility_date = "2026-11-01"
 
+# Served only on the site domain (DNS record and certificate are created by the deploy)
+workers_dev = false
+routes = [{ pattern = "api.ffbeequipreborn.com", custom_domain = true }]
+
 # Fill the id with the output of: npx wrangler kv namespace create LINKS
 [[kv_namespaces]]
 binding = "LINKS"
-id = "a5b83cb683664cb59d77d8acf30eb6ee"
+id = "fb61e2daa37947e8a7181ad7a56daabe"

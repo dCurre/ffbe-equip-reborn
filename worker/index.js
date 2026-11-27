@@ -7,7 +7,8 @@
 const GOOGLE_CLIENT_ID = '391730182542-pfup98mjhmllb4o14ap3gsmpfojb1j6v.apps.googleusercontent.com';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_REVOKE_URL = 'https://oauth2.googleapis.com/revoke';
-const ALLOWED_ORIGINS = ['https://dcurre.github.io', 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:4200'];
+const ALLOWED_ORIGINS = ['https://ffbeequipreborn.com', 'http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:4200'];
+const OLD_LINK_STORE_URL = 'https://ffbe-equip-reborn.ffbe-equip-reborn.workers.dev';
 const MAX_BYTES = 200 * 1024;
 const ALPHABET = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
@@ -16,6 +17,16 @@ const ALPHABET = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 async function idFor(text) {
     const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
     return Array.from(hash.slice(0, 10), b => ALPHABET[b % ALPHABET.length]).join('');
+}
+
+// Links shared before the move are only in the previous Worker (another account): fetched on first use and kept here.
+// shortcut: works while that Worker is up; links nobody has opened are lost if it is removed.
+async function oldLink(env, id) {
+    const response = await fetch(`${OLD_LINK_STORE_URL}/${id}`).catch(() => null);
+    if (!response?.ok) return null;
+    const text = await response.text();
+    await env.LINKS.put(id, text);
+    return text;
 }
 
 const sessionKey = id => `session:${id}`;
@@ -110,7 +121,7 @@ export default {
         }
         if (request.method === 'GET') {
             const id = new URL(request.url).pathname.slice(1);
-            const value = /^[A-Za-z0-9]{10}$/.test(id) ? await env.LINKS.get(id) : null;
+            const value = /^[A-Za-z0-9]{10}$/.test(id) ? await env.LINKS.get(id) ?? await oldLink(env, id) : null;
             return value === null ? reply('{"error":"not found"}', 404) : reply(value);
         }
         return reply('{"error":"method not allowed"}', 405);

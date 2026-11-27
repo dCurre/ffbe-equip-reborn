@@ -8,7 +8,7 @@ description: >-
 
 # Push workflow
 
-Pushing `master` deploys the site via GitHub Actions (https://dcurre.github.io/ffbe-equip-reborn/).
+Pushing `master` deploys the site via GitHub Actions (https://ffbeequipreborn.com/).
 
 ## Rules
 - English commit messages, no Claude attribution lines.

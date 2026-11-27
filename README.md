@@ -5,7 +5,7 @@ A revival of [FFBE Equip](https://github.com/lyrgard/ffbeEquip), the web tool fo
 units and parties, unit search, the item encyclopedia, and pages to keep track of your own units, inventory
 and espers.
 
-**Live site: https://dcurre.github.io/ffbe-equip-reborn/**
+**Live site: https://ffbeequipreborn.com/**
 
 Unofficial fan project, not affiliated with or endorsed by Square Enix.
 
@@ -83,7 +83,7 @@ are up to date.
 - `src/app/`: the Angular app, one folder per page in `features/`, shared components and services in `shared/`.
 - `src/core/`: the calculation core (formulas, stats, damage, optimizer), with no Angular in it.
 - `public/`: game data and images, copied into the build as they are. Paths are relative, so the site also
-  works under a sub-path like `/ffbe-equip-reborn/`.
+  works under a sub-path.
 - `tools/`: `generateUnitFiles.js` (the per-unit files), `mergeServers.js` (how the Global and Japan data became
   `public/ALL`). The extraction scripts and the raw game data were removed
   (they are in the history).

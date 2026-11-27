@@ -32,7 +32,6 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/ffbe-equip-reborn/",
               "budgets": [
                 {
                   "type": "initial",
