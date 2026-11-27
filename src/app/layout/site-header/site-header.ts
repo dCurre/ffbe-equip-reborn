@@ -3,7 +3,7 @@ import { Button } from '../../shared/components/button/button';
 import { Alert } from '../../shared/components/alert/alert';
 import { Modal } from '../../shared/components/modal/modal';
 import { Icon } from '../../shared/components/icon/icon';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { IsActiveMatchOptions, RouterLink, RouterLinkActive } from '@angular/router';
 import { GoogleDrive } from '../../shared/services/google-drive';
 import { Inventory } from '../../shared/services/inventory';
 import { Language, LANGUAGES, ServerContext } from '../../shared/services/server-context';
@@ -56,6 +56,13 @@ export class SiteHeader {
   readonly banner = input.required<BannerName>();
 
   protected readonly menu = MENU;
+  /** the page alone marks its link: the tab or the row opened in it adds parameters to the address */
+  protected readonly activeOptions: IsActiveMatchOptions = {
+    paths: 'exact',
+    queryParams: 'ignored',
+    matrixParams: 'ignored',
+    fragment: 'ignored',
+  };
   protected readonly languages = LANGUAGES;
   protected readonly serverContext = inject(ServerContext);
   protected readonly theme = inject(Theme);

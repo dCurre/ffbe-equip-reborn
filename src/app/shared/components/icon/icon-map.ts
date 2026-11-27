@@ -466,6 +466,8 @@ export const ICONS = {
   'crystal-NVPlus': { kind: 'image', src: 'img/icons/NVPlus.png', title: 'NV+ (enhanced with Azure Pearls)' },
   'brave-shift': { kind: 'image', src: 'img/icons/braveShift.png', title: 'Brave Shift' },
   killer: { kind: 'image', src: 'img/icons/killer.png', title: 'Killers' },
+  vortex: { kind: 'image', src: 'img/icons/vortex.png', title: 'Vortex' },
+  world: { kind: 'image', src: 'img/icons/world.png', title: 'World' },
   'limit-burst': { kind: 'image', src: 'img/icons/lb.png', title: 'Limit Burst' },
   'lb-shard': { kind: 'image', src: 'img/icons/lbShard.png', title: 'LB cost' },
   gil: { kind: 'image', src: 'img/icons/gil.png', title: 'Gil' },

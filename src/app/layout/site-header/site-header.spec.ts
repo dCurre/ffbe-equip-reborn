@@ -59,6 +59,14 @@ describe('SiteHeader', () => {
     expect(links).toContain('/builder?l=de');
   });
 
+  it('keeps the page marked in the menu whatever its parameters say', async () => {
+    await router.navigateByUrl('/events?view=story&event=story%7C111');
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const marked = [...page.querySelectorAll('.desktop a.active')].map((a) => a.textContent?.trim());
+    expect(marked).toEqual(['Events']);
+  });
+
   it('starts the Google login from the login dialog', async () => {
     const proto = HTMLDialogElement.prototype;
     proto.showModal ??= function (this: HTMLDialogElement) {

@@ -1,4 +1,5 @@
-// Builds `public/ALL/events.json` (and `storyChapters.json`, the story chapters kept aside):
+// Builds `public/ALL/events.json`, and `storyChapters.json` (the story of seasons 1-4, one entry per area of the game).
+// The events:
 // 1. the Global releases of the wiki page Update_Schedule, the pages of its Category:Events, the events of Elvlin only;
 // 2. each one linked to its dungeons and missions by name (`match` says how: automatic, not checked one by one).
 import assert from 'node:assert';
@@ -267,7 +268,6 @@ const leftOut = (e) =>
   /^(U\.Intro Events?|FFBE - Story Event|Character Episodes)$/i.test(e.kind || e.type || '');
 
 const list = [];
-const chapters = [];
 const written = new Set();
 for (const e of events) {
   if (notAnEvent(e) || leftOut(e)) continue;
@@ -284,7 +284,8 @@ for (const e of events) {
   const key = `${out.name}|${out.date}|${out.page ?? ''}`;
   if (written.has(key)) continue;
   written.add(key);
-  (e.type === 'Story' || /\/Story$/.test(e.name) ? chapters : list).push(out);
+  // the story chapters of the schedule are not events: the Story tab is made from the game data, at the end
+  if (e.type !== 'Story' && !/\/Story$/.test(e.name)) list.push(out);
 }
 // --- the trials of a permanent chamber are one event, with a section for each boss and its release ---
 const CHAMBERS = [
@@ -389,5 +390,56 @@ assert(
   'dungeon ids',
 );
 fs.writeFileSync(published('events'), JSON.stringify(list));
-fs.writeFileSync(published('storyChapters'), JSON.stringify(chapters));
-console.log(`events ${list.length}, story chapters ${chapters.length}`);
+
+// --- the story: the areas of the story worlds of the game, in game order, with their battle stages ---
+/** the season of each story world; the other worlds are the Vortex and the side stories */
+const SEASONS = { 1: 1, 3: 2, 4: 3, 5: 4, 6: 4 };
+const clientMissions = json('aenigmatic/missions.json');
+const worlds = json('aenigmatic/worlds.json');
+/** The region of an area: a land in seasons 1 to 3, a chapter ("Chapter 4") in season 4. */
+const regionOf = (dungeon) => worlds[dungeon.world_id].regions[dungeon.region_id].names[0];
+// battles only, without the episodes of the characters (left out as for the events)
+const storyStage = (m) => clientMissions[m.id]?.wave_count > 0 && !/'s Episode \d+\/\d+$/.test(m.name);
+const storyAreas = Map.groupBy(
+  Object.keys(AE)
+    .map(Number)
+    .filter((id) => SEASONS[AE[id].world_id]),
+  (id) => +AE[id].subregion_id,
+);
+const story = [...storyAreas]
+  .sort(([a], [b]) => a - b)
+  .map(([area, ids]) => ({
+    name: areas.get(area),
+    page: '',
+    series: `Season ${SEASONS[AE[ids[0]].world_id]}`,
+    area,
+    // "Levonia 1" and "Levonia 2" of the game are the two parts of one world
+    world: worlds[AE[ids[0]].world_id].names[0].replace(/ (\d)$/, ' [Part $1]'),
+    region: regionOf(AE[ids[0]]),
+    dungeons: dungeonsOf(ids)
+      .map((d) => ({ ...d, missions: d.missions.filter(storyStage) }))
+      .filter((d) => d.missions.length),
+  }))
+  .filter((a) => a.dungeons.length);
+assert(
+  story.every((a) => a.name),
+  'story area names',
+);
+assert(story[0].name === 'Grandshelt Isles', 'the story starts in Grandshelt');
+assert(
+  story.every((a) => a.region) && story.find((a) => a.name === 'Past Levonia').region === 'Chapter 7',
+  'story regions',
+);
+assert.deepStrictEqual(
+  [...new Set(story.map((a) => `${a.series}: ${a.world}`))],
+  [
+    'Season 1: Lapis',
+    'Season 2: Paladia',
+    'Season 3: Dimensional Expanse',
+    'Season 4: Levonia [Part 1]',
+    'Season 4: Levonia [Part 2]',
+  ],
+  'the seasons and their worlds in order',
+);
+fs.writeFileSync(published('storyChapters'), JSON.stringify(story));
+console.log(`events ${list.length}, story areas ${story.length}`);

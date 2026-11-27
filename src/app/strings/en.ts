@@ -128,6 +128,15 @@ export const STRINGS = {
     pageNotFound: 'Page not found',
   },
   events: {
+    eventsTab: 'Events',
+    storyTab: 'Story',
+    searchStory: 'Search an area, a world, a chapter, a stage or a monster',
+    area: 'Area',
+    world: 'World',
+    region: 'Region / Chapter',
+    loadingStory: 'Loading the story…',
+    noAreaFound: 'No area found with this search.',
+    errorWhileLoadingStory: 'Error while loading the story',
     searchEvent: 'Search an event, a stage or a monster',
     useWithoutStats: 'Use in Builder: some stats are not published, they stay empty',
     useInBuilder: 'Use in Builder',
@@ -691,6 +700,7 @@ export const STRINGS = {
     myInventory: PAGES.myInventory,
     myUnits: PAGES.myUnits,
     myEspers: PAGES.myEspers,
+    events: 'Events',
     dataImport: PAGES.dataImport,
   },
   imageExportModal: {

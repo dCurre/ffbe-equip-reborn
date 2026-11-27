@@ -16,7 +16,7 @@ export interface TabItem<T extends string> {
   title: string;
   icon?: string;
   image?: string;
-  kind?: 'stmr' | 'small';
+  kind?: 'stmr' | 'small' | 'picture';
   /** a number written small after the title */
   count?: number;
   /** a check before the title, with what it means */

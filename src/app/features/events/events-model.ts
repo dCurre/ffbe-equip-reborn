@@ -18,9 +18,14 @@ export interface Dungeon {
   missions: Mission[];
 }
 
-/** An event of `events.json`. */
+/** An event of `events.json`, or an area of the story (`storyChapters.json`). */
 export interface GameEvent {
   name: string;
+  /** the id of an area of the story (two areas may have the same name) */
+  area?: number;
+  /** the world of an area of the story, and its region: a land, or a chapter in season 4 */
+  world?: string;
+  region?: string;
   /** the wiki page when it is not the name; '' when there is none */
   page?: string;
   /** the first release of the Global version (`2016-09-30`), when known */
@@ -86,7 +91,15 @@ export interface EventSort {
 }
 
 /** What tells an event apart in the data and in the link of its page. */
-export const eventKey = (event: GameEvent): string => `${event.name}|${event.date ?? ''}|${event.page ?? '-'}`;
+export const eventKey = (event: GameEvent): string =>
+  event.area ? `story|${event.area}` : `${event.name}|${event.date ?? ''}|${event.page ?? '-'}`;
+
+/** How many dungeons an event has, and how many of them are completed (every stage). */
+export function dungeonProgress(event: GameEvent, cleared: ReadonlySet<number>): { done: number; total: number } {
+  const dungeons = (event.dungeons ?? []).filter((dungeon) => dungeon.missions.length);
+  const done = dungeons.filter((dungeon) => dungeon.missions.every(({ id }) => cleared.has(id)));
+  return { done: done.length, total: dungeons.length };
+}
 
 /** A dungeon, stage or monster of an event, with the stage that opens it. */
 export interface Hit {

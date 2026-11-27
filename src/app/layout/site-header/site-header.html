@@ -74,7 +74,7 @@
         [routerLink]="item.path"
         [queryParams]="serverContext.linkParams()"
         routerLinkActive="active"
-        [routerLinkActiveOptions]="{ exact: true }"
+        [routerLinkActiveOptions]="activeOptions"
         >{{ item.label }}</a
       >
     }
@@ -100,7 +100,7 @@
               [routerLink]="item.path"
               [queryParams]="serverContext.linkParams()"
               routerLinkActive="active"
-              [routerLinkActiveOptions]="{ exact: true }"
+              [routerLinkActiveOptions]="activeOptions"
               (click)="menuOpen.set(false)"
               >{{ item.label }}</a
             >

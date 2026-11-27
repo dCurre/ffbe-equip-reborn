@@ -1,4 +1,6 @@
 import {
+  dungeonProgress,
+  eventKey,
   eventType,
   matchingDungeons,
   matchingStages,
@@ -25,6 +27,29 @@ describe('events model', () => {
   it('sorts by date, with the undated events always last', () => {
     expect(names('date', false)).toEqual(['Rush #2', 'Rush #10', 'Undated']);
     expect(names('date', true)).toEqual(['Rush #10', 'Rush #2', 'Undated']);
+  });
+
+  it('tells apart two areas of the story with the same name', () => {
+    expect(eventKey({ name: 'Rovina Ruins', area: 1318 })).not.toBe(eventKey({ name: 'Rovina Ruins', area: 1321 }));
+  });
+
+  it('counts the dungeons with every stage completed', () => {
+    const area = {
+      name: 'Area',
+      dungeons: [
+        { id: 1, name: 'a', missions: [{ id: 11, name: null }] },
+        {
+          id: 2,
+          name: 'b',
+          missions: [
+            { id: 21, name: null },
+            { id: 22, name: null },
+          ],
+        },
+      ],
+    };
+    // the second dungeon has a stage left
+    expect(dungeonProgress(area, new Set([11, 22, 99]))).toEqual({ done: 1, total: 2 });
   });
 
   it('reads the type without the marks of the schedule', () => {

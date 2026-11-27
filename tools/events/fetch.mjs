@@ -60,7 +60,7 @@ for (const file of [
   ...['MONSTER_PARTS', 'BATTLE_GROUP', 'BATTLE_LOTTERY', 'MISSION_PHASE'].map((t) => `content/battle/F_${t}_MST.tsv`),
 ])
   await save(`elvlin/${path.basename(file)}`, raw(ELVLIN, `source/server/${file}`));
-for (const file of ['dungeons', 'missions'])
+for (const file of ['dungeons', 'missions', 'worlds'])
   await save(`aenigmatic/${file}.json`, raw('aEnigmatic/ffbe', `${file}.json`));
 for (const file of ['MONSTER', 'MISSION', 'DUNGEONS', 'AREA'])
   await save(`aenigmatic/MST_${file}_NAME.json`, raw('aEnigmatic/ffbe-gl-strings', `MST_${file}_NAME.json`));

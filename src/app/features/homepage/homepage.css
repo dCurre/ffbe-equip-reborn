@@ -73,9 +73,9 @@
   display: block;
 }
 
-/* Push the buttons of the middle row closer */
-.line:nth-child(2)::before,
-.line:nth-child(2)::after {
+/* Push the buttons of the rows of two closer */
+.line:nth-child(even)::before,
+.line:nth-child(even)::after {
   width: 200px;
 }
 
@@ -127,8 +127,11 @@
 
 .kuppo {
   position: absolute;
-  left: 62%;
-  top: -62px;
+  /* clear of the first button, but never past the right edge */
+  left: min(max(62%, 50% + 180px), 100% - 400px);
+  /* above the first row; the row gets closer to the header as the window narrows (the menu is 35vw high), so there the
+     bubble comes down beside the button instead of going under the menu tabs */
+  top: max(-62px, 24px - 4.375vw);
   width: 400px;
   height: 104px;
   padding: 14px 16px 35px 108px;
@@ -152,12 +155,6 @@
   }
   100% {
     transform: scale(1);
-  }
-}
-
-@media (max-width: 1200px) {
-  .kuppo {
-    left: 65%;
   }
 }
 
@@ -194,8 +191,15 @@
 
 /* Below 1100px, use fixed size */
 @media (max-width: 1100px) {
+  /* the rows wrap: the menu grows with them, or the last one is cut */
   .mainmenu {
-    height: 400px;
+    height: auto;
+    min-height: 400px;
+  }
+
+  /* Keep the last button clear of the bottom border */
+  .content {
+    padding-bottom: 40px;
   }
 
   .layer-1 {
@@ -221,7 +225,9 @@
 
   .layer-4 {
     width: 1200px;
-    height: 151px;
+    /* down to the bottom of a menu taller than 451px */
+    height: calc(100% - 300px);
+    min-height: 151px;
     top: 300px;
     left: -50px;
   }
@@ -244,7 +250,6 @@
 /* For small screens, use a fixed size background */
 @media (max-width: 770px) {
   .mainmenu {
-    height: auto;
     min-height: 550px;
     margin-top: -22px;
     background-image: var(--fixed-background);
@@ -254,11 +259,6 @@
 
   .layer {
     display: none;
-  }
-
-  /* Keep the last button clear of the bottom border */
-  .content {
-    padding-bottom: 40px;
   }
 }
 

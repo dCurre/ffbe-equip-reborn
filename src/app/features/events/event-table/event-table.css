@@ -30,8 +30,20 @@ col.kind {
   width: 30%;
 }
 
+col.world {
+  width: 20%;
+}
+
+col.region {
+  width: 28%;
+}
+
 col.number {
   width: 80px;
+}
+
+col.progress {
+  width: 110px;
 }
 
 th,
@@ -55,6 +67,18 @@ th {
 
 th button {
   font-weight: bold;
+}
+
+/* the season headings of the story are not the header of the table: they scroll with it */
+.season th {
+  position: static;
+  font-size: 13px;
+  border-top: 1px solid var(--color-border);
+}
+
+.done {
+  margin-right: 3px;
+  color: var(--color-buff);
 }
 
 .row {
@@ -124,8 +148,14 @@ th button {
   border-bottom: 1px solid var(--color-border);
 }
 
-td.kind {
+td.kind,
+td.world,
+td.region {
   opacity: 0.8;
+}
+
+.world-line {
+  display: none;
 }
 
 .date {
@@ -148,13 +178,17 @@ td.kind {
     min-width: 0;
   }
 
-  /* no room for the type: its column stays, empty and 1px wide (a hidden one leaves a gap at the right of the rows) */
-  col.kind {
+  /* no room for the type and the world: their columns stay, empty and 1px wide (a hidden one leaves a gap at the right
+     of the rows); the world is written over the region instead */
+  col.kind,
+  col.world {
     width: 1px;
   }
 
   th.kind,
-  td.kind {
+  td.kind,
+  th.world,
+  td.world {
     padding: 0;
     overflow: hidden;
     font-size: 0;
@@ -164,8 +198,22 @@ td.kind {
     width: 30%;
   }
 
+  col.region {
+    width: 36%;
+  }
+
+  .world-line {
+    display: block;
+    font-size: 11px;
+    line-height: 16px;
+  }
+
   col.number {
     width: 56px;
+  }
+
+  col.progress {
+    width: 84px;
   }
 
   th,

@@ -19,6 +19,7 @@ interface Layer {
   height: number;
 }
 
+/** The rows of the menu, in the order of the header menu (also the order on a phone, one button per row). */
 const MENU_BUTTONS = [
   [{ path: '/builder', title: STRINGS.homepage.unitBuilder, character: 'Lid' }],
   [
@@ -26,11 +27,14 @@ const MENU_BUTTONS = [
     { path: '/unitSearch', title: STRINGS.homepage.unitSearch, character: 'Lasswell' },
   ],
   [
+    { path: '/events', title: STRINGS.homepage.events, character: 'Sol' },
     { path: '/inventory', title: STRINGS.homepage.myInventory, character: 'Jake' },
     { path: '/units', title: STRINGS.homepage.myUnits, character: 'Rain' },
-    { path: '/espers', title: STRINGS.homepage.myEspers, character: 'Nichol' },
   ],
-  [{ path: '/data-import', title: STRINGS.homepage.dataImport, character: 'Charlotte' }],
+  [
+    { path: '/espers', title: STRINGS.homepage.myEspers, character: 'Nichol' },
+    { path: '/data-import', title: STRINGS.homepage.dataImport, character: 'Charlotte' },
+  ],
 ];
 
 /** The start page: the menu over a background of four layers that move with the mouse and the scroll. */

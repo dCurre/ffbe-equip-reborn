@@ -1,7 +1,9 @@
 <div class="filters">
-  <app-search-box [placeholder]="t.searchEvent" (search)="query.set($event)" />
-  <app-combobox [options]="types()" [(value)]="type" [emptyLabel]="t.allTypes" />
-  <app-combobox [options]="allSeries()" [(value)]="series" [emptyLabel]="t.allSeries" />
+  <app-search-box [placeholder]="story() ? t.searchStory : t.searchEvent" (search)="query.set($event)" />
+  @if (!story()) {
+    <app-combobox [options]="types()" [(value)]="type" [emptyLabel]="t.allTypes" />
+    <app-combobox [options]="allSeries()" [(value)]="series" [emptyLabel]="t.allSeries" />
+  }
   @if (cleared.error()) {
     <span role="status">{{ t.errorWhileLoadingCompleted }}</span>
   }
@@ -16,37 +18,60 @@
   <table>
     <colgroup>
       <col />
-      <col class="date" />
-      <col class="kind" />
-      <col class="number" />
+      @if (story()) {
+        <col class="world" />
+        <col class="region" />
+        <col class="progress" />
+      } @else {
+        <col class="date" />
+        <col class="kind" />
+        <col class="number" />
+      }
     </colgroup>
     <thead>
       <tr>
-        <th [attr.aria-sort]="ariaSort('name')">
-          <button app-button variant="flat" type="button" (click)="sortBy('name')">
-            {{ t.name }}
+        @if (story()) {
+          <th>
+            {{ t.area }}
             @if (!loading()) {
               <span aria-live="polite">({{ rows().length }})</span>
             }
-            @if (sort().by === 'name') {
-              <app-icon [name]="sort().descending ? 'chevron-down' : 'chevron-up'" />
-            }
-          </button>
-        </th>
-        <th [attr.aria-sort]="ariaSort('date')">
-          <button app-button variant="flat" type="button" (click)="sortBy('date')">
-            {{ t.date }}
-            @if (sort().by === 'date') {
-              <app-icon [name]="sort().descending ? 'chevron-down' : 'chevron-up'" />
-            }
-          </button>
-        </th>
-        <th class="kind">{{ t.type }}</th>
-        <th class="number">{{ t.quests }}</th>
+          </th>
+          <th class="world">{{ t.world }}</th>
+          <th>{{ t.region }}</th>
+          <th class="number">{{ t.dungeons }}</th>
+        } @else {
+          <th [attr.aria-sort]="ariaSort('name')">
+            <button app-button variant="flat" type="button" (click)="sortBy('name')">
+              {{ t.name }}
+              @if (!loading()) {
+                <span aria-live="polite">({{ rows().length }})</span>
+              }
+              @if (sort().by === 'name') {
+                <app-icon [name]="sort().descending ? 'chevron-down' : 'chevron-up'" />
+              }
+            </button>
+          </th>
+          <th [attr.aria-sort]="ariaSort('date')">
+            <button app-button variant="flat" type="button" (click)="sortBy('date')">
+              {{ t.date }}
+              @if (sort().by === 'date') {
+                <app-icon [name]="sort().descending ? 'chevron-down' : 'chevron-up'" />
+              }
+            </button>
+          </th>
+          <th class="kind">{{ t.type }}</th>
+          <th class="number">{{ t.quests }}</th>
+        }
       </tr>
     </thead>
     <tbody>
       @for (row of rows(); track row.key) {
+        @if (row.season) {
+          <tr class="season">
+            <th scope="colgroup" colspan="4">{{ row.season }}</th>
+          </tr>
+        }
         <tr class="row" [class.open]="row.key === opened()" (click)="toggle(row.key)">
           <td>
             <div class="title">
@@ -77,14 +102,39 @@
               </div>
             }
           </td>
-          <td class="date">{{ row.event.date ?? '—' }}</td>
-          <td class="kind">
-            {{ row.event.kind }}
-            @if (row.event.series) {
-              ({{ row.event.series }})
-            }
-          </td>
-          <td class="number">{{ row.quests }}</td>
+          @if (row.progress; as progress) {
+            <td class="world">{{ row.event.world }}</td>
+            <td class="region">
+              <!-- on a phone the world has no column of its own -->
+              <small class="world-line">{{ row.event.world }}</small>
+              {{ row.event.region }}
+            </td>
+            <td class="number">
+              @if (completed().size) {
+                @if (progress.done === progress.total) {
+                  <app-icon
+                    class="done"
+                    name="check"
+                    role="img"
+                    [title]="t.completed"
+                    [attr.aria-label]="t.completed"
+                  />
+                }
+                {{ progress.done }}/{{ progress.total }}
+              } @else {
+                {{ progress.total }}
+              }
+            </td>
+          } @else {
+            <td class="date">{{ row.event.date ?? '—' }}</td>
+            <td class="kind">
+              {{ row.event.kind }}
+              @if (row.event.series) {
+                ({{ row.event.series }})
+              }
+            </td>
+            <td class="number">{{ row.quests }}</td>
+          }
         </tr>
         @if (row.key === opened()) {
           <tr #openedRow class="drawer">
@@ -103,9 +153,9 @@
         <tr>
           <td colspan="4" class="none">
             @if (loading()) {
-              {{ t.loadingEvents }}
+              {{ story() ? t.loadingStory : t.loadingEvents }}
             } @else if (events().length) {
-              <p>{{ t.noEventFound }}</p>
+              <p>{{ story() ? t.noAreaFound : t.noEventFound }}</p>
               <button app-button type="button" (click)="clearFilters()">{{ t.clearFilters }}</button>
             }
           </td>

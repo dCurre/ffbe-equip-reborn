@@ -1,4 +1,5 @@
-// Builds `public/ALL/dungeonMonsters.json`: the monsters of every mission of `events.json` (run `events.mjs` first).
+// Builds `public/ALL/dungeonMonsters.json`: the monsters of every mission of `events.json` and of `storyChapters.json`
+// (run `events.mjs` first).
 // The best source wins, and each monster says which one it comes from (`source`):
 //   1. `datamine` / `datamineJp`: the gist of aEnigmatic about the mission (Global values; Japan when there is no other);
 //   2. `table`: the Japan battle tables of Elvlin;
@@ -472,7 +473,10 @@ function withWikiTrial(mission, found) {
 
 const missions = {};
 const battles = {};
-const wanted = new Set(events.flatMap((e) => (e.dungeons ?? []).flatMap((d) => d.missions.map((m) => m.id))));
+const story = readPublished('storyChapters');
+const wanted = new Set(
+  [...events, ...story].flatMap((e) => (e.dungeons ?? []).flatMap((d) => d.missions.map((m) => m.id))),
+);
 for (const mission of wanted) {
   let bosses = withWikiTrial(mission, monstersOf(mission));
   const counterpart = bosses.length ? null : fromCounterpart(mission);
@@ -774,6 +778,10 @@ assert.deepStrictEqual(
   [['Lost Number'], ['Golden Bomb', 'Yin & Yang']].map((names) => names.sort()),
   'the battles of "Nibelheim - ELT" from the wiki',
 );
+const storyStages = story.flatMap((a) => a.dungeons.flatMap((d) => d.missions));
+const storyFound = storyStages.filter((m) => missions[m.id]).length;
+console.log(`story stages with monsters: ${storyFound} of ${storyStages.length}`);
+assert(storyFound > storyStages.length * 0.9, 'the monsters of the story');
 fs.writeFileSync(published('dungeonMonsters'), JSON.stringify({ monsters: list, missions, battles: stageList }));
 const values = Object.values(stageList);
 console.log({

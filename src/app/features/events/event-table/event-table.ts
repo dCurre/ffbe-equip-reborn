@@ -31,6 +31,7 @@ import {
   questCount,
   monsterHits,
   sortEvents,
+  dungeonProgress,
 } from '../events-model';
 import { EventDetail } from '../event-detail/event-detail';
 
@@ -45,7 +46,8 @@ const distinct = (values: (string | undefined)[]): string[] =>
 
 /**
  * All the events, with search (by name, stage, dungeon or monster), filters by type and series, and the order by name or
- * release. One event at a time opens under its row; the link of the page keeps which one and which stage.
+ * release. As the story: its areas in game order under a heading for each season, with the completed dungeons, and the
+ * search only. One event at a time opens under its row; the link of the page keeps which one and which stage.
  */
 @Component({
   selector: 'app-event-table',
@@ -57,6 +59,8 @@ export class EventTable {
   protected readonly t = STRINGS.events;
   readonly events = input.required<readonly GameEvent[]>();
   readonly loading = input(false);
+  /** the events are the areas of the story */
+  readonly story = input(false);
   private readonly searchBox = viewChild.required(SearchBox);
   /** the key of the event opened, and the stage shown in it */
   readonly opened = input<string | null>(null);
@@ -91,8 +95,10 @@ export class EventTable {
   });
   protected readonly rows = computed(() => {
     const text = this.query().trim().toLowerCase();
-    const type = this.type();
-    const series = this.series();
+    const story = this.story();
+    // the story has no filters: what was chosen for the events waits for them
+    const type = story ? '' : this.type();
+    const series = story ? '' : this.series();
     const names = this.monsterNames();
     // the monsters of an event with the text in their name
     const monstersOf = (event: GameEvent): Hit[] =>
@@ -107,10 +113,17 @@ export class EventTable {
       }))
       .filter(
         ({ event, dungeons, stages, monsters }) =>
-          dungeons.length || stages.length || monsters.length || event.name.toLowerCase().includes(text),
+          dungeons.length ||
+          stages.length ||
+          monsters.length ||
+          // an area of the story is also found by its season, world and region
+          [event.name, event.world, event.region, event.area ? event.series : ''].some((name) =>
+            name?.toLowerCase().includes(text),
+          ),
       );
     const matched = new Map(found.map((hit) => [hit.event, hit]));
-    return sortEvents([...matched.keys()], this.sort()).map((event) => {
+    const shown = story ? [...matched.keys()] : sortEvents([...matched.keys()], this.sort());
+    return shown.map((event, index) => {
       const hit = matched.get(event);
       const quests = questCount(event);
       return {
@@ -118,6 +131,8 @@ export class EventTable {
         key: eventKey(event),
         quests,
         several: quests > 1,
+        season: story && event.series !== shown[index - 1]?.series ? event.series : undefined,
+        progress: story ? dungeonProgress(event, this.completed()) : undefined,
         lines: [
           line(this.t.dungeons, hit?.dungeons ?? []),
           line(this.t.missions, hit?.stages ?? []),
