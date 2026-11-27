@@ -6,6 +6,7 @@ import { ItemSummary } from '../../../game/components/item-summary/item-summary'
 import { ItemEntry } from '../inventory-model';
 import { Button } from '../../../shared/components/button/button';
 import { Icon } from '../../../shared/components/icon/icon';
+import { pictureId } from '../../../shared/helpers/unit-picture';
 import { STRINGS } from '../../../strings/en';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the enchantments of the game are open */
@@ -47,7 +48,7 @@ export class InventoryCard {
   }
 
   protected stmrImage(): string {
-    const unitId: string = this.line().item['stmrUnit'];
+    const unitId = pictureId(this.line().item['stmrUnit']);
     return `img/units/unit_icon_${unitId.substring(0, unitId.length - 1)}7.png`;
   }
 

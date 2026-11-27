@@ -62,6 +62,9 @@ export class UnitPanel extends StatePanel {
   protected readonly unitName = computed(() => this.s.unitOptions().find((o) => o.id === this.s.unitId())?.label ?? '');
 
   protected readonly unitNames = computed(() => this.s.unitOptions().map((o) => o.label));
+  protected readonly unitAliases = computed(
+    () => new Map<string, string | undefined>(this.s.unitOptions().map((o) => [o.label, o.alias])),
+  );
 
   protected chooseUnitByName(name: string): void {
     const option = this.s.unitOptions().find((o) => o.label === name);

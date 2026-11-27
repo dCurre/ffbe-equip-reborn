@@ -4,11 +4,14 @@ import { Combobox } from '../../../shared/components/combobox/combobox';
 import { Icon } from '../../../shared/components/icon/icon';
 import { Panel } from '../../../shared/components/panel/panel';
 import { debouncer } from '../../../shared/helpers/search-input';
+import { pictureId } from '../../../shared/helpers/unit-picture';
 import { STRINGS } from '../../../strings/en';
 
 export interface FullUnit {
   id: string;
   name: string;
+  jpname?: string;
+  variantOf?: string;
   max_rarity: string;
   roles?: string[];
   sex?: string;
@@ -41,7 +44,9 @@ export class TargetUnitPanel {
   readonly chosen = output<void>();
 
   protected readonly unitNames = computed(() => [...new Set(this.unitList().map((u) => u.name))]);
+  protected readonly unitAliases = computed(() => new Map(this.unitList().map((u) => [u.name, u.jpname])));
   protected readonly baseStatList = baseStats;
+  protected readonly pictureId = pictureId;
   protected readonly unit = computed(() => this.unitList().find((u) => u.name === this.unitName()));
   /** the crystal of the unit's max rarity (none for a 2★ unit) */
   protected readonly crystal = computed(() => {

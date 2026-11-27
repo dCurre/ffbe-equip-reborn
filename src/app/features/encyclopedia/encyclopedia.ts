@@ -236,7 +236,7 @@ export class Encyclopedia {
       elementsAnd: this.elementsLogic()[0] === 'and',
       ailmentsAnd: this.ailmentsLogic()[0] === 'and',
       killersAnd: this.killersLogic()[0] === 'and',
-      unit: unit && { id: unit.id, roles: unit.roles, sex: unit.sex },
+      unit: unit && { id: unit.id, variantOf: unit.variantOf, roles: unit.roles, sex: unit.sex },
       showNotReleasedYet: this.showNotReleased(),
       onlyOwned: this.onlyOwned() && this.loggedIn() ? this.inventory.items() : undefined,
     };
@@ -381,7 +381,9 @@ export class Encyclopedia {
       return;
     }
     if (state.unit) {
-      const unit = units[state.unit] ?? Object.values(units).find((u) => u.name === state.unit);
+      const unit =
+        units[state.unit] ??
+        Object.values(units).find((u) => [u.name, u.jpname, `${u.jpname} [JP]`].includes(state.unit));
       if (unit) this.unitName.set(unit.name);
     }
     this.baseStatText.set(state.baseStats ?? {});

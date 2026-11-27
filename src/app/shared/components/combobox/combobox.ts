@@ -11,6 +11,8 @@ import { Icon } from '../icon/icon';
 })
 export class Combobox {
   readonly options = input.required<readonly string[]>();
+  /** other texts an option is found by, never shown */
+  readonly aliases = input<ReadonlyMap<string, string | undefined>>(new Map());
   /** the option chosen; '' is the empty choice, shown as `emptyLabel` */
   readonly value = model('');
   readonly emptyLabel = input('Custom');
@@ -20,7 +22,9 @@ export class Combobox {
   protected readonly query = signal('');
   protected readonly shown = computed(() => {
     const text = this.query().trim().toLowerCase();
-    return text ? this.options().filter((o) => o.toLowerCase().includes(text)) : this.options();
+    return text
+      ? this.options().filter((o) => `${o}|${this.aliases().get(o) ?? ''}`.toLowerCase().includes(text))
+      : this.options();
   });
 
   /** Puts the cursor in the field: the options open, as when it is clicked. */

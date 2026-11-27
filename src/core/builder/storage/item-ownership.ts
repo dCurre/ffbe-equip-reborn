@@ -1,6 +1,7 @@
 import type { DataStorage } from '../data-storage.js';
 import { isStackable } from '../item-values.js';
 import { adventurerIds } from '../../constants/game-ids.js';
+import { trustUnitIds } from '../trust-units.js';
 
 export const DATA_STORAGE_EASILY_OBTAINABLE_ITEMS = [
   'shop',
@@ -70,7 +71,7 @@ export function getAvailableNumbers(storage: DataStorage, item) {
           var access: any = item.access[index];
           if (
             (storage.excludeNotReleasedYet && access == 'not released yet') ||
-            (storage.excludeTMR5 && access.startsWith('TMR-5*') && item.tmrUnit != storage.currentBuild.unit.id) ||
+            (storage.excludeTMR5 && access.startsWith('TMR-5*') && !trustUnitIds(storage.currentBuild.unit).own.includes(item.tmrUnit)) ||
             (storage.excludePremium && access == 'premium') ||
             (storage.excludeSTMR && (access == 'STMR' || access == 'stmrUpgrade'))
           ) {

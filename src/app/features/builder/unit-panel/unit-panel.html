@@ -1,7 +1,13 @@
 @if (part() === 'choose') {
   <div class="line">
     <span class="label">{{ t.unit }}</span>
-    <app-combobox class="unit-input" [options]="unitNames()" [value]="unitName()" (picked)="chooseUnitByName($event)" />
+    <app-combobox
+      class="unit-input"
+      [options]="unitNames()"
+      [aliases]="unitAliases()"
+      [value]="unitName()"
+      (picked)="chooseUnitByName($event)"
+    />
     <label class="nv-only">
       <input type="checkbox" [checked]="s.onlyNvUnits()" (change)="s.onlyNvUnits.set($any($event.target).checked)" />
       {{ t.onlyNvUnits }}

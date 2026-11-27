@@ -1,7 +1,13 @@
 <app-panel>
   <div panelHeading class="heading unit-heading">
     <span>{{ t.targetUnit }}</span>
-    <app-combobox class="unit-input" [options]="unitNames()" [value]="unitName()" (picked)="chooseUnit($event)" />
+    <app-combobox
+      class="unit-input"
+      [options]="unitNames()"
+      [aliases]="unitAliases()"
+      [value]="unitName()"
+      (picked)="chooseUnit($event)"
+    />
     @if (crystal(); as crystal) {
       <span class="rarity">
         <app-icon [name]="crystal" />
@@ -11,7 +17,7 @@
       </span>
     }
     @if (unit(); as unit) {
-      <img class="unit-picture" [src]="'img/units/unit_ills_' + unit.id + '.png'" alt="" />
+      <img class="unit-picture" [src]="'img/units/unit_ills_' + pictureId(unit.id) + '.png'" alt="" />
     }
   </div>
   <div class="base-stats">

@@ -1,4 +1,5 @@
 import { containsText, searchTokens } from '../../game/helpers/item';
+import { searchName } from '../../shared/helpers/search-name';
 
 /* eslint-disable @typescript-eslint/no-explicit-any -- the skill data of the units has no fixed shape */
 
@@ -176,7 +177,10 @@ export interface SearchUnit {
 export interface SkillUnit {
   id: string;
   name: string;
+  jpname?: string;
+  wikiEntry?: string;
   braveShifted?: string;
+  variantOf?: string;
   max_rarity: string;
   /** the roles of the unit (a role the game does not name is null) */
   roles?: (string | null)[];
@@ -310,9 +314,11 @@ const isOwning = (owned: SearchContext['owned'], id: string): boolean => {
 
 /** The user owns the unit, or the unit it was brave shifted from. */
 export function isOwnedUnit(unit: SearchUnit, context: SearchContext): boolean {
-  if (isOwning(context.owned, unit.id)) return true;
+  // a [JP] version is owned when the unit it is a version of is
+  const globalId = (id: string): string => context.units[id]?.variantOf ?? id;
+  if (isOwning(context.owned, globalId(unit.id))) return true;
   const shifted = context.units[unit.id]?.braveShifted;
-  return !!shifted && isOwning(context.owned, shifted);
+  return !!shifted && isOwning(context.owned, globalId(shifted));
 }
 
 function matchesSeries(series: readonly string[], unit: SearchUnit): boolean {
@@ -643,7 +649,7 @@ function skillSearchText(skill: any): string {
 /** Sets the `searchString` of the units: their name and everything their skills say. */
 export function prepareUnitSearch(units: Record<string, SkillUnit>): void {
   for (const unit of Object.values(units)) {
-    let text = unit.name.toLowerCase();
+    let text = searchName(unit).toLowerCase();
     for (const skill of [...unit.magics, ...unit.actives, ...unit.passives]) text += `|${skillSearchText(skill)}`;
     text += `|${unit.lb.name.toLowerCase()}`;
     for (const effect of unit.lb.maxEffects) if (effect.desc != null) text += `|${effect.desc.toLowerCase()}`;

@@ -6,6 +6,7 @@
 // - Items, vision cards and Espers are the union by id (the shared ones are the same in both servers).
 //
 // Run it with `node tools/mergeServers.js` (or `npm run build:merged`); it is safe to run again.
+// Then run `node tools/translateJpUnits.mjs`: the merge brings back the Japanese unit names.
 // Its input is not in the tree any more (the data is frozen and `public/ALL` is the result): to run it again, restore
 // `public/GL`, `public/JP` and `tools/GL/sources/units.json`, `tools/JP/sources/units.json` from the commit before the
 // one that removed them (`git log --diff-filter=D -- public/GL/units.json`, then `git checkout <commit>~ -- <paths>`).
@@ -91,8 +92,12 @@ const tagged = (unit, id) => {
     for (const key of ['6_form', '7_form']) if (unit[key]) result[key] = tagForm(unit[key]);
     return result;
 };
-// the Brave Shift of a doubled unit points to the Japan version of its Brave Shift
-const withLinks = (unit) => (typeof unit.braveShift === 'string' ? { ...unit, braveShift: jpId(unit.braveShift) } : unit);
+// the two forms of a doubled unit point to the Japan version of each other
+const withLinks = (unit) => {
+    const result = { ...unit };
+    for (const key of ['braveShift', 'braveShifted']) if (typeof unit[key] === 'string') result[key] = jpId(unit[key]);
+    return result;
+};
 
 fs.mkdirSync(OUT, { recursive: true });
 

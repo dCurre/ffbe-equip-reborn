@@ -2,6 +2,8 @@ import type { SpriteName } from '../../shared/components/icon/icon';
 import type { Item } from '../../game/helpers/item';
 import { OwnedUnit, OwnedUnits } from '../../shared/services/inventory';
 import { STRINGS } from '../../strings/en';
+import { searchName } from '../../shared/helpers/search-name';
+import { pictureId } from '../../shared/helpers/unit-picture';
 
 /** A unit of `units.json` (only the fields this page uses). `min_rarity` / `max_rarity` are strings in the data. */
 export interface GameUnit {
@@ -18,6 +20,7 @@ export interface GameUnit {
   braveShifted?: boolean;
   fragmentId?: string;
   wikiEntry?: string;
+  jpname?: string;
   equip: string[];
   /** the roles of the unit (a role the game does not name is null) */
   roles?: (string | null)[];
@@ -53,8 +56,9 @@ export function rarityParts(min: string | number, max: string | number): RarityP
 
 /** The picture of a unit: its highest form (a 7* that is not owned as 7* shows the 6* picture). */
 export function unitImage(unit: GameUnit, owned: OwnedUnit | undefined): string {
-  let image = `img/units/unit_icon_${unit.id.substring(0, 7)}`;
-  image += unit.max_rarity === 'NV' && unit.min_rarity !== 'NV' ? '1' : unit.id.substring(7, 8);
+  const id = pictureId(unit.id);
+  let image = `img/units/unit_icon_${id.slice(0, -2)}`;
+  image += unit.max_rarity === 'NV' && unit.min_rarity !== 'NV' ? '1' : id.slice(-2, -1);
   if (unit.max_rarity === 'NV') image += '7';
   else image += String(unit.max_rarity) === '7' && owned && !owned.sevenStar ? '6' : unit.max_rarity;
   return `${image}.png`;
@@ -92,7 +96,7 @@ export const sortByTrustName = (units: readonly GameUnit[], tmrs: Readonly<Recor
 export function filterByName(units: readonly GameUnit[], text: string): GameUnit[] {
   const words = text.toLowerCase().split(' ');
   return units.filter((unit) =>
-    words.every((word) => unit.name.toLowerCase().includes(word) || unit.equip.includes(word)),
+    words.every((word) => searchName(unit).toLowerCase().includes(word) || unit.equip.includes(word)),
   );
 }
 

@@ -3,7 +3,7 @@
     <img [src]="image()" loading="lazy" alt="" />
   </div>
   <div class="unitDescriptionLines">
-    <span class="unitName"><app-wiki-link [name]="unit().name" /></span>
+    <span class="unitName"><app-wiki-link [name]="unit().name" [page]="unit().wikiEntry" /></span>
     <span class="roles">
       @for (role of roles(); track role.name) {
         <app-icon

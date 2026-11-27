@@ -3,6 +3,11 @@ import { baseStats, elementList } from '../constants/base-lists.js';
 import { percentValues } from '../constants/stat-values.js';
 import { typeList, weaponList } from '../constants/item-types.js';
 
+/** Is the unit one of the exclusive units of an item? A [JP] version (`variantOf`) counts as the unit it is a version of. */
+export function isExclusiveUnit(ids: readonly string[], unit: { id: string; variantOf?: string }): boolean {
+  return ids.includes(unit.id) || (!!unit.variantOf && ids.includes(unit.variantOf));
+}
+
 export function isApplicable(item, unit) {
   if (item.exclusiveSex && item.exclusiveSex != unit.sex) {
     return false;
@@ -10,7 +15,7 @@ export function isApplicable(item, unit) {
   if (item.exclusiveRoles && !item.exclusiveRoles.some((role) => unit.roles.includes(role))) {
     return false;
   }
-  if (item.exclusiveUnits && !item.exclusiveUnits.includes(unit.id)) {
+  if (item.exclusiveUnits && !isExclusiveUnit(item.exclusiveUnits, unit)) {
     return false;
   }
   if (item.max7StarUnit && unit.max_rarity === 'NV') {

@@ -21,6 +21,7 @@ export type EquipmentSource = 'all' | 'global' | 'owned' | 'shop';
 export interface BuilderUnit {
   id: string;
   name: string;
+  jpname?: string;
   max_rarity: string | number;
   min_rarity?: string | number;
   stats: { maxStats: Record<string, number>; pots: Record<string, number> };
@@ -199,10 +200,14 @@ export class BuilderState {
         .filter(([, unit]) => !nvOnly || unit.max_rarity === 'NV')
         // a [JP] version (`variantOf`) is owned when the unit it is a version of is
         .filter(
-          ([id, unit]) =>
-            !owned ||
-            isOwned(owned[unit['variantOf'] ?? id]) ||
-            isOwned(owned[unit.braveShift ?? unit.braveShifted ?? '']),
+          ([id, unit]) => {
+            const other = unit.braveShift ?? unit.braveShifted ?? '';
+            return (
+              !owned ||
+              isOwned(owned[unit['variantOf'] ?? id]) ||
+              isOwned(owned[this.units()[other]?.['variantOf'] ?? other])
+            );
+          },
         )
         .sort(([, a], [, b]) => a.name.localeCompare(b.name))
         .flatMap(([id, unit]) => {
@@ -210,9 +215,10 @@ export class BuilderState {
           if (!nvOnly && unit['6_form'] && unit.max_rarity === 7) label += ` ${unit.max_rarity}★ `;
           if (unit.max_rarity === 'NV' && unit['7_form']) label += ' NV ';
           if (unit['nvPlus']) label += ' NV+'; // the list has text only: no icon
-          const options = [{ id, label }];
-          if (!nvOnly && unit['7_form']) options.push({ id: `${id}-7`, label: `${unit['7_form'].name} 7★` });
-          if (!nvOnly && unit['6_form']) options.push({ id: `${id}-6`, label: `${unit['6_form'].name} 6★` });
+          const alias = unit.jpname;
+          const options = [{ id, label, alias }];
+          if (!nvOnly && unit['7_form']) options.push({ id: `${id}-7`, label: `${unit['7_form'].name} 7★`, alias });
+          if (!nvOnly && unit['6_form']) options.push({ id: `${id}-6`, label: `${unit['6_form'].name} 6★`, alias });
           return options;
         });
     });

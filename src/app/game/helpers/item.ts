@@ -1,17 +1,21 @@
+import { isExclusiveUnit } from '../../../core/builder/item-conditions';
 import { accessList, typeListWithEsper } from '../../../core/constants/item-types';
 import { ailmentList, baseStats, elementList } from '../../../core/constants/base-lists';
 import { itemStats } from './item-stats';
 
 export type { Item } from '../models/item.model';
 import type { Item } from '../models/item.model';
+import { searchName } from '../../shared/helpers/search-name';
 
-type Units = Readonly<Record<string, { name: string; sex?: string; roles?: string[] }>>;
+type Units = Readonly<
+  Record<string, { name: string; jpname?: string; variantOf?: string; sex?: string; roles?: string[] }>
+>;
 
 const isTwoHanded = (item: Item): boolean => !!item.special?.includes('twoHanded');
 
 /** The text the search box looks into: name, stats, effects, units, access. */
 export function buildSearchString(item: Item, units: Units): string {
-  const unitName = (id: string): string => units[id]?.name ?? id;
+  const unitName = (id: string): string => (units[id] ? searchName(units[id]) : id);
   const parts: string[] = [item.name + (item['jpname'] ?? '')];
   const add = (...texts: string[]): void => void parts.push(...texts);
   add(
@@ -154,7 +158,7 @@ export interface ItemQuery {
   ailmentsAnd?: boolean;
   killersAnd?: boolean;
   /** the unit looking for items: the items exclusive to other units, roles or sex are left out */
-  unit?: { id: string; roles?: readonly string[]; sex?: string };
+  unit?: { id: string; variantOf?: string; roles?: readonly string[]; sex?: string };
   showNotReleasedYet?: boolean;
   /** only the items of this inventory (`itemInventory`) */
   onlyOwned?: Readonly<Record<string, unknown>>;
@@ -222,7 +226,7 @@ export function itemMatches(item: Item, query: ItemQuery): boolean {
 
 /** The exclusive unit, roles and sex of an item must fit the unit (an item without them fits every unit). */
 function unitCanUse(item: Item, unit: NonNullable<ItemQuery['unit']>): boolean {
-  if (item['exclusiveUnits'] && !item['exclusiveUnits'].includes(unit.id)) return false;
+  if (item['exclusiveUnits'] && !isExclusiveUnit(item['exclusiveUnits'], unit)) return false;
   if (item['exclusiveRoles'] && !item['exclusiveRoles'].some((role: string) => unit.roles?.includes(role)))
     return false;
   return !item['exclusiveSex'] || item['exclusiveSex'] === unit.sex;
@@ -334,7 +338,7 @@ export function sortItems(items: Item[], unitIds: string | readonly string[] = [
 export function exclusiveForbidAccess(item: Item, unitId: string, units: Units): boolean {
   const unit = units[unitId];
   if (item['exclusiveSex'] && unit.sex !== item['exclusiveSex']) return true;
-  if (item['exclusiveUnits'] && !item['exclusiveUnits'].includes(unitId)) return true;
+  if (item['exclusiveUnits'] && !isExclusiveUnit(item['exclusiveUnits'], { id: unitId, variantOf: unit.variantOf })) return true;
   return !!item['exclusiveRoles'] && !item['exclusiveRoles'].some((role: string) => unit.roles?.includes(role));
 }
 

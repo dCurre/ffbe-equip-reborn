@@ -19,7 +19,7 @@
       @if (tab() === 'tmr') {
         <app-wiki-link [name]="card().name" />
       } @else {
-        <app-wiki-link [name]="card().unit.name" />
+        <app-wiki-link [name]="card().unit.name" [page]="card().unit.wikiEntry" />
       }
       @if (card().timeLimited) {
         <span class="time" [title]="t.timeLimitedUnit"><app-icon name="timer" /></span>
